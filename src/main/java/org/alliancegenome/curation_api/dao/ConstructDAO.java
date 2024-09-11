@@ -17,7 +17,9 @@ public class ConstructDAO extends BaseSQLDAO<Construct> {
 	}
 
 	public Map<String, Long> getConstructIdMap() {
-		Map<String, Long> constructIdMap = new HashMap<>();
+		if (constructIdMap.size() > 0) {
+			return constructIdMap;
+		}
 		Query q = entityManager.createNativeQuery("SELECT a.id, a.modEntityId, a.modInternalId FROM Reagent as a where exists (select * from construct as g where g.id = a.id)");
 		List<Object[]> ids = q.getResultList();
 		ids.forEach(record -> {
@@ -31,4 +33,9 @@ public class ConstructDAO extends BaseSQLDAO<Construct> {
 		return constructIdMap;
 	}
 
+	private Map<String, Long> constructIdMap = new HashMap<>();
+
+	public long getConstructIdByModID(String modID) {
+		return getConstructIdMap().get(modID);
+	}
 }

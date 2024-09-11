@@ -17,7 +17,9 @@ public class GenomicEntityDAO extends BaseSQLDAO<GenomicEntity> {
 	}
 
 	public Map<String, Long> getGenomicEntityIdMap() {
-		Map<String, Long> genomicEntityIdMap = new HashMap<>();
+		if (genomicEntityIdMap.size() > 0) {
+			return genomicEntityIdMap;
+		}
 		Query q = entityManager.createNativeQuery("SELECT a.id, a.modEntityId, a.modInternalId FROM BiologicalEntity as a where exists (select * from genomicentity as g where g.id = a.id)");
 		List<Object[]> ids = q.getResultList();
 		ids.forEach(record -> {
@@ -29,6 +31,12 @@ public class GenomicEntityDAO extends BaseSQLDAO<GenomicEntity> {
 			}
 		});
 		return genomicEntityIdMap;
+	}
+
+	private Map<String, Long> genomicEntityIdMap = new HashMap<>();
+
+	public long getGenomicEntityIdByModID(String modID) {
+		return getGenomicEntityIdMap().get(modID);
 	}
 
 }
