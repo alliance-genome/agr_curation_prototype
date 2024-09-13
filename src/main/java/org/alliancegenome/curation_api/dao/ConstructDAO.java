@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.dao;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.Query;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@ApplicationScoped
+@RequestScoped
 public class ConstructDAO extends BaseSQLDAO<Construct> {
 
 	protected ConstructDAO() {
