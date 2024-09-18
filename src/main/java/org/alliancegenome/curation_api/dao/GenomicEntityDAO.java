@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.dao;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.Query;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
