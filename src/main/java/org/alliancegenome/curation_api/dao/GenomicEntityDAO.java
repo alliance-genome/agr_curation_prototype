@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.dao;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.Query;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -9,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RequestScoped
+@ApplicationScoped
 public class GenomicEntityDAO extends BaseSQLDAO<GenomicEntity> {
 
 	protected GenomicEntityDAO() {
@@ -17,9 +18,7 @@ public class GenomicEntityDAO extends BaseSQLDAO<GenomicEntity> {
 	}
 
 	public Map<String, Long> getGenomicEntityIdMap() {
-		if (genomicEntityIdMap.size() > 0) {
-			return genomicEntityIdMap;
-		}
+		Map<String, Long> genomicEntityIdMap = new HashMap<>();
 		Query q = entityManager.createNativeQuery("SELECT a.id, a.modEntityId, a.modInternalId FROM BiologicalEntity as a where exists (select * from genomicentity as g where g.id = a.id)");
 		List<Object[]> ids = q.getResultList();
 		ids.forEach(record -> {
@@ -31,12 +30,6 @@ public class GenomicEntityDAO extends BaseSQLDAO<GenomicEntity> {
 			}
 		});
 		return genomicEntityIdMap;
-	}
-
-	private Map<String, Long> genomicEntityIdMap = new HashMap<>();
-
-	public long getGenomicEntityIdByModID(String modID) {
-		return getGenomicEntityIdMap().get(modID);
 	}
 
 }

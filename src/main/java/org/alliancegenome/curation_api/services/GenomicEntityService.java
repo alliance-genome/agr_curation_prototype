@@ -51,7 +51,7 @@ public class GenomicEntityService extends SubmittedObjectCrudService<GenomicEnti
 	private Map<String, Long> genomicEntityIdMap = new HashMap<>();
 
 	public Long getIdByModID(String modID) {
-		return genomicEntityDAO.getGenomicEntityIdByModID(modID);
+		return getGenomicEntityIdMap().get(modID);
 	}
 
 	public GenomicEntity getShallowEntity(Long id) {

@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.dao;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.Query;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -9,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RequestScoped
+@ApplicationScoped
 public class ConstructDAO extends BaseSQLDAO<Construct> {
 
 	protected ConstructDAO() {
@@ -17,9 +18,7 @@ public class ConstructDAO extends BaseSQLDAO<Construct> {
 	}
 
 	public Map<String, Long> getConstructIdMap() {
-		if (constructIdMap.size() > 0) {
-			return constructIdMap;
-		}
+		Map<String, Long> constructIdMap = new HashMap<>();
 		Query q = entityManager.createNativeQuery("SELECT a.id, a.modEntityId, a.modInternalId FROM Reagent as a where exists (select * from construct as g where g.id = a.id)");
 		List<Object[]> ids = q.getResultList();
 		ids.forEach(record -> {
@@ -33,9 +32,4 @@ public class ConstructDAO extends BaseSQLDAO<Construct> {
 		return constructIdMap;
 	}
 
-	private Map<String, Long> constructIdMap = new HashMap<>();
-
-	public long getConstructIdByModID(String modID) {
-		return getConstructIdMap().get(modID);
-	}
 }

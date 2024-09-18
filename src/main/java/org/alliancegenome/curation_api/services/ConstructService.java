@@ -143,7 +143,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 	private Map<String, Long> constructIdMap = new HashMap<>();
 
 	public Long getIdByModID(String modID) {
-		return constructDAO.getConstructIdByModID(modID);
+		return getConstructIdMap().get(modID);
 	}
 
 	public Construct getShallowEntity(Long id) {
