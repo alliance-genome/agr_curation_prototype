@@ -57,6 +57,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 			} else {
 				if (beDataProvider != null && !construct.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 					assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
+					return null;
 				}
 			}
 		} else {
@@ -72,7 +73,6 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 				assocResponse.addErrorMessage("genomic_entity_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityIdentifier() + ")");
 			}
 		}
-
 		ConstructGenomicEntityAssociation association = null;
 		if (construct != null && StringUtils.isNotBlank(dto.getGenomicEntityRelationName()) && genomicEntity != null) {
 			HashMap<String, Object> params = new HashMap<>();

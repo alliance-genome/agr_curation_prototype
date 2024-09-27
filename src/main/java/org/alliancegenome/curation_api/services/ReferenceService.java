@@ -1,10 +1,10 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
+import io.quarkus.logging.Log;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -12,18 +12,19 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.references.ReferenceSynchronisationHelper;
 
-import io.quarkus.logging.Log;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 @RequestScoped
 public class ReferenceService extends BaseEntityCrudService<Reference, ReferenceDAO> {
 
-	@Inject ReferenceDAO referenceDAO;
-	@Inject ReferenceSynchronisationHelper refSyncHelper;
-	
+	@Inject
+	ReferenceDAO referenceDAO;
+	@Inject
+	ReferenceSynchronisationHelper refSyncHelper;
+
 	Date referenceRequest;
 	HashMap<String, Reference> referenceCacheMap = new HashMap<>();
 
@@ -56,8 +57,12 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 				reference = referenceCacheMap.get(curieOrXref);
 			} else {
 				Log.debug("Reference not cached, caching reference: (" + curieOrXref + ")");
-				reference = findOrCreateReference(curieOrXref);
-				referenceCacheMap.put(curieOrXref, reference);
+				if (referenceCacheMap.isEmpty()) {
+					referenceCacheMap = referenceDAO.getReferenceMap();
+				} else {
+					reference = findOrCreateReference(curieOrXref);
+					referenceCacheMap.put(curieOrXref, reference);
+				}
 			}
 		} else {
 			reference = findOrCreateReference(curieOrXref);
@@ -65,7 +70,7 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 		}
 		return reference;
 	}
-	
+
 	private Reference findOrCreateReference(String curieOrXref) {
 		Reference reference = null;
 
