@@ -2,7 +2,14 @@ package org.alliancegenome.curation_api.model.ingest.dto.fms;
 
 import java.util.List;
 
-public class HTPExpressionDatasetSampleAnnotationFmsDTO {
+import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class HTPExpressionDatasetSampleAnnotationFmsDTO extends BaseDTO{
 	private HTPIdFmsDTO sampleId;
 	private String sampleTitle;
 	private String sampleType;
