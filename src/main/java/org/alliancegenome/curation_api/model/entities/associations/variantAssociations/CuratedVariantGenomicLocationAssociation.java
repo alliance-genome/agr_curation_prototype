@@ -31,7 +31,8 @@ import lombok.ToString;
 	@Index(name = "cvgla_curatedconsequence_index", columnList = "curatedConsequence_id"),
 	@Index(name = "cvgla_variantassociationsubject_index", columnList = "variantassociationsubject_id"),
 	@Index(name = "cvgla_vglaobject_index", columnList = "variantgenomiclocationassociationobject_id")
-})
+	}, name = "CuratedVariantGenomicLocation"
+)
 
 public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLocationAssociation {
 

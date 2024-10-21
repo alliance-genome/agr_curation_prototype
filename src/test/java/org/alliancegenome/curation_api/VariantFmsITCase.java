@@ -48,7 +48,7 @@ public class VariantFmsITCase extends BaseITCase {
 	private final String variantGetEndpoint = "/api/variant/";
 	private final String allele = "WB:AlleleWithVar1";
 	private final String assemblyComponent = "RefSeq:NC_001.1";
-	private final String variantId = "var";
+	private final String variantId = "var_NC_001.1:g.1A>T";
 	
 	private void loadRequiredEntities() throws Exception {
 		createSoTerm("SO:1000002", "substitution", false);
@@ -86,12 +86,12 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.modInternalId", is(variantId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
-			body("entity.transcriptType.curie", is("SO:0000234")).
-			body("entity.curatedVariantGenomicLocationAssociations", hasSize(1)).
-			body("entity.curatedVariantGenomicLocationAssociations[0].relation.name", is("located_on")).
-			body("entity.curatedVariantGenomicLocationAssociations[0].variantGenomicLocationAssociationObject.name", is("Test1")).
-			body("entity.curatedVariantGenomicLocationAssociations[0].start", is(1)).
-			body("entity.curatedVariantGenomicLocationAssociations[0].end", is(1000)).
+			body("entity.variantType.curie", is("SO:1000002")).
+			body("entity.curatedVariantGenomicLocations", hasSize(1)).
+			body("entity.curatedVariantGenomicLocations[0].relation.name", is("located_on")).
+			body("entity.curatedVariantGenomicLocations[0].variantGenomicLocationAssociationObject.name", is("Test1")).
+			body("entity.curatedVariantGenomicLocations[0].start", is(1)).
+			body("entity.curatedVariantGenomicLocations[0].end", is(1000)).
 			body("entity.alleleVariantAssociations", hasSize(1)).
 			body("entity.alleleVariantAssociations[0].relation.name", is("has_variant")).
 			body("entity.alleleVariantAssociations[0].alleleAssociationSubject.modEntityId", is("WB:AlleleWithVar1"));

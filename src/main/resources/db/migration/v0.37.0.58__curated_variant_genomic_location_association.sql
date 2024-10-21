@@ -1,4 +1,4 @@
-CREATE TABLE curatedvariantgenomiclocationassociation (
+CREATE TABLE curatedvariantgenomiclocation (
 	id bigint PRIMARY KEY,
 	datecreated timestamp(6) with time zone,
 	dateupdated timestamp(6) with time zone,
@@ -29,47 +29,47 @@ CREATE TABLE curatedvariantgenomiclocationassociation (
 	variantsequence character varying(1000)
 );
 
-CREATE TABLE CuratedVariantGenomicLocationAssociation_InformationContentEntity (
+CREATE TABLE curatedvariantgenomiclocation_informationcontententity (
 	association_id bigint NOT NULL,
 	evidence_id bigint NOT NULL
 );
 
-CREATE SEQUENCE curatedvariantgenomiclocationassociation_seq
+CREATE SEQUENCE curatedvariantgenomiclocation_seq
 	START WITH 1
 	INCREMENT BY 50
 	NO MINVALUE
 	NO MAXVALUE
 	CACHE 1;
 
-CREATE INDEX cvgla_internal_index ON curatedvariantgenomiclocationassociation USING btree (internal);
-CREATE INDEX cvgla_obsolete_index ON curatedvariantgenomiclocationassociation USING btree (obsolete);
-CREATE INDEX cvgla_hgvs_index ON curatedvariantgenomiclocationassociation USING btree (hgvs);
-CREATE INDEX cvgla_createdby_index ON curatedvariantgenomiclocationassociation USING btree (createdby_id);
-CREATE INDEX cvgla_updatedby_index ON curatedvariantgenomiclocationassociation USING btree (updatedby_id);
-CREATE INDEX cvgla_relation_index ON curatedvariantgenomiclocationassociation USING btree (relation_id);
-CREATE INDEX cvgla_consequence_index ON curatedvariantgenomiclocationassociation USING btree (consequence_id);
-CREATE INDEX cvgla_curatedconsequence_index ON curatedvariantgenomiclocationassociation USING btree (curatedconsequence_id);
-CREATE INDEX cvgla_dnamutationtype_index ON curatedvariantgenomiclocationassociation USING btree (dnamutationtype_id);
-CREATE INDEX cvgla_genelocalizationtype_index ON curatedvariantgenomiclocationassociation USING btree (genelocalizationtype_id);
-CREATE INDEX cvgla_variantassociationsubject_index ON curatedvariantgenomiclocationassociation USING btree (variantassociationsubject_id);
-CREATE INDEX cvgla_vglaobject_index ON curatedvariantgenomiclocationassociation USING btree (variantgenomiclocationassociationobject_id);
+CREATE INDEX cvgla_internal_index ON curatedvariantgenomiclocation USING btree (internal);
+CREATE INDEX cvgla_obsolete_index ON curatedvariantgenomiclocation USING btree (obsolete);
+CREATE INDEX cvgla_hgvs_index ON curatedvariantgenomiclocation USING btree (hgvs);
+CREATE INDEX cvgla_createdby_index ON curatedvariantgenomiclocation USING btree (createdby_id);
+CREATE INDEX cvgla_updatedby_index ON curatedvariantgenomiclocation USING btree (updatedby_id);
+CREATE INDEX cvgla_relation_index ON curatedvariantgenomiclocation USING btree (relation_id);
+CREATE INDEX cvgla_consequence_index ON curatedvariantgenomiclocation USING btree (consequence_id);
+CREATE INDEX cvgla_curatedconsequence_index ON curatedvariantgenomiclocation USING btree (curatedconsequence_id);
+CREATE INDEX cvgla_dnamutationtype_index ON curatedvariantgenomiclocation USING btree (dnamutationtype_id);
+CREATE INDEX cvgla_genelocalizationtype_index ON curatedvariantgenomiclocation USING btree (genelocalizationtype_id);
+CREATE INDEX cvgla_variantassociationsubject_index ON curatedvariantgenomiclocation USING btree (variantassociationsubject_id);
+CREATE INDEX cvgla_vglaobject_index ON curatedvariantgenomiclocation USING btree (variantgenomiclocationassociationobject_id);
 
-CREATE INDEX idxf6ue9897y96ts14v3cxil0rr3 ON curatedvariantgenomiclocationassociation_informationcontententity USING btree (association_id);
-CREATE INDEX idxf71i1k78crgfhf7pnaewvc1ia ON curatedvariantgenomiclocationassociation_informationcontententity USING btree (evidence_id);
+CREATE INDEX idxf6ue9897y96ts14v3cxil0rr3 ON curatedvariantgenomiclocation_informationcontententity USING btree (association_id);
+CREATE INDEX idxf71i1k78crgfhf7pnaewvc1ia ON curatedvariantgenomiclocation_informationcontententity USING btree (evidence_id);
 
-ALTER TABLE ONLY curatedvariantgenomiclocationassociation ADD CONSTRAINT cvgla_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY curatedvariantgenomiclocationassociation ADD CONSTRAINT cvgla_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY curatedvariantgenomiclocationassociation ADD CONSTRAINT cvgla_relation_id_fk FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY curatedvariantgenomiclocationassociation ADD CONSTRAINT cvgla_variantassociationsubject_id_fk FOREIGN KEY (variantassociationsubject_id) REFERENCES variant(id);
-ALTER TABLE ONLY curatedvariantgenomiclocationassociation ADD CONSTRAINT cvgla_variantgenomiclocationassociationobject_id_fk FOREIGN KEY (variantgenomiclocationassociationobject_id) REFERENCES assemblycomponent(id);
-ALTER TABLE ONLY curatedvariantgenomiclocationassociation ADD CONSTRAINT cvgla_dnamutationtype_id_fk FOREIGN KEY (dnamutationtype_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY curatedvariantgenomiclocationassociation ADD CONSTRAINT cvgla_genelocalizationtype_id_fk FOREIGN KEY (genelocalizationtype_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY curatedvariantgenomiclocationassociation ADD CONSTRAINT cvgla_curatedconsequence_id_fk FOREIGN KEY (curatedconsequence_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY curatedvariantgenomiclocationassociation ADD CONSTRAINT cvgla_consequence_id_fk FOREIGN KEY (consequence_id) REFERENCES ontologyterm(id);
+ALTER TABLE ONLY curatedvariantgenomiclocation ADD CONSTRAINT cvgla_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person(id);
+ALTER TABLE ONLY curatedvariantgenomiclocation ADD CONSTRAINT cvgla_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person(id);
+ALTER TABLE ONLY curatedvariantgenomiclocation ADD CONSTRAINT cvgla_relation_id_fk FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
+ALTER TABLE ONLY curatedvariantgenomiclocation ADD CONSTRAINT cvgla_variantassociationsubject_id_fk FOREIGN KEY (variantassociationsubject_id) REFERENCES variant(id);
+ALTER TABLE ONLY curatedvariantgenomiclocation ADD CONSTRAINT cvgla_variantgenomiclocationassociationobject_id_fk FOREIGN KEY (variantgenomiclocationassociationobject_id) REFERENCES assemblycomponent(id);
+ALTER TABLE ONLY curatedvariantgenomiclocation ADD CONSTRAINT cvgla_dnamutationtype_id_fk FOREIGN KEY (dnamutationtype_id) REFERENCES ontologyterm(id);
+ALTER TABLE ONLY curatedvariantgenomiclocation ADD CONSTRAINT cvgla_genelocalizationtype_id_fk FOREIGN KEY (genelocalizationtype_id) REFERENCES ontologyterm(id);
+ALTER TABLE ONLY curatedvariantgenomiclocation ADD CONSTRAINT cvgla_curatedconsequence_id_fk FOREIGN KEY (curatedconsequence_id) REFERENCES ontologyterm(id);
+ALTER TABLE ONLY curatedvariantgenomiclocation ADD CONSTRAINT cvgla_consequence_id_fk FOREIGN KEY (consequence_id) REFERENCES ontologyterm(id);
 
 
-ALTER TABLE ONLY curatedvariantgenomiclocationassociation_informationcontententity ADD CONSTRAINT cvgla_ice_association_id_fk FOREIGN KEY (association_id) REFERENCES curatedvariantgenomiclocationassociation(id);
-ALTER TABLE ONLY curatedvariantgenomiclocationassociation_informationcontententity ADD CONSTRAINT cvgla_ice_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
+ALTER TABLE ONLY curatedvariantgenomiclocation_informationcontententity ADD CONSTRAINT cvgla_ice_association_id_fk FOREIGN KEY (association_id) REFERENCES curatedvariantgenomiclocation(id);
+ALTER TABLE ONLY curatedvariantgenomiclocation_informationcontententity ADD CONSTRAINT cvgla_ice_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
 
 CREATE TABLE allelevariantassociation (
 	id bigint PRIMARY KEY,

@@ -46,7 +46,7 @@ public interface VariantCrudInterface extends BaseSubmittedObjectCrudInterface<V
 
 	@Override
 	@GET
-	@JsonView(View.VariantView.class)
+	@JsonView(View.VariantDetailView.class)
 	@Path("/{identifierString}")
 	ObjectResponse<Variant> getByIdentifier(@PathParam("identifierString") String identifierString);
 

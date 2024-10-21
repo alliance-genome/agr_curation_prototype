@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
+import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
@@ -42,8 +43,15 @@ public class CodingSequenceService extends BaseEntityCrudService<CodingSequence,
 		return ids;
 	}
 
+	@Override
+	public ObjectResponse<CodingSequence> getByIdentifier(String identifier) {
+		CodingSequence object = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifier);
+		ObjectResponse<CodingSequence> ret = new ObjectResponse<CodingSequence>(object);
+		return ret;
+	}
+
 	public ObjectResponse<CodingSequence> deleteByIdentifier(String identifierString) {
-		CodingSequence codingSequence = findByAlternativeFields(List.of("modEntityId", "modInternalId", "uniqueId"), identifierString);
+		CodingSequence codingSequence = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifierString);
 		if (codingSequence != null) {
 			codingSequenceDAO.remove(codingSequence.getId());
 		}

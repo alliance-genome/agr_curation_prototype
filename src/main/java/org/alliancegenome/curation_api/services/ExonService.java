@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.ExonDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.Exon;
+import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +39,13 @@ public class ExonService extends BaseEntityCrudService<Exon, ExonDAO> {
 		List<Long> ids = exonDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;
+	}
+
+	@Override
+	public ObjectResponse<Exon> getByIdentifier(String identifier) {
+		Exon object = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifier);
+		ObjectResponse<Exon> ret = new ObjectResponse<Exon>(object);
+		return ret;
 	}
 
 	public ObjectResponse<Exon> deleteByIdentifier(String identifierString) {

@@ -44,7 +44,7 @@ public class VariantFmsDTOValidator {
 	@Inject AlleleService alleleService;
 	@Inject AssemblyComponentService assemblyComponentService;
 	@Inject CuratedVariantGenomicLocationAssociationDAO curatedVariantGenomicLocationAssociationDAO;
-	CuratedVariantGenomicLocationAssociationService curatedVariantGenomicLocationAssociationService;
+	@Inject CuratedVariantGenomicLocationAssociationService curatedVariantGenomicLocationAssociationService;
 	@Inject AlleleVariantAssociationDAO alleleVariantAssociationDAO;
 	@Inject AlleleVariantAssociationService alleleVariantAssociationService;
 	@Inject SoTermService soTermService;
