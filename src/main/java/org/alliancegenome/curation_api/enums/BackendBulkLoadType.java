@@ -28,11 +28,13 @@ public enum BackendBulkLoadType {
 	GFF_TRANSCRIPT("gff"),
 	
 	INTERACTION_MOL("tsv"),
+	EXPRESSION_ATLAS("tsv"),
 	INTERACTION_GEN("tsv"),
 	PARALOGY("json"),
 	SEQUENCE_TARGETING_REAGENT("json"),
 	EXPRESSION("json"),
 	HTPDATASET("json"),
+	HTPDATASAMPLE("json"),
 	;
 
 	public String fileExtension;

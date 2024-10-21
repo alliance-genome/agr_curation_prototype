@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PublicationFmsDTO;
@@ -117,18 +118,33 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 		}
 
 		if (CollectionUtils.isNotEmpty(dto.getCategoryTags())) {
-			List<VocabularyTerm> categoryTags = new ArrayList<>();
+			Map<String, VocabularyTerm> categoryTags = new HashMap<>();
 			for (String categoryTag : dto.getCategoryTags()) {
 				if (StringUtils.isNotEmpty(categoryTag)) {
-					VocabularyTerm tag = vocabularyTermService.getTermInVocabulary(VocabularyConstants.HTP_DATASET_CATEGORY_TAGS, categoryTag).getEntity();
-					if (tag == null) {
+					Map<String, Object> params = new HashMap<>();
+					params.put("name", categoryTag);
+					params.put("query_operator", "or");
+					params.put("synonyms", categoryTag);
+					SearchResponse<VocabularyTerm> searchResponse = vocabularyTermService.findByParams(new Pagination(), params);
+					boolean added = false;
+					if (searchResponse.getTotalResults() > 0) {
+						for (VocabularyTerm tag : searchResponse.getResults()) {
+							if (tag.getVocabulary().getName().equals("Data Set Category Tags") && (tag.getName().equals(categoryTag) || tag.getSynonyms().contains(categoryTag))) {
+								if (categoryTags.containsKey(categoryTag)) {
+									htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " Multiple Tags found in the Vocabulary " + " (" + categoryTag + ")");
+								} else {
+									categoryTags.put(categoryTag, tag);
+									added = true;
+								}
+							}
+						}
+					}
+					if (!added) {
 						htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " (" + categoryTag + ")");
-					} else {
-						categoryTags.add(tag);
 					}
 				}
 			}
-			htpannotation.setCategoryTags(categoryTags);
+			htpannotation.setCategoryTags(new ArrayList<>(categoryTags.values()));
 		} else {
 			htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.REQUIRED_MESSAGE);
 		}

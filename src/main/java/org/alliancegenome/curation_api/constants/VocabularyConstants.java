@@ -86,5 +86,5 @@ public final class VocabularyConstants {
 
 	public static final String HTP_DATASET_CATEGORY_TAGS = "data_set_category_tags";
 	public static final String HTP_DATASET_NOTE_TYPE_VOCABULARY_TERM_SET = "htp_expression_dataset_note_type";
-
+	public static final String HTP_DATASET_SAMPLE_NOTE_TYPE_VOCABULARY_TERM_SET = "htp_expression_dataset_sample_note_type";
 }

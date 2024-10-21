@@ -40,7 +40,7 @@ import lombok.ToString;
 public class BulkLoadFileHistory extends AuditedObject {
 
 	private static final String COUNT_TYPE = "Records";
-	
+
 	@JsonView({ View.FieldsOnly.class })
 	private LocalDateTime loadStarted = LocalDateTime.now();
 
@@ -84,13 +84,13 @@ public class BulkLoadFileHistory extends AuditedObject {
 	public BulkLoadFileHistory() {
 		loadStarted = LocalDateTime.now();
 	}
-	
+
 	@Transient
 	public void finishLoad() {
 		loadFinished = LocalDateTime.now();
 	}
-	
-	
+
+
 	@Transient
 	public void addCounts2(BulkLoadFileHistory history) {
 		for (Entry<String, ProcessCount> entry: history.getCounts().entrySet()) {
@@ -142,6 +142,10 @@ public class BulkLoadFileHistory extends AuditedObject {
 	@Transient
 	public void incrementSkipped(String countType) {
 		getProcessCount(countType).incrementSkipped();
+	}
+	@Transient
+	public void setTotalCount(long total) {
+		getProcessCount(COUNT_TYPE).setTotal(total);
 	}
 	@Transient
 	public double getErrorRate() {

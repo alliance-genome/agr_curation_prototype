@@ -185,7 +185,7 @@ public class JobScheduler {
 		}
 	}
 
-	@Scheduled(cron = "0 0 0 ? * SAT")
+	@Scheduled(cron = "0 0 0 ? * *")
 	public void cleanUpFileExceptions() {
 		bulkLoadFileExceptionDAO.cleanUpTwoWeekOldExceptions();
 	}
