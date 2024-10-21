@@ -18,6 +18,7 @@ public enum BackendBulkLoadType {
 	ALLELE_ASSOCIATION("json"),
 	CONSTRUCT_ASSOCIATION("json"),
 	VARIANT("json"),
+	VARIATION("json"), // FMS variants as opposed to direct submission for VARIANT
 
 	// GFF all from the same file but split out
 	GFF("gff"), // For Database entries

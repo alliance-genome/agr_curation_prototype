@@ -54,7 +54,7 @@ public class BulkLoadJobExecutor {
 	@Inject ParalogyExecutor paralogyExecutor;
 	@Inject GeneExpressionExecutor geneExpressionExecutor;
 	@Inject SequenceTargetingReagentExecutor sqtrExecutor;
-	
+	@Inject VariantFmsExecutor variantFmsExecutor;
 	@Inject Gff3ExonExecutor gff3ExonExecutor;
 	@Inject Gff3CDSExecutor gff3CDSExecutor;
 	@Inject Gff3TranscriptExecutor gff3TranscriptExecutor;
@@ -120,7 +120,8 @@ public class BulkLoadJobExecutor {
 			resourceDescriptorExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION) {
 			geneExpressionExecutor.execLoad(bulkLoadFileHistory);
-			
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.VARIATION) {
+			variantFmsExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_EXON) {
 			gff3ExonExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_CDS) {

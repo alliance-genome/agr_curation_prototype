@@ -215,6 +215,24 @@ public class BaseITCase {
 
 		return response.getEntity();
 	}
+	
+	public AssemblyComponent createAssemblyComponent(String modEntityId, String name, DataProvider dataProvider) throws Exception {
+		AssemblyComponent assemblyComponent = new AssemblyComponent();
+		assemblyComponent.setModEntityId(modEntityId);
+		assemblyComponent.setName(name);
+		assemblyComponent.setDataProvider(dataProvider);
+		
+		ObjectResponse<AssemblyComponent> response = RestAssured.given().
+				contentType("application/json").
+				body(assemblyComponent).
+				when().
+				put("/api/assemblycomponent").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefAssemblyComponent());
+
+			return response.getEntity();
+	}
 
 	public CHEBITerm createChebiTerm(String curie, String name, Boolean obsolete) {
 		CHEBITerm chebiTerm = new CHEBITerm();
@@ -1124,13 +1142,13 @@ public class BaseITCase {
 		};
 	}
 
-	private TypeRef<ObjectResponse<OntologyTerm>> getObjectResponseTypeRefOntologyTerm() {
-		return new TypeRef<ObjectResponse<OntologyTerm>>() {
+	private TypeRef<ObjectResponse<AnatomicalTerm>> getObjectResponseTypeRefAnatomicalTerm() {
+		return new TypeRef<ObjectResponse<AnatomicalTerm>>() {
 		};
 	}
 
-	private TypeRef<ObjectResponse<AnatomicalTerm>> getObjectResponseTypeRefAnatomicalTerm() {
-		return new TypeRef<ObjectResponse<AnatomicalTerm>>() {
+	private TypeRef<ObjectResponse<AssemblyComponent>> getObjectResponseTypeRefAssemblyComponent() {
+		return new TypeRef<ObjectResponse<AssemblyComponent>>() {
 		};
 	}
 
@@ -1241,6 +1259,11 @@ public class BaseITCase {
 
 	public TypeRef<ObjectResponse<Note>> getObjectResponseTypeRefNote() {
 		return new TypeRef<ObjectResponse<Note>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<OntologyTerm>> getObjectResponseTypeRefOntologyTerm() {
+		return new TypeRef<ObjectResponse<OntologyTerm>>() {
 		};
 	}
 

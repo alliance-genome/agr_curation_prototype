@@ -2,12 +2,14 @@ package org.alliancegenome.curation_api.services;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AssemblyComponentDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
@@ -76,6 +78,15 @@ public class AssemblyComponentService extends BaseEntityCrudService<AssemblyComp
 		assemblyComponent.setTaxon(ncbiTaxonTermService.getByCurie(taxonCurie).getEntity());
 		assemblyComponent.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));
 		return assemblyComponentDAO.persist(assemblyComponent);
+	}
+
+	public ObjectResponse<AssemblyComponent> deleteByIdentifier(String identifierString) {
+		AssemblyComponent assemblyComponent = findByAlternativeFields(List.of("modEntityId", "modInternalId"), identifierString);
+		if (assemblyComponent != null) {
+			assemblyComponentDAO.remove(assemblyComponent.getId());
+		}
+		ObjectResponse<AssemblyComponent> ret = new ObjectResponse<>(assemblyComponent);
+		return ret;
 	}
 
 }

@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudIn
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -37,6 +38,11 @@ public interface VariantCrudInterface extends BaseSubmittedObjectCrudInterface<V
 	@Path("/bulk/{dataProvider}/variants")
 	@JsonView(View.FieldsAndLists.class)
 	APIResponse updateVariants(@PathParam("dataProvider") String dataProvider, List<VariantDTO> alleleData);
+
+	@POST
+	@Path("/bulk/{dataProvider}/fmsvariants")
+	@JsonView(View.FieldsAndLists.class)
+	APIResponse updateFmsVariants(@PathParam("dataProvider") String dataProvider, List<VariantFmsDTO> alleleData);
 
 	@Override
 	@GET

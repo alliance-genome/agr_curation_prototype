@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -15,10 +16,12 @@ import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
+import org.alliancegenome.curation_api.services.helpers.variants.HgvsIdentifierHelper;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
