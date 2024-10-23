@@ -1,10 +1,12 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleVariantAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.variantAssociations.CuratedVariantGenomicLocationAssociationDAO;
@@ -13,20 +15,25 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleVariantAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.variantAssociations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.AssemblyComponentService;
+import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.VocabularyTermSetService;
 import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleVariantAssociationService;
 import org.alliancegenome.curation_api.services.associations.variantAssociations.CuratedVariantGenomicLocationAssociationService;
+import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.helpers.variants.HgvsIdentifierHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
@@ -41,6 +48,7 @@ import jakarta.transaction.Transactional;
 public class VariantFmsDTOValidator {
 
 	@Inject VariantDAO variantDAO;
+	@Inject NoteDAO noteDAO;
 	@Inject AlleleService alleleService;
 	@Inject AssemblyComponentService assemblyComponentService;
 	@Inject CuratedVariantGenomicLocationAssociationDAO curatedVariantGenomicLocationAssociationDAO;
@@ -52,6 +60,9 @@ public class VariantFmsDTOValidator {
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject VocabularyTermSetService vocabularyTermSetService;
+	@Inject CrossReferenceFmsDTOValidator crossReferenceFmsDtoValidator;
+	@Inject CrossReferenceService crossReferenceService;
+	@Inject VariantNoteFmsDTOValidator variantNoteFmsDtoValidator;
 	
 	@Transactional
 	public Variant validateVariant(VariantFmsDTO dto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
@@ -71,14 +82,14 @@ public class VariantFmsDTOValidator {
 			variantResponse.addErrorMessage("sequenceOfReferenceAccessionNumber", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		
-		SOTerm soTerm = null;
+		SOTerm variantType = null;
 		if (StringUtils.isBlank(dto.getType())) {
 			variantResponse.addErrorMessage("type", ValidationConstants.REQUIRED_MESSAGE);
 		} else if (Objects.equals(dto.getType(), "SO:1000002") || Objects.equals(dto.getType(), "SO:1000008") ||
 				Objects.equals(dto.getType(), "SO:0000667") || Objects.equals(dto.getType(), "SO:0000159") ||
 				Objects.equals(dto.getType(), "SO:0002007") || Objects.equals(dto.getType(), "SO:1000032")) {
-			soTerm = soTermService.findByCurieOrSecondaryId(dto.getType());
-			if (soTerm == null) {
+			variantType = soTermService.findByCurieOrSecondaryId(dto.getType());
+			if (variantType == null) {
 				variantResponse.addErrorMessage("type", ValidationConstants.INVALID_MESSAGE + " (" + dto.getType() + ")");
 			} else {
 				if (StringUtils.isBlank(dto.getGenomicReferenceSequence()) && !Objects.equals(dto.getType(), "SO:0000159")
@@ -105,11 +116,74 @@ public class VariantFmsDTOValidator {
 		}
 		
 		variant.setModInternalId(modInternalId);
-		variant.setVariantType(soTerm);
+		variant.setVariantType(variantType);
 		variant.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.name()));
 		variant.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
 		
+		SOTerm consequence = null;
+		if (StringUtils.isNotBlank(dto.getConsequence())) {
+			consequence = soTermService.findByCurieOrSecondaryId(dto.getConsequence());
+			if (consequence == null) {
+				variantResponse.addErrorMessage("consequence", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConsequence() + ")");
+			}
+		}
+		variant.setSourceGeneralConsequence(consequence);
+		
+		List<CrossReference> validatedXrefs = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(dto.getCrossReferences())) {
+			for (CrossReferenceFmsDTO xrefDto : dto.getCrossReferences()) {
+				ObjectResponse<List<CrossReference>> xrefResponse = crossReferenceFmsDtoValidator.validateCrossReferenceFmsDTO(xrefDto);
+				if (xrefResponse.hasErrors()) {
+					variantResponse.addErrorMessage("cross_references", xrefResponse.errorMessagesString());
+					break;
+				} else {
+					validatedXrefs.addAll(xrefResponse.getEntity());
+				}
+			}
+		}
+		List<CrossReference> xrefs = crossReferenceService.getUpdatedXrefList(validatedXrefs, variant.getCrossReferences());
+		if (variant.getCrossReferences() != null) {
+			variant.getCrossReferences().clear();
+		}
+		if (xrefs != null) {
+			if (variant.getCrossReferences() == null) {
+				variant.setCrossReferences(new ArrayList<>());
+			}
+			variant.getCrossReferences().addAll(xrefs);
+		}
+		
+		if (variant.getRelatedNotes() != null) {
+			variant.getRelatedNotes().clear();
+		}
 
+		List<Note> validatedNotes = new ArrayList<Note>();
+		List<String> noteIdentities = new ArrayList<String>();
+		Boolean allNotesValid = true;
+		if (CollectionUtils.isNotEmpty(dto.getNotes())) {
+			for (int ix = 0; ix < dto.getNotes().size(); ix++) {
+				ObjectResponse<Note> noteResponse = variantNoteFmsDtoValidator.validateVariantNoteFmsDTO(dto.getNotes().get(ix));
+				if (noteResponse.hasErrors()) {
+					allNotesValid = false;
+					variantResponse.addErrorMessages("notes", ix, noteResponse.getErrorMessages());
+				} else {
+					String noteIdentity = NoteIdentityHelper.variantNoteFmsDtoIdentity(dto.getNotes().get(ix));
+					if (!noteIdentities.contains(noteIdentity)) {
+						noteIdentities.add(noteIdentity);
+						validatedNotes.add(noteDAO.persist(noteResponse.getEntity()));
+					}
+				}
+			}
+		}
+		if (!allNotesValid) {
+			variantResponse.convertMapToErrorMessages("notes");
+		}
+		if (CollectionUtils.isNotEmpty(validatedNotes) && allNotesValid) {
+			if (variant.getRelatedNotes() == null) {
+				variant.setRelatedNotes(new ArrayList<>());
+			}
+			variant.getRelatedNotes().addAll(validatedNotes);
+		}
+		
 		if (variantResponse.hasErrors()) {
 			variantResponse.convertErrorMessagesToMap();
 			throw new ObjectValidationException(dto, variantResponse.errorMessagesString());
@@ -173,6 +247,10 @@ public class VariantFmsDTOValidator {
 			association.setVariantSequence(dto.getGenomicVariantSequence());
 		}
 		
+		if (variant == null) {
+			cvglaResponse.addErrorMessage("variant", ValidationConstants.INVALID_MESSAGE);
+		}
+		
 		if (cvglaResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, cvglaResponse.errorMessagesString());
 		}
@@ -219,6 +297,13 @@ public class VariantFmsDTOValidator {
 		association.setAlleleVariantAssociationObject(variant);
 		association.setRelation(vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ALLELE_VARIANT_RELATION_VOCABULARY_TERM_SET, "has_variant").getEntity());
 		
+		if (variant == null) {
+			avaResponse.addErrorMessage("variant", ValidationConstants.INVALID_MESSAGE);
+		}
+		
+		if (avaResponse.hasErrors()) {
+			throw new ObjectValidationException(dto, avaResponse.errorMessagesString());
+		}
 		
 		association = alleleVariantAssociationDAO.persist(association);
 		if (association != null) {

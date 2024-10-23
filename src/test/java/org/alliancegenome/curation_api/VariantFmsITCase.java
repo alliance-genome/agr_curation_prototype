@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
@@ -49,6 +50,7 @@ public class VariantFmsITCase extends BaseITCase {
 	private final String allele = "WB:AlleleWithVar1";
 	private final String assemblyComponent = "RefSeq:NC_001.1";
 	private final String variantId = "var_NC_001.1:g.1A>T";
+	private final String reference = "AGRKB:000000001";
 	
 	private void loadRequiredEntities() throws Exception {
 		createSoTerm("SO:1000002", "substitution", false);
@@ -87,6 +89,7 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
 			body("entity.variantType.curie", is("SO:1000002")).
+			body("entity.sourceGeneralConsequence.curie", is("SO:0001587")).
 			body("entity.curatedVariantGenomicLocations", hasSize(1)).
 			body("entity.curatedVariantGenomicLocations[0].relation.name", is("located_on")).
 			body("entity.curatedVariantGenomicLocations[0].variantGenomicLocationAssociationObject.name", is("Test1")).
@@ -94,7 +97,16 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.curatedVariantGenomicLocations[0].end", is(1000)).
 			body("entity.alleleVariantAssociations", hasSize(1)).
 			body("entity.alleleVariantAssociations[0].relation.name", is("has_variant")).
-			body("entity.alleleVariantAssociations[0].alleleAssociationSubject.modEntityId", is("WB:AlleleWithVar1"));
+			body("entity.alleleVariantAssociations[0].alleleAssociationSubject.modEntityId", is("WB:AlleleWithVar1")).
+			body("entity.relatedNotes", hasSize(1)).
+			body("entity.relatedNotes[0].internal", is(false)).
+			body("entity.relatedNotes[0].freeText", is("This is a test note.")).
+			body("entity.relatedNotes[0].noteType.name", is("comment")).
+			body("entity.relatedNotes[0].references[0].curie", is(reference)).
+			body("entity.crossReferences", hasSize(1)).
+			body("entity.crossReferences[0].referencedCurie", is("TEST:WBVar00252636")).
+			body("entity.crossReferences[0].displayName", is("TEST:WBVar00252636")).
+			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage"));
 
 	}
 

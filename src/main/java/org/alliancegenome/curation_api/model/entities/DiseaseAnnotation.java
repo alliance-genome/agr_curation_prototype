@@ -160,7 +160,8 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private DataProvider secondaryDataProvider;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"symbol", "name", "curie", "modEntityId", "modInternalId",
+			"symbol_keyword", "name_keyword", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
