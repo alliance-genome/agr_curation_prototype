@@ -63,6 +63,7 @@ public class BulkLoadJobExecutor {
 	@Inject Gff3TranscriptExecutor gff3TranscriptExecutor;
 	
 	@Inject ExpressionAtlasExecutor expressionAtlasExecutor;
+	@Inject GafExecutor gafExecutor;
 
 	@Inject BiogridOrcExecutor biogridOrcExecutor;
 
@@ -142,6 +143,8 @@ public class BulkLoadJobExecutor {
 			biogridOrcExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.HTPDATASAMPLE) {
 			htpExpressionDatasetSampleAnnotationExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GAF) {
+			gafExecutor.execLoad(bulkLoadFileHistory);
 		} else {
 			log.info("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
