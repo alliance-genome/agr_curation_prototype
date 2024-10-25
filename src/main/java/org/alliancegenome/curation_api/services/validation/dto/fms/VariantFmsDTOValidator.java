@@ -69,7 +69,7 @@ public class VariantFmsDTOValidator {
 	@Inject VariantNoteFmsDTOValidator variantNoteFmsDtoValidator;
 	
 	@Transactional
-	public Variant validateVariant(VariantFmsDTO dto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public Long validateVariant(VariantFmsDTO dto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		ObjectResponse<Variant> variantResponse = new ObjectResponse<Variant>();
 		Variant variant = new Variant();
@@ -198,11 +198,11 @@ public class VariantFmsDTOValidator {
 			idsAdded.add(variant.getId());
 		}
 
-		return variant;
+		return variant.getId();
 	}
 	
 	@Transactional
-	public void validateCuratedVariantGenomicLocationAssociation(VariantFmsDTO dto, List<Long> idsAdded, Variant variant) throws ValidationException {
+	public void validateCuratedVariantGenomicLocationAssociation(VariantFmsDTO dto, List<Long> idsAdded, Long variantId) throws ValidationException {
 
 		CuratedVariantGenomicLocationAssociation association = new CuratedVariantGenomicLocationAssociation();
 		ObjectResponse<CuratedVariantGenomicLocationAssociation> cvglaResponse = new ObjectResponse<CuratedVariantGenomicLocationAssociation>();
@@ -237,6 +237,10 @@ public class VariantFmsDTOValidator {
 		
 		String hgvs = HgvsIdentifierHelper.getHgvsIdentifier(dto);
 		
+		Variant variant = null;
+		if (variantId != null) {
+			variant = variantDAO.find(variantId);
+		}
 		if (variant != null && StringUtils.isNotBlank(hgvs) && !cvglaResponse.hasErrors() && CollectionUtils.isNotEmpty(variant.getCuratedVariantGenomicLocations())) {
 			for (CuratedVariantGenomicLocationAssociation existingLocationAssociation : variant.getCuratedVariantGenomicLocations()) {
 				if (Objects.equals(hgvs, existingLocationAssociation.getHgvs())) {
@@ -259,7 +263,7 @@ public class VariantFmsDTOValidator {
 			association.setVariantSequence(dto.getGenomicVariantSequence());
 		}
 		
-		if (variant == null) {
+		if (variantId == null) {
 			cvglaResponse.addErrorMessage("variant", ValidationConstants.INVALID_MESSAGE);
 		}
 		
@@ -276,13 +280,16 @@ public class VariantFmsDTOValidator {
 	}
 	
 	@Transactional
-	public void validateAlleleVariantAssociation(VariantFmsDTO dto, List<Long> idsAdded, Variant variant) throws ValidationException {
+	public void validateAlleleVariantAssociation(VariantFmsDTO dto, List<Long> idsAdded, Long variantId) throws ValidationException {
 		
 		AlleleVariantAssociation association = new AlleleVariantAssociation();
 		ObjectResponse<AlleleVariantAssociation> avaResponse = new ObjectResponse<AlleleVariantAssociation>();
 		
-		if (variant == null) {
+		Variant variant = null;
+		if (variantId == null) {
 			avaResponse.addErrorMessage("variant", ValidationConstants.INVALID_MESSAGE);
+		} else {
+			variant = variantDAO.find(variantId);
 		}
 		if (StringUtils.isBlank(dto.getAlleleId())) {
 			avaResponse.addErrorMessage("alleleId", ValidationConstants.REQUIRED_MESSAGE);

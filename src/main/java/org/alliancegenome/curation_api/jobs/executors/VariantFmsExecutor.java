@@ -41,8 +41,6 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 		
 			VariantIngestFmsDTO variantData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), VariantIngestFmsDTO.class);
 			
-			AGRCurationSchemaVersion version = CuratedVariantGenomicLocationAssociation.class.getAnnotation(AGRCurationSchemaVersion.class);
-			bulkLoadFileHistory.getBulkLoadFile().setLinkMLSchemaVersion(version.max());
 			if (variantData.getMetaData() != null && StringUtils.isNotBlank(variantData.getMetaData().getRelease())) {
 				bulkLoadFileHistory.getBulkLoadFile().setAllianceMemberReleaseVersion(variantData.getMetaData().getRelease());
 			}
@@ -55,14 +53,13 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 			
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 		
-			bulkLoadFileHistory.setCount(variantData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 			
 			boolean success = runLoad(bulkLoadFileHistory, variantData.getData(), entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider);
 			if (success) {
-				runCleanup(variantService, bulkLoadFileHistory, dataProvider.name(), variantService.getIdsByDataProvider(dataProvider.name()), entityIdsAdded, "variant");
-				runCleanup(curatedVariantGenomicLocationAssociationService, bulkLoadFileHistory, dataProvider.name(), curatedVariantGenomicLocationAssociationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "curated variant genomic location association");
-				runCleanup(alleleVariantAssociationService, bulkLoadFileHistory, dataProvider.name(), alleleVariantAssociationService.getAssociationsByDataProvider(dataProvider), associationIdsAdded, "allele variant association");
+				runCleanup(variantService, bulkLoadFileHistory, dataProvider.name(), variantService.getIdsByDataProvider(dataProvider.name()), entityIdsAdded, "Variant");
+				runCleanup(curatedVariantGenomicLocationAssociationService, bulkLoadFileHistory, dataProvider.name(), curatedVariantGenomicLocationAssociationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "Curated variant genomic location association");
+				runCleanup(alleleVariantAssociationService, bulkLoadFileHistory, dataProvider.name(), alleleVariantAssociationService.getAssociationsByDataProvider(dataProvider), associationIdsAdded, "Allele variant association");
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);
@@ -93,9 +90,9 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 		String countType = null;
 		for (VariantFmsDTO dto : data) {
 			countType = "Entities";
-			Variant variant = null;
+			Long variantId = null;
 			try {
-				variant = variantFmsDtoValidator.validateVariant(dto, entityIdsAdded, dataProvider);
+				variantId = variantFmsDtoValidator.validateVariant(dto, entityIdsAdded, dataProvider);
 				history.incrementCompleted(countType);
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed(countType);
@@ -107,7 +104,7 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 			}
 			countType = "Locations";
 			try {
-				variantFmsDtoValidator.validateCuratedVariantGenomicLocationAssociation(dto, locationIdsAdded, variant);
+				variantFmsDtoValidator.validateCuratedVariantGenomicLocationAssociation(dto, locationIdsAdded, variantId);
 				history.incrementCompleted(countType);
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed(countType);
@@ -119,7 +116,7 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 			}
 			countType = "Associations";
 			try {
-				variantFmsDtoValidator.validateAlleleVariantAssociation(dto, associationIdsAdded, variant);
+				variantFmsDtoValidator.validateAlleleVariantAssociation(dto, associationIdsAdded, variantId);
 				history.incrementCompleted(countType);
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed(countType);
@@ -129,6 +126,7 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 				history.incrementFailed(countType);
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
 			}
+			ph.progressProcess();
 		}
 		
 		updateHistory(history);
