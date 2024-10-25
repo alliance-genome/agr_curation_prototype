@@ -168,8 +168,6 @@ INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 	SELECT nextval('bulkload_seq'), 'VARIATION', 'RGD Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'File Management System (FMS) Variant Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'SGD Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'File Management System (FMS) Variant Loads';
-INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 	SELECT nextval('bulkload_seq'), 'VARIATION', 'WB Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'File Management System (FMS) Variant Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 	SELECT nextval('bulkload_seq'), 'VARIATION', 'ZFIN Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'File Management System (FMS) Variant Loads';
@@ -181,8 +179,6 @@ INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
 	SELECT id, 'VARIATION', 'MGI' FROM bulkload WHERE name = 'MGI Variant Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
 	SELECT id, 'VARIATION', 'RGD' FROM bulkload WHERE name = 'RGD Variant Load';
-INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
-	SELECT id, 'VARIATION', 'SGD' FROM bulkload WHERE name = 'SGD Variant Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
 	SELECT id, 'VARIATION', 'WB' FROM bulkload WHERE name = 'WB Variant Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
