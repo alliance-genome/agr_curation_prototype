@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
+import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleVariantAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -39,6 +40,7 @@ public class AlleleVariantAssociationService extends BaseEntityCrudService<Allel
 	@Inject AlleleVariantAssociationValidator alleleVariantAssociationValidator;
 	@Inject AlleleVariantAssociationDTOValidator alleleVariantAssociationDtoValidator;
 	@Inject AlleleDAO alleleDAO;
+	@Inject VariantDAO variantDAO;
 	@Inject NoteDAO noteDAO;
 	@Inject GeneDAO geneDAO;
 	@Inject PersonService personService;
@@ -155,7 +157,7 @@ public class AlleleVariantAssociationService extends BaseEntityCrudService<Allel
 	}
 
 	public void addAssociationToVariant(AlleleVariantAssociation association) {
-		Variant variant = association.getAlleleVariantAssociationObject();
+		Variant variant = variantDAO.find(association.getAlleleVariantAssociationObject().getId());
 		List<AlleleVariantAssociation> currentAssociations = variant.getAlleleVariantAssociations();
 		if (currentAssociations == null) {
 			currentAssociations = new ArrayList<>();

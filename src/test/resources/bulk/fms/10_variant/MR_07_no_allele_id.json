@@ -1,0 +1,47 @@
+[
+	{
+		"sequenceOfReferenceAccessionNumber": "RefSeq:NC_003279.8",
+		"start": 1,
+		"end": 1000,
+		"genomicReferenceSequence": "A",
+		"genomicVariantSequence": "T",
+		"type": "SO:1000002",
+		"consequence": "SO:0001587",
+		"references": [
+			{
+				"publicationId": "PMID:25920554",
+				"crossReference": {
+					"id": "WB:WBPaper00042242",
+					"pages": [
+						"reference"
+					]
+				}
+			}
+		],
+		"notes": [
+			{
+				"note": "This is a test note.",
+				"references": [
+					{
+						"publicationId": "PMID:25920550",
+						"crossReference": {
+							"id": "WB:WBPaper00042241",
+							"pages": [
+								"reference"
+							]
+						}
+					}
+				]
+			}
+		],
+		"crossReferences": [
+			{
+				"id": "TEST:WBVar00252636",
+				"pages": [
+					"homepage"
+				]
+			}
+		]
+	}
+]
+

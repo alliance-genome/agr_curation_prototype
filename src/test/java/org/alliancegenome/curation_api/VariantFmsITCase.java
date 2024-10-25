@@ -48,9 +48,10 @@ public class VariantFmsITCase extends BaseITCase {
 	private final String variantFmsBulkPostEndpoint = "/api/variant/bulk/WB/fmsvariants";
 	private final String variantGetEndpoint = "/api/variant/";
 	private final String allele = "WB:AlleleWithVar1";
-	private final String assemblyComponent = "RefSeq:NC_003279.8";
+	private final String allele2 = "WB:AlleleWithVar2";
 	private final String variantId = "var_NC_003279.8:g.1A>T";
 	private final String reference = "AGRKB:000000001";
+	private final String reference2 = "AGRKB:000000021";
 	
 	private void loadRequiredEntities() throws Exception {
 		createSoTerm("SO:1000002", "substitution", false);
@@ -60,11 +61,12 @@ public class VariantFmsITCase extends BaseITCase {
 		createSoTerm("SO:0000159", "deletion", false);
 		createSoTerm("SO:1000032", "delins", false);
 		createSoTerm("SO:0001587", "stop_gained", false);
+		createSoTerm("SO:0001578", "stop_lost", false);
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		DataProvider dataProvider = createDataProvider("WB", false);
 		createAllele(allele, "TestAlleleWithVariant", "NCBITaxon:6239", symbolTerm, false, dataProvider);
-		//createAssemblyComponent(assemblyComponent, "I", getGenomeAssembly("WBcel235"), dataProvider);
+		createAllele(allele2, "TestAlleleWithVariant2", "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		
 	}
 	
@@ -109,6 +111,108 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.crossReferences[0].displayName", is("TEST:WBVar00252636")).
 			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage"));
 
+	}
+	
+	@Test
+	@Order(2)
+	public void variantFmsBulkUploadUpdate() throws Exception {
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 0, 1, 0));
+		params.put("Locations", createCountParams(1, 0, 1, 0));
+		params.put("Associations", createCountParams(1, 0, 1, 0));
+
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "UD_01_update_variant.json", params);
+		
+		RestAssured.given().
+			when().
+			get(variantGetEndpoint + variantId).
+			then().
+			statusCode(200).
+			body("entity.modInternalId", is(variantId)).
+			body("entity.taxon.curie", is("NCBITaxon:6239")).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.variantType.curie", is("SO:1000008")).
+			body("entity.sourceGeneralConsequence.curie", is("SO:0001578")).
+			body("entity.curatedVariantGenomicLocations", hasSize(1)).
+			body("entity.curatedVariantGenomicLocations[0].hgvs", is("NC_003279.8:g.1A>T")).
+			body("entity.curatedVariantGenomicLocations[0].relation.name", is("located_on")).
+			body("entity.curatedVariantGenomicLocations[0].variantGenomicLocationAssociationObject.name", is("I")).
+			body("entity.curatedVariantGenomicLocations[0].start", is(1)).
+			body("entity.curatedVariantGenomicLocations[0].end", is(1000)).
+			body("entity.alleleVariantAssociations", hasSize(2)).
+			body("entity.alleleVariantAssociations[0].relation.name", is("has_variant")).
+			body("entity.alleleVariantAssociations[0].alleleAssociationSubject.modEntityId", is("WB:AlleleWithVar1")).
+			body("entity.alleleVariantAssociations[1].relation.name", is("has_variant")).
+			body("entity.alleleVariantAssociations[1].alleleAssociationSubject.modEntityId", is("WB:AlleleWithVar2")).
+			body("entity.relatedNotes", hasSize(1)).
+			body("entity.relatedNotes[0].internal", is(false)).
+			body("entity.relatedNotes[0].freeText", is("This is an updated test note.")).
+			body("entity.relatedNotes[0].noteType.name", is("comment")).
+			body("entity.relatedNotes[0].references[0].curie", is(reference2)).
+			body("entity.crossReferences", hasSize(1)).
+			body("entity.crossReferences[0].referencedCurie", is("TEST:WBVar00252637")).
+			body("entity.crossReferences[0].displayName", is("TEST:WBVar00252637")).
+			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage"));
+
+	}
+	
+	@Test
+	@Order(3)
+	public void variantFmsBulkUploadMissingRequiredFields() throws Exception {
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 1, 0, 0));
+		params.put("Locations", createCountParams(1, 1, 0, 0));
+		params.put("Associations", createCountParams(1, 1, 0, 0));
+		
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_01_no_start.json", params);
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_02_no_end.json", params);
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_03_no_sequence_of_reference_accession_number.json", params);
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_04_no_type.json", params);
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_05_no_genomic_reference_sequence.json", params);
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_06_no_genomic_variant_sequence.json", params);
+
+		params.put("Entities", createCountParams(1, 0, 1, 0));
+		params.put("Locations", createCountParams(1, 0, 1, 0));
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_07_no_allele_id.json", params);	
+	}
+	
+	@Test
+	@Order(4)
+	public void variantFmsBulkUploadEmptyRequiredFields() throws Exception {
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 1, 0, 0));
+		params.put("Locations", createCountParams(1, 1, 0, 0));
+		params.put("Associations", createCountParams(1, 1, 0, 0));
+		
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "ER_01_empty_sequence_of_reference_accession_number.json", params);
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "ER_02_empty_type.json", params);
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "ER_03_empty_genomic_reference_sequence.json", params);
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "ER_04_empty_genomic_variant_sequence.json", params);
+
+		params.put("Entities", createCountParams(1, 0, 1, 0));
+		params.put("Locations", createCountParams(1, 0, 1, 0));
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "ER_05_empty_allele_id.json", params);	
+	}
+	
+	@Test
+	@Order(3)
+	public void variantFmsBulkUploadInvalidFields() throws Exception {
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 1, 0, 0));
+		params.put("Locations", createCountParams(1, 1, 0, 0));
+		params.put("Associations", createCountParams(1, 1, 0, 0));
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_01_invalid_type.json", params);
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_02_invalid_type_for_fms_submissions.json", params);
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_03_invalid_consequence.json", params);
+
+		params.put("Entities", createCountParams(1, 0, 1, 0));
+		params.put("Associations", createCountParams(1, 0, 1, 0));
+		
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_04_invalid_sequence_of_reference_accession_number.json", params);
+		
+		params.put("Locations", createCountParams(1, 0, 1, 0));
+		params.put("Associations", createCountParams(1, 1, 0, 0));
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_05_invalid_allele_id.json", params);	
 	}
 
 }

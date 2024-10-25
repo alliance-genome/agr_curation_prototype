@@ -30,27 +30,31 @@ public abstract class HgvsIdentifierHelper {
 		}
 
 		String hgvs = chrAccession + ":g." + start;
-		switch(dto.getType()) {
-			case "SO:1000002": // point mutation
-				hgvs = hgvs + refSeq + ">" + varSeq;
-				break;
-			case "SO:1000008": // substitution
-				hgvs = hgvs + refSeq + ">" + varSeq;
-				break;
-			case "SO:0000667": // insertion
-				hgvs = hgvs + "_" + end + "ins" + varSeq;
-				break;
-			case "SO:0000159": // deletion
-				hgvs = hgvs + "_" + end + "del";
-				break;
-			case "SO:0002007": // MNV
-				hgvs = hgvs + "_" + end + "delins" + varSeq;
-				break;
-			case "SO:1000032": // delin
-				hgvs = hgvs + "_" + end + "delins" + varSeq;
-				break;
-			default:
-				hgvs = null;	
+		if (StringUtils.isNotBlank(dto.getType())) {
+			switch(dto.getType()) {
+				case "SO:1000002": // point mutation
+					hgvs = hgvs + refSeq + ">" + varSeq;
+					break;
+				case "SO:1000008": // substitution
+					hgvs = hgvs + refSeq + ">" + varSeq;
+					break;
+				case "SO:0000667": // insertion
+					hgvs = hgvs + "_" + end + "ins" + varSeq;
+					break;
+				case "SO:0000159": // deletion
+					hgvs = hgvs + "_" + end + "del";
+					break;
+				case "SO:0002007": // MNV
+					hgvs = hgvs + "_" + end + "delins" + varSeq;
+					break;
+				case "SO:1000032": // delin
+					hgvs = hgvs + "_" + end + "delins" + varSeq;
+					break;
+				default:
+					hgvs = null;
+			}
+		} else {
+			hgvs = null;
 		}
 		
 		return hgvs;

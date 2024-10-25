@@ -66,7 +66,7 @@ public interface VariantCrudInterface extends BaseSubmittedObjectCrudInterface<V
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
-	@JsonView(View.VariantView.class)
+	@JsonView(View.VariantDetailView.class)
 	SearchResponse<Variant> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override

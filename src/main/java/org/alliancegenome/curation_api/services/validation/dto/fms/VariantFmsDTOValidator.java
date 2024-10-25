@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AssemblyComponentDAO;
@@ -44,7 +43,6 @@ import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -103,7 +101,7 @@ public class VariantFmsDTOValidator {
 				}
 				if (StringUtils.isBlank(dto.getGenomicVariantSequence()) && !Objects.equals(dto.getType(), "SO:0000667")
 						&& !Objects.equals(dto.getType(), "SO:1000032")) {
-					variantResponse.addErrorMessage("genomicReferenceSequence", ValidationConstants.REQUIRED_MESSAGE + " for variant type " + dto.getType());
+					variantResponse.addErrorMessage("genomicVariantSequence", ValidationConstants.REQUIRED_MESSAGE + " for variant type " + dto.getType());
 				}
 			}
 		} else {
@@ -209,7 +207,6 @@ public class VariantFmsDTOValidator {
 		ObjectResponse<CuratedVariantGenomicLocationAssociation> cvglaResponse = new ObjectResponse<CuratedVariantGenomicLocationAssociation>();
 		AssemblyComponent chromosome = null;
 		
-		
 		if (dto.getStart() == null) {
 			cvglaResponse.addErrorMessage("start", ValidationConstants.REQUIRED_MESSAGE);
 		} 
@@ -239,10 +236,10 @@ public class VariantFmsDTOValidator {
 		
 		String hgvs = HgvsIdentifierHelper.getHgvsIdentifier(dto);
 		
-		if (StringUtils.isNotBlank(hgvs) && !cvglaResponse.hasErrors() && CollectionUtils.isNotEmpty(variant.getCuratedVariantGenomicLocations())) {
+		if (variant != null && StringUtils.isNotBlank(hgvs) && !cvglaResponse.hasErrors() && CollectionUtils.isNotEmpty(variant.getCuratedVariantGenomicLocations())) {
 			for (CuratedVariantGenomicLocationAssociation existingLocationAssociation : variant.getCuratedVariantGenomicLocations()) {
 				if (Objects.equals(hgvs, existingLocationAssociation.getHgvs())) {
-					association = existingLocationAssociation;
+					association = curatedVariantGenomicLocationAssociationDAO.find(existingLocationAssociation.getId());
 					break;
 				}
 			}
@@ -289,20 +286,19 @@ public class VariantFmsDTOValidator {
 		if (StringUtils.isBlank(dto.getAlleleId())) {
 			avaResponse.addErrorMessage("alleleId", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			if (CollectionUtils.isNotEmpty(variant.getAlleleVariantAssociations())) {
-				for (AlleleVariantAssociation existingAssociation : variant.getAlleleVariantAssociations()) {
-					if (Objects.equals(dto.getAlleleId(), existingAssociation.getAlleleAssociationSubject().getModEntityId())) {
-						association = existingAssociation;
-						break;
-					}
-				}
-			}
-			
 			if (association.getId() == null) {
 				Allele allele = alleleService.findByIdentifierString(dto.getAlleleId());
 				if (allele == null) {
 					avaResponse.addErrorMessage("alleleId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleId() + ")");
 				} else {
+					if (CollectionUtils.isNotEmpty(allele.getAlleleVariantAssociations())) {
+						for (AlleleVariantAssociation existingAssociation : allele.getAlleleVariantAssociations()) {
+							if (Objects.equals(dto.getAlleleId(), existingAssociation.getAlleleAssociationSubject().getModEntityId())) {
+								association = alleleVariantAssociationDAO.find(existingAssociation.getId());
+								break;
+							}
+						}
+					}
 					association.setAlleleAssociationSubject(allele);
 				}
 			}

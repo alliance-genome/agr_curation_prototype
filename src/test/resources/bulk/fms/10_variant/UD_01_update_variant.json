@@ -1,0 +1,48 @@
+[
+	{
+		"alleleId": "WB:AlleleWithVar2",
+		"sequenceOfReferenceAccessionNumber": "RefSeq:NC_003279.8",
+		"start": 1,
+		"end": 1000,
+		"genomicReferenceSequence": "A",
+		"genomicVariantSequence": "T",
+		"type": "SO:1000008",
+		"consequence": "SO:0001578",
+		"references": [
+			{
+				"publicationId": "PMID:25920554",
+				"crossReference": {
+					"id": "WB:WBPaper00042242",
+					"pages": [
+						"reference"
+					]
+				}
+			}
+		],
+		"notes": [
+			{
+				"note": "This is an updated test note.",
+				"references": [
+					{
+						"publicationId": "PMID:25920551",
+						"crossReference": {
+							"id": "WB:WBPaper00042241",
+							"pages": [
+								"reference"
+							]
+						}
+					}
+				]
+			}
+		],
+		"crossReferences": [
+			{
+				"id": "TEST:WBVar00252637",
+				"pages": [
+					"homepage"
+				]
+			}
+		]
+	}
+]
+
