@@ -25,8 +25,8 @@ CREATE TABLE curatedvariantgenomiclocation (
 	genelocalizationtype_id bigint,
 	consequence_id bigint,
 	curatedconsequence_id bigint,
-	referencesequence character varying(1000),
-	variantsequence character varying(1000)
+	referencesequence character varying(4000),
+	variantsequence character varying(4000)
 );
 
 CREATE TABLE curatedvariantgenomiclocation_informationcontententity (
@@ -149,19 +149,30 @@ DELETE FROM bulkmanualload WHERE id IN (SELECT id FROM bulkload WHERE backendbul
 DELETE FROM bulkload WHERE backendbulkloadtype = 'VARIANT';
 DELETE FROM bulkloadgroup WHERE name = 'Direct (LinkML) DQM Variant Loads';
 
-INSERT INTO bulkloadgroup (id, name) VALUES (nextval('bulkloadgroup_seq'), 'Variant Bulk Loads');
+UPDATE bulkloadgroup SET name = 'File Management System (FMS) Expression Loads' WHERE name = 'Expression Bulk Loads';
+UPDATE bulkloadgroup SET name = 'File Management System (FMS) HTP Expression Dataset Annotation Loads' WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
+UPDATE bulkloadgroup SET name = 'File Management System (FMS) HTP Expression Dataset Sample Annotation Loads' WHERE name = 'HTP Expression Dataset Sample Annotation Bulk Loads';
+UPDATE bulkloadgroup SET name = 'File Management System (FMS) Interaction Loads' WHERE name = 'Interaction Bulk Loads';
+UPDATE bulkloadgroup SET name = 'File Management System (FMS) Molecule Loads' WHERE name = 'Molecule Bulk Loads';
+UPDATE bulkloadgroup SET name = 'File Management System (FMS) Orthology Loads' WHERE name = 'Orthology Bulk Loads';
+UPDATE bulkloadgroup SET name = 'File Management System (FMS) Paralogy Loads' WHERE name = 'Paralogy Bulk Loads';
+UPDATE bulkloadgroup SET name = 'File Management System (FMS) Phenotype Loads' WHERE name = 'Phenotype Bulk Loads';
+UPDATE bulkloadgroup SET name = 'File Management System (FMS) Sequence Targeting Reagent Loads' WHERE name = 'Sequence Targeting Reagent Bulk Loads';
+UPDATE bulkloadgroup SET name = 'Expression Atlas Loads' WHERE name = 'Expression Atlas Load';
+
+INSERT INTO bulkloadgroup (id, name) VALUES (nextval('bulkloadgroup_seq'), 'File Management System (FMS) Variant Loads');
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'FB Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
+	SELECT nextval('bulkload_seq'), 'VARIATION', 'FB Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'File Management System (FMS) Variant Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'MGI Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
+	SELECT nextval('bulkload_seq'), 'VARIATION', 'MGI Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'File Management System (FMS) Variant Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'RGD Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
+	SELECT nextval('bulkload_seq'), 'VARIATION', 'RGD Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'File Management System (FMS) Variant Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'SGD Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
+	SELECT nextval('bulkload_seq'), 'VARIATION', 'SGD Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'File Management System (FMS) Variant Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'WB Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
+	SELECT nextval('bulkload_seq'), 'VARIATION', 'WB Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'File Management System (FMS) Variant Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'ZFIN Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
+	SELECT nextval('bulkload_seq'), 'VARIATION', 'ZFIN Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'File Management System (FMS) Variant Loads';
 INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive)
 	SELECT id, '0 0 22 ? * SUN-THU', false FROM bulkload WHERE backendbulkloadtype = 'VARIATION';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
