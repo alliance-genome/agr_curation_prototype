@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -48,7 +49,7 @@ public class VariantFmsITCase extends BaseITCase {
 	private final String variantGetEndpoint = "/api/variant/";
 	private final String allele = "WB:AlleleWithVar1";
 	private final String allele2 = "WB:AlleleWithVar2";
-	private final String variantId = "var_NC_003279.8:g.1A>T";
+	private final String variantId = DigestUtils.md5Hex("NC_003279.8:g.1A>T");
 	private final String reference = "AGRKB:000000001";
 	private final String reference2 = "AGRKB:000000021";
 	

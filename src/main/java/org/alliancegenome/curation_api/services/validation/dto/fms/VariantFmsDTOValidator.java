@@ -40,6 +40,7 @@ import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper
 import org.alliancegenome.curation_api.services.helpers.variants.HgvsIdentifierHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -109,7 +110,7 @@ public class VariantFmsDTOValidator {
 		}
 		
 		String hgvs = HgvsIdentifierHelper.getHgvsIdentifier(dto);
-		String modInternalId = "var_" + hgvs;
+		String modInternalId = DigestUtils.md5Hex(hgvs);
 		
 		if (StringUtils.isNotBlank(hgvs) && !variantResponse.hasErrors()) {
 			SearchResponse<Variant> searchResponse = variantDAO.findByField("modInternalId", modInternalId);
