@@ -5,11 +5,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.Gaf;
+import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
-import org.alliancegenome.curation_api.model.ingest.dto.GafDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
 import org.alliancegenome.curation_api.services.GafService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -20,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -70,19 +69,19 @@ public class GafExecutor extends LoadFileExecutor {
 
 		String name = bulkLoadFileHistory.getBulkLoad().getName();
 
-		Map<Long, GafDTO> gafMap = service.getGafMap(organization);
+		Map<Long, GeneOntologyAnnotationDTO> gafMap = service.getGafMap(organization);
 		List<Long> gafIdsBefore = new ArrayList<>(gafMap.keySet().stream().toList());
 		gafIdsBefore.removeIf(Objects::isNull);
 
 		List<Long> geneGoIdsLoaded = new ArrayList<>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		List<GafDTO> dtos = uiMap.entrySet()
+		List<GeneOntologyAnnotationDTO> dtos = uiMap.entrySet()
 			.stream()
 			.map(entry -> entry.getValue().stream().map(goID -> {
-				GafDTO dto = new GafDTO();
-				dto.setGeneID(abbr + ":" + entry.getKey());
-				dto.setGoID(goID);
+				GeneOntologyAnnotationDTO dto = new GeneOntologyAnnotationDTO();
+				dto.setGeneIdentifier(abbr + ":" + entry.getKey());
+				dto.setGoTermCurie(goID);
 				return dto;
 			}).toList()).flatMap(Collection::stream).toList();
 
@@ -90,7 +89,7 @@ public class GafExecutor extends LoadFileExecutor {
 		dtos.forEach(modID -> {
 			Long geneID = service.getGeneID(modID, abbr);
 			if (geneID != null) {
-				Gaf newGaf = service.insert(modID, abbr).getEntity();
+				GeneOntologyAnnotation newGaf = service.insert(modID, abbr).getEntity();
 				if (newGaf != null) {
 					geneGoIdsLoaded.add(newGaf.getId());
 					bulkLoadFileHistory.incrementCompleted();
@@ -98,7 +97,7 @@ public class GafExecutor extends LoadFileExecutor {
 					bulkLoadFileHistory.incrementSkipped();
 				}
 			} else {
-				addException(bulkLoadFileHistory, new ObjectUpdateException.ObjectUpdateExceptionData(modID, "Could not find gene " + modID.getGeneID(), null));
+				addException(bulkLoadFileHistory, new ObjectUpdateException.ObjectUpdateExceptionData(modID, "Could not find gene " + modID.getGeneIdentifier(), null));
 				bulkLoadFileHistory.incrementFailed();
 			}
 			ph.progressProcess();

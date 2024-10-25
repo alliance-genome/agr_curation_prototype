@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -10,10 +9,9 @@ import org.alliancegenome.curation_api.dao.GafDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.SpeciesDAO;
 import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
-import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
-import org.alliancegenome.curation_api.model.ingest.dto.GafDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.DataProviderValidator;
@@ -22,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RequestScoped
-public class GafService extends BaseEntityCrudService<Gaf, GafDAO> {
+public class GafService extends BaseEntityCrudService<GeneOntologyAnnotation, GafDAO> {
 
 	private Species species;
 	public static final String RESOURCE_DESCRIPTOR_PREFIX = "ENSEMBL";
@@ -54,14 +52,14 @@ public class GafService extends BaseEntityCrudService<Gaf, GafDAO> {
 	}
 
 	@Transactional
-	public ObjectResponse<Gaf> insert(GafDTO uiEntity, String orgAbbreviation) {
+	public ObjectResponse<GeneOntologyAnnotation> insert(GeneOntologyAnnotationDTO uiEntity, String orgAbbreviation) {
 		// if record exists skip over it
 		if (gafMap.values().stream().anyMatch(gafDTO -> gafDTO.equals(uiEntity))) {
-			for (Map.Entry<Long, GafDTO> entry : gafMap.entrySet()) {
+			for (Map.Entry<Long, GeneOntologyAnnotationDTO> entry : gafMap.entrySet()) {
 				if (entry.getValue().equals(uiEntity)) {
-					Gaf gaf = new Gaf();
+					GeneOntologyAnnotation gaf = new GeneOntologyAnnotation();
 					gaf.setId(entry.getKey());
-					ObjectResponse<Gaf> objectObjectResponse = new ObjectResponse<>();
+					ObjectResponse<GeneOntologyAnnotation> objectObjectResponse = new ObjectResponse<>();
 					objectObjectResponse.setEntity(gaf);
 					return objectObjectResponse;
 				}
@@ -70,39 +68,39 @@ public class GafService extends BaseEntityCrudService<Gaf, GafDAO> {
 		// convert curies into IDs
 
 		Long geneID = getGeneID(uiEntity, orgAbbreviation);
-		Gaf gaf = new Gaf();
+		GeneOntologyAnnotation gaf = new GeneOntologyAnnotation();
 		Gene gene = new Gene();
 		gene.setId(geneID);
-		gaf.setGene(gene);
+		gaf.setSingleGene(gene);
 		Long goID = getGOID(uiEntity);
 		GOTerm term = new GOTerm();
 		term.setId(goID);
 		gaf.setGoTerm(term);
-		Gaf gafNew = gafDAO.persistGeneGoAssociation(gaf);
+		GeneOntologyAnnotation gafNew = gafDAO.persistGeneGoAssociation(gaf);
 		addNewRecordToMap(gafNew, uiEntity);
 		return new ObjectResponse<>(gafNew);
 	}
 
-	private void addNewRecordToMap(Gaf gafNew, GafDTO uiEntity) {
-		GafDTO dto = new GafDTO();
-		dto.setGeneID(uiEntity.getGeneID());
-		dto.setGoID(uiEntity.getGoID());
+	private void addNewRecordToMap(GeneOntologyAnnotation gafNew, GeneOntologyAnnotationDTO uiEntity) {
+		GeneOntologyAnnotationDTO dto = new GeneOntologyAnnotationDTO();
+		dto.setGeneIdentifier(uiEntity.getGeneIdentifier());
+		dto.setGoTermCurie(uiEntity.getGoTermCurie());
 		gafMap.put(gafNew.getId(), dto);
 	}
 
-	public Long getGeneID(GafDTO uiEntity, String orgAbbreviation) {
+	public Long getGeneID(GeneOntologyAnnotationDTO uiEntity, String orgAbbreviation) {
 		if (accessionGeneMap.isEmpty()) {
 			accessionGeneMap = geneDAO.getAllGeneIdsPerSpecies(getSpecies(orgAbbreviation));
 		}
-		Long geneID = accessionGeneMap.get(uiEntity.getGeneID());
+		Long geneID = accessionGeneMap.get(uiEntity.getGeneIdentifier());
 		return geneID;
 	}
 
-	private Long getGOID(GafDTO uiEntity) {
+	private Long getGOID(GeneOntologyAnnotationDTO uiEntity) {
 		if (goTermMap.isEmpty()) {
 			goTermMap = goTermDAO.getAllGOIds();
 		}
-		Long goID = goTermMap.get(uiEntity.getGoID());
+		Long goID = goTermMap.get(uiEntity.getGoTermCurie());
 		return goID;
 	}
 
@@ -121,9 +119,9 @@ public class GafService extends BaseEntityCrudService<Gaf, GafDAO> {
 	}
 
 
-	private Map<Long, GafDTO> gafMap = new HashMap<>();
+	private Map<Long, GeneOntologyAnnotationDTO> gafMap = new HashMap<>();
 
-	public Map<Long, GafDTO> getGafMap(Organization organization) {
+	public Map<Long, GeneOntologyAnnotationDTO> getGafMap(Organization organization) {
 		if (gafMap.size() > 0) {
 			return gafMap;
 		}
@@ -132,7 +130,7 @@ public class GafService extends BaseEntityCrudService<Gaf, GafDAO> {
 	}
 
 	@Transactional
-	public Gaf deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
+	public GeneOntologyAnnotation deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
 		gafDAO.delete(id);
 		return null;
 	}
