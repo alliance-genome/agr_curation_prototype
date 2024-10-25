@@ -1,21 +1,7 @@
 package org.alliancegenome.curation_api.base;
 
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.response.ValidatableResponse;
-import org.alliancegenome.curation_api.constants.OntologyConstants;
-import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
-import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
-import org.alliancegenome.curation_api.response.ObjectListResponse;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
-import org.apache.commons.lang3.StringUtils;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,8 +10,66 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.is;
+import org.alliancegenome.curation_api.constants.OntologyConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
+import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.Construct;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
+import org.alliancegenome.curation_api.model.entities.Variant;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
+import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
+import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.apache.commons.lang3.StringUtils;
+
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.response.ValidatableResponse;
 
 public class BaseITCase {
 
@@ -180,23 +224,6 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public BiologicalEntity createBiologicalEntity(String modEntityId, String taxonCurie) {
-		BiologicalEntity bioEntity = new BiologicalEntity();
-		bioEntity.setModEntityId(modEntityId);
-		bioEntity.setTaxon(getNCBITaxonTerm(taxonCurie));
-
-		ObjectResponse<BiologicalEntity> response = given().
-				contentType("application/json").
-				body(bioEntity).
-				when().
-				post("/api/biologicalentity").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefBiologicalEntity());
-
-		return response.getEntity();
-	}
-
 	public AnatomicalTerm createAnatomicalTerm(String curie, String name) throws Exception {
 		AnatomicalTerm anatomicalTerm = new AnatomicalTerm();
 		anatomicalTerm.setCurie(curie);
@@ -212,6 +239,42 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefAnatomicalTerm());
+
+		return response.getEntity();
+	}
+	
+	public AssemblyComponent createAssemblyComponent(String modEntityId, String name, GenomeAssembly assembly, DataProvider dataProvider) throws Exception {
+		AssemblyComponent assemblyComponent = new AssemblyComponent();
+		assemblyComponent.setModEntityId(modEntityId);
+		assemblyComponent.setName(name);
+		assemblyComponent.setDataProvider(dataProvider);
+		assemblyComponent.setGenomeAssembly(assembly);
+		
+		ObjectResponse<AssemblyComponent> response = RestAssured.given().
+				contentType("application/json").
+				body(assemblyComponent).
+				when().
+				put("/api/assemblycomponent").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefAssemblyComponent());
+
+			return response.getEntity();
+	}
+
+	public BiologicalEntity createBiologicalEntity(String modEntityId, String taxonCurie) {
+		BiologicalEntity bioEntity = new BiologicalEntity();
+		bioEntity.setModEntityId(modEntityId);
+		bioEntity.setTaxon(getNCBITaxonTerm(taxonCurie));
+
+		ObjectResponse<BiologicalEntity> response = given().
+				contentType("application/json").
+				body(bioEntity).
+				when().
+				post("/api/biologicalentity").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefBiologicalEntity());
 
 		return response.getEntity();
 	}
@@ -705,6 +768,23 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
+	public SequenceTargetingReagent createSequenceTargetingReagent(String modEntityId, Boolean obsolete, String name) {
+		SequenceTargetingReagent sqtr = new SequenceTargetingReagent();
+		sqtr.setModEntityId(modEntityId);
+		sqtr.setObsolete(obsolete);
+		sqtr.setName(name);
+
+		ObjectResponse<SequenceTargetingReagent> response = given().
+				contentType("application/json").
+				body(sqtr).
+				when().
+				post("/api/sqtr").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefSequenceTargetingReagent());
+		return response.getEntity();
+	}
+
 	public SOTerm createSoTerm(String curie, String name, Boolean obsolete) {
 		SOTerm term = new SOTerm();
 		term.setCurie(curie);
@@ -1029,23 +1109,6 @@ public class BaseITCase {
 		return res.getEntity();
 	}
 
-	public SequenceTargetingReagent createSequenceTargetingReagent(String modEntityId, Boolean obsolete, String name) {
-		SequenceTargetingReagent sqtr = new SequenceTargetingReagent();
-		sqtr.setModEntityId(modEntityId);
-		sqtr.setObsolete(obsolete);
-		sqtr.setName(name);
-
-		ObjectResponse<SequenceTargetingReagent> response = given().
-				contentType("application/json").
-				body(sqtr).
-				when().
-				post("/api/sqtr").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefSequenceTargetingReagent());
-		return response.getEntity();
-	}
-
 	public GeneDiseaseAnnotation getGeneDiseaseAnnotation(String uniqueId) {
 		ObjectResponse<GeneDiseaseAnnotation> res = RestAssured.given().
 				when().
@@ -1055,6 +1118,17 @@ public class BaseITCase {
 				extract().body().as(getObjectResponseTypeRefGeneDiseaseAnnotation());
 
 		return res.getEntity();
+	}
+	
+	public GenomeAssembly getGenomeAssembly(String modEntityId) throws Exception {
+		ObjectResponse<GenomeAssembly> response = RestAssured.given().
+				when().
+				get("/api/genomeassembly/" + modEntityId).
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefGenomeAssembly());
+
+			return response.getEntity();
 	}
 
 	public MPTerm getMpTerm(String curie) {
@@ -1124,13 +1198,13 @@ public class BaseITCase {
 		};
 	}
 
-	private TypeRef<ObjectResponse<OntologyTerm>> getObjectResponseTypeRefOntologyTerm() {
-		return new TypeRef<ObjectResponse<OntologyTerm>>() {
+	private TypeRef<ObjectResponse<AnatomicalTerm>> getObjectResponseTypeRefAnatomicalTerm() {
+		return new TypeRef<ObjectResponse<AnatomicalTerm>>() {
 		};
 	}
 
-	private TypeRef<ObjectResponse<AnatomicalTerm>> getObjectResponseTypeRefAnatomicalTerm() {
-		return new TypeRef<ObjectResponse<AnatomicalTerm>>() {
+	private TypeRef<ObjectResponse<AssemblyComponent>> getObjectResponseTypeRefAssemblyComponent() {
+		return new TypeRef<ObjectResponse<AssemblyComponent>>() {
 		};
 	}
 
@@ -1199,6 +1273,11 @@ public class BaseITCase {
 		};
 	}
 
+	private TypeRef<ObjectResponse<GenomeAssembly>> getObjectResponseTypeRefGenomeAssembly() {
+		return new TypeRef<ObjectResponse<GenomeAssembly>>() {
+		};
+	}
+
 	private TypeRef<ObjectResponse<SequenceTargetingReagent>> getObjectResponseTypeRefSequenceTargetingReagent() {
 		return new TypeRef<ObjectResponse<SequenceTargetingReagent>>() {
 		};
@@ -1241,6 +1320,11 @@ public class BaseITCase {
 
 	public TypeRef<ObjectResponse<Note>> getObjectResponseTypeRefNote() {
 		return new TypeRef<ObjectResponse<Note>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<OntologyTerm>> getObjectResponseTypeRefOntologyTerm() {
+		return new TypeRef<ObjectResponse<OntologyTerm>>() {
 		};
 	}
 

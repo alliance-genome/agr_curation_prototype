@@ -1,12 +1,14 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GenomeAssemblyDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
@@ -51,6 +53,15 @@ public class GenomeAssemblyService extends BaseEntityCrudService<GenomeAssembly,
 		} else {
 			return null;
 		}
+	}
+
+	public ObjectResponse<GenomeAssembly> deleteByIdentifier(String identifierString) {
+		GenomeAssembly assembly = findByAlternativeFields(List.of("modEntityId", "modInternalId"), identifierString);
+		if (assembly != null) {
+			genomeAssemblyDAO.remove(assembly.getId());
+		}
+		ObjectResponse<GenomeAssembly> ret = new ObjectResponse<>(assembly);
+		return ret;
 	}
 	
 }

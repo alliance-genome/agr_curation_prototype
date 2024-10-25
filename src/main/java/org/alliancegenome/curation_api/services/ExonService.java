@@ -40,6 +40,13 @@ public class ExonService extends BaseEntityCrudService<Exon, ExonDAO> {
 		return ids;
 	}
 
+	@Override
+	public ObjectResponse<Exon> getByIdentifier(String identifier) {
+		Exon object = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifier);
+		ObjectResponse<Exon> ret = new ObjectResponse<Exon>(object);
+		return ret;
+	}
+
 	public ObjectResponse<Exon> deleteByIdentifier(String identifierString) {
 		Exon exon = findByAlternativeFields(List.of("modEntityId", "modInternalId", "uniqueId"), identifierString);
 		if (exon != null) {

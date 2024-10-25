@@ -200,7 +200,7 @@ public class Gff3DtoValidator {
 			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.CODING_SEQUENCE_ASSOCIATION_SUBJECT + ".id", cds.getId());
-			params.put(EntityFieldConstants.CODING_SEQUENCE_GENOMIC_LOCATION_ASSOCIATION_OBJECT, assemblyComponent.getName());
+			params.put(EntityFieldConstants.CODING_SEQUENCE_GENOMIC_LOCATION_ASSOCIATION_OBJECT + ".name", assemblyComponent.getName());
 			params.put(EntityFieldConstants.CODING_SEQUENCE_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assemblyId);
 			SearchResponse<CodingSequenceGenomicLocationAssociation> locationSearchResponse = cdsLocationDAO.findByParams(params);
 			if (locationSearchResponse != null && locationSearchResponse.getSingleResult() != null) {
@@ -228,7 +228,7 @@ public class Gff3DtoValidator {
 			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.EXON_ASSOCIATION_SUBJECT + ".id", exon.getId());
-			params.put(EntityFieldConstants.EXON_GENOMIC_LOCATION_ASSOCIATION_OBJECT, assemblyComponent.getName());
+			params.put(EntityFieldConstants.EXON_GENOMIC_LOCATION_ASSOCIATION_OBJECT + ".name", assemblyComponent.getName());
 			params.put(EntityFieldConstants.EXON_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assemblyId);
 			SearchResponse<ExonGenomicLocationAssociation> locationSearchResponse = exonLocationDAO.findByParams(params);
 			if (locationSearchResponse != null && locationSearchResponse.getSingleResult() != null) {
@@ -381,7 +381,7 @@ public class Gff3DtoValidator {
 	private <E extends LocationAssociation> ObjectResponse<E> validateLocationAssociation(E association, Gff3DTO dto, AssemblyComponent assemblyComponent) {
 		ObjectResponse<E> associationResponse = new ObjectResponse<E>();
 		
-		association.setRelation(vocabularyTermService.getTermInVocabulary("location_association_relation", "located_on").getEntity());
+		association.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.LOCATION_ASSOCIATION_RELATION_VOCABULARY, "located_on").getEntity());
 		
 		if (assemblyComponent == null) {
 			associationResponse.addErrorMessage("SeqId", ValidationConstants.REQUIRED_MESSAGE);
