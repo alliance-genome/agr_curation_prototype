@@ -87,7 +87,7 @@ export const DataLoadsComponent = () => {
 				// 'VariantDTO',
 				'ConstructDTO',
 				'AlleleGeneAssociationDTO',
-				'ConstructGenomicEntityAssociationDTO'
+				'ConstructGenomicEntityAssociationDTO',
 			],
 		],
 		['DISEASE_ANNOTATION', ['GeneDiseaseAnnotationDTO', 'AlleleDiseaseAnnotationDTO', 'AGMDiseaseAnnotationDTO']],
