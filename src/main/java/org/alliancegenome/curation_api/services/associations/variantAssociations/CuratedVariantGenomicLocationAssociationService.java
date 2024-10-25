@@ -48,7 +48,7 @@ public class CuratedVariantGenomicLocationAssociationService extends BaseEntityC
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.VARIANT_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
 		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
-			params.put(EntityFieldConstants.EXON_ASSOCIATION_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+			params.put(EntityFieldConstants.VARIANT_ASSOCIATION_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
 		}
 		List<Long> associationIds = curatedVariantGenomicLocationAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
