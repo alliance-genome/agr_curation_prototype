@@ -151,17 +151,17 @@ DELETE FROM bulkloadgroup WHERE name = 'Direct (LinkML) DQM Variant Loads';
 
 INSERT INTO bulkloadgroup (id, name) VALUES (nextval('bulkloadgroup_seq'), 'Variant Bulk Loads');
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'FB Phenotype Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
+	SELECT nextval('bulkload_seq'), 'VARIATION', 'FB Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'MGI Phenotype Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
+	SELECT nextval('bulkload_seq'), 'VARIATION', 'MGI Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'RGD Phenotype Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
+	SELECT nextval('bulkload_seq'), 'VARIATION', 'RGD Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'SGD Phenotype Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
+	SELECT nextval('bulkload_seq'), 'VARIATION', 'SGD Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'WB Phenotype Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
+	SELECT nextval('bulkload_seq'), 'VARIATION', 'WB Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'VARIATION', 'ZFIN Phenotype Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
+	SELECT nextval('bulkload_seq'), 'VARIATION', 'ZFIN Variant Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Variant Bulk Loads';
 INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive)
 	SELECT id, '0 0 22 ? * SUN-THU', false FROM bulkload WHERE backendbulkloadtype = 'VARIATION';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
