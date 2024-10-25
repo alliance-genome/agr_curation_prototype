@@ -88,9 +88,9 @@ public class VariantFmsDTOValidator {
 		SOTerm variantType = null;
 		if (StringUtils.isBlank(dto.getType())) {
 			variantResponse.addErrorMessage("type", ValidationConstants.REQUIRED_MESSAGE);
-		} else if (Objects.equals(dto.getType(), "SO:1000002") || Objects.equals(dto.getType(), "SO:1000008") ||
-				Objects.equals(dto.getType(), "SO:0000667") || Objects.equals(dto.getType(), "SO:0000159") ||
-				Objects.equals(dto.getType(), "SO:0002007") || Objects.equals(dto.getType(), "SO:1000032")) {
+		} else if (Objects.equals(dto.getType(), "SO:1000002") || Objects.equals(dto.getType(), "SO:1000008")
+				|| Objects.equals(dto.getType(), "SO:0000667") || Objects.equals(dto.getType(), "SO:0000159")
+				|| Objects.equals(dto.getType(), "SO:0002007") || Objects.equals(dto.getType(), "SO:1000032")) {
 			variantType = soTermService.findByCurieOrSecondaryId(dto.getType());
 			if (variantType == null) {
 				variantResponse.addErrorMessage("type", ValidationConstants.INVALID_MESSAGE + " (" + dto.getType() + ")");
@@ -203,13 +203,13 @@ public class VariantFmsDTOValidator {
 	@Transactional
 	public void validateCuratedVariantGenomicLocationAssociation(VariantFmsDTO dto, List<Long> idsAdded, Variant variant) throws ValidationException {
 
-		CuratedVariantGenomicLocationAssociation association = new CuratedVariantGenomicLocationAssociation();	
+		CuratedVariantGenomicLocationAssociation association = new CuratedVariantGenomicLocationAssociation();
 		ObjectResponse<CuratedVariantGenomicLocationAssociation> cvglaResponse = new ObjectResponse<CuratedVariantGenomicLocationAssociation>();
 		AssemblyComponent chromosome = null;
 		
 		if (dto.getStart() == null) {
 			cvglaResponse.addErrorMessage("start", ValidationConstants.REQUIRED_MESSAGE);
-		} 
+		}
 		
 		if (dto.getEnd() == null) {
 			cvglaResponse.addErrorMessage("end", ValidationConstants.REQUIRED_MESSAGE);
@@ -229,8 +229,8 @@ public class VariantFmsDTOValidator {
 				}
 			}
 			if (chromosome == null) {
-				cvglaResponse.addErrorMessage("sequenceOfReferenceAccessionNumber", ValidationConstants.INVALID_MESSAGE + " (" +
-						dto.getSequenceOfReferenceAccessionNumber() + ")");
+				cvglaResponse.addErrorMessage("sequenceOfReferenceAccessionNumber", ValidationConstants.INVALID_MESSAGE + " ("
+						+ dto.getSequenceOfReferenceAccessionNumber() + ")");
 			}
 		}
 		
@@ -253,7 +253,7 @@ public class VariantFmsDTOValidator {
 		association.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.LOCATION_ASSOCIATION_RELATION_VOCABULARY, "located_on").getEntity());
 		if (StringUtils.isNotBlank(dto.getGenomicReferenceSequence())) {
 			association.setReferenceSequence(dto.getGenomicReferenceSequence());
-		}		
+		}
 		if (StringUtils.isNotBlank(dto.getGenomicVariantSequence())) {
 			association.setVariantSequence(dto.getGenomicVariantSequence());
 		}

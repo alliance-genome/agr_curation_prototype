@@ -8,7 +8,6 @@ import java.util.HashMap;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
-import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -173,7 +172,7 @@ public class VariantFmsITCase extends BaseITCase {
 
 		params.put("Entities", createCountParams(1, 0, 1, 0));
 		params.put("Locations", createCountParams(1, 0, 1, 0));
-		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_07_no_allele_id.json", params);	
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_07_no_allele_id.json", params);
 	}
 	
 	@Test
@@ -191,7 +190,7 @@ public class VariantFmsITCase extends BaseITCase {
 
 		params.put("Entities", createCountParams(1, 0, 1, 0));
 		params.put("Locations", createCountParams(1, 0, 1, 0));
-		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "ER_05_empty_allele_id.json", params);	
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "ER_05_empty_allele_id.json", params);
 	}
 	
 	@Test
@@ -212,7 +211,7 @@ public class VariantFmsITCase extends BaseITCase {
 		
 		params.put("Locations", createCountParams(1, 0, 1, 0));
 		params.put("Associations", createCountParams(1, 1, 0, 0));
-		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_05_invalid_allele_id.json", params);	
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_05_invalid_allele_id.json", params);
 	}
 
 }

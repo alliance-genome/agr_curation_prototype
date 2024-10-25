@@ -30,7 +30,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class CuratedVariantGenomicLocationAssociationService extends BaseEntityCrudService<CuratedVariantGenomicLocationAssociation, CuratedVariantGenomicLocationAssociationDAO>  {
+public class CuratedVariantGenomicLocationAssociationService extends BaseEntityCrudService<CuratedVariantGenomicLocationAssociation, CuratedVariantGenomicLocationAssociationDAO> {
 
 	@Inject CuratedVariantGenomicLocationAssociationDAO curatedVariantGenomicLocationAssociationDAO;
 	@Inject VariantFmsDTOValidator variantFmsDtoValidator;

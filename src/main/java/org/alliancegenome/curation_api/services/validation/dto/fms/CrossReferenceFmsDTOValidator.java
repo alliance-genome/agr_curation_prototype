@@ -33,7 +33,7 @@ public class CrossReferenceFmsDTOValidator {
 			pageNames = dto.getPages();
 		}
 		
-		for (String pageName : pageNames) {		
+		for (String pageName : pageNames) {
 			CrossReference xref = new CrossReference();
 		
 			if (StringUtils.isBlank(dto.getId())) {
@@ -59,7 +59,7 @@ public class CrossReferenceFmsDTOValidator {
 					xref.setResourceDescriptorPage(page);
 					xrefList.add(xref);
 				}
-			}		
+			}
 		}
 
 		crResponse.setEntity(xrefList);

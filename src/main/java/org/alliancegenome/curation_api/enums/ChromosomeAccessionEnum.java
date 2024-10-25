@@ -151,8 +151,8 @@ public enum ChromosomeAccessionEnum {
 			return null;
 		}
 		for (ChromosomeAccessionEnum chromosome : values()) {
-			if (chromosomeName.equals(chromosome.chromosomeName) &&
-					assemblyIdentifier.equals(chromosome.assemblyIdentifier)) {
+			if (chromosomeName.equals(chromosome.chromosomeName)
+					&& assemblyIdentifier.equals(chromosome.assemblyIdentifier)) {
 				return chromosome.accession;
 			}
 		}

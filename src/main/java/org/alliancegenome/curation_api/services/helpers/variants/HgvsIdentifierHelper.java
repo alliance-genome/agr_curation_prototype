@@ -31,7 +31,7 @@ public abstract class HgvsIdentifierHelper {
 
 		String hgvs = chrAccession + ":g." + start;
 		if (StringUtils.isNotBlank(dto.getType())) {
-			switch(dto.getType()) {
+			switch (dto.getType()) {
 				case "SO:1000002": // point mutation
 					hgvs = hgvs + refSeq + ">" + varSeq;
 					break;
