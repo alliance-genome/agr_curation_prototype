@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.model.event.index.IndexProcessingEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.event.ObservesAsync;
 import jakarta.inject.Inject;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -66,7 +66,7 @@ public class IndexProcessingWebsocket {
 		// session.getOpenSessions().forEach(s -> s.getAsyncRemote().sendText(message));
 	}
 
-	public void observeProcessingEvent(@Observes IndexProcessingEvent event) {
+	public void observeProcessingEvent(@ObservesAsync IndexProcessingEvent event) {
 		this.event = event;
 		//Log.info(sessions);
 		for (Entry<String, Session> sessionEntry : sessions.entrySet()) {

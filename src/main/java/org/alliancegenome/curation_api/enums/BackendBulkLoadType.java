@@ -30,6 +30,7 @@ public enum BackendBulkLoadType {
 	INTERACTION_MOL("tsv"),
 	EXPRESSION_ATLAS("tsv"),
 	INTERACTION_GEN("tsv"),
+	BIOGRID_ORCS("tsv"),
 	PARALOGY("json"),
 	SEQUENCE_TARGETING_REAGENT("json"),
 	EXPRESSION("json"),

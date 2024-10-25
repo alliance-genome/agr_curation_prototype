@@ -59,6 +59,9 @@ describe('<DiseaseAnnotationsPage />', () => {
 		const geneticSexTd = await result.findByText('genetic sex test');
 		const sgdStrainBackgroundTd = await result.findByText('SGD Strain Background test (sgd test curie)');
 		const diseaseGeneticModifierRelationTd = await result.findByText('disease genetic modifier relation test');
+		const diseaseGeneticModifierAgmsTd = await result.findByText('DGM AGM test (WB:DGM1)');
+		const diseaseGeneticModifierAllelesTd = await result.findByText('DGM Allele test (WB:DGM2)');
+		const diseaseGeneticModifierGenesTd = await result.findByText('DGM Gene test (WB:DGM3)');
 		const secondaryDataProviderTd = await result.findByText('test provider');
 
 		const updatedByCreatedByArray = await result.findAllByText('MGI:curation_staff');
@@ -85,6 +88,9 @@ describe('<DiseaseAnnotationsPage />', () => {
 			expect(sgdStrainBackgroundTd).toBeInTheDocument();
 			expect(diseaseQualifiersTd).toBeInTheDocument();
 			expect(diseaseGeneticModifierRelationTd).toBeInTheDocument();
+			expect(diseaseGeneticModifierAgmsTd).toBeInTheDocument();
+			expect(diseaseGeneticModifierAllelesTd).toBeInTheDocument();
+			expect(diseaseGeneticModifierGenesTd).toBeInTheDocument();
 			expect(secondaryDataProviderTd).toBeInTheDocument();
 			expect(updatedByCreatedByArray.length).toEqual(2);
 			expect(dateUpdatedDateCreatedArray.length).toEqual(2);

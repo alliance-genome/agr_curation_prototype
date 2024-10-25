@@ -132,7 +132,17 @@ public abstract class AnnotationUniqueIdHelper {
 				uniqueId.add(gda.getSgdStrainBackground().getIdentifier());
 			}
 		}
-		uniqueId.addSubmittedObjectList(annotation.getDiseaseGeneticModifiers());
+		List<BiologicalEntity> geneticModifiers = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(annotation.getDiseaseGeneticModifierGenes())) {
+			geneticModifiers.addAll(annotation.getDiseaseGeneticModifierGenes());
+		}
+		if (CollectionUtils.isNotEmpty(annotation.getDiseaseGeneticModifierAlleles())) {
+			geneticModifiers.addAll(annotation.getDiseaseGeneticModifierAlleles());
+		}
+		if (CollectionUtils.isNotEmpty(annotation.getDiseaseGeneticModifierAgms())) {
+			geneticModifiers.addAll(annotation.getDiseaseGeneticModifierAgms());
+		}
+		uniqueId.addSubmittedObjectList(geneticModifiers);
 		return uniqueId.getUniqueId();
 	}
 

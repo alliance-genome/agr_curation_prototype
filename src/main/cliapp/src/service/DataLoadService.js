@@ -95,7 +95,8 @@ export class DataLoadService extends BaseAuthService {
 				'PHENOTYPE',
 				'PARALOGY',
 				'SEQUENCE_TARGETING_REAGENT',
-				'VARIATION'
+				// 'VARIATION',
+				'BIOGRID-ORCS',
 			],
 			BulkURLLoad: [
 				'ONTOLOGY',

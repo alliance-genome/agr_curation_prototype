@@ -160,20 +160,63 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private DataProvider secondaryDataProvider;
 
-	@IndexedEmbedded(includePaths = {"symbol", "name", "curie", "modEntityId", "modInternalId",
-			"symbol_keyword", "name_keyword", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword"})
+	@IndexedEmbedded(includePaths = {
+			"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+			"geneSymbol.formatText", "geneSymbol.displayText", "geneSymbol.formatText_keyword", "geneSymbol.displayText_keyword",
+			"geneFullName.formatText", "geneFullName.displayText", "geneFullName.formatText_keyword", "geneFullName.displayText_keyword",
+			"geneSystematicName.formatText", "geneSystematicName.displayText", "geneSystematicName.formatText_keyword", "geneSystematicName.displayText_keyword",
+			"geneSynonyms.formatText", "geneSynonyms.displayText", "geneSynonyms.formatText_keyword", "geneSynonyms.displayText_keyword",
+			"geneSecondaryIds.secondaryId", "geneSecondaryIds.secondaryId_keyword", "name", "name_keyword", "symbol", "symbol_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(
+		name = "diseaseannotation_modifiergene",
 		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
-		inverseJoinColumns = @JoinColumn(name = "diseasegeneticmodifiers_id"),
+		inverseJoinColumns = @JoinColumn(name = "diseasegeneticmodifiergenes_id"),
 		indexes = {
-			@Index(name = "diseaseannotation_biologicalentity_da_index", columnList = "diseaseannotation_id"),
-			@Index(name = "diseaseannotation_biologicalentity_dgm_index", columnList = "diseasegeneticmodifiers_id")
+			@Index(name = "diseaseannotation_modifiergene_da_index", columnList = "diseaseannotation_id"),
+			@Index(name = "diseaseannotation_modifiergene_dgmg_index", columnList = "diseasegeneticmodifiergenes_id")
 		}
 	)
-	private List<BiologicalEntity> diseaseGeneticModifiers;
+	private List<Gene> diseaseGeneticModifierGenes;
+
+	@IndexedEmbedded(includePaths = {
+			"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+			"alleleSymbol.formatText", "alleleSymbol.displayText", "alleleSymbol.formatText_keyword", "alleleSymbol.displayText_keyword",
+			"alleleFullName.formatText", "alleleFullName.displayText", "alleleFullName.formatText_keyword", "alleleFullName.displayText_keyword",
+			"alleleSynonyms.formatText", "alleleSynonyms.displayText", "alleleSynonyms.formatText_keyword", "alleleSynonyms.displayText_keyword",
+			"alleleSecondaryIds.secondaryId", "alleleSecondaryIds.secondaryId_keyword"
+	})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
+	@JoinTable(
+		name = "diseaseannotation_modifierallele",
+		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "diseasegeneticmodifieralleles_id"),
+		indexes = {
+			@Index(name = "diseaseannotation_modifierallele_da_index", columnList = "diseaseannotation_id"),
+			@Index(name = "diseaseannotation_modifierallele_dgma_index", columnList = "diseasegeneticmodifieralleles_id")
+		}
+	)
+	private List<Allele> diseaseGeneticModifierAlleles;
+
+	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
+	@JoinTable(
+		name = "diseaseannotation_modifieragm",
+		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "diseasegeneticmodifieragms_id"),
+		indexes = {
+			@Index(name = "diseaseannotation_modifieragm_da_index", columnList = "diseaseannotation_id"),
+			@Index(name = "diseaseannotation_modifieragm_dgma_index", columnList = "diseasegeneticmodifieragms_id")
+		}
+	)
+	private List<AffectedGenomicModel> diseaseGeneticModifierAgms;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

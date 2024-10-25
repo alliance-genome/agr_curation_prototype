@@ -62,6 +62,8 @@ public class BulkLoadJobExecutor {
 	@Inject HTPExpressionDatasetAnnotationExecutor htpExpressionDatasetAnnotationExecutor;
 	@Inject ExpressionAtlasExecutor expressionAtlasExecutor;
 
+	@Inject BiogridOrcExecutor biogridOrcExecutor;
+
 	public void process(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) throws Exception {
 
 		BackendBulkLoadType loadType = bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType();
@@ -134,6 +136,8 @@ public class BulkLoadJobExecutor {
 			htpExpressionDatasetAnnotationExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION_ATLAS) {
 			expressionAtlasExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.BIOGRID_ORCS) {
+			biogridOrcExecutor.execLoad(bulkLoadFileHistory);
 		} else {
 			log.info("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
