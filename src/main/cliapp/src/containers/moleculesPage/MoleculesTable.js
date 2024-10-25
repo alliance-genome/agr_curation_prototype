@@ -115,6 +115,7 @@ export const MoleculesTable = () => {
 				tableState={tableState}
 				setTableState={setTableState}
 				columns={columns}
+				defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 				dataKey="curie"
 				isEditable={false}
 				isInEditMode={isInEditMode}
