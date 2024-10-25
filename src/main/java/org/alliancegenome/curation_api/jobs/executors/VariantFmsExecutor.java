@@ -40,8 +40,7 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 		
 			VariantIngestFmsDTO variantData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), VariantIngestFmsDTO.class);
-			bulkLoadFileHistory.getBulkLoadFile().setRecordCount(variantData.getData().size());
-		
+			
 			AGRCurationSchemaVersion version = CuratedVariantGenomicLocationAssociation.class.getAnnotation(AGRCurationSchemaVersion.class);
 			bulkLoadFileHistory.getBulkLoadFile().setLinkMLSchemaVersion(version.max());
 			if (variantData.getMetaData() != null && StringUtils.isNotBlank(variantData.getMetaData().getRelease())) {
