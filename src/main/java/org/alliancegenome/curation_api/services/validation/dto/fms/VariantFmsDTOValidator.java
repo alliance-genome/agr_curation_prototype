@@ -1,16 +1,21 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.AssemblyComponentDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleVariantAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.variantAssociations.CuratedVariantGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.enums.ChromosomeAccessionEnum;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -26,7 +31,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
-import org.alliancegenome.curation_api.services.AssemblyComponentService;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
@@ -40,6 +44,7 @@ import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -50,7 +55,7 @@ public class VariantFmsDTOValidator {
 	@Inject VariantDAO variantDAO;
 	@Inject NoteDAO noteDAO;
 	@Inject AlleleService alleleService;
-	@Inject AssemblyComponentService assemblyComponentService;
+	@Inject AssemblyComponentDAO assemblyComponentDAO;
 	@Inject CuratedVariantGenomicLocationAssociationDAO curatedVariantGenomicLocationAssociationDAO;
 	@Inject CuratedVariantGenomicLocationAssociationService curatedVariantGenomicLocationAssociationService;
 	@Inject AlleleVariantAssociationDAO alleleVariantAssociationDAO;
@@ -216,7 +221,16 @@ public class VariantFmsDTOValidator {
 		if (StringUtils.isBlank(dto.getSequenceOfReferenceAccessionNumber())) {
 			cvglaResponse.addErrorMessage("sequenceOfReferenceAccessionNumber", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			chromosome = assemblyComponentService.getByIdentifier(dto.getSequenceOfReferenceAccessionNumber()).getEntity();
+			ChromosomeAccessionEnum cae = ChromosomeAccessionEnum.getChromosomeAccessionEnum(dto.getSequenceOfReferenceAccessionNumber());
+			if (cae != null) {
+				Map<String, Object> params = new HashMap<>();
+				params.put("name", cae.chromosomeName);
+				params.put("genomeAssembly.modEntityId", cae.assemblyIdentifier);
+				SearchResponse<AssemblyComponent> acResponse = assemblyComponentDAO.findByParams(params);
+				if (acResponse != null) {
+					chromosome = acResponse.getSingleResult();
+				}
+			}
 			if (chromosome == null) {
 				cvglaResponse.addErrorMessage("sequenceOfReferenceAccessionNumber", ValidationConstants.INVALID_MESSAGE + " (" +
 						dto.getSequenceOfReferenceAccessionNumber() + ")");

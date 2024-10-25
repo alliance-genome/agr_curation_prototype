@@ -95,6 +95,7 @@ export class DataLoadService extends BaseAuthService {
 				'PHENOTYPE',
 				'PARALOGY',
 				'SEQUENCE_TARGETING_REAGENT',
+				'VARIATION'
 			],
 			BulkURLLoad: [
 				'ONTOLOGY',
@@ -114,7 +115,7 @@ export class DataLoadService extends BaseAuthService {
 				'GENE',
 				'ALLELE',
 				'AGM',
-				'VARIANT',
+				// 'VARIANT',
 				'CONSTRUCT',
 				'ALLELE_ASSOCIATION',
 				'CONSTRUCT_ASSOCIATION',

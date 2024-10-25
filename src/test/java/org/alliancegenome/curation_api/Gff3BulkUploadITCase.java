@@ -84,6 +84,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.transcriptGenomicLocationAssociations", hasSize(1)).
 			body("entity.transcriptGenomicLocationAssociations[0].relation.name", is("located_on")).
 			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.name", is("I")).
+			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.modEntityId", is("RefSeq:NC_003279.8")).
 			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.transcriptGenomicLocationAssociations[0].start", is(1)).
 			body("entity.transcriptGenomicLocationAssociations[0].end", is(1000)).
@@ -117,6 +118,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.exonGenomicLocationAssociations", hasSize(1)).
 			body("entity.exonGenomicLocationAssociations[0].relation.name", is("located_on")).
 			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.name", is("I")).
+			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.modEntityId", is("RefSeq:NC_003279.8")).
 			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.exonGenomicLocationAssociations[0].start", is(1)).
 			body("entity.exonGenomicLocationAssociations[0].end", is(100)).
@@ -154,6 +156,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.codingSequenceGenomicLocationAssociations", hasSize(1)).
 			body("entity.codingSequenceGenomicLocationAssociations[0].relation.name", is("located_on")).
 			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.name", is("I")).
+			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.modEntityId", is("RefSeq:NC_003279.8")).
 			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.codingSequenceGenomicLocationAssociations[0].start", is(10)).
 			body("entity.codingSequenceGenomicLocationAssociations[0].end", is(100)).
@@ -195,6 +198,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.transcriptGenomicLocationAssociations", hasSize(1)).
 			body("entity.transcriptGenomicLocationAssociations[0].relation.name", is("located_on")).
 			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.name", is("II")).
+			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.modEntityId", is("RefSeq:NC_003280.10")).
 			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.transcriptGenomicLocationAssociations[0].start", is(2)).
 			body("entity.transcriptGenomicLocationAssociations[0].end", is(2000)).

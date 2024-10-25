@@ -83,7 +83,8 @@ public class BulkLoadJobExecutor {
 				constructExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == VARIANT || loadType == FULL_INGEST) {
-				variantExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+				// TODO: re-enable once accepting direct submissions of variants by DQMs again and FMS load turned off
+				// variantExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == ALLELE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
 				alleleDiseaseAnnotationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
@@ -123,7 +124,6 @@ public class BulkLoadJobExecutor {
 			geneExpressionExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.VARIATION) {
 			variantFmsExecutor.execLoad(bulkLoadFileHistory);
-
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_EXON) {
 			gff3ExonExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_CDS) {

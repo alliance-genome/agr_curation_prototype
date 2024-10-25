@@ -1,7 +1,7 @@
 [
 	{
 		"alleleId": "WB:AlleleWithVar1",
-		"sequenceOfReferenceAccessionNumber": "RefSeq:NC_001.1",
+		"sequenceOfReferenceAccessionNumber": "RefSeq:NC_003279.8",
 		"start": 1,
 		"end": 1000,
 		"genomicReferenceSequence": "A",

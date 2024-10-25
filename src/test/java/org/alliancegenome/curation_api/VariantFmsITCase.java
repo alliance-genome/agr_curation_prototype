@@ -3,12 +3,12 @@ package org.alliancegenome.curation_api;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import java.time.OffsetDateTime;
 import java.util.HashMap;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -48,8 +48,8 @@ public class VariantFmsITCase extends BaseITCase {
 	private final String variantFmsBulkPostEndpoint = "/api/variant/bulk/WB/fmsvariants";
 	private final String variantGetEndpoint = "/api/variant/";
 	private final String allele = "WB:AlleleWithVar1";
-	private final String assemblyComponent = "RefSeq:NC_001.1";
-	private final String variantId = "var_NC_001.1:g.1A>T";
+	private final String assemblyComponent = "RefSeq:NC_003279.8";
+	private final String variantId = "var_NC_003279.8:g.1A>T";
 	private final String reference = "AGRKB:000000001";
 	
 	private void loadRequiredEntities() throws Exception {
@@ -64,7 +64,7 @@ public class VariantFmsITCase extends BaseITCase {
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		DataProvider dataProvider = createDataProvider("WB", false);
 		createAllele(allele, "TestAlleleWithVariant", "NCBITaxon:6239", symbolTerm, false, dataProvider);
-		createAssemblyComponent(assemblyComponent, "Test1", dataProvider);
+		//createAssemblyComponent(assemblyComponent, "I", getGenomeAssembly("WBcel235"), dataProvider);
 		
 	}
 	
@@ -91,8 +91,9 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.variantType.curie", is("SO:1000002")).
 			body("entity.sourceGeneralConsequence.curie", is("SO:0001587")).
 			body("entity.curatedVariantGenomicLocations", hasSize(1)).
+			body("entity.curatedVariantGenomicLocations[0].hgvs", is("NC_003279.8:g.1A>T")).
 			body("entity.curatedVariantGenomicLocations[0].relation.name", is("located_on")).
-			body("entity.curatedVariantGenomicLocations[0].variantGenomicLocationAssociationObject.name", is("Test1")).
+			body("entity.curatedVariantGenomicLocations[0].variantGenomicLocationAssociationObject.name", is("I")).
 			body("entity.curatedVariantGenomicLocations[0].start", is(1)).
 			body("entity.curatedVariantGenomicLocations[0].end", is(1000)).
 			body("entity.alleleVariantAssociations", hasSize(1)).
