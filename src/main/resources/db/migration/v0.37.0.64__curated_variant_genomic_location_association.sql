@@ -10,7 +10,7 @@ CREATE TABLE curatedvariantgenomiclocation (
 	start integer,
 	phase integer,
 	variationstrand character varying(1),
-	hgvs character varying(255),
+	hgvs text,
 	paddedbase character varying(1),
 	insertedsequence text,
 	deletedsequence text,
