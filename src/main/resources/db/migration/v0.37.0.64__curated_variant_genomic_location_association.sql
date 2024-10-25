@@ -25,8 +25,8 @@ CREATE TABLE curatedvariantgenomiclocation (
 	genelocalizationtype_id bigint,
 	consequence_id bigint,
 	curatedconsequence_id bigint,
-	referencesequence character varying(4000),
-	variantsequence character varying(4000)
+	referencesequence text,
+	variantsequence text
 );
 
 CREATE TABLE curatedvariantgenomiclocation_informationcontententity (
