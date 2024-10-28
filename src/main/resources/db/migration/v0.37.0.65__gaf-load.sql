@@ -183,6 +183,8 @@ create table GeneOntologyAnnotation
     singlegene_id   bigint,
     goterm_id bigint,
     dateCreated timestamp,
+    dateUpdated timestamp,
+    dbDateUpdated timestamp,
     dbDateCreated timestamp
 );
 
