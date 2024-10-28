@@ -181,7 +181,9 @@ create table GeneOntologyAnnotation
 (
     id        bigint PRIMARY KEY,
     singlegene_id   bigint,
-    goterm_id bigint
+    goterm_id bigint,
+    dateCreated timestamp,
+    dbDateCreated timestamp
 );
 
 CREATE SEQUENCE public.gene_go_annotation_seq START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
