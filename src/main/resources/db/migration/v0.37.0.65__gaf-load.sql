@@ -192,12 +192,12 @@ create table GeneOntologyAnnotation
     obsolete boolean DEFAULT false
 );
 
-CREATE SEQUENCE public.gene_go_annotation_seq START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE SEQUENCE public.GeneOntologyAnnotation_SEQ START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
 
-ALTER TABLE GeneOntologyAnnotation ADD CONSTRAINT gene_go_annotation_gene_fk
+ALTER TABLE GeneOntologyAnnotation ADD CONSTRAINT GeneOntologyAnnotation_gene_fk
     FOREIGN KEY (singlegene_id) REFERENCES biologicalentity(id);
 
-ALTER TABLE GeneOntologyAnnotation ADD CONSTRAINT gene_go_annotation_goterm_fk
+ALTER TABLE GeneOntologyAnnotation ADD CONSTRAINT GeneOntologyAnnotation_goterm_fk
     FOREIGN KEY (goterm_id) REFERENCES ontologyterm(id);
 
 ALTER TABLE GeneOntologyAnnotation
