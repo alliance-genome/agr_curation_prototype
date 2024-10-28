@@ -186,6 +186,8 @@ create table GeneOntologyAnnotation
     dateUpdated timestamp,
     dbDateUpdated timestamp,
     dbDateCreated timestamp,
+    createdBy_id bigint,
+    updatedBy_id bigint,
     internal boolean DEFAULT false,
     obsolete boolean DEFAULT false
 );
