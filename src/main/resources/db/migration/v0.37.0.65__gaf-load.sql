@@ -185,7 +185,9 @@ create table GeneOntologyAnnotation
     dateCreated timestamp,
     dateUpdated timestamp,
     dbDateUpdated timestamp,
-    dbDateCreated timestamp
+    dbDateCreated timestamp,
+    internal boolean DEFAULT false,
+    obsolete boolean DEFAULT false
 );
 
 CREATE SEQUENCE public.gene_go_annotation_seq START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
