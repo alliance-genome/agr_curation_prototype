@@ -16,7 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "Gene_Disease_Annotation", description = "Annotation class representing a gene disease annotation")
 @JsonTypeName("GeneOntologyAnnotation")
-@AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {DiseaseAnnotation.class})
+@AGRCurationSchemaVersion(min = "2.8.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {AuditedObject.class})
 public class GeneOntologyAnnotation extends AuditedObject {
 
 	@ManyToOne
