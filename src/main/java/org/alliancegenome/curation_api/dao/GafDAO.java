@@ -20,7 +20,7 @@ public class GafDAO extends BaseSQLDAO<GeneOntologyAnnotation> {
 
 	public GeneOntologyAnnotation persistGeneGoAssociation(GeneOntologyAnnotation gaf) {
 		String sql = """
-			insert into gene_go_annotation (id, singlegene_id,goterm_id)
+			insert into GeneOntologyAnnotation (id, singlegene_id,goterm_id)
 			VALUES (nextval('gene_go_annotation_seq'), :geneID, :goID)
 						""";
 		Query query = entityManager.createNativeQuery(sql);
@@ -37,7 +37,7 @@ public class GafDAO extends BaseSQLDAO<GeneOntologyAnnotation> {
 	public Map<Long, GeneOntologyAnnotationDTO> getAllGafIdsPerProvider(Organization sourceOrganization) {
 		Query query = entityManager.createNativeQuery("""
 			select gga.*, be.modentityid, ot.curie
-			from gene_go_annotation as gga , BiologicalEntity as be, ontologyterm as ot,
+			from GeneOntologyAnnotation as gga , BiologicalEntity as be, ontologyterm as ot,
 			species as spec
 			where gga.singlegene_id = be.id
 			and be.taxon_id = spec.taxon_id
@@ -58,7 +58,7 @@ public class GafDAO extends BaseSQLDAO<GeneOntologyAnnotation> {
 
 	public void delete(Long id) {
 		String sql = """
-			delete from gene_go_annotation where id = :id
+			delete from GeneOntologyAnnotation where id = :id
 						""";
 		Query query = entityManager.createNativeQuery(sql);
 		query.setParameter("id", id);

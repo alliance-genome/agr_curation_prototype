@@ -177,7 +177,7 @@ select id, 'http://current.geneontology.org/annotations/xenbase.gaf.gz'
 from bulkload
 where name = 'XB GAF';
 
-create table gene_go_annotation
+create table GeneOntologyAnnotation
 (
     id        bigint PRIMARY KEY,
     singlegene_id   bigint,
@@ -186,11 +186,11 @@ create table gene_go_annotation
 
 CREATE SEQUENCE public.gene_go_annotation_seq START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
 
-ALTER TABLE gene_go_annotation ADD CONSTRAINT gene_go_annotation_gene_fk
+ALTER TABLE GeneOntologyAnnotation ADD CONSTRAINT gene_go_annotation_gene_fk
     FOREIGN KEY (singlegene_id) REFERENCES biologicalentity(id);
 
-ALTER TABLE gene_go_annotation ADD CONSTRAINT gene_go_annotation_goterm_fk
+ALTER TABLE GeneOntologyAnnotation ADD CONSTRAINT gene_go_annotation_goterm_fk
     FOREIGN KEY (goterm_id) REFERENCES ontologyterm(id);
 
-ALTER TABLE gene_go_annotation
+ALTER TABLE GeneOntologyAnnotation
     ADD UNIQUE (singlegene_id, goterm_id);

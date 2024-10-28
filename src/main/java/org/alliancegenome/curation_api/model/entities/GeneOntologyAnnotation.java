@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.model.entities;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
