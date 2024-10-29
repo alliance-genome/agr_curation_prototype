@@ -8,20 +8,15 @@ import java.util.zip.GZIPInputStream;
 import org.alliancegenome.curation_api.dao.ExternalDataBaseEntityDAO;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetSampleAnnotationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetSampleAnnotationIngestFmsDTO;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
 import org.alliancegenome.curation_api.services.HTPExpressionDatasetSampleAnnotationService;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
