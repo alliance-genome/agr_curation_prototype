@@ -7,8 +7,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class HTPExpressionDatasetSampleAnnotationDAO extends BaseSQLDAO<HTPExpressionDatasetSampleAnnotation> {
-    	
-    protected HTPExpressionDatasetSampleAnnotationDAO() {
+	
+	protected HTPExpressionDatasetSampleAnnotationDAO() {
 		super(HTPExpressionDatasetSampleAnnotation.class);
 	}
 }

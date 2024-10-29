@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BioSampleGenomicInformationDTO extends BaseDTO{
+public class BioSampleGenomicInformationDTO extends BaseDTO {
 	private String biosampleId;
 	private String idType;
 	private String bioSampleText;

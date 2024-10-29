@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class MicroarraySampleDetailsDTO extends BaseDTO{
+public class MicroarraySampleDetailsDTO extends BaseDTO {
 	private String channelId;
 	private Integer channelNum;
 }

@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class HTPExpressionDatasetSampleAnnotationFmsDTO extends BaseDTO{
+public class HTPExpressionDatasetSampleAnnotationFmsDTO extends BaseDTO {
 	private HTPIdFmsDTO sampleId;
 	private String sampleTitle;
 	private String sampleType;
