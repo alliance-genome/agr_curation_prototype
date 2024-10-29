@@ -23,6 +23,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTO extends BaseDTO{
 	private String sequencingFormat;
 	private List<String> assemblyVersions;
 	private String notes;
-	private List<HTPIdFmsDTO> datasetIds;
+	private List<String> datasetIds;
 	private MicroarraySampleDetailsDTO microarraySampleDetails;
+	private String dateAssigned;
 }

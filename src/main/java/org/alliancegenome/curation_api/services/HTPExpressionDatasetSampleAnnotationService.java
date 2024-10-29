@@ -16,10 +16,13 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.HTPExpressionDatasetSampleAnnotationFmsDTOValidator;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
+@RequestScoped
 public class HTPExpressionDatasetSampleAnnotationService extends BaseEntityCrudService<HTPExpressionDatasetSampleAnnotation, HTPExpressionDatasetSampleAnnotationDAO> implements BaseUpsertServiceInterface<HTPExpressionDatasetSampleAnnotation, HTPExpressionDatasetSampleAnnotationFmsDTO> {
-    @Inject HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
+	
+	@Inject HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
 	@Inject HTPExpressionDatasetSampleAnnotationFmsDTOValidator htpExpressionDatasetSampleAnnotationFmsDtoValidator;
 
 	@Override

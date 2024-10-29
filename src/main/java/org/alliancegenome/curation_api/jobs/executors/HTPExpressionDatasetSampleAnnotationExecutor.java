@@ -8,6 +8,8 @@ import java.util.zip.GZIPInputStream;
 import org.alliancegenome.curation_api.dao.ExternalDataBaseEntityDAO;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
@@ -16,16 +18,20 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDataset
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetSampleAnnotationIngestFmsDTO;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
 import org.alliancegenome.curation_api.services.HTPExpressionDatasetSampleAnnotationService;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+@ApplicationScoped
 public class HTPExpressionDatasetSampleAnnotationExecutor extends LoadFileExecutor{
 
 	@Inject ExternalDataBaseEntityService externalDataBaseEntityService;
 	@Inject ExternalDataBaseEntityDAO externalDataBaseEntityDAO;
-	@Inject HTPExpressionDatasetSampleAnnotationService HTPExpressionDatasetSampleAnnotationService;
-	@Inject HTPExpressionDatasetSampleAnnotationDAO HTPExpressionDatasetSampleAnnotationDAO;
+	@Inject HTPExpressionDatasetSampleAnnotationService htpExpressionDatasetSampleAnnotationService;
+	@Inject HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
 
     public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
         try {
@@ -42,7 +48,7 @@ public class HTPExpressionDatasetSampleAnnotationExecutor extends LoadFileExecut
 
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
 			List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
-			List<Long> previousIds = HTPExpressionDatasetSampleAnnotationService.getAnnotationIdsByDataProvider(dataProvider.name());
+			List<Long> previousIds = htpExpressionDatasetSampleAnnotationService.getAnnotationIdsByDataProvider(dataProvider.name());
 			
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
@@ -52,7 +58,7 @@ public class HTPExpressionDatasetSampleAnnotationExecutor extends LoadFileExecut
 			boolean success = runLoad(bulkLoadFileHistory, dataProvider, htpExpressionDatasetSampleData.getData(), htpAnnotationsIdsLoaded);
 			
 			if (success) {
-				runCleanup(HTPExpressionDatasetSampleAnnotationService, bulkLoadFileHistory, dataProvider.name(), previousIds, htpAnnotationsIdsLoaded, fms.getFmsDataType());
+				runCleanup(htpExpressionDatasetSampleAnnotationService, bulkLoadFileHistory, dataProvider.name(), previousIds, htpAnnotationsIdsLoaded, fms.getFmsDataType());
 			}
 			bulkLoadFileHistory.finishLoad();
 
@@ -64,7 +70,40 @@ public class HTPExpressionDatasetSampleAnnotationExecutor extends LoadFileExecut
 			e.printStackTrace();
 		}
     }
-	private boolean runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetSampleAnnotationFmsDTO> htpDatasetAnnotations, List<Long> htpAnnotationsIdsLoaded) {
+
+	private boolean runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetSampleAnnotationFmsDTO> htpDatasetSampleAnnotations, List<Long> htpAnnotationsIdsLoaded) {
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
+		ph.addDisplayHandler(loadProcessDisplayService);
+		ph.startProcess("HTP Expression Dataset Sample Annotation DTO Update for " + dataProvider.name(), htpDatasetSampleAnnotations.size());
+
+		updateHistory(history);
+		for (HTPExpressionDatasetSampleAnnotationFmsDTO dto : htpDatasetSampleAnnotations) {
+			try {
+				HTPExpressionDatasetSampleAnnotation dbObject = htpExpressionDatasetSampleAnnotationService.upsert(dto, dataProvider);
+				history.incrementCompleted();
+				if (dbObject != null) {
+					htpAnnotationsIdsLoaded.add(dbObject.getId());
+				}
+			} catch (ObjectUpdateException e) {
+				history.incrementFailed();
+				addException(history, e.getData());
+			} catch (Exception e) {
+				e.printStackTrace();
+				history.incrementFailed();
+				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
+			}
+			if (history.getErrorRate() > 0.25) {
+				Log.error("Failure Rate > 25% aborting load");
+				updateHistory(history);
+				updateExceptions(history);
+				failLoadAboveErrorRateCutoff(history);
+				return false;
+			}
+			ph.progressProcess();
+		}
+		updateHistory(history);
+		updateExceptions(history);
+		ph.finishProcess();
 		return true;
 	}
 }
