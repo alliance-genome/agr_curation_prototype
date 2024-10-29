@@ -26,7 +26,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetSampleAnnotationFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.WhereExpressedDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.WhereExpressedFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
@@ -66,7 +66,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		ObjectResponse<HTPExpressionDatasetSampleAnnotation> htpSampleAnnotationResponse = new ObjectResponse<>();
 		HTPExpressionDatasetSampleAnnotation htpSampleAnnotation;
 
-		if (dto.getSampleId().getPrimaryId() != null) {
+		if (StringUtils.isNotBlank(dto.getSampleId().getPrimaryId())) {
 			String curie = dto.getSampleId().getPrimaryId();
 			ExternalDataBaseEntity externalDbEntity = externalDataBaseEntityFmsDtoValidator.validateExternalDataBaseEntityFmsDTO(dto.getSampleId());
 			if (externalDbEntity != null) {
@@ -133,7 +133,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 
 		if (CollectionUtils.isNotEmpty(dto.getSampleLocations())) {
 			List<AnatomicalSite> htpSampleLocations = new ArrayList<>();
-			for (WhereExpressedDTO whereExpressedDTO : dto.getSampleLocations()) {
+			for (WhereExpressedFmsDTO whereExpressedDTO : dto.getSampleLocations()) {
 				ObjectResponse<AnatomicalSite> anatomicalSiteObjectResponse = geneExpressionAnnotationFmsDTOValidator.validateAnatomicalSite(whereExpressedDTO);
 				if (anatomicalSiteObjectResponse.hasErrors()) {
 					htpSampleAnnotationResponse.addErrorMessage("SampleLocations", anatomicalSiteObjectResponse.errorMessagesString());

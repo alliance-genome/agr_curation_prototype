@@ -12,8 +12,8 @@ import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.UberonSlimTermDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.WhenExpressedDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.WhereExpressedDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.WhenExpressedFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.WhereExpressedFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
@@ -133,7 +133,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		return geneExpressionAnnotation;
 	}
 
-	protected ObjectResponse<TemporalContext> validateTemporalContext(WhenExpressedDTO whenExpressedDTO) {
+	protected ObjectResponse<TemporalContext> validateTemporalContext(WhenExpressedFmsDTO whenExpressedDTO) {
 		ObjectResponse<TemporalContext> response = new ObjectResponse<>();
 		TemporalContext temporalContext = new TemporalContext();
 		if (ObjectUtils.isEmpty(whenExpressedDTO)) {
@@ -171,7 +171,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		return response;
 	}
 
-	protected ObjectResponse<AnatomicalSite> validateAnatomicalSite(WhereExpressedDTO whereExpressedDTO) {
+	protected ObjectResponse<AnatomicalSite> validateAnatomicalSite(WhereExpressedFmsDTO whereExpressedDTO) {
 		ObjectResponse<AnatomicalSite> response = new ObjectResponse<>();
 		AnatomicalSite anatomicalSite = new AnatomicalSite();
 		if (ObjectUtils.isEmpty(whereExpressedDTO)) {

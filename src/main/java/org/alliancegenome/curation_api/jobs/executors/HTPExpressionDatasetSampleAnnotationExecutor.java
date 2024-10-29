@@ -55,7 +55,7 @@ public class HTPExpressionDatasetSampleAnnotationExecutor extends LoadFileExecut
 			bulkLoadFileHistory.setCount((long) htpExpressionDatasetSampleData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 			
-			boolean success = runLoad(bulkLoadFileHistory, dataProvider, htpExpressionDatasetSampleData.getData(), htpAnnotationsIdsLoaded);
+			boolean success = runLoad(htpExpressionDatasetSampleAnnotationService, bulkLoadFileHistory, dataProvider, htpExpressionDatasetSampleData.getData(), htpAnnotationsIdsLoaded);
 			
 			if (success) {
 				runCleanup(htpExpressionDatasetSampleAnnotationService, bulkLoadFileHistory, dataProvider.name(), previousIds, htpAnnotationsIdsLoaded, fms.getFmsDataType());
@@ -69,41 +69,5 @@ public class HTPExpressionDatasetSampleAnnotationExecutor extends LoadFileExecut
 			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
 		}
-	}
-
-	private boolean runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetSampleAnnotationFmsDTO> htpDatasetSampleAnnotations, List<Long> htpAnnotationsIdsLoaded) {
-		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("HTP Expression Dataset Sample Annotation DTO Update for " + dataProvider.name(), htpDatasetSampleAnnotations.size());
-
-		updateHistory(history);
-		for (HTPExpressionDatasetSampleAnnotationFmsDTO dto : htpDatasetSampleAnnotations) {
-			try {
-				HTPExpressionDatasetSampleAnnotation dbObject = htpExpressionDatasetSampleAnnotationService.upsert(dto, dataProvider);
-				history.incrementCompleted();
-				if (dbObject != null) {
-					htpAnnotationsIdsLoaded.add(dbObject.getId());
-				}
-			} catch (ObjectUpdateException e) {
-				history.incrementFailed();
-				addException(history, e.getData());
-			} catch (Exception e) {
-				e.printStackTrace();
-				history.incrementFailed();
-				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
-			}
-			if (history.getErrorRate() > 0.25) {
-				Log.error("Failure Rate > 25% aborting load");
-				updateHistory(history);
-				updateExceptions(history);
-				failLoadAboveErrorRateCutoff(history);
-				return false;
-			}
-			ph.progressProcess();
-		}
-		updateHistory(history);
-		updateExceptions(history);
-		ph.finishProcess();
-		return true;
 	}
 }

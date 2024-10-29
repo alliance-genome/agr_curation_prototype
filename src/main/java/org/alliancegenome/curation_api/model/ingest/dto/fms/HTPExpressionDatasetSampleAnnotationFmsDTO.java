@@ -13,10 +13,10 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTO extends BaseDTO {
 	private HTPIdFmsDTO sampleId;
 	private String sampleTitle;
 	private String sampleType;
-	private BioSampleAgeDTO sampleAge;
-	private List<WhereExpressedDTO> sampleLocations;
+	private BioSampleAgeFmsDTO sampleAge;
+	private List<WhereExpressedFmsDTO> sampleLocations;
 	private String abundance;
-	private BioSampleGenomicInformationDTO genomicInformation;
+	private BioSampleGenomicInformationFmsDTO genomicInformation;
 	private String taxonId;
 	private String sex;
 	private String assayType;
@@ -24,6 +24,6 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTO extends BaseDTO {
 	private List<String> assemblyVersions;
 	private String notes;
 	private List<String> datasetIds;
-	private MicroarraySampleDetailsDTO microarraySampleDetails;
+	private MicroarraySampleDetailsFmsDTO microarraySampleDetails;
 	private String dateAssigned;
 }
