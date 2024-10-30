@@ -110,7 +110,7 @@ public class VariantFmsDTOValidator {
 		}
 		
 		String hgvs = HgvsIdentifierHelper.getHgvsIdentifier(dto);
-		String modInternalId = DigestUtils.md5Hex(hgvs);
+		String modInternalId = hgvs == null ? null : DigestUtils.md5Hex(hgvs);
 		
 		if (StringUtils.isNotBlank(hgvs) && !variantResponse.hasErrors()) {
 			SearchResponse<Variant> searchResponse = variantDAO.findByField("modInternalId", modInternalId);

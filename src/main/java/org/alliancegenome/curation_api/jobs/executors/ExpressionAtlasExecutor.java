@@ -1,10 +1,13 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import lombok.extern.jbosslog.JBossLog;
+import static org.alliancegenome.curation_api.services.DataProviderService.RESOURCE_DESCRIPTOR_PREFIX;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Organization;
@@ -17,15 +20,12 @@ import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
-import static org.alliancegenome.curation_api.services.DataProviderService.RESOURCE_DESCRIPTOR_PREFIX;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@JBossLog
 @ApplicationScoped
 public class ExpressionAtlasExecutor extends LoadFileExecutor {
 
