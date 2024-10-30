@@ -63,7 +63,8 @@ public class BulkLoadJobExecutor {
 	@Inject Gff3TranscriptExecutor gff3TranscriptExecutor;
 	
 	@Inject ExpressionAtlasExecutor expressionAtlasExecutor;
-	@Inject GafExecutor gafExecutor;
+	@Inject
+	GeneOntologyAnnotationExecutor gafExecutor;
 
 	@Inject BiogridOrcExecutor biogridOrcExecutor;
 

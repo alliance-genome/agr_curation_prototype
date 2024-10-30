@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
@@ -13,7 +12,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDT
 import org.alliancegenome.curation_api.services.GeneOntologyAnnotationService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
@@ -21,13 +19,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 @JBossLog
 @ApplicationScoped
-public class GafExecutor extends LoadFileExecutor {
+public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 
 	@Inject
 	GeneOntologyAnnotationService service;
@@ -103,7 +100,7 @@ public class GafExecutor extends LoadFileExecutor {
 			ph.progressProcess();
 		});
 		bulkLoadFileHistory.setTotalCount(dtos.size());
-		runCleanupSpecial(service, bulkLoadFileHistory, abbr, gafIdsBefore, geneGoIdsLoaded, "GAF Load");
+		runCleanup(service, bulkLoadFileHistory, abbr, gafIdsBefore, geneGoIdsLoaded, "GAF Load");
 		ph.finishProcess();
 		updateHistory(bulkLoadFileHistory);
 
@@ -112,43 +109,4 @@ public class GafExecutor extends LoadFileExecutor {
 		updateExceptions(bulkLoadFileHistory);
 	}
 
-	private void runCleanupSpecial(GeneOntologyAnnotationService service, BulkLoadFileHistory history, String abbr, List<Long> gafIdsBefore, List<Long> geneGoIdsLoaded, String gafLoad) {
-		Log.debug("runLoad: After: " + abbr + " " + geneGoIdsLoaded.size());
-
-		List<Long> distinctAfter = geneGoIdsLoaded.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + abbr + " " + distinctAfter.size());
-
-		List<Long> idsToRemove = ListUtils.subtract(gafIdsBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + abbr + " " + idsToRemove.size());
-
-		String countType = gafLoad + " Deleted";
-
-		long existingDeletes = history.getCount(countType).getTotal() == null ? 0 : history.getCount(countType).getTotal();
-		history.setCount(countType, idsToRemove.size() + existingDeletes);
-
-		String loadDescription = abbr + " " + gafLoad + " bulk load (" + history.getBulkLoadFile().getMd5Sum() + ")";
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("Deletion/deprecation of: " + abbr + " " + gafLoad, idsToRemove.size());
-		//updateHistory(history);
-		for (Long id : idsToRemove) {
-			try {
-				service.deprecateOrDelete(id, false, loadDescription, false);
-				history.incrementCompleted(countType);
-			} catch (Exception e) {
-				history.incrementFailed(countType);
-				addException(history, new ObjectUpdateException.ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
-			}
-			if (history.getErrorRate(countType) > 0.25) {
-				Log.error(countType + " failure rate > 25% aborting load");
-				failLoadAboveErrorRateCutoff(history);
-				break;
-			}
-			ph.progressProcess();
-		}
-		updateHistory(history);
-		updateExceptions(history);
-		ph.finishProcess();
-
-	}
 }
