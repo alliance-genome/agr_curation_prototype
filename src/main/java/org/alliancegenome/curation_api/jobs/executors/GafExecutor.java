@@ -10,7 +10,7 @@ import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
-import org.alliancegenome.curation_api.services.GafService;
+import org.alliancegenome.curation_api.services.GeneOntologyAnnotationService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections4.ListUtils;
@@ -30,7 +30,7 @@ import java.util.zip.GZIPInputStream;
 public class GafExecutor extends LoadFileExecutor {
 
 	@Inject
-	GafService service;
+	GeneOntologyAnnotationService service;
 	@Inject
 	OrganizationService organizationService;
 
@@ -112,7 +112,7 @@ public class GafExecutor extends LoadFileExecutor {
 		updateExceptions(bulkLoadFileHistory);
 	}
 
-	private void runCleanupSpecial(GafService service, BulkLoadFileHistory history, String abbr, List<Long> gafIdsBefore, List<Long> geneGoIdsLoaded, String gafLoad) {
+	private void runCleanupSpecial(GeneOntologyAnnotationService service, BulkLoadFileHistory history, String abbr, List<Long> gafIdsBefore, List<Long> geneGoIdsLoaded, String gafLoad) {
 		Log.debug("runLoad: After: " + abbr + " " + geneGoIdsLoaded.size());
 
 		List<Long> distinctAfter = geneGoIdsLoaded.stream().distinct().collect(Collectors.toList());

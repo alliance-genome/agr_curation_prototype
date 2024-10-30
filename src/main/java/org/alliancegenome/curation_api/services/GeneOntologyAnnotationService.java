@@ -5,7 +5,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
-import org.alliancegenome.curation_api.dao.GafDAO;
+import org.alliancegenome.curation_api.dao.GeneOntologyAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.SpeciesDAO;
 import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RequestScoped
-public class GafService extends BaseEntityCrudService<GeneOntologyAnnotation, GafDAO> {
+public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOntologyAnnotation, GeneOntologyAnnotationDAO> {
 
 	private Species species;
 	public static final String RESOURCE_DESCRIPTOR_PREFIX = "ENSEMBL";
@@ -35,7 +35,7 @@ public class GafService extends BaseEntityCrudService<GeneOntologyAnnotation, Ga
 	@AuthenticatedUser
 	protected Person authenticatedPerson;
 	@Inject
-	GafDAO gafDAO;
+	GeneOntologyAnnotationDAO gafDAO;
 	@Inject
 	GeneDAO geneDAO;
 	@Inject

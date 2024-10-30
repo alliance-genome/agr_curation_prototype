@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 @ApplicationScoped
-public class GafDAO extends BaseSQLDAO<GeneOntologyAnnotation> {
+public class GeneOntologyAnnotationDAO extends BaseSQLDAO<GeneOntologyAnnotation> {
 
-	protected GafDAO() {
+	protected GeneOntologyAnnotationDAO() {
 		super(GeneOntologyAnnotation.class);
 	}
 
