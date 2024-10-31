@@ -66,6 +66,12 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		ObjectResponse<HTPExpressionDatasetSampleAnnotation> htpSampleAnnotationResponse = new ObjectResponse<>();
 		HTPExpressionDatasetSampleAnnotation htpSampleAnnotation;
 
+		Boolean sampleExists = ((dto.getSampleId() != null && StringUtils.isNotEmpty(dto.getSampleId().getPrimaryId())) || StringUtils.isNotEmpty(dto.getSampleTitle()));
+
+		if(!sampleExists) {
+			htpSampleAnnotationResponse.addErrorMessage("SampleId or Sample Title", ValidationConstants.REQUIRED_MESSAGE);
+		}
+		
 		if (StringUtils.isNotBlank(dto.getSampleId().getPrimaryId())) {
 			String curie = dto.getSampleId().getPrimaryId();
 			ExternalDataBaseEntity externalDbEntity = externalDataBaseEntityFmsDtoValidator.validateExternalDataBaseEntityFmsDTO(dto.getSampleId());
@@ -85,7 +91,6 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 				htpSampleAnnotation = new HTPExpressionDatasetSampleAnnotation();
 			}
 		} else {
-			htpSampleAnnotationResponse.addErrorMessage("SampleId", ValidationConstants.REQUIRED_MESSAGE);
 			htpSampleAnnotation = new HTPExpressionDatasetSampleAnnotation();
 		}
 
@@ -144,30 +149,35 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		}
 
 		if (dto.getGenomicInformation() != null) {
-			if (htpSampleAnnotation.getGenomicInformation() == null) {
-				htpSampleAnnotation.setGenomicInformation(new BioSampleGenomicInformation());
-				if (StringUtils.isNotEmpty(dto.getGenomicInformation().getBiosampleId())) {
-					validateGenomicInformation(dto.getGenomicInformation(), htpSampleAnnotation, htpSampleAnnotationResponse);
-				} else {
-					htpSampleAnnotationResponse.addErrorMessage("GenomicInformation - BioSampleId", ValidationConstants.REQUIRED_MESSAGE);
-				}
-			} else {
-				if (StringUtils.isNotEmpty(dto.getGenomicInformation().getBiosampleId())) {
-					String identifierString = null;
-					if (htpSampleAnnotation.getGenomicInformation().getBioSampleAgm() != null) {
-						identifierString = htpSampleAnnotation.getGenomicInformation().getBioSampleAgm().getIdentifier();
-					} else if (htpSampleAnnotation.getGenomicInformation().getBioSampleAllele() != null) {
-						identifierString = htpSampleAnnotation.getGenomicInformation().getBioSampleAllele().getIdentifier();
-					}
-					if (!identifierString.equals(dto.getGenomicInformation().getBiosampleId())) {
+			Boolean genomicInformationExists = (StringUtils.isNotEmpty(dto.getGenomicInformation().getBioSampleText()) == true || StringUtils.isNotEmpty(dto.getGenomicInformation().getBiosampleId()) == true);
+			if (genomicInformationExists) {
+				if (htpSampleAnnotation.getGenomicInformation() == null) {
+					htpSampleAnnotation.setGenomicInformation(new BioSampleGenomicInformation());
+					if (StringUtils.isNotEmpty(dto.getGenomicInformation().getBiosampleId())) {
 						validateGenomicInformation(dto.getGenomicInformation(), htpSampleAnnotation, htpSampleAnnotationResponse);
 					}
+					if (StringUtils.isNotEmpty(dto.getGenomicInformation().getBioSampleText())) {
+						htpSampleAnnotation.getGenomicInformation().setBioSampleText(dto.getGenomicInformation().getBioSampleText());
+					}
 				} else {
-					htpSampleAnnotationResponse.addErrorMessage("GenomicInformation - BioSampleId", ValidationConstants.REQUIRED_MESSAGE);
+					if (StringUtils.isNotEmpty(dto.getGenomicInformation().getBiosampleId())) {
+						String identifierString = null;
+						if (htpSampleAnnotation.getGenomicInformation().getBioSampleAgm() != null) {
+							identifierString = htpSampleAnnotation.getGenomicInformation().getBioSampleAgm().getIdentifier();
+						} else if (htpSampleAnnotation.getGenomicInformation().getBioSampleAllele() != null) {
+							identifierString = htpSampleAnnotation.getGenomicInformation().getBioSampleAllele().getIdentifier();
+						}
+						if (!identifierString.equals(dto.getGenomicInformation().getBiosampleId())) {
+							validateGenomicInformation(dto.getGenomicInformation(), htpSampleAnnotation, htpSampleAnnotationResponse);
+						}
+						if (StringUtils.isNotEmpty(dto.getGenomicInformation().getBioSampleText())) {
+							htpSampleAnnotation.getGenomicInformation().setBioSampleText(dto.getGenomicInformation().getBioSampleText());
+						}
+					}
 				}
+			} else {
+				htpSampleAnnotationResponse.addErrorMessage("GenomicInformation - BioSampleId or BioSampleText", ValidationConstants.REQUIRED_MESSAGE);
 			}
-		} else {
-			htpSampleAnnotationResponse.addErrorMessage("GenomicInformation", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
 		if (StringUtils.isNotEmpty(dto.getSex())) {
