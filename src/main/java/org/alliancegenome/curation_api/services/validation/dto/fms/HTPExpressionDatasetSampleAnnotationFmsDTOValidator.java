@@ -126,7 +126,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 
 		List<Long> idsToRemove = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getSampleLocations())) {
-			if(CollectionUtils.isNotEmpty(htpSampleAnnotation.getHtpExpressionSampleLocations())) {
+			if (CollectionUtils.isNotEmpty(htpSampleAnnotation.getHtpExpressionSampleLocations())) {
 				for (AnatomicalSite anatomicalSite : htpSampleAnnotation.getHtpExpressionSampleLocations()) {
 					idsToRemove.add(anatomicalSite.getId());
 				}
