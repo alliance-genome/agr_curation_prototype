@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.AnatomicalSiteDAO;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -25,6 +26,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.BioSampleGenomicInformationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetSampleAnnotationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.WhereExpressedFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -37,10 +39,8 @@ import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.ontology.ObiTermService;
-import org.alliancegenome.curation_api.services.ontology.StageTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -56,10 +56,10 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 	@Inject DataProviderService dataProviderService;
 	@Inject ObiTermService obiTermService;
 	@Inject MmoTermService mmoTermService;
-	@Inject StageTermService stageTermService;
 	@Inject AlleleService alleleService;
 	@Inject AffectedGenomicModelService affectedGenomicModelService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject AnatomicalSiteDAO anatomicalSiteDAO;
 
 	@Transactional
 	public HTPExpressionDatasetSampleAnnotation validateHTPExpressionDatasetSampleAnnotationFmsDTO(HTPExpressionDatasetSampleAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
@@ -110,28 +110,27 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		}
 
 		if (dto.getSampleAge() != null) {
+			if (htpSampleAnnotation.getHtpExpressionSampleAge() == null) {
+				htpSampleAnnotation.setHtpExpressionSampleAge(new BioSampleAge());
+			}
 			ObjectResponse<TemporalContext> temporalContextObjectResponse = geneExpressionAnnotationFmsDTOValidator.validateTemporalContext(dto.getSampleAge().getStage());
 			if (temporalContextObjectResponse.hasErrors()) {
-				htpSampleAnnotationResponse.addErrorMessage("BioSampleAge", temporalContextObjectResponse.errorMessagesString());
+				htpSampleAnnotationResponse.addErrorMessage("Sample Age - Stage", temporalContextObjectResponse.errorMessagesString());
 			} else {
-				if (htpSampleAnnotation.getHtpExpressionSampleAge() == null) {
-					htpSampleAnnotation.setHtpExpressionSampleAge(new BioSampleAge());
-					htpSampleAnnotation.getHtpExpressionSampleAge().setStage(new TemporalContext());
-				}
-				TemporalContext temporalContext = temporalContextObjectResponse.getEntity();
-				TemporalContext temporalContextDB = htpSampleAnnotation.getHtpExpressionSampleAge().getStage();
-				if (temporalContextDB == null) {
-					temporalContextDB = new TemporalContext();
-				}
-				htpSampleAnnotation.getHtpExpressionSampleAge().setWhenExpressedStageName(dto.getSampleAge().getStage().getStageName());
-				htpSampleAnnotation.getHtpExpressionSampleAge().setStage(temporalContextDB);
-				htpSampleAnnotation.getHtpExpressionSampleAge().getStage().setDevelopmentalStageStart(temporalContext.getDevelopmentalStageStart());
-				htpSampleAnnotation.getHtpExpressionSampleAge().getStage().setStageUberonSlimTerms(temporalContext.getStageUberonSlimTerms());
+				TemporalContext temporalContext = geneExpressionAnnotationFmsDTOValidator.updateTemporalContext(temporalContextObjectResponse, htpSampleAnnotation.getHtpExpressionSampleAge().getStage());
 				htpSampleAnnotation.getHtpExpressionSampleAge().setAge(dto.getSampleAge().getAge());
+				htpSampleAnnotation.getHtpExpressionSampleAge().setWhenExpressedStageName(dto.getSampleAge().getStage().getStageName());
+				htpSampleAnnotation.getHtpExpressionSampleAge().setStage(temporalContext);
 			}
 		}
 
+		List<Long> idsToRemove = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getSampleLocations())) {
+			if(CollectionUtils.isNotEmpty(htpSampleAnnotation.getHtpExpressionSampleLocations())) {
+				for (AnatomicalSite anatomicalSite : htpSampleAnnotation.getHtpExpressionSampleLocations()) {
+					idsToRemove.add(anatomicalSite.getId());
+				}
+			}
 			List<AnatomicalSite> htpSampleLocations = new ArrayList<>();
 			for (WhereExpressedFmsDTO whereExpressedDTO : dto.getSampleLocations()) {
 				ObjectResponse<AnatomicalSite> anatomicalSiteObjectResponse = geneExpressionAnnotationFmsDTOValidator.validateAnatomicalSite(whereExpressedDTO);
@@ -147,23 +146,24 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		if (dto.getGenomicInformation() != null) {
 			if (htpSampleAnnotation.getGenomicInformation() == null) {
 				htpSampleAnnotation.setGenomicInformation(new BioSampleGenomicInformation());
-			}
-			if (StringUtils.isNotEmpty(dto.getGenomicInformation().getBiosampleId())) {
-				String identifierString = dto.getGenomicInformation().getBiosampleId();
-				Allele allele = alleleService.findByIdentifierString(identifierString);
-				if (allele == null) {
-					AffectedGenomicModel agm = affectedGenomicModelService.findByIdentifierString(identifierString);
-					if (agm == null) {
-						htpSampleAnnotationResponse.addErrorMessage("GenomicInformation", ValidationConstants.INVALID_MESSAGE + " (" + identifierString + ")");
-					} else {
-						htpSampleAnnotation.getGenomicInformation().setBioSampleAgm(agm);
-						VocabularyTerm agmType = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.AGM_SUBTYPE_VOCABULARY, dto.getGenomicInformation().getIdType()).getEntity();
-						if (agmType != null) {
-							htpSampleAnnotation.getGenomicInformation().setBioSampleAgmType(agmType);
-						}
+				if (StringUtils.isNotEmpty(dto.getGenomicInformation().getBiosampleId())) {
+					validateGenomicInformation(dto.getGenomicInformation(), htpSampleAnnotation, htpSampleAnnotationResponse);
+				} else {
+					htpSampleAnnotationResponse.addErrorMessage("GenomicInformation - BioSampleId", ValidationConstants.REQUIRED_MESSAGE);
+				}
+			} else {
+				if (StringUtils.isNotEmpty(dto.getGenomicInformation().getBiosampleId())) {
+					String identifierString = null;
+					if (htpSampleAnnotation.getGenomicInformation().getBioSampleAgm() != null) {
+						identifierString = htpSampleAnnotation.getGenomicInformation().getBioSampleAgm().getIdentifier();
+					} else if (htpSampleAnnotation.getGenomicInformation().getBioSampleAllele() != null) {
+						identifierString = htpSampleAnnotation.getGenomicInformation().getBioSampleAllele().getIdentifier();
+					}
+					if (!identifierString.equals(dto.getGenomicInformation().getBiosampleId())) {
+						validateGenomicInformation(dto.getGenomicInformation(), htpSampleAnnotation, htpSampleAnnotationResponse);
 					}
 				} else {
-					htpSampleAnnotation.getGenomicInformation().setBioSampleAllele(allele);
+					htpSampleAnnotationResponse.addErrorMessage("GenomicInformation - BioSampleId", ValidationConstants.REQUIRED_MESSAGE);
 				}
 			}
 		} else {
@@ -252,6 +252,31 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 			throw new ObjectValidationException(dto, htpSampleAnnotationResponse.errorMessagesString());
 		}
 
-		return htpExpressionDatasetSampleAnnotationDAO.persist(htpSampleAnnotation);
+		HTPExpressionDatasetSampleAnnotation htp = htpExpressionDatasetSampleAnnotationDAO.persist(htpSampleAnnotation);
+		for (Long id : idsToRemove) {
+			anatomicalSiteDAO.remove(id);
+		}
+		return htp;
+	}
+
+	protected void validateGenomicInformation(BioSampleGenomicInformationFmsDTO dto, HTPExpressionDatasetSampleAnnotation htpSampleAnnotation, ObjectResponse<HTPExpressionDatasetSampleAnnotation> htpSampleAnnotationResponse) {
+		if (StringUtils.isNotEmpty(dto.getBiosampleId())) {
+			String identifierString = dto.getBiosampleId();
+			Allele allele = alleleService.findByIdentifierString(identifierString);
+			if (allele != null) {
+				htpSampleAnnotation.getGenomicInformation().setBioSampleAllele(allele);
+			} else {
+				AffectedGenomicModel agm = affectedGenomicModelService.findByIdentifierString(identifierString);
+				if (agm == null) {
+					htpSampleAnnotationResponse.addErrorMessage("GenomicInformation - BioSampleId", ValidationConstants.INVALID_MESSAGE + " (" + identifierString + ")");
+				} else {
+					htpSampleAnnotation.getGenomicInformation().setBioSampleAgm(agm);
+					VocabularyTerm agmType = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.AGM_SUBTYPE_VOCABULARY, dto.getIdType()).getEntity();
+					if (agmType != null) {
+						htpSampleAnnotation.getGenomicInformation().setBioSampleAgmType(agmType);
+					}
+				}
+			}
+		}
 	}
 }

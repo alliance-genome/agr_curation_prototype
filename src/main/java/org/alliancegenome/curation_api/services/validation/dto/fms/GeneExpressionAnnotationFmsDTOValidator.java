@@ -316,7 +316,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		return response;
 	}
 
-	private TemporalContext updateTemporalContext(ObjectResponse<TemporalContext> temporalContextObjectResponse, TemporalContext whenExpressed) {
+	protected TemporalContext updateTemporalContext(ObjectResponse<TemporalContext> temporalContextObjectResponse, TemporalContext whenExpressed) {
 		TemporalContext temporalContext = temporalContextObjectResponse.getEntity();
 		TemporalContext temporalContextDB = whenExpressed;
 		if (temporalContextDB == null) {
