@@ -66,7 +66,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		ObjectResponse<HTPExpressionDatasetSampleAnnotation> htpSampleAnnotationResponse = new ObjectResponse<>();
 		HTPExpressionDatasetSampleAnnotation htpSampleAnnotation;
 
-		Boolean sampleExists = (dto.getSampleId() != null && StringUtils.isNotEmpty(dto.getSampleId().getPrimaryId())) || StringUtils.isNotEmpty(dto.getSampleTitle());
+		Boolean sampleExists = dto.getSampleId() != null && StringUtils.isNotEmpty(dto.getSampleId().getPrimaryId()) || StringUtils.isNotEmpty(dto.getSampleTitle());
 
 		if (!sampleExists) {
 			htpSampleAnnotationResponse.addErrorMessage("SampleId or Sample Title", ValidationConstants.REQUIRED_MESSAGE);
