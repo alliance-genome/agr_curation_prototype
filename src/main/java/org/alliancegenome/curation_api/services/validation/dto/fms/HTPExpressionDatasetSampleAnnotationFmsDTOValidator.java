@@ -66,7 +66,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		ObjectResponse<HTPExpressionDatasetSampleAnnotation> htpSampleAnnotationResponse = new ObjectResponse<>();
 		HTPExpressionDatasetSampleAnnotation htpSampleAnnotation;
 
-		Boolean sampleExists = (dto.getSampleId() != null && StringUtils.isNotEmpty(dto.getSampleId().getPrimaryId()) || StringUtils.isNotEmpty(dto.getSampleTitle()));
+		Boolean sampleExists = (dto.getSampleId() != null && StringUtils.isNotEmpty(dto.getSampleId().getPrimaryId())) || StringUtils.isNotEmpty(dto.getSampleTitle());
 
 		if (!sampleExists) {
 			htpSampleAnnotationResponse.addErrorMessage("SampleId or Sample Title", ValidationConstants.REQUIRED_MESSAGE);
@@ -149,7 +149,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		}
 
 		if (dto.getGenomicInformation() != null) {
-			Boolean genomicInformationExists = (StringUtils.isNotEmpty(dto.getGenomicInformation().getBioSampleText()) == true) || (StringUtils.isNotEmpty(dto.getGenomicInformation().getBiosampleId()) == true);
+			Boolean genomicInformationExists = StringUtils.isNotEmpty(dto.getGenomicInformation().getBioSampleText()) || StringUtils.isNotEmpty(dto.getGenomicInformation().getBiosampleId());
 			if (genomicInformationExists) {
 				if (htpSampleAnnotation.getGenomicInformation() == null) {
 					htpSampleAnnotation.setGenomicInformation(new BioSampleGenomicInformation());
