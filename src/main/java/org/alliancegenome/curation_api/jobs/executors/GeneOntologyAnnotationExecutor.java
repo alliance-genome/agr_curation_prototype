@@ -99,7 +99,6 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 			}
 			ph.progressProcess();
 		}
-		;
 		bulkLoadFileHistory.setTotalCount(dtos.size());
 		runCleanup(service, bulkLoadFileHistory, abbr, gafIdsBefore, geneGoIdsLoaded, "GAF Load");
 		ph.finishProcess();
