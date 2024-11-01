@@ -179,26 +179,36 @@ where name = 'XB GAF';
 
 create table GeneOntologyAnnotation
 (
-    id        bigint PRIMARY KEY,
-    singlegene_id   bigint,
-    goterm_id bigint,
-    dateCreated timestamp,
-    dateUpdated timestamp,
+    id            bigint PRIMARY KEY,
+    singlegene_id bigint,
+    goterm_id     bigint,
+    dateCreated   timestamp default now(),
+    dateUpdated   timestamp,
     dbDateUpdated timestamp,
     dbDateCreated timestamp,
-    createdBy_id bigint,
-    updatedBy_id bigint,
-    internal boolean DEFAULT false,
-    obsolete boolean DEFAULT false
+    createdBy_id  bigint,
+    updatedBy_id  bigint,
+    internal      boolean   DEFAULT false,
+    obsolete      boolean   DEFAULT false
 );
 
 CREATE SEQUENCE public.GeneOntologyAnnotation_SEQ START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
 
-ALTER TABLE GeneOntologyAnnotation ADD CONSTRAINT GeneOntologyAnnotation_gene_fk
-    FOREIGN KEY (singlegene_id) REFERENCES biologicalentity(id);
+ALTER TABLE GeneOntologyAnnotation
+    ADD CONSTRAINT GeneOntologyAnnotation_gene_fk
+        FOREIGN KEY (singlegene_id) REFERENCES biologicalentity (id);
 
-ALTER TABLE GeneOntologyAnnotation ADD CONSTRAINT GeneOntologyAnnotation_goterm_fk
-    FOREIGN KEY (goterm_id) REFERENCES ontologyterm(id);
+ALTER TABLE GeneOntologyAnnotation
+    ADD CONSTRAINT GeneOntologyAnnotation_goterm_fk
+        FOREIGN KEY (goterm_id) REFERENCES ontologyterm (id);
 
 ALTER TABLE GeneOntologyAnnotation
     ADD UNIQUE (singlegene_id, goterm_id);
+
+CREATE INDEX GeneOntologyAnnotation_createdby_index ON GeneOntologyAnnotation USING btree (createdby_id);
+
+CREATE INDEX GeneOntologyAnnotation_updatedby_index ON GeneOntologyAnnotation USING btree (updatedBy_id);
+
+CREATE INDEX GeneOntologyAnnotation_singlegeneId_index ON GeneOntologyAnnotation USING btree (singlegene_id);
+
+CREATE INDEX GeneOntologyAnnotation_gotermId_index ON GeneOntologyAnnotation USING btree (goterm_id);

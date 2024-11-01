@@ -83,7 +83,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 			}).toList()).flatMap(Collection::stream).toList();
 
 		ph.startProcess(name, dtos.size());
-		dtos.forEach(modID -> {
+		for (GeneOntologyAnnotationDTO modID : dtos) {
 			Long geneID = service.getGeneID(modID, abbr);
 			if (geneID != null) {
 				GeneOntologyAnnotation newGaf = service.insert(modID, abbr).getEntity();
@@ -98,7 +98,8 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 				bulkLoadFileHistory.incrementFailed();
 			}
 			ph.progressProcess();
-		});
+		}
+		;
 		bulkLoadFileHistory.setTotalCount(dtos.size());
 		runCleanup(service, bulkLoadFileHistory, abbr, gafIdsBefore, geneGoIdsLoaded, "GAF Load");
 		ph.finishProcess();

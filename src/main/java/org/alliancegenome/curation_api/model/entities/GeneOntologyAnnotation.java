@@ -1,8 +1,7 @@
 package org.alliancegenome.curation_api.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
@@ -10,14 +9,20 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 
 @Entity
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode
 @Schema(name = "Gene_Disease_Annotation", description = "Annotation class representing a gene disease annotation")
 @JsonTypeName("GeneOntologyAnnotation")
-@AGRCurationSchemaVersion(min = "2.8.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {AuditedObject.class})
+@AGRCurationSchemaVersion(min = "2.8.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
 public class GeneOntologyAnnotation extends AuditedObject {
+
+	@Id
+	@DocumentId
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	protected Long id;
 
 	@ManyToOne
 	private GOTerm goTerm;
