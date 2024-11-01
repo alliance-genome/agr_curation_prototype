@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class WhenExpressedDTO extends BaseDTO {
+public class WhenExpressedFmsDTO extends BaseDTO {
 	private String stageTermId;
 	private String stageName;
 	private UberonSlimTermDTO stageUberonSlimTerm;
