@@ -171,6 +171,12 @@ public class Gff3DtoValidator {
 			transcriptResponse.addErrorMessage("attributes - ID", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		
+		if (attributes.containsKey("transcript_id")) {
+			transcript.setTranscriptId(attributes.get("transcript_id"));
+		} else {
+			transcriptResponse.addErrorMessage("attributes - transcript_id", ValidationConstants.REQUIRED_MESSAGE);
+		}
+		
 		if (transcriptResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, transcriptResponse.errorMessagesString());
 		}

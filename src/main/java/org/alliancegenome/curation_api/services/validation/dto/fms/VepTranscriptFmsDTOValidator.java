@@ -68,9 +68,13 @@ public class VepTranscriptFmsDTOValidator {
 		if (StringUtils.isBlank(dto.getFeature())) {
 			response.addErrorMessage("feature", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			transcript = transcriptService.getByIdentifier(dto.getFeature()).getEntity();
-			if (transcript == null) {
+			SearchResponse<Transcript> searchResponse = transcriptService.findByField("transcriptId", dto.getFeature());
+			if (searchResponse == null || searchResponse.getSingleResult() == null) {
 				response.addErrorMessage("feature", ValidationConstants.INVALID_MESSAGE + " (" + dto.getFeature() + ")");
+			} else if (searchResponse.getReturnedRecords() > 1) {
+				response.addErrorMessage("feature", ValidationConstants.AMBIGUOUS_MESSAGE + " (" + dto.getFeature() + ")");
+			} else {
+				transcript = searchResponse.getSingleResult();
 			}
 		}
 		
@@ -139,11 +143,14 @@ public class VepTranscriptFmsDTOValidator {
 		String variantCodon = null;
 		if (StringUtils.isNotBlank(dto.getCodons())) {
 			String[] refVarCodons = dto.getCodons().split("/");
-			if (refVarCodons.length != 2) {
-				response.addErrorMessage("codons", ValidationConstants.INVALID_MESSAGE + " (" + dto.getCodons() + ")");
-			} else {
+			if (refVarCodons.length == 1 && dto.getConsequence().contains("synonymous_variant")) {
+				referenceCodon = dto.getCodons();
+				variantCodon = dto.getCodons();
+			} else if (refVarCodons.length == 2) {
 				referenceCodon = refVarCodons[0];
 				variantCodon = refVarCodons[1];
+			} else { 
+				response.addErrorMessage("codons", ValidationConstants.INVALID_MESSAGE + " (" + dto.getCodons() + ")");
 			}
 		}
 		predictedVariantConsequence.setCodonReference(referenceCodon);

@@ -45,9 +45,13 @@ public class VepGeneFmsDTOValidator {
 		if (StringUtils.isBlank(dto.getFeature())) {
 			response.addErrorMessage("feature", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			transcript = transcriptService.getByIdentifier(dto.getFeature()).getEntity();
-			if (transcript == null) {
+			SearchResponse<Transcript> searchResponse = transcriptService.findByField("transcriptId", dto.getFeature());
+			if (searchResponse == null || searchResponse.getSingleResult() == null) {
 				response.addErrorMessage("feature", ValidationConstants.INVALID_MESSAGE + " (" + dto.getFeature() + ")");
+			} else if (searchResponse.getReturnedRecords() > 1) {
+				response.addErrorMessage("feature", ValidationConstants.AMBIGUOUS_MESSAGE + " (" + dto.getFeature() + ")");
+			} else {
+				transcript = searchResponse.getSingleResult();
 			}
 		}
 		

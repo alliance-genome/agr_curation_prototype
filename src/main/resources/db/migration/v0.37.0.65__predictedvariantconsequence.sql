@@ -1,3 +1,7 @@
+ALTER TABLE transcript ADD COLUMN transcriptid VARCHAR(255);
+
+CREATE INDEX transcript_transcriptid_index ON transcript USING btree (transcriptid);
+
 CREATE TABLE predictedvariantconsequence (
 	id bigint PRIMARY KEY,
 	datecreated timestamp(6) with time zone,

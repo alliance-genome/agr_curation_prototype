@@ -78,6 +78,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.modInternalId", is(transcriptId)).
 			body("entity.name", is("Y74C9A.2a.1")).
+			body("entity.transcriptId", is("WB:Y74C9A.2a.1")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
 			body("entity.transcriptType.curie", is("SO:0000234")).
@@ -192,6 +193,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.modInternalId", is(transcriptId)).
 			body("entity.name", is("Y74C9A.2a.1")).
+			body("entity.transcriptId", is("RefSeq:Y74C9A.2a.1")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
 			body("entity.transcriptType.curie", is("SO:0001035")).
@@ -226,6 +228,10 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 		checkBulkLoadRecordCounts(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_05_no_transcript_parent.json", params);
 		checkBulkLoadRecordCounts(exonBulkPostEndpoint, gffDataTestFilePath + "MR_06_no_exon_parent.json", params);
 		checkBulkLoadRecordCounts(cdsBulkPostEndpoint, gffDataTestFilePath + "MR_07_no_cds_parent.json", params);
+		
+		params.put("Entities", createCountParams(1, 1, 0, 0));
+		params.put("Locations", createCountParams(1, 1, 0, 0));
+		checkBulkLoadRecordCounts(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_08_no_transcript_id.json", params);
 	}
 
 	@Test
@@ -245,6 +251,10 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 		checkBulkLoadRecordCounts(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_03_empty_transcript_parent.json", params);
 		checkBulkLoadRecordCounts(exonBulkPostEndpoint, gffDataTestFilePath + "ER_04_empty_exon_parent.json", params);
 		checkBulkLoadRecordCounts(cdsBulkPostEndpoint, gffDataTestFilePath + "ER_05_empty_cds_parent.json", params);
+		
+		params.put("Entities", createCountParams(1, 1, 0, 0));
+		params.put("Locations", createCountParams(1, 1, 0, 0));
+		checkBulkLoadRecordCounts(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_06_empty_transcript_id.json", params);
 	}
 
 	@Test
