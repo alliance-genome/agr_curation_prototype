@@ -153,7 +153,7 @@ public class VepTranscriptFmsDTOValidator {
 			} else if (refVarCodons.length == 2) {
 				referenceCodon = refVarCodons[0];
 				variantCodon = refVarCodons[1];
-			} else { 
+			} else {
 				response.addErrorMessage("codons", ValidationConstants.INVALID_MESSAGE + " (" + dto.getCodons() + ")");
 			}
 		}
@@ -300,7 +300,7 @@ public class VepTranscriptFmsDTOValidator {
 	
 	private Pair<Integer, Integer> parseStartEnd(String position) {
 		Matcher matcher = POSITION_STRING.matcher(position);
-		if(!matcher.find()) {
+		if (!matcher.find()) {
 			return null;
 		}
 		
@@ -312,7 +312,7 @@ public class VepTranscriptFmsDTOValidator {
 			return null;
 		}
 		
-		if(positions.length == 1) {
+		if (positions.length == 1) {
 			start = Integer.parseInt(position);
 			end = start;
 		} else {

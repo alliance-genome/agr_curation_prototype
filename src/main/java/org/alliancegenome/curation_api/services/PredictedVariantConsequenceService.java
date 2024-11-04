@@ -93,7 +93,7 @@ public class PredictedVariantConsequenceService extends BaseEntityCrudService<Pr
 				pvc.setUpdatedBy(updatedBy);
 				pvc.setDateUpdated(OffsetDateTime.now());
 			return predictedVariantConsequenceDAO.persist(pvc);
-		} 
+		}
 		
 		return pvc;
 	}

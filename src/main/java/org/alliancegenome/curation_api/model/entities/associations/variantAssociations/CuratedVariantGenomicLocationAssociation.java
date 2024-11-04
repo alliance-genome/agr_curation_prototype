@@ -51,9 +51,10 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 		includePaths = {
 			"variantTranscript.name", "variantTranscript.modEntityId",
 			"variantTranscript.modInternalId", "variantTranscript.curie",
-			"vepConsequence.name", "variantTranscript.name_keyword", 
+			"vepConsequence.name", "variantTranscript.name_keyword",
 			"variantTranscript.modEntityId_keyword", "variantTranscript.modInternalId_keyword",
 			"variantTranscript.curie_keyword", "vepConsequence.name_keyword",
+			"variantTranscript.transcriptId", "variantTranscript.transcriptId_keyword"
 		}
 	)
 	@OneToMany(mappedBy = "variantGenomicLocation", cascade = CascadeType.ALL, orphanRemoval = true)
