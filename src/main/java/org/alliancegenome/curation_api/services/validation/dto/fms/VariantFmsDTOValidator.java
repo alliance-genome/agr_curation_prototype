@@ -256,11 +256,17 @@ public class VariantFmsDTOValidator {
 		association.setStart(dto.getStart());
 		association.setEnd(dto.getEnd());
 		association.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.LOCATION_ASSOCIATION_RELATION_VOCABULARY, "located_on").getEntity());
-		if (StringUtils.isNotBlank(dto.getGenomicReferenceSequence())) {
+		
+		if (StringUtils.isNotBlank(dto.getGenomicReferenceSequence()) && !Objects.equals(dto.getGenomicReferenceSequence(), "N/A")) {
 			association.setReferenceSequence(dto.getGenomicReferenceSequence());
+		} else {
+			association.setReferenceSequence(null);
 		}
-		if (StringUtils.isNotBlank(dto.getGenomicVariantSequence())) {
+		
+		if (StringUtils.isNotBlank(dto.getGenomicVariantSequence()) && !Objects.equals(dto.getGenomicVariantSequence(), "N/A")) {
 			association.setVariantSequence(dto.getGenomicVariantSequence());
+		} else {
+			association.setVariantSequence(null);
 		}
 		
 		if (variantId == null) {

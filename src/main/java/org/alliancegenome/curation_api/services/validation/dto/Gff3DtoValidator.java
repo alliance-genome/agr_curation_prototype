@@ -164,6 +164,8 @@ public class Gff3DtoValidator {
 		
 		if (attributes.containsKey("Name")) {
 			transcript.setName(attributes.get("Name"));
+		} else {
+			transcript.setName(null);
 		}
 		
 		ObjectResponse<Transcript> transcriptResponse = validateGenomicEntity(transcript, dto, attributes, dataProvider);
@@ -174,7 +176,7 @@ public class Gff3DtoValidator {
 		if (attributes.containsKey("transcript_id")) {
 			transcript.setTranscriptId(attributes.get("transcript_id"));
 		} else {
-			transcriptResponse.addErrorMessage("attributes - transcript_id", ValidationConstants.REQUIRED_MESSAGE);
+			transcript.setTranscriptId(null);
 		}
 		
 		if (transcriptResponse.hasErrors()) {
