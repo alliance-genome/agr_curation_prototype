@@ -47,6 +47,9 @@ CREATE INDEX predictedvariantconsequence_polyphenprediction_index ON predictedva
 CREATE INDEX predictedvariantconsequence_siftprediction_index ON predictedvariantconsequence USING btree (siftprediction_id);
 CREATE INDEX predictedvariantconsequence_createdby_index ON predictedvariantconsequence USING btree (createdby_id);
 CREATE INDEX predictedvariantconsequence_updatedby_index ON predictedvariantconsequence USING btree (updatedby_id);
+CREATE INDEX predictedvariantconsequence_hgvsproteinnomenclature_index ON predictedvariantconsequence USING btree (hgvsProteinNomenclature);
+CREATE INDEX predictedvariantconsequence_hgvscodingnomenclature_index ON predictedvariantconsequence USING btree (hgvsCodingNomenclature);
+CREATE INDEX predictedvariantconsequence_variantgenomiclocation_index ON predictedvariantconsequence USING btree (variantGenomicLocation_id);
 
 ALTER TABLE ONLY predictedvariantconsequence ADD CONSTRAINT predictedvariantconsequence_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person(id);
 ALTER TABLE ONLY predictedvariantconsequence ADD CONSTRAINT predictedvariantconsequence_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person(id);

@@ -48,7 +48,10 @@ import lombok.ToString;
 	@Index(name = "predictedvariantconsequence_polyphenprediction_index", columnList = "polyphenprediction_id"),
 	@Index(name = "predictedvariantconsequence_siftprediction_index", columnList = "siftprediction_id"),
 	@Index(name = "predictedvariantconsequence_createdby_index", columnList = "createdby_id"),
-	@Index(name = "predictedvariantconsequence_updatedby_index", columnList = "updatedby_id")
+	@Index(name = "predictedvariantconsequence_updatedby_index", columnList = "updatedby_id"),
+	@Index(name = "predictedvariantconsequence_hgvsproteinnomenclature_index", columnList = "hgvsProteinNomenclature"),
+	@Index(name = "predictedvariantconsequence_hgvscodingnomenclature_index", columnList = "hgvsCodingNomenclature"),
+	@Index(name = "predictedvariantconsequence_variantgenomiclocation_index", columnList = "variantGenomicLocation_id")
 })
 public class PredictedVariantConsequence extends AuditedObject {
 
