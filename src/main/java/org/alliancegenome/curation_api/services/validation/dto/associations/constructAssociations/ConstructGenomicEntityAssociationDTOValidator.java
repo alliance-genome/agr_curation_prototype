@@ -47,7 +47,10 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 
 		Construct construct = null;
 		if (StringUtils.isNotBlank(dto.getConstructIdentifier())) {
-			construct = constructService.getShallowEntity(constructService.getIdByModID(dto.getConstructIdentifier()));
+			Long constructId = constructService.getIdByModID(dto.getConstructIdentifier());
+			if (constructId != null) {
+				construct = constructService.getShallowEntity(constructId);
+			}
 			if (construct == null) {
 				assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE);
 			} else {
@@ -63,7 +66,10 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		if (StringUtils.isBlank(dto.getGenomicEntityIdentifier())) {
 			assocResponse.addErrorMessage("genomic_entity_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			genomicEntity = genomicEntityService.getShallowEntity(genomicEntityService.getIdByModID(dto.getGenomicEntityIdentifier()));
+			Long genomicEntityId = genomicEntityService.getIdByModID(dto.getGenomicEntityIdentifier());
+			if (genomicEntityId != null) {
+				genomicEntity = genomicEntityService.getShallowEntity(genomicEntityId);
+			}
 			if (genomicEntity == null) {
 				assocResponse.addErrorMessage("genomic_entity_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityIdentifier() + ")");
 			}

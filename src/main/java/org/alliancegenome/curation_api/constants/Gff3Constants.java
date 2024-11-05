@@ -12,7 +12,7 @@ public final class Gff3Constants {
 		"mRNA", "ncRNA", "piRNA", "lincRNA", "miRNA", "pre_miRNA", "snoRNA", "lncRNA",
 		"tRNA", "snRNA", "rRNA", "antisense_RNA", "C_gene_segment", "V_gene_segment",
 		"pseudogene_attribute", "pseudogenic_transcript", "lnc_RNA", "nc_primary_transcript",
-		"circular_ncRNA"
+		"circular_ncRNA", "transcript"
 	);
 	
 	public static final List<String> STRANDS = List.of("+", "-");
