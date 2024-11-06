@@ -164,11 +164,14 @@ public class VepTranscriptFmsDTOValidator {
 		String variantAminoAcids = null;
 		if (StringUtils.isNotBlank(dto.getAminoAcids())) {
 			String[] refVarAminoAcids = dto.getAminoAcids().split("/");
-			if (refVarAminoAcids.length != 2) {
-				response.addErrorMessage("aminoAcids", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAminoAcids() + ")");
-			} else {
+			if (refVarAminoAcids.length == 1 && dto.getConsequence().contains("synonymous_variant")) {
+				referenceAminoAcids = refVarAminoAcids[0];
+				variantAminoAcids = refVarAminoAcids[0];
+			} else if (refVarAminoAcids.length == 2) {
 				referenceAminoAcids = refVarAminoAcids[0];
 				variantAminoAcids = refVarAminoAcids[1];
+			} else {
+				response.addErrorMessage("aminoAcids", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAminoAcids() + ")");
 			}
 		}
 		predictedVariantConsequence.setAminoAcidReference(referenceAminoAcids);
