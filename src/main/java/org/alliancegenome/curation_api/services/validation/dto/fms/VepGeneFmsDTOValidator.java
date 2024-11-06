@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.PredictedVariantConsequenceDAO;
+import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
@@ -43,6 +44,9 @@ public class VepGeneFmsDTOValidator {
 		
 		Transcript transcript = null;
 		if (StringUtils.isBlank(dto.getFeature())) {
+			if (dto.getConsequence().contains("intergenic_variant")) {
+				throw new KnownIssueValidationException("Intergenic variant consequences not currently supported");
+			}
 			response.addErrorMessage("feature", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			SearchResponse<Transcript> searchResponse = transcriptService.findByField("transcriptId", dto.getFeature());
