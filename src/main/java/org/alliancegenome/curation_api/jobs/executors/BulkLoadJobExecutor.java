@@ -65,6 +65,8 @@ public class BulkLoadJobExecutor {
 	@Inject VepGeneExecutor vepGeneExecutor;
 	
 	@Inject ExpressionAtlasExecutor expressionAtlasExecutor;
+	@Inject
+	GeneOntologyAnnotationExecutor gafExecutor;
 
 	@Inject BiogridOrcExecutor biogridOrcExecutor;
 
@@ -148,6 +150,8 @@ public class BulkLoadJobExecutor {
 			vepGeneExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.HTPDATASAMPLE) {
 			htpExpressionDatasetSampleAnnotationExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GAF) {
+			gafExecutor.execLoad(bulkLoadFileHistory);
 		} else {
 			log.info("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");

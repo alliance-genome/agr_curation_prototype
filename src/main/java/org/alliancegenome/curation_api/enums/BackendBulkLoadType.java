@@ -31,6 +31,7 @@ public enum BackendBulkLoadType {
 	
 	INTERACTION_MOL("tsv"),
 	EXPRESSION_ATLAS("tsv"),
+	GAF("tsv"),
 	INTERACTION_GEN("tsv"),
 	BIOGRID_ORCS("tsv"),
 	PARALOGY("json"),

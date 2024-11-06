@@ -107,6 +107,7 @@ export class DataLoadService extends BaseAuthService {
 				'DISEASE_ANNOTATION',
 				'RESOURCE_DESCRIPTOR',
 				'EXPRESSION_ATLAS',
+				'GAF',
 			],
 			BulkManualLoad: [
 				'FULL_INGEST',
