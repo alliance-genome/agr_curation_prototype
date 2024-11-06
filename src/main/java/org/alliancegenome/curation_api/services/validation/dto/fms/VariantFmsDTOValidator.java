@@ -258,13 +258,13 @@ public class VariantFmsDTOValidator {
 		association.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.LOCATION_ASSOCIATION_RELATION_VOCABULARY, "located_on").getEntity());
 		
 		if (StringUtils.isNotBlank(dto.getGenomicReferenceSequence()) && !Objects.equals(dto.getGenomicReferenceSequence(), "N/A")) {
-			association.setReferenceSequence(dto.getGenomicReferenceSequence());
+			association.setReferenceSequence(StringUtils.deleteWhitespace(dto.getGenomicReferenceSequence()));
 		} else {
 			association.setReferenceSequence(null);
 		}
 		
 		if (StringUtils.isNotBlank(dto.getGenomicVariantSequence()) && !Objects.equals(dto.getGenomicVariantSequence(), "N/A")) {
-			association.setVariantSequence(dto.getGenomicVariantSequence());
+			association.setVariantSequence(StringUtils.deleteWhitespace(dto.getGenomicVariantSequence()));
 		} else {
 			association.setVariantSequence(null);
 		}
