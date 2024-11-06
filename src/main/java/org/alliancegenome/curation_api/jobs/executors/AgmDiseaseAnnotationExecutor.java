@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
@@ -26,13 +25,13 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
 	@Inject AGMDiseaseAnnotationService agmDiseaseAnnotationService;
 
-	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
-		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile, AGMDiseaseAnnotationDTO.class);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AGMDiseaseAnnotationDTO.class);
 		if (ingestDto == null) {
 			return;
 		}
@@ -49,17 +48,19 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 			annotationIdsBefore.removeIf(Objects::isNull);
 		}
 
-		bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
-		bulkLoadFileDAO.merge(bulkLoadFile);
+		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(annotations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		createHistory(history, bulkLoadFile);
-		boolean success = runLoad(agmDiseaseAnnotationService, history, dataProvider, annotations, annotationIdsLoaded);
+		bulkLoadFileHistory.setCount(annotations.size());
+		updateHistory(bulkLoadFileHistory);
+		
+		boolean success = runLoad(agmDiseaseAnnotationService, bulkLoadFileHistory, dataProvider, annotations, annotationIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "AGM disease annotation", bulkLoadFile.getMd5Sum());
+			runCleanup(diseaseAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "AGM disease annotation");
 		}
-		history.finishLoad();
-		finalSaveHistory(history);
+		bulkLoadFileHistory.finishLoad();
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 	}
 
 }

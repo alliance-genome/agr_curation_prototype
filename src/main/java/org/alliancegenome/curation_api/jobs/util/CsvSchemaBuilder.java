@@ -59,6 +59,32 @@ public class CsvSchemaBuilder {
 		
 		return schema;
 	}
+
+	public static CsvSchema biogridOrcFmsSchema() {
+		CsvSchema schema = CsvSchema.builder()
+				.setColumnSeparator('\t')
+				.setArrayElementSeparator("|")
+				.setAllowComments(true)
+				.setNullValue("-")
+				.disableQuoteChar()
+				.addColumn("screenId")
+				.addColumn("identifierId")
+				.addColumn("identifierType")
+				.addColumn("officialSymbol")
+				.addColumn("aliases")
+				.addColumn("organismId")
+				.addColumn("organismOfficial")
+				.addColumn("score1")
+				.addColumn("score2")
+				.addColumn("score3")
+				.addColumn("score4")
+				.addColumn("score5")
+				.addColumn("hit")
+				.addColumn("source")
+				.build();
+		
+		return schema;
+	}
 	
 	public static CsvSchema gff3Schema() {
 		CsvSchema schema = CsvSchema.builder()

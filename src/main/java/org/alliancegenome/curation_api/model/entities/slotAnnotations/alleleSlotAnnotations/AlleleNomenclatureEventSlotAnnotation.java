@@ -15,9 +15,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -28,8 +26,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "AlleleNomenclatureSlotAnnotation", description = "POJO representing an allele nomenclature event slot annotation")
-@Table(indexes = { @Index(name = "allelenomenclatureevent_singleallele_index", columnList = "singleallele_id"),
-		@Index(name = "allelenomenclatureevent_nomenclatureevent_index", columnList = "nomenclatureevent_id")})
 public class AlleleNomenclatureEventSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne

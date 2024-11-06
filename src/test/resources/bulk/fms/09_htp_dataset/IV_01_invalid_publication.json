@@ -1,0 +1,76 @@
+{
+    "data": [
+        {
+            "categoryTags": [
+            "anatomical structure"
+            ],
+            "datasetId": {
+                "alternateIds": [
+                    "GEO:GSE38764"
+                ],
+                "crossReferences": [
+                    {
+                        "id": "TEST:TestMol00000001",
+                        "pages": [
+                          "homepage"
+                        ]
+                    },
+                    {
+                        "id": "TEST:TestMol00000002",
+                        "pages": [
+                          "homepage"
+                        ]
+                    }
+                ],
+                "preferredCrossReference": {
+                    "id": "TEST:TestMol00000001",
+                    "pages": [
+                    "homepage"
+                    ]
+                },
+                "primaryId": "FB:FBlc0003342"
+            },
+            "dateAssigned": "2024-07-12T12:36:21-04:00",
+            "publications": [
+            {
+                "publicationId": "INVALID",
+                "crossReference": {
+                    "id": "ZFIN:ZDB-PUB-130927-9",
+                    "pages": [
+                    "reference"
+                    ],
+                    "curie": "ZFIN:ZDB-PUB-130927-9"
+                 }
+            },
+            {
+                "publicationId" : "PMID:009",
+                "crossReference" : {
+                    "id" : "ZFIN:PUB001",
+                    "pages" : [ 
+                        "reference" 
+                    ]
+                }
+            }
+            ],
+            "title": "TEST TITLE",
+            "summary" : "TEST_SUMMARY",
+            "numChannels" : 2,
+            "subSeries": [
+                "FB:FBlc0003342"
+            ]
+        }
+    ],
+    "metaData": {
+        "dataProvider": {
+        "crossReference": {
+            "id": "FB",
+            "pages": [
+            "homepage"
+            ]
+        },
+        "type": "curated"
+        },
+        "dateProduced": "2024-07-12T12:36:21-04:00",
+        "release": "2024_03"
+    }
+}

@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneToGeneParalogyDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneToGeneParalogy;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -36,7 +37,7 @@ public class ParalogyFmsDTOValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 
 	@Transactional
-	public GeneToGeneParalogy validateParalogyFmsDTO(ParalogyFmsDTO dto) throws ObjectValidationException {
+	public GeneToGeneParalogy validateParalogyFmsDTO(ParalogyFmsDTO dto) throws ValidationException {
 
 		ObjectResponse<GeneToGeneParalogy> paralogyResponse = new ObjectResponse<GeneToGeneParalogy>();
 
@@ -162,19 +163,13 @@ public class ParalogyFmsDTOValidator {
 		}
 		paralogyData.setConfidence(confidence);
 
-		if (dto.getSimilarity() == null) {
-			paralogyResponse.addErrorMessage("Similarity", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
+		if (dto.getSimilarity() != null) {
 			paralogyData.setSimilarity(dto.getSimilarity());
 		}
-		if (dto.getIdentity() == null) {
-			paralogyResponse.addErrorMessage("Identity", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
+		if (dto.getIdentity() != null) {
 			paralogyData.setIdentity(dto.getIdentity());
 		}
-		if (dto.getLength() == null) {
-			paralogyResponse.addErrorMessage("Length", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
+		if (dto.getLength() != null) {
 			paralogyData.setLength(dto.getLength());
 		}
 		if (dto.getRank() == null) {

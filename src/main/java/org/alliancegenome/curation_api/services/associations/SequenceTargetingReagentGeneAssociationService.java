@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.associations.SequenceTargetingReagentGeneAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations.SequenceTargetingReagentGeneAssociation;
@@ -40,7 +40,7 @@ public class SequenceTargetingReagentGeneAssociationService extends BaseEntityCr
 	}
 
 	@Transactional
-	public List<Long> loadGeneAssociations(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public List<Long> loadGeneAssociations(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		List<SequenceTargetingReagentGeneAssociation> associations = sequenceTargetingReagentGeneAssociationFmsDTOValidator
 				.validateSQTRGeneAssociationFmsDTO(dto, dataProvider);

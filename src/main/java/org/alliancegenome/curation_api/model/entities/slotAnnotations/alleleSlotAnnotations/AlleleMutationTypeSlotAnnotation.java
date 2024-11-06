@@ -20,10 +20,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -34,7 +34,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "AlleleMutationtTypeSlotAnnotation", description = "POJO representing an allele mutation type slot annotation")
-@Table(indexes = { @Index(name = "allelemutationtype_singleallele_index", columnList = "singleallele_id") })
 public class AlleleMutationTypeSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne
@@ -45,8 +44,14 @@ public class AlleleMutationTypeSlotAnnotation extends SlotAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JoinTable(indexes = { @Index(name = "allelemutationtypesa_soterm_amsa_index", columnList = "allelemutationtypeslotannotation_id"),
-		@Index(name = "allelemutationtypesa_soterm_mutationtypes_index", columnList = "mutationtypes_id") })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "slotannotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "mutationtypes_id"),
+		indexes = {
+			@Index(name = "slotannotation_soterm_amsa_index", columnList = "slotannotation_id"),
+			@Index(name = "slotannotation_soterm_mutationtypes_index", columnList = "mutationtypes_id")
+		}
+	)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<SOTerm> mutationTypes;
 

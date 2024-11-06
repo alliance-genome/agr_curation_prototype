@@ -6,9 +6,6 @@ import { Messages } from 'primereact/messages';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ListTableCell } from '../../components/ListTableCell';
-import { Tooltip } from 'primereact/tooltip';
 import { Button } from 'primereact/button';
 import { ConditionRelationService } from '../../service/ConditionRelationService';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
@@ -31,6 +28,9 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
+import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
+import { conditionsSort } from '../../components/Templates/utils/sortMethods';
 
 export const ConditionRelationTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -126,19 +126,6 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
-	const conditionTemplate = (rowData) => {
-		if (rowData.conditions) {
-			const listTemplate = (condition) => {
-				return <EllipsisTableCell>{condition.conditionSummary}</EllipsisTableCell>;
-			};
-			return (
-				<div style={{ margin: '-10px 10px -10px 10px' }}>
-					<ListTableCell template={listTemplate} listData={rowData.conditions} showBullets={true} />
-				</div>
-			);
-		}
-	};
-
 	const onConditionRelationValueChange = (event, setFieldValue, props) => {
 		multipleAutocompleteOnChange(props, event, 'conditions', setFieldValue);
 	};
@@ -186,29 +173,6 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
-	const singleReferenceBodyTemplate = (rowData) => {
-		if (rowData && rowData.singleReference) {
-			let refString = getRefString(rowData.singleReference);
-			return (
-				<>
-					<div
-						className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}
-						dangerouslySetInnerHTML={{
-							__html: refString,
-						}}
-					/>
-					<Tooltip target={`.a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}>
-						<div
-							dangerouslySetInnerHTML={{
-								__html: refString,
-							}}
-						/>
-					</Tooltip>
-				</>
-			);
-		}
-	};
-
 	const columns = [
 		{
 			field: 'handle',
@@ -224,7 +188,7 @@ export const ConditionRelationTable = () => {
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 			editor: (props) => referenceEditorTemplate(props),
-			body: singleReferenceBodyTemplate,
+			body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference} />,
 		},
 		{
 			field: 'conditionRelationType.name',
@@ -237,7 +201,14 @@ export const ConditionRelationTable = () => {
 			field: 'conditions.conditionSummary',
 			header: 'Experimental Conditions',
 			sortable: true,
-			body: conditionTemplate,
+			body: (rowData) => (
+				<ObjectListTemplate
+					list={rowData.conditions}
+					sortMethod={conditionsSort}
+					stringTemplate={(item) => item.conditionSummary}
+					showBullets={true}
+				/>
+			),
 			filterConfig: FILTER_CONFIGS.experimentalConditionFilterConfig,
 			editor: (props) => conditionRelationTemplate(props),
 		},

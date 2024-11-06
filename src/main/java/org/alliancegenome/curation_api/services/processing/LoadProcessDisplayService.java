@@ -18,16 +18,16 @@ public class LoadProcessDisplayService implements ProcessDisplayHandler {
 
 	@Override
 	public void startProcess(String message, long startTime, long totalSize) {
-		processingEvent.fire(new StartLoadProcessingEvent(message, startTime, totalSize));
+		processingEvent.fireAsync(new StartLoadProcessingEvent(message, startTime, totalSize));
 	}
 
 	@Override
 	public void progressProcess(String message, String data, long startTime, long nowTime, long lastTime, long currentCount, long lastCount, long totalSize) {
-		processingEvent.fire(new ProgressLoadProcessingEvent(message, data, startTime, nowTime, lastTime, currentCount, lastCount, totalSize));
+		processingEvent.fireAsync(new ProgressLoadProcessingEvent(message, data, startTime, nowTime, lastTime, currentCount, lastCount, totalSize));
 	}
 
 	@Override
 	public void finishProcess(String message, String data, long current, long totalSize, long duration) {
-		processingEvent.fire(new EndLoadProcessingEvent(message, data, current, totalSize, duration));
+		processingEvent.fireAsync(new EndLoadProcessingEvent(message, data, current, totalSize, duration));
 	}
 }

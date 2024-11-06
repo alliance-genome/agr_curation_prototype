@@ -38,13 +38,19 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { LocationAssociation.class })
 @Schema(name = "TranscriptGenomicLocationAssociation", description = "POJO representing an association between a transcript and a genomic location")
-@Table(
-	indexes = {
-		@Index(name = "transcriptlocationassociation_relation_index", columnList = "relation_id"),
-		@Index(name = "transcriptlocationassociation_subject_index", columnList = "transcriptassociationsubject_id"),
-		@Index(name = "transcriptlocationassociation_object_index", columnList = "transcriptgenomiclocationassociationobject_id")
-	}
-)
+
+@Table(indexes = {
+	@Index(columnList = "internal"),
+	@Index(columnList = "obsolete"),
+	@Index(columnList = "phase"),
+	@Index(columnList = "strand"),
+	@Index(columnList = "createdBy_id"),
+	@Index(columnList = "updatedBy_id"),
+	@Index(columnList = "relation_id"),
+	@Index(columnList = "transcriptassociationsubject_id"),
+	@Index(columnList = "transcriptgenomiclocationassociationobject_id")
+})
+
 public class TranscriptGenomicLocationAssociation extends LocationAssociation {
 
 	@IndexedEmbedded(includePaths = {
@@ -53,7 +59,12 @@ public class TranscriptGenomicLocationAssociation extends LocationAssociation {
 	})
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@JsonIgnoreProperties("transcriptGenomicLocationAssociations")
+	@JsonIgnoreProperties({
+		"transcriptCodingSequenceAssociations",
+		"transcriptExonAssociations",
+		"transcriptGeneAssociations",
+		"transcriptGenomicLocationAssociations"
+	})
 	@Fetch(FetchMode.JOIN)
 	private Transcript transcriptAssociationSubject;
 
@@ -72,7 +83,7 @@ public class TranscriptGenomicLocationAssociation extends LocationAssociation {
 	private Integer phase;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "phenotypeAnnotationObject_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "strand_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class })
 	@Column(length = 1)
 	private String strand;

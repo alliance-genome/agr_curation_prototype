@@ -40,7 +40,7 @@ public class DataProviderValidator extends AuditedObjectValidator<DataProvider> 
 			dbEntity = new DataProvider();
 		}
 
-		dbEntity = (DataProvider) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
+		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 
 		Organization sourceOrganization = validateSourceOrganization(uiEntity, dbEntity);
 		dbEntity.setSourceOrganization(sourceOrganization);

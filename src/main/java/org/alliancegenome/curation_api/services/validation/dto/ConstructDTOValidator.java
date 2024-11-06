@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
@@ -20,6 +21,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAn
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.constructSlotAnnotations.ConstructComponentSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.helpers.UniqueIdentifierHelper;
 import org.alliancegenome.curation_api.services.helpers.constructs.ConstructUniqueIdHelper;
 import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDTOValidator;
@@ -27,7 +29,6 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.c
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.constructSlotAnnotations.ConstructSynonymSlotAnnotationDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -46,27 +47,15 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 	private ObjectResponse<Construct> constructResponse;
 
 	@Transactional
-	public Construct validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public Construct validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 
-		constructResponse = new ObjectResponse<Construct>();
+		constructResponse = new ObjectResponse<>();
 
 		Construct construct = new Construct();
-		String constructId;
-		String identifyingField;
 		String uniqueId = ConstructUniqueIdHelper.getConstructUniqueId(dto);
-
-		if (StringUtils.isNotBlank(dto.getModEntityId())) {
-			constructId = dto.getModEntityId();
-			construct.setModEntityId(constructId);
-			identifyingField = "modEntityId";
-		} else if (StringUtils.isNotBlank(dto.getModInternalId())) {
-			constructId = dto.getModInternalId();
-			construct.setModInternalId(constructId);
-			identifyingField = "modInternalId";
-		} else {
-			constructId = uniqueId;
-			identifyingField = "uniqueId";
-		}
+		String constructId = UniqueIdentifierHelper.setAnnotationID(dto, construct, uniqueId);
+		String identifyingField = UniqueIdentifierHelper.getIdentifyingField(dto);
+		UniqueIdentifierHelper.setObsoleteAndInternal(dto, construct);
 
 		SearchResponse<Construct> constructList = constructDAO.findByField(identifyingField, constructId);
 		if (constructList != null && constructList.getResults().size() > 0) {

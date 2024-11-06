@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.GeneGeneticInteractionDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.GeneGeneticInteraction;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
@@ -35,7 +35,7 @@ public class GeneGeneticInteractionService extends BaseEntityCrudService<GeneGen
 	}
 
 	@Transactional
-	public GeneGeneticInteraction upsert(PsiMiTabDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
+	public GeneGeneticInteraction upsert(PsiMiTabDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		GeneGeneticInteraction interaction = geneGeneticInteractionValidator.validateGeneGeneticInteractionFmsDTO(dto);
 		return geneGeneticInteractionDAO.persist(interaction);
 	}

@@ -15,7 +15,7 @@ import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.constructAssociations.ConstructGenomicEntityAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
@@ -70,13 +70,8 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 	}
 
 	@Transactional
-	public ConstructGenomicEntityAssociation upsert(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public ConstructGenomicEntityAssociation upsert(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ConstructGenomicEntityAssociation association = constructGenomicEntityAssociationDtoValidator.validateConstructGenomicEntityAssociationDTO(dto, dataProvider);
-		if (association != null) {
-			addAssociationToConstruct(association);
-			addAssociationToGenomicEntity(association);
-		}
-
 		return association;
 	}
 

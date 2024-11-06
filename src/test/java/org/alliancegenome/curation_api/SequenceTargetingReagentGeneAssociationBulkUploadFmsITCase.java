@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -23,7 +22,6 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 
-@Disabled
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -37,7 +35,6 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 	private VocabularyTerm relation;
 	private String relationName = "targets";
 	private String geneCurie = "GENETEST:Gene0001";
-	private String sqtrId = "83";
 	private String sqtrModEntityId = "ZFIN:ZDB-TALEN-180503-1";
 	
 	private final String sqtrGeneAssociationGetEndpoint = "/api/sqtrgeneassociation/findBy";
@@ -51,7 +48,7 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 		Vocabulary noteTypeVocab = getVocabulary("construct_relation");
 		relation = getVocabularyTerm(noteTypeVocab, relationName);
 		gene = getGene(geneCurie);
-		sqtr = getSequenceTargetingReagent(sqtrId);
+		sqtr = getSequenceTargetingReagent(sqtrModEntityId);
 	}
 
 	@Test
@@ -72,7 +69,7 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 		
 		RestAssured.given().
 			when().
-			get(sqtrGetEndpoint + sqtrId).
+			get(sqtrGetEndpoint + sqtrModEntityId).
 			then().
 			statusCode(200).
 			body("entity.sequenceTargetingReagentGeneAssociations", hasSize(1)).
@@ -94,13 +91,13 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 	@Test
 	@Order(2)
 	public void sqtrGeneAssociationBulkUploadInvalidGenes() throws Exception {
-		checkFailedBulkLoad(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "IV_01_invalid_gene_ids.json", 2, 1, 1);
+		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "IV_01_invalid_gene_ids.json", "Records", 2, 1, 1, 0);
 	}
 	
 	@Test
 	@Order(3)
 	public void sqtrGeneAssociationBulkUploadMissingGenes() throws Exception {
-		checkFailedBulkLoad(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "UE_01_update_empty_gene_ids.json", 2, 0, 2);
+		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "UE_01_update_empty_gene_ids.json", "Records", 2, 0, 2, 0);
 	}
 	
 

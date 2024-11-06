@@ -34,7 +34,7 @@ quarkus.flyway.clean-disabled=true
 
 quarkus.elasticsearch.protocol = http
 
-quarkus.hibernate-search-orm.elasticsearch.version=opensearch:1.2.4
+quarkus.hibernate-search-orm.elasticsearch.version=opensearch:2.16.0
 quarkus.hibernate-search-orm.elasticsearch.protocol=http
 quarkus.hibernate-search-orm.elasticsearch.read-timeout=600S
 quarkus.hibernate-search-orm.schema-management.strategy=create-or-update

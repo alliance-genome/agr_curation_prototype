@@ -10,11 +10,7 @@ import org.alliancegenome.curation_api.dao.AnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
-import org.alliancegenome.curation_api.model.entities.Annotation;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
-import org.alliancegenome.curation_api.model.entities.Note;
-import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.dto.AnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -141,4 +137,6 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 		aResponse.setEntity(annotation);
 		return aResponse;
 	}
+
+
 }

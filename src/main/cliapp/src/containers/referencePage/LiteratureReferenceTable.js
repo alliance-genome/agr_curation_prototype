@@ -7,7 +7,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
-import { NameTemplate } from '../../components/Templates/NameTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { SearchService } from '../../service/SearchService';
 
 export const LiteratureReferenceTable = () => {
@@ -42,7 +42,7 @@ export const LiteratureReferenceTable = () => {
 			header: 'Title',
 			sortable: true,
 			filter: true,
-			body: (rowData) => <NameTemplate name={rowData.title} />,
+			body: (rowData) => <StringTemplate string={rowData.title} />,
 			filterConfig: FILTER_CONFIGS.titleFilterConfig,
 		},
 		{
@@ -50,7 +50,7 @@ export const LiteratureReferenceTable = () => {
 			header: 'Abstract',
 			sortable: true,
 			filter: true,
-			body: (rowData) => <NameTemplate name={rowData.abstract} />,
+			body: (rowData) => <StringTemplate string={rowData.abstract} />,
 			filterConfig: FILTER_CONFIGS.abstractFilterConfig,
 		},
 		{
@@ -58,7 +58,7 @@ export const LiteratureReferenceTable = () => {
 			header: 'Citation',
 			sortable: true,
 			filter: true,
-			body: (rowData) => <NameTemplate name={rowData.citation} />,
+			body: (rowData) => <StringTemplate string={rowData.citation} />,
 			filterConfig: FILTER_CONFIGS.citationFilterConfig,
 		},
 		{

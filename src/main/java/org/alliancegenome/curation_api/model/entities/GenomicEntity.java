@@ -37,7 +37,7 @@ public class GenomicEntity extends BiologicalEntity {
 		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_index")
 	})
 	@EqualsAndHashCode.Include
-	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.GeneView.class, View.AffectedGenomicModelView.class })
+	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.GeneView.class, View.AffectedGenomicModelView.class, View.VariantView.class })
 	private List<CrossReference> crossReferences;
 	
 

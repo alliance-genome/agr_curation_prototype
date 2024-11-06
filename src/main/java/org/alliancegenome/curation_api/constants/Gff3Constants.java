@@ -11,7 +11,8 @@ public final class Gff3Constants {
 	public static final List<String> TRANSCRIPT_TYPES = List.of(
 		"mRNA", "ncRNA", "piRNA", "lincRNA", "miRNA", "pre_miRNA", "snoRNA", "lncRNA",
 		"tRNA", "snRNA", "rRNA", "antisense_RNA", "C_gene_segment", "V_gene_segment",
-		"pseudogene_attribute", "snoRNA_gene", "pseudogenic_transcript", "lnc_RNA"
+		"pseudogene_attribute", "pseudogenic_transcript", "lnc_RNA", "nc_primary_transcript",
+		"circular_ncRNA"
 	);
 	
 	public static final List<String> STRANDS = List.of("+", "-");

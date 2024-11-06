@@ -23,10 +23,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,11 +38,17 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "ConstructGenomicEntityAssociation", description = "POJO representing an association between a construct and a genomic entity")
+
 @Table(indexes = {
-	@Index(name = "constructgenomicentityassociation_subject_index", columnList = "constructassociationsubject_id"),
-	@Index(name = "constructgenomicentityassociation_object_index", columnList = "constructgenomicentityassociationobject_id"),
-	@Index(name = "constructgenomicentityassociation_relation_index", columnList = "relation_id")
+	@Index(columnList = "internal"),
+	@Index(columnList = "obsolete"),
+	@Index(columnList = "createdBy_id"),
+	@Index(columnList = "updatedBy_id"),
+	@Index(columnList = "constructassociationsubject_id"),
+	@Index(columnList = "constructgenomicentityassociationobject_id"),
+	@Index(columnList = "relation_id")
 })
+
 public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includePaths = {
@@ -64,7 +70,7 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne
+	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({
 		"alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations",
@@ -79,9 +85,13 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
-	@JoinTable(indexes = {
-			@Index(name = "cgeassociation_note_cgeassociation_index", columnList = "constructgenomicentityassociation_id"),
-			@Index(name = "cgeassociation_note_relatednotes_index", columnList = "relatedNotes_id")
-		})
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "constructgenomicentityassociation_id"),
+		inverseJoinColumns = @JoinColumn(name = "relatedNotes_id"),
+		indexes = {
+			@Index(name = "constructgeassociation_note_cgea_index", columnList = "constructgenomicentityassociation_id"),
+			@Index(name = "constructgeassociation_note_relatednotes_index", columnList = "relatedNotes_id")
+		}
+	)
 	private List<Note> relatedNotes;
 }

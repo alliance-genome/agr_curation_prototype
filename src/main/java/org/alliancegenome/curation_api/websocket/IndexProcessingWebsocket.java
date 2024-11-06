@@ -1,15 +1,15 @@
 package org.alliancegenome.curation_api.websocket;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.alliancegenome.curation_api.model.event.index.IndexProcessingEvent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.event.ObservesAsync;
 import jakarta.inject.Inject;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -26,7 +26,7 @@ public class IndexProcessingWebsocket {
 	@Inject
 	ObjectMapper mapper;
 
-	Map<String, Session> sessions = new ConcurrentHashMap<>();
+	Map<String, Session> sessions = new HashMap<>();
 
 	@Getter
 	private IndexProcessingEvent event;
@@ -66,7 +66,7 @@ public class IndexProcessingWebsocket {
 		// session.getOpenSessions().forEach(s -> s.getAsyncRemote().sendText(message));
 	}
 
-	public void observeProcessingEvent(@Observes IndexProcessingEvent event) {
+	public void observeProcessingEvent(@ObservesAsync IndexProcessingEvent event) {
 		this.event = event;
 		//Log.info(sessions);
 		for (Entry<String, Session> sessionEntry : sessions.entrySet()) {

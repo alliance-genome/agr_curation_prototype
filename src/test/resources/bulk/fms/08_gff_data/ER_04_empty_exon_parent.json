@@ -1,0 +1,14 @@
+[
+	{
+		"seqId": "I",
+		"source": "WormBase",
+		"type": "exon",
+		"start": 1,
+		"end": 100,
+		"strand": "+",
+		"attributes": [
+			"ID=Exon:Y74C9A.2a_exon",
+			"Parent="
+		]
+	}
+]

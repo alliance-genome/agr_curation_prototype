@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.alliancegenome.curation_api.dao.ResourceDescriptorDAO;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.ingest.dto.ResourceDescriptorDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -43,7 +43,7 @@ public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDes
 	}
 
 	@Transactional
-	public ResourceDescriptor upsert(ResourceDescriptorDTO dto) throws ObjectUpdateException {
+	public ResourceDescriptor upsert(ResourceDescriptorDTO dto) throws ValidationException {
 		ResourceDescriptor rd = resourceDescriptorDtoValidator.validateResourceDescriptorDTO(dto);
 
 		if (rd == null) {

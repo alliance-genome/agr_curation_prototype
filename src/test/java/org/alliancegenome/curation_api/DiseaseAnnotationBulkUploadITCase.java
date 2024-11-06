@@ -117,41 +117,40 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	private final String daTestFilePath = "src/test/resources/bulk/04_disease_annotation/";
 	
 	private void loadRequiredEntities() throws Exception {
-		loadDOTerm(doTerm, "Test DOTerm");
-		loadDOTerm(doTerm2, "Test DOTerm 2");
+		createDoTerm(doTerm, "Test DOTerm");
+		createDoTerm(doTerm2, "Test DOTerm 2");
 		createEcoTerm(ecoTerm, "Test ECOTerm", false, true);
 		createEcoTerm(ecoTerm2, "Test ECOTerm 2", false, true);
 		createEcoTerm(unsupportedEcoTerm, "Test unsupported ECOTerm", false, false);
-		loadGOTerm(goTerm, "Test GOTerm");
-		loadGOTerm(goTerm2, "Test GOTerm 2");
-		loadExperimentalConditionTerm(expCondTerm, "Test ExperimentalConditionOntologyTerm");
-		loadZecoTerm(zecoTerm, "Test ExperimentalConditionOntologyTerm", OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		loadZecoTerm(zecoTerm2, "Test ExperimentalConditionOntologyTerm 2", OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		loadZecoTerm(nonSlimZecoTerm, "Test ExperimentalConditionOntologyTerm", null);
-		loadChemicalTerm(chemicalTerm, "Test ChemicalTerm");
-		loadChemicalTerm(chemicalTerm2, "Test ChemicalTerm 2");
-		loadAnatomyTerm(anatomyTerm, "Test AnatomicalTerm");
-		loadAnatomyTerm(anatomyTerm2, "Test AnatomicalTerm 2");
+		createGoTerm(goTerm, "Test GOTerm", false);
+		createGoTerm(goTerm2, "Test GOTerm 2", false);
+		createExperimentalConditionOntologyTerm(expCondTerm, "Test ExperimentalConditionOntologyTerm");
+		createZecoTerm(zecoTerm, "Test ExperimentalConditionOntologyTerm", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		createZecoTerm(zecoTerm2, "Test ExperimentalConditionOntologyTerm 2", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		createZecoTerm(nonSlimZecoTerm, "Test ExperimentalConditionOntologyTerm", false);
+		createChemicalTerm(chemicalTerm, "Test ChemicalTerm");
+		createChemicalTerm(chemicalTerm2, "Test ChemicalTerm 2");
+		createAnatomicalTerm(anatomyTerm, "Test AnatomicalTerm");
+		createAnatomicalTerm(anatomyTerm2, "Test AnatomicalTerm 2");
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		DataProvider dataProvider = createDataProvider("WB", false);
 		DataProvider ratDataProvider = createDataProvider("RGD", false);
-		loadGenes(List.of(gene, gene2), "NCBITaxon:6239", symbolTerm, dataProvider);
-		loadGenes(List.of(withGene, withGene2), "NCBITaxon:9606", symbolTerm, dataProvider);
-		loadGenes(List.of(ratGene), "NCBITaxon:10116", symbolTerm, ratDataProvider);
-		loadGenes(List.of(humanGene), "NCBITaxon:9606", symbolTerm, ratDataProvider);
-		loadAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm, dataProvider);
-		loadAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm, dataProvider);
-		loadAllele(ratAllele, "TestAllele3", "NCBITaxon:10116", symbolTerm, ratDataProvider);
-		loadAllele(humanAllele, "TestAllele4", "NCBITaxon:9606", symbolTerm, ratDataProvider);
-		loadAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "fish", dataProvider);
-		loadAffectedGenomicModel(agm2, "Test AGM2", "NCBITaxon:6239", "genotype", dataProvider);
-		loadAffectedGenomicModel(ratAgm, "TestAGM3", "NCBITaxon:10116", "genotype", ratDataProvider);
-		loadAffectedGenomicModel(humanAgm, "TestAGM4", "NCBITaxon:9606", "genotype", ratDataProvider);
-		loadAffectedGenomicModel(sgdBackgroundStrain, "Test SGD AGM", "NCBITaxon:559292", "strain", dataProvider);
-		loadAffectedGenomicModel(sgdBackgroundStrain2, "Test SGD AGM2", "NCBITaxon:559292", "strain", dataProvider);
-		loadReference(reference, referenceXref);
-		loadOrganization("OBSOLETE");
+		createGenes(List.of(gene, gene2), "NCBITaxon:6239", symbolTerm, false, dataProvider);
+		createGenes(List.of(withGene, withGene2), "NCBITaxon:9606", symbolTerm, false, dataProvider);
+		createGenes(List.of(ratGene), "NCBITaxon:10116", symbolTerm, false, ratDataProvider);
+		createGenes(List.of(humanGene), "NCBITaxon:9606", symbolTerm, false, ratDataProvider);
+		createAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm, false, dataProvider);
+		createAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm, false, dataProvider);
+		createAllele(ratAllele, "TestAllele3", "NCBITaxon:10116", symbolTerm, false, ratDataProvider);
+		createAllele(humanAllele, "TestAllele4", "NCBITaxon:9606", symbolTerm, false, ratDataProvider);
+		createAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "fish", false, dataProvider);
+		createAffectedGenomicModel(agm2, "Test AGM2", "NCBITaxon:6239", "genotype", false, dataProvider);
+		createAffectedGenomicModel(ratAgm, "TestAGM3", "NCBITaxon:10116", "genotype", false, ratDataProvider);
+		createAffectedGenomicModel(humanAgm, "TestAGM4", "NCBITaxon:9606", "genotype", false, ratDataProvider);
+		createAffectedGenomicModel(sgdBackgroundStrain, "Test SGD AGM", "NCBITaxon:559292", "strain", false, dataProvider);
+		createAffectedGenomicModel(sgdBackgroundStrain2, "Test SGD AGM2", "NCBITaxon:559292", "strain", false, dataProvider);
+		createReference(reference, referenceXref);
 		
 		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
 		Vocabulary relationVocabulary = createVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY, false);
@@ -202,7 +201,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0001")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.uniqueId", is("DATEST:Gene0001|is_implicated_in|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:Gene0002|SGD:AGM0001")).
+			body("entity.uniqueId", is("DATEST:Gene0001|is_implicated_in|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|"
+					+ "exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:AGM0002|DATEST:Allele0002|DATEST:Gene0002|SGD:AGM0001")).
 			body("entity.diseaseAnnotationSubject.modEntityId", is(gene)).
 			body("entity.diseaseAnnotationObject.curie", is(doTerm)).
 			body("entity.relation.name", is(alleleAndGeneRelation)).
@@ -234,7 +234,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm)).
 			body("entity.conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
 			body("entity.conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
-			body("entity.diseaseGeneticModifiers[0].modEntityId", is(gene2)).
+			body("entity.diseaseGeneticModifierAgms[0].modEntityId", is(agm2)).
+			body("entity.diseaseGeneticModifierAlleles[0].modEntityId", is(allele2)).
+			body("entity.diseaseGeneticModifierGenes[0].modEntityId", is(gene2)).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation)).
 			body("entity.with", hasSize(1)).
 			body("entity.with[0].modEntityId", is(withGene)).
@@ -282,7 +284,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0001")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.uniqueId", is("DATEST:Allele0001|is_implicated_in|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:Gene0002")).
+			body("entity.uniqueId",
+					is("DATEST:Allele0001|is_implicated_in|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:AGM0002|DATEST:Allele0002|DATEST:Gene0002")).
 			body("entity.diseaseAnnotationSubject.modEntityId", is(allele)).
 			body("entity.diseaseAnnotationObject.curie", is(doTerm)).
 			body("entity.relation.name", is(alleleAndGeneRelation)).
@@ -314,7 +317,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm)).
 			body("entity.conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
 			body("entity.conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
-			body("entity.diseaseGeneticModifiers[0].modEntityId", is(gene2)).
+			body("entity.diseaseGeneticModifierAgms[0].modEntityId", is(agm2)).
+			body("entity.diseaseGeneticModifierAlleles[0].modEntityId", is(allele2)).
+			body("entity.diseaseGeneticModifierGenes[0].modEntityId", is(gene2)).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation)).
 			body("entity.with", hasSize(1)).
 			body("entity.with[0].modEntityId", is(withGene)).
@@ -363,7 +368,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0001")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.uniqueId", is("DATEST:AGM0001|is_model_of|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:Gene0002")).
+			body("entity.uniqueId", is("DATEST:AGM0001|is_model_of|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:AGM0002|DATEST:Allele0002|DATEST:Gene0002")).
 			body("entity.diseaseAnnotationSubject.modEntityId", is(agm)).
 			body("entity.diseaseAnnotationObject.curie", is(doTerm)).
 			body("entity.relation.name", is(agmRelation)).
@@ -395,7 +400,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm)).
 			body("entity.conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
 			body("entity.conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
-			body("entity.diseaseGeneticModifiers[0].modEntityId", is(gene2)).
+			body("entity.diseaseGeneticModifierAgms[0].modEntityId", is(agm2)).
+			body("entity.diseaseGeneticModifierAlleles[0].modEntityId", is(allele2)).
+			body("entity.diseaseGeneticModifierGenes[0].modEntityId", is(gene2)).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation)).
 			body("entity.with", hasSize(1)).
 			body("entity.with[0].modEntityId", is(withGene)).
@@ -446,7 +453,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0002")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-			body("entity.uniqueId", is("DATEST:Gene0002|is_marker_for|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001|SGD:AGM0002")).
+			body("entity.uniqueId",
+					is("DATEST:Gene0002|is_marker_for|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:AGM0001|DATEST:Allele0001|DATEST:Gene0001|SGD:AGM0002")).
 			body("entity.diseaseAnnotationSubject.modEntityId", is(gene2)).
 			body("entity.diseaseAnnotationObject.curie", is(doTerm2)).
 			body("entity.relation.name", is(geneRelation)).
@@ -478,7 +486,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm2)).
 			body("entity.conditionRelations[0].conditions[0].conditionFreeText", is("Free text 2")).
 			body("entity.conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm 2:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm 2:Test GOTerm 2:Test ChemicalTerm 2:Homo sapiens:Some amount 2:Free text 2")).
-			body("entity.diseaseGeneticModifiers[0].modEntityId", is(gene)).
+			body("entity.diseaseGeneticModifierAgms[0].modEntityId", is(agm)).
+			body("entity.diseaseGeneticModifierAlleles[0].modEntityId", is(allele)).
+			body("entity.diseaseGeneticModifierGenes[0].modEntityId", is(gene)).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation2)).
 			body("entity.with", hasSize(1)).
 			body("entity.with[0].modEntityId", is(withGene2)).
@@ -526,7 +536,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0002")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-			body("entity.uniqueId", is("DATEST:Allele0002|is_implicated_in|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
+			body("entity.uniqueId", is("DATEST:Allele0002|is_implicated_in|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:AGM0001|DATEST:Allele0001|DATEST:Gene0001")).
 			body("entity.diseaseAnnotationSubject.modEntityId", is(allele2)).
 			body("entity.diseaseAnnotationObject.curie", is(doTerm2)).
 			body("entity.relation.name", is(alleleAndGeneRelation)).
@@ -558,7 +568,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm2)).
 			body("entity.conditionRelations[0].conditions[0].conditionFreeText", is("Free text 2")).
 			body("entity.conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm 2:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm 2:Test GOTerm 2:Test ChemicalTerm 2:Homo sapiens:Some amount 2:Free text 2")).
-			body("entity.diseaseGeneticModifiers[0].modEntityId", is(gene)).
+			body("entity.diseaseGeneticModifierAgms[0].modEntityId", is(agm)).
+			body("entity.diseaseGeneticModifierAlleles[0].modEntityId", is(allele)).
+			body("entity.diseaseGeneticModifierGenes[0].modEntityId", is(gene)).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation2)).
 			body("entity.with", hasSize(1)).
 			body("entity.with[0].modEntityId", is(withGene2)).
@@ -607,7 +619,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0002")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-			body("entity.uniqueId", is("DATEST:AGM0002|is_exacerbated_model_of|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
+			body("entity.uniqueId",
+					is("DATEST:AGM0002|is_exacerbated_model_of|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:AGM0001|DATEST:Allele0001|DATEST:Gene0001")).
 			body("entity.diseaseAnnotationSubject.modEntityId", is(agm2)).
 			body("entity.diseaseAnnotationObject.curie", is(doTerm2)).
 			body("entity.relation.name", is(agmRelation2)).
@@ -639,7 +652,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm2)).
 			body("entity.conditionRelations[0].conditions[0].conditionFreeText", is("Free text 2")).
 			body("entity.conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm 2:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm 2:Test GOTerm 2:Test ChemicalTerm 2:Homo sapiens:Some amount 2:Free text 2")).
-			body("entity.diseaseGeneticModifiers[0].modEntityId", is(gene)).
+			body("entity.diseaseGeneticModifierAgms[0].modEntityId", is(agm)).
+			body("entity.diseaseGeneticModifierAlleles[0].modEntityId", is(allele)).
+			body("entity.diseaseGeneticModifierGenes[0].modEntityId", is(gene)).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation2)).
 			body("entity.with", hasSize(1)).
 			body("entity.with[0].modEntityId", is(withGene2)).
@@ -818,7 +833,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("geneticSex"))).
 			body("entity", not(hasKey("secondaryDataProvider"))).
 			body("entity", not(hasKey("conditionRelations"))).
-			body("entity", not(hasKey("diseaseGeneticModifiers"))).
+			body("entity", not(hasKey("diseaseGeneticModifierAgms"))).
+			body("entity", not(hasKey("diseaseGeneticModifierAlleles"))).
+			body("entity", not(hasKey("diseaseGeneticModifierGenes"))).
 			body("entity", not(hasKey("diseaseGeneticModifierRelation"))).
 			body("entity", not(hasKey("with"))).
 			body("entity", not(hasKey("relatedNotes"))).
@@ -846,7 +863,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("geneticSex"))).
 			body("entity", not(hasKey("secondaryDataProvider"))).
 			body("entity", not(hasKey("conditionRelations"))).
-			body("entity", not(hasKey("diseaseGeneticModifiers"))).
+			body("entity", not(hasKey("diseaseGeneticModifierAgms"))).
+			body("entity", not(hasKey("diseaseGeneticModifierAlleles"))).
+			body("entity", not(hasKey("diseaseGeneticModifierGenes"))).
 			body("entity", not(hasKey("diseaseGeneticModifierRelation"))).
 			body("entity", not(hasKey("with"))).
 			body("entity", not(hasKey("relatedNotes"))).
@@ -875,7 +894,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("geneticSex"))).
 			body("entity", not(hasKey("secondaryDataProvider"))).
 			body("entity", not(hasKey("conditionRelations"))).
-			body("entity", not(hasKey("diseaseGeneticModifiers"))).
+			body("entity", not(hasKey("diseaseGeneticModifierAgms"))).
+			body("entity", not(hasKey("diseaseGeneticModifierAlleles"))).
+			body("entity", not(hasKey("diseaseGeneticModifierGenes"))).
 			body("entity", not(hasKey("diseaseGeneticModifierRelation"))).
 			body("entity", not(hasKey("with"))).
 			body("entity", not(hasKey("relatedNotes"))).
@@ -944,7 +965,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("geneticSex"))).
 			body("entity", not(hasKey("secondaryDataProvider"))).
 			body("entity", not(hasKey("conditionRelations"))).
-			body("entity", not(hasKey("diseaseGeneticModifiers"))).
+			body("entity", not(hasKey("diseaseGeneticModifierAgms"))).
+			body("entity", not(hasKey("diseaseGeneticModifierAlleles"))).
+			body("entity", not(hasKey("diseaseGeneticModifierGenes"))).
 			body("entity", not(hasKey("diseaseGeneticModifierRelation"))).
 			body("entity", not(hasKey("with"))).
 			body("entity", not(hasKey("relatedNotes"))).
@@ -972,7 +995,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("geneticSex"))).
 			body("entity", not(hasKey("secondaryDataProvider"))).
 			body("entity", not(hasKey("conditionRelations"))).
-			body("entity", not(hasKey("diseaseGeneticModifiers"))).
+			body("entity", not(hasKey("diseaseGeneticModifierAgms"))).
+			body("entity", not(hasKey("diseaseGeneticModifierAlleles"))).
+			body("entity", not(hasKey("diseaseGeneticModifierGenes"))).
 			body("entity", not(hasKey("diseaseGeneticModifierRelation"))).
 			body("entity", not(hasKey("with"))).
 			body("entity", not(hasKey("relatedNotes"))).
@@ -1001,7 +1026,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("geneticSex"))).
 			body("entity", not(hasKey("secondaryDataProvider"))).
 			body("entity", not(hasKey("conditionRelations"))).
-			body("entity", not(hasKey("diseaseGeneticModifiers"))).
+			body("entity", not(hasKey("diseaseGeneticModifierAgms"))).
+			body("entity", not(hasKey("diseaseGeneticModifierAlleles"))).
+			body("entity", not(hasKey("diseaseGeneticModifierGenes"))).
 			body("entity", not(hasKey("diseaseGeneticModifierRelation"))).
 			body("entity", not(hasKey("with"))).
 			body("entity", not(hasKey("relatedNotes"))).

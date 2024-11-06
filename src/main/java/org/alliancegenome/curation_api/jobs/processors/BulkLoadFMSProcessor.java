@@ -10,18 +10,18 @@ import org.alliancegenome.curation_api.model.fms.DataFile;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.event.ObservesAsync;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @ApplicationScoped
 public class BulkLoadFMSProcessor extends BulkLoadProcessor {
 
-	public void processBulkFMSLoad(@Observes StartedBulkLoadJobEvent load) {
+	public void processBulkFMSLoad(@ObservesAsync StartedBulkLoadJobEvent load) {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		if (bulkLoad instanceof BulkFMSLoad bulkFMSLoad) {
 
-			Log.info("processBulkFMSLoad: " + load.getId());
+			Log.debug("processBulkFMSLoad: " + load.getId());
 			startLoad(bulkFMSLoad);
 
 			if (bulkFMSLoad.getFmsDataType() != null && bulkFMSLoad.getFmsDataSubType() != null) {

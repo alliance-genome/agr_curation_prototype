@@ -1,20 +1,19 @@
 import React, { useRef, useState } from 'react';
 import { Toast } from 'primereact/toast';
-import { NameTemplate } from './NameTemplate';
 import { TabView, TabPanel } from 'primereact/tabview';
-import { DefinitionTemplate } from './DefinitionTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { GenericDataTree } from '../../components/GenericDataTree';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ListTableCell } from '../../components/ListTableCell';
-import { Tooltip } from 'primereact/tooltip';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 
+import { IdTemplate } from '../../components/Templates/IdTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
+
 import { SearchService } from '../../service/SearchService';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 
 export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAbbreviation, hideDefinition }) => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -31,70 +30,18 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 
 	const columns = [];
 
-	const synonymsTemplate = (rowData) => {
-		if (rowData?.synonyms && rowData.synonyms.length > 0) {
-			const listTemplate = (synonym) => {
-				return (
-					<EllipsisTableCell>
-						<div dangerouslySetInnerHTML={{ __html: synonym }} />
-					</EllipsisTableCell>
-				);
-			};
-			return (
-				<>
-					<div className={`syn${rowData.curie.replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={rowData.synonyms.map((a) => a.name).sort()} />
-					</div>
-					<Tooltip
-						target={`.syn${rowData.curie.replace(':', '')}`}
-						style={{ width: '450px', maxWidth: '450px' }}
-						position="left"
-					>
-						<ListTableCell template={listTemplate} listData={rowData.synonyms.map((a) => a.name).sort()} />
-					</Tooltip>
-				</>
-			);
-		}
-	};
-
-	const secondaryIdsTemplate = (rowData) => {
-		if (rowData?.secondaryIdentifiers && rowData.secondaryIdentifiers.length > 0) {
-			const sortedIds = rowData.secondaryIdentifiers.sort();
-			const listTemplate = (secondaryId) => {
-				return (
-					<EllipsisTableCell>
-						<div dangerouslySetInnerHTML={{ __html: secondaryId }} />
-					</EllipsisTableCell>
-				);
-			};
-			return (
-				<>
-					<div className={`sid${rowData.curie.replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={sortedIds} />
-					</div>
-					<Tooltip
-						target={`.sid${rowData.curie.replace(':', '')}`}
-						style={{ width: '450px', maxWidth: '450px' }}
-						position="left"
-					>
-						<ListTableCell template={listTemplate} listData={sortedIds} />
-					</Tooltip>
-				</>
-			);
-		}
-	};
-
 	columns.push({
 		field: 'curie',
 		header: 'Curie',
 		sortable: true,
+		body: (rowData) => <IdTemplate id={rowData.curie} />,
 		filterConfig: FILTER_CONFIGS.curieFilterConfig,
 	});
 	columns.push({
 		field: 'name',
 		header: 'Name',
 		sortable: true,
-		body: (rowData) => <NameTemplate rowData={rowData} />,
+		body: (rowData) => <StringTemplate string={rowData.name} />,
 		filterConfig: FILTER_CONFIGS.nameFilterConfig,
 	});
 	if (!hideDefinition) {
@@ -102,7 +49,7 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 			field: 'definition',
 			header: 'Definition',
 			sortable: true,
-			body: (rowData) => <DefinitionTemplate rowData={rowData} />,
+			body: (rowData) => <StringTemplate string={rowData.definition} />,
 			filterConfig: FILTER_CONFIGS.definitionFilterConfig,
 		});
 	}
@@ -111,6 +58,7 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 			field: 'abbreviation',
 			header: 'Abbreviation',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.abbreviation} />,
 			filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
 		});
 	}
@@ -119,13 +67,14 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 			field: 'namespace',
 			header: 'Name Space',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.namespace} />,
 			filterConfig: FILTER_CONFIGS.namespaceFilterConfig,
 		});
 	}
 	columns.push({
 		field: 'synonyms.name',
 		header: 'Synonyms',
-		body: synonymsTemplate,
+		body: (rowData) => <StringListTemplate list={rowData.synonyms?.map((synonym) => synonym?.name)} />,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.ontologySynonymsFilterConfig,
 	});
@@ -133,7 +82,7 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 		field: 'secondaryIdentifiers',
 		header: 'Secondary IDs',
 		sortable: true,
-		body: secondaryIdsTemplate,
+		body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />,
 		filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
 	});
 	columns.push({

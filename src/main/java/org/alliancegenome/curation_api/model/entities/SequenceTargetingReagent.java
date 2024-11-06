@@ -59,14 +59,14 @@ public class SequenceTargetingReagent extends GenomicEntity {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "synonyms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JoinTable(indexes = @Index(name = "sequencetargetingreagent_synonyms_sequencetargetingreagent_index", columnList = "sequencetargetingreagent_id"))
+	@JoinTable(indexes = @Index(name = "sqtr_synonyms_sqtr_index", columnList = "sequencetargetingreagent_id"))
 	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentView.class })
 	private List<String> synonyms;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JoinTable(indexes = @Index(name = "sequencetargetingreagent_secondaryIdentifiers_sequencetargetingreagent_index", columnList = "sequencetargetingreagent_id"))
+	@JoinTable(indexes = @Index(name = "sqtr_secondaryIdentifiers_sqtr_index", columnList = "sequencetargetingreagent_id"))
 	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentView.class })
 	private List<String> secondaryIdentifiers;
 

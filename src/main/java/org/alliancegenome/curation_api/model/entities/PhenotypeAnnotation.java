@@ -25,6 +25,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -34,6 +37,7 @@ import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+@Inheritance(strategy = InheritanceType.JOINED)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = AGMPhenotypeAnnotation.class, name = "AGMPhenotypeAnnotation"), @Type(value = AllelePhenotypeAnnotation.class, name = "AllelePhenotypeAnnotation"),
 	@Type(value = GenePhenotypeAnnotation.class, name = "GenePhenotypeAnnotation") })
@@ -43,7 +47,18 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.2.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
 @Schema(name = "Phenotype_Annotation", description = "Annotation class representing a phenotype annotation")
 @Table(indexes = {
-	@Index(name = "phenotypeannotation_relation_index", columnList = "relation_id")
+	@Index(name = "PhenotypeAnnotation_internal_index", columnList = "internal"),
+	@Index(name = "PhenotypeAnnotation_obsolete_index", columnList = "obsolete"),
+	@Index(name = "PhenotypeAnnotation_curie_index", columnList = "curie"),
+	@Index(name = "PhenotypeAnnotation_modEntityId_index", columnList = "modEntityId"),
+	@Index(name = "PhenotypeAnnotation_modInternalId_index", columnList = "modInternalId"),
+	@Index(name = "PhenotypeAnnotation_uniqueId_index", columnList = "uniqueId"),
+	@Index(name = "PhenotypeAnnotation_createdBy_index", columnList = "createdBy_id"),
+	@Index(name = "PhenotypeAnnotation_updatedBy_index", columnList = "updatedBy_id"),
+	@Index(name = "PhenotypeAnnotation_singleReference_index", columnList = "singleReference_id"),
+	@Index(name = "PhenotypeAnnotation_dataProvider_index", columnList = "dataProvider_id"),
+	@Index(name = "PhenotypeAnnotation_crossReference_index", columnList = "crossReference_id"),
+	@Index(name = "PhenotypeAnnotation_relation_index", columnList = "relation_id")
 })
 public abstract class PhenotypeAnnotation extends Annotation {
 
@@ -57,10 +72,14 @@ public abstract class PhenotypeAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
-	@JoinTable(indexes = {
-		@Index(name = "phenotypeannotation_ontologyterm_phenotypeannotation_index", columnList = "phenotypeannotation_id"),
-		@Index(name = "phenotypeannotation_ontologyterm_phenotypeterms_index", columnList = "phenotypeterms_id")
-	})
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "phenotypeannotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "phenotypeTerms_id"),
+		indexes = {
+			@Index(name = "phenotypeannotation_ontologyterm_pa_index", columnList = "phenotypeannotation_id"),
+			@Index(name = "phenotypeannotation_ontologyterm_phenotypeterms_index", columnList = "phenotypeTerms_id")
+		}
+	)
 	private List<PhenotypeTerm> phenotypeTerms;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})

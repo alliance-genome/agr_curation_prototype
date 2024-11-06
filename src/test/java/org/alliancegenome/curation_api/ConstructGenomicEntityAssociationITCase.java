@@ -67,9 +67,9 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 		construct = createConstruct("CGEA:Construct0001", false, symbolNameType);
 		construct2 = createConstruct("CGEA:Construct0002", false, symbolNameType);
 		obsoleteConstruct = createConstruct("CGEA:Construct0003", true, symbolNameType);
-		gene = createGene("CGEA:Gene0001", "NCBITaxon:6239", false, symbolNameType);
-		gene2 = createGene("CGEA:Gene0002", "NCBITaxon:6239", false, symbolNameType);
-		obsoleteGene = createGene("CGEA:Gene0003", "NCBITaxon:6239", true, symbolNameType);
+		gene = createGene("CGEA:Gene0001", "NCBITaxon:6239", symbolNameType, false);
+		gene2 = createGene("CGEA:Gene0002", "NCBITaxon:6239", symbolNameType, false);
+		obsoleteGene = createGene("CGEA:Gene0003", "NCBITaxon:6239", symbolNameType, true);
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY);
 		relation = getVocabularyTerm(relationVocabulary, "is_regulated_by");
 		relation2 = getVocabularyTerm(relationVocabulary, "targets");

@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.apache.commons.lang.StringUtils;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -44,6 +45,9 @@ public class CodingSequenceGenomicLocationAssociationService extends BaseEntityC
 	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.CODING_SEQUENCE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
+		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
+			params.put(EntityFieldConstants.CODING_SEQUENCE_ASSOCIATION_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+		}
 		List<Long> associationIds = codingSequenceGenomicLocationAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 
@@ -110,8 +114,7 @@ public class CodingSequenceGenomicLocationAssociationService extends BaseEntityC
 			currentSubjectAssociations = new ArrayList<>();
 		}
 		
-		List<Long> currentSubjectAssociationIds = currentSubjectAssociations.stream()
-				.map(CodingSequenceGenomicLocationAssociation::getId).collect(Collectors.toList());
+		List<Long> currentSubjectAssociationIds = currentSubjectAssociations.stream().map(CodingSequenceGenomicLocationAssociation::getId).collect(Collectors.toList());
 		
 		if (!currentSubjectAssociationIds.contains(association.getId())) {
 			currentSubjectAssociations.add(association);

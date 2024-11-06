@@ -73,7 +73,9 @@
       }
     ],
     "disease_genetic_modifier_identifiers": [
-      "DATEST:Gene0002"
+      "DATEST:Gene0002",
+      "DATEST:Allele0002",
+      "DATEST:AGM0002"
     ],
     "disease_genetic_modifier_relation_name": "ameliorated_by",
     "with_gene_identifiers": [

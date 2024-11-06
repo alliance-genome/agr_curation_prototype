@@ -30,11 +30,13 @@ public class PhenotypeAnnotationCrudController extends BaseEntityCrudController<
 		setService(phenotypeAnnotationService);
 	}
 	
+	@Override
 	public ObjectResponse<PhenotypeAnnotation> getByIdentifier(String identifierString) {
 		return phenotypeAnnotationService.getByIdentifier(identifierString);
 	}
 	
+	@Override
 	public APIResponse updatePhenotypeAnnotations(String dataProvider, List<PhenotypeFmsDTO> annotations) {
-		return phenotypeAnnotationExecutor.runLoad(dataProvider, annotations);
+		return phenotypeAnnotationExecutor.runLoadApi(dataProvider, annotations);
 	}
 }

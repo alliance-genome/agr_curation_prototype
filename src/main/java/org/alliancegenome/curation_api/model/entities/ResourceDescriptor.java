@@ -7,6 +7,8 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -61,6 +63,7 @@ public class ResourceDescriptor extends AuditedObject {
 	@KeywordField(name = "synoynyms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
 	@JoinTable(indexes = @Index(columnList = "resourcedescriptor_id"))
+	@Fetch(FetchMode.JOIN)
 	@JsonView({ View.ResourceDescriptorView.class, View.FieldsAndLists.class })
 	private List<String> synonyms;
 

@@ -31,8 +31,8 @@ import io.restassured.config.RestAssuredConfig;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("605 - Paralogy bulk upload - FMS")
-@Order(605)
+@DisplayName("607 - Paralogy bulk upload - FMS")
+@Order(607)
 public class ParalogyBulkUploadFmsITCase extends BaseITCase {
 
 	@BeforeEach
@@ -53,7 +53,7 @@ public class ParalogyBulkUploadFmsITCase extends BaseITCase {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		DataProvider dataProvider = createDataProvider("WB", false);
-		loadGenes(List.of(gene1, gene2), "NCBITaxon:6239", symbolTerm, dataProvider);
+		createGenes(List.of(gene1, gene2), "NCBITaxon:6239", symbolTerm, false, dataProvider);
 	}
 
 	@Test
@@ -89,10 +89,7 @@ public class ParalogyBulkUploadFmsITCase extends BaseITCase {
 		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_02_no_gene2.json");
 		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_03_no_species.json");
 		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_04_no_confidence.json");
-		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_05_no_identity.json");
-		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_06_no_length.json");
 		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_07_no_rank.json");
-		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_08_no_similarity.json");
 	}
 
 	@Test

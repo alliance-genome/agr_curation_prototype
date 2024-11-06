@@ -105,6 +105,9 @@ public class View {
 
 	public static class VariantCreate extends GeneView {
 	}
+	
+	public static class VariantDetailView extends VariantView {
+	}
 
 	public static class GeneInteractionView extends FieldsOnly {
 	}

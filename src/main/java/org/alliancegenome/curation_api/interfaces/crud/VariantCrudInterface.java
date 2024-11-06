@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudIn
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -38,9 +39,14 @@ public interface VariantCrudInterface extends BaseSubmittedObjectCrudInterface<V
 	@JsonView(View.FieldsAndLists.class)
 	APIResponse updateVariants(@PathParam("dataProvider") String dataProvider, List<VariantDTO> alleleData);
 
+	@POST
+	@Path("/bulk/{dataProvider}/fmsvariants")
+	@JsonView(View.FieldsAndLists.class)
+	APIResponse updateFmsVariants(@PathParam("dataProvider") String dataProvider, List<VariantFmsDTO> alleleData);
+
 	@Override
 	@GET
-	@JsonView(View.VariantView.class)
+	@JsonView(View.VariantDetailView.class)
 	@Path("/{identifierString}")
 	ObjectResponse<Variant> getByIdentifier(@PathParam("identifierString") String identifierString);
 
@@ -60,7 +66,7 @@ public interface VariantCrudInterface extends BaseSubmittedObjectCrudInterface<V
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
-	@JsonView(View.VariantView.class)
+	@JsonView(View.VariantDetailView.class)
 	SearchResponse<Variant> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override

@@ -4,7 +4,6 @@ import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.interfaces.crud.bulkloads.BulkLoadFileCrudInterface;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.loads.BulkLoadFileService;
 
 import jakarta.annotation.PostConstruct;
@@ -21,11 +20,6 @@ public class BulkLoadFileCrudController extends BaseEntityCrudController<BulkLoa
 	@PostConstruct
 	protected void init() {
 		setService(bulkLoadFileService);
-	}
-
-	@Override
-	public ObjectResponse<BulkLoadFile> restartLoadFile(Long id) {
-		return bulkLoadFileService.restartLoad(id);
 	}
 
 }

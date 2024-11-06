@@ -9,7 +9,9 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGeneratedDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -36,7 +38,7 @@ public class OrthologyFmsDTOValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 
 	@Transactional
-	public GeneToGeneOrthologyGenerated validateOrthologyFmsDTO(OrthologyFmsDTO dto) throws ObjectValidationException {
+	public GeneToGeneOrthologyGenerated validateOrthologyFmsDTO(OrthologyFmsDTO dto) throws ValidationException {
 
 		ObjectResponse<GeneToGeneOrthologyGenerated> orthologyResponse = new ObjectResponse<GeneToGeneOrthologyGenerated>();
 
@@ -60,7 +62,8 @@ public class OrthologyFmsDTOValidator {
 		if (StringUtils.isNotBlank(dto.getGene1())) {
 			subjectGene = geneService.findByIdentifierString(subjectGeneIdentifier);
 			if (subjectGene == null) {
-				orthologyResponse.addErrorMessage("gene1", ValidationConstants.INVALID_MESSAGE + " (" + subjectGeneIdentifier + ")");
+				//orthologyResponse.addErrorMessage("gene1", ValidationConstants.INVALID_MESSAGE + " (" + subjectGeneIdentifier + ")");
+				throw new KnownIssueValidationException(ValidationConstants.UNRECOGNIZED_MESSAGE + " (" + subjectGeneIdentifier + ")");
 			} else {
 				if (dto.getGene1Species() == null) {
 					orthologyResponse.addErrorMessage("gene1Species", ValidationConstants.REQUIRED_MESSAGE);
@@ -80,7 +83,8 @@ public class OrthologyFmsDTOValidator {
 		if (StringUtils.isNotBlank(dto.getGene2())) {
 			objectGene = geneService.findByIdentifierString(objectGeneIdentifier);
 			if (objectGene == null) {
-				orthologyResponse.addErrorMessage("gene2", ValidationConstants.INVALID_MESSAGE + " (" + objectGeneIdentifier + ")");
+				//orthologyResponse.addErrorMessage("gene2", ValidationConstants.INVALID_MESSAGE + " (" + objectGeneIdentifier + ")");
+				throw new KnownIssueValidationException(ValidationConstants.UNRECOGNIZED_MESSAGE + " (" + objectGeneIdentifier + ")");
 			} else {
 				if (dto.getGene2Species() == null) {
 					orthologyResponse.addErrorMessage("gene2Species", ValidationConstants.REQUIRED_MESSAGE);

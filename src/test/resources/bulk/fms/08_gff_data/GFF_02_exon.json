@@ -7,7 +7,7 @@
 		"end": 100,
 		"strand": "+",
 		"attributes": [
-			"ID=Exon:Y74C9A.2a_exon",
+			"ID=Y74C9A.2a_exon",
 			"Parent=Transcript:Y74C9A.2a.1"
 		]
 	}

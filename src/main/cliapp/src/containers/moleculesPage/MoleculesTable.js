@@ -1,12 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+
+import { IdTemplate } from '../../components/Templates/IdTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 import { SearchService } from '../../service/SearchService';
 
@@ -21,43 +22,13 @@ export const MoleculesTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	const inChiBodyTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`a${rowData.curie.replaceAll(':', '')}`}>{rowData.inchi}</EllipsisTableCell>
-				<Tooltip target={`.a${rowData.curie.replaceAll(':', '')}`} content={rowData.inchi} />
-			</>
-		);
-	};
-
-	const iupacBodyTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`b${rowData.curie.replaceAll(':', '')}`}>{rowData.iupac}</EllipsisTableCell>
-				<Tooltip target={`.b${rowData.curie.replaceAll(':', '')}`} content={rowData.iupac} />
-			</>
-		);
-	};
-
-	const smilesBodyTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`c${rowData.curie.replaceAll(':', '')}`}>{rowData.smiles}</EllipsisTableCell>
-				<Tooltip
-					target={`.c${rowData.curie.replaceAll(':', '')}`}
-					content={rowData.smiles}
-					style={{ width: '450px', maxWidth: '450px' }}
-				/>
-			</>
-		);
-	};
-
 	const columns = [
 		{
 			field: 'curie',
 			header: 'Curie',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <IdTemplate id={rowData.curie} />,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
@@ -65,6 +36,7 @@ export const MoleculesTable = () => {
 			header: 'Name',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.name} />,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 		},
 		{
@@ -72,7 +44,7 @@ export const MoleculesTable = () => {
 			header: 'InChi',
 			sortable: true,
 			filter: true,
-			body: inChiBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.inchi} />,
 			filterConfig: FILTER_CONFIGS.inchiFilterConfig,
 		},
 		{
@@ -80,6 +52,7 @@ export const MoleculesTable = () => {
 			header: 'InChiKey',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.inchiKey} />,
 			filterConfig: FILTER_CONFIGS.inchiKeyFilterConfig,
 		},
 		{
@@ -87,7 +60,7 @@ export const MoleculesTable = () => {
 			header: 'IUPAC',
 			sortable: true,
 			filter: true,
-			body: iupacBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.iupac} />,
 			filterConfig: FILTER_CONFIGS.iupacFilterConfig,
 		},
 		{
@@ -95,6 +68,7 @@ export const MoleculesTable = () => {
 			header: 'Formula',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.formula} />,
 			filterConfig: FILTER_CONFIGS.formulaFilterConfig,
 		},
 		{
@@ -102,7 +76,7 @@ export const MoleculesTable = () => {
 			header: 'SMILES',
 			sortable: true,
 			filter: true,
-			body: smilesBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.smiles} />,
 			filterConfig: FILTER_CONFIGS.smilesFilterConfig,
 		},
 	];
@@ -141,6 +115,7 @@ export const MoleculesTable = () => {
 				tableState={tableState}
 				setTableState={setTableState}
 				columns={columns}
+				defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 				dataKey="curie"
 				isEditable={false}
 				isInEditMode={isInEditMode}

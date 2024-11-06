@@ -15,7 +15,7 @@ import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -91,7 +91,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		return annotationIds;
 	}
 
-	public Long upsertPrimaryAnnotation(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public Long upsertPrimaryAnnotation(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		if (StringUtils.isBlank(dto.getObjectId())) {
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.REQUIRED_MESSAGE);
 		}
@@ -115,7 +115,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 
 	}
 
-	public List<Long> addInferredOrAssertedEntities(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public List<Long> addInferredOrAssertedEntities(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		List<Long> primaryAnnotationIds = new ArrayList<>();
 		for (String primaryGeneticEntityCurie : dto.getPrimaryGeneticEntityIds()) {
 			GenomicEntity primaryAnnotationSubject = genomicEntityService.findByIdentifierString(primaryGeneticEntityCurie);

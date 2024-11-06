@@ -4,6 +4,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
@@ -35,7 +36,7 @@ public class SequenceTargetingReagentFmsDTOValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 
 
-	public SequenceTargetingReagent validateSQTRFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
+	public SequenceTargetingReagent validateSQTRFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 		ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
 		
 		SequenceTargetingReagent sqtr;
@@ -86,7 +87,7 @@ public class SequenceTargetingReagentFmsDTOValidator {
 		}
 		
 		if (beDataProvider != null) {
-			sqtr.setDataProvider(dataProviderService.createOrganizationDataProvider(beDataProvider.sourceOrganization));
+			sqtr.setDataProvider(dataProviderService.getDefaultDataProvider(beDataProvider.sourceOrganization));
 		}
 		
 		if (sqtrResponse.hasErrors()) {

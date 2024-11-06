@@ -6,6 +6,9 @@ all:
 run:
 	npm start
 
+pretty:
+	npx prettier --write .
+
 runalpha:
 	export API_URL=https://alpha-curation.alliancegenome.org; make run; unset API_URL
 

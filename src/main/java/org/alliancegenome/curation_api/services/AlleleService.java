@@ -10,7 +10,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -65,7 +65,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		return new ObjectResponse<Allele>(dbEntity);
 	}
 
-	public Allele upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public Allele upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return alleleDtoValidator.validateAlleleDTO(dto, dataProvider);
 	}
 
@@ -85,6 +85,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 			if (forceDeprecate || alleleDAO.hasReferencingDiseaseAnnotationIds(id)
 					|| alleleDAO.hasReferencingPhenotypeAnnotations(id)
 					|| CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())
+					|| CollectionUtils.isNotEmpty(allele.getAlleleVariantAssociations())
 					|| CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
 				if (!allele.getObsolete()) {
 					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));

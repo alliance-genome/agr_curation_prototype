@@ -19,7 +19,10 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3ExonExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptExecutor;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -51,76 +54,94 @@ public class BulkLoadJobExecutor {
 	@Inject ParalogyExecutor paralogyExecutor;
 	@Inject GeneExpressionExecutor geneExpressionExecutor;
 	@Inject SequenceTargetingReagentExecutor sqtrExecutor;
-	@Inject Gff3Executor gff3Executor;
+	@Inject VariantFmsExecutor variantFmsExecutor;
+	@Inject Gff3ExonExecutor gff3ExonExecutor;
+	@Inject Gff3CDSExecutor gff3CDSExecutor;
+	@Inject Gff3TranscriptExecutor gff3TranscriptExecutor;
+	
+	@Inject HTPExpressionDatasetAnnotationExecutor htpExpressionDatasetAnnotationExecutor;
+	@Inject ExpressionAtlasExecutor expressionAtlasExecutor;
 
-	public void process(BulkLoadFile bulkLoadFile, Boolean cleanUp) throws Exception {
+	@Inject BiogridOrcExecutor biogridOrcExecutor;
 
-		BackendBulkLoadType loadType = bulkLoadFile.getBulkLoad().getBackendBulkLoadType();
+	public void process(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) throws Exception {
+
+		BackendBulkLoadType loadType = bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType();
 
 		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, FULL_INGEST, ALLELE_ASSOCIATION, CONSTRUCT_ASSOCIATION);
 
 		if (ingestTypes.contains(loadType)) {
 
-			bulkLoadFile.setRecordCount(0);
-			bulkLoadFileDAO.merge(bulkLoadFile);
-
 			if (loadType == AGM || loadType == FULL_INGEST) {
-				agmExecutor.execLoad(bulkLoadFile, cleanUp);
+				agmExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == ALLELE || loadType == FULL_INGEST) {
-				alleleExecutor.execLoad(bulkLoadFile, cleanUp);
+				alleleExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == GENE || loadType == FULL_INGEST) {
-				geneExecutor.execLoad(bulkLoadFile, cleanUp);
+				geneExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == CONSTRUCT || loadType == FULL_INGEST) {
-				constructExecutor.execLoad(bulkLoadFile, cleanUp);
+				constructExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == VARIANT || loadType == FULL_INGEST) {
-				variantExecutor.execLoad(bulkLoadFile, cleanUp);
+				// TODO: re-enable once accepting direct submissions of variants by DQMs again and FMS load turned off
+				// variantExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == ALLELE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
-				alleleDiseaseAnnotationExecutor.execLoad(bulkLoadFile, cleanUp);
+				alleleDiseaseAnnotationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == AGM_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
-				agmDiseaseAnnotationExecutor.execLoad(bulkLoadFile, cleanUp);
+				agmDiseaseAnnotationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == GENE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
-				geneDiseaseAnnotationExecutor.execLoad(bulkLoadFile, cleanUp);
+				geneDiseaseAnnotationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == ALLELE_ASSOCIATION || loadType == FULL_INGEST) {
-				alleleGeneAssociationExecutor.execLoad(bulkLoadFile, cleanUp);
+				alleleGeneAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == CONSTRUCT_ASSOCIATION || loadType == FULL_INGEST) {
-				constructGenomicEntityAssociationExecutor.execLoad(bulkLoadFile, cleanUp);
+				constructGenomicEntityAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
-			moleculeExecutor.execLoad(bulkLoadFile);
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.SEQUENCE_TARGETING_REAGENT) {
-			sqtrExecutor.execLoad(bulkLoadFile);
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.INTERACTION_MOL) {
-			geneMolecularInteractionExecutor.execLoad(bulkLoadFile);
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.INTERACTION_GEN) {
-			geneGeneticInteractionExecutor.execLoad(bulkLoadFile);
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.PHENOTYPE) {
-			phenotypeAnnotationExecutor.execLoad(bulkLoadFile);
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ORTHOLOGY) {
-			orthologyExecutor.execLoad(bulkLoadFile);
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.PARALOGY) {
-			paralogyExecutor.execLoad(bulkLoadFile);
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
-			ontologyExecutor.execLoad(bulkLoadFile);
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.RESOURCE_DESCRIPTOR) {
-			resourceDescriptorExecutor.execLoad(bulkLoadFile);
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION) {
-			geneExpressionExecutor.execLoad(bulkLoadFile);
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF) {
-			gff3Executor.execLoad(bulkLoadFile);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
+			moleculeExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.SEQUENCE_TARGETING_REAGENT) {
+			sqtrExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.INTERACTION_MOL) {
+			geneMolecularInteractionExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.INTERACTION_GEN) {
+			geneGeneticInteractionExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.PHENOTYPE) {
+			phenotypeAnnotationExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ORTHOLOGY) {
+			orthologyExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.PARALOGY) {
+			paralogyExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
+			ontologyExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.RESOURCE_DESCRIPTOR) {
+			resourceDescriptorExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION) {
+			geneExpressionExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.VARIATION) {
+			variantFmsExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_EXON) {
+			gff3ExonExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_CDS) {
+			gff3CDSExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT) {
+			gff3TranscriptExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.HTPDATASET) {
+			htpExpressionDatasetAnnotationExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION_ATLAS) {
+			expressionAtlasExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.BIOGRID_ORCS) {
+			biogridOrcExecutor.execLoad(bulkLoadFileHistory);
 		} else {
-			log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
-			throw new Exception("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
+			log.info("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
+			throw new Exception("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
 		}
-		log.info("Process Finished for: " + bulkLoadFile.getBulkLoad().getName());
+		log.info("Process Finished for: " + bulkLoadFileHistory.getBulkLoad().getName());
 	}
 }

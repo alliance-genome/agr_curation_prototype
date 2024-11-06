@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -22,6 +22,7 @@ import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.helpers.UniqueIdentifierHelper;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationRetrievalHelper;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
@@ -33,14 +34,18 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValidator {
 
-	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-	@Inject VocabularyTermService vocabularyTermService;
-	@Inject AffectedGenomicModelService agmService;
-	@Inject GeneService geneService;
-	@Inject AlleleService alleleService;
+	@Inject
+	AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject
+	VocabularyTermService vocabularyTermService;
+	@Inject
+	AffectedGenomicModelService agmService;
+	@Inject
+	GeneService geneService;
+	@Inject
+	AlleleService alleleService;
 
-	public AGMDiseaseAnnotation validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException, ObjectValidationException {
-
+	public AGMDiseaseAnnotation validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		AGMDiseaseAnnotation annotation = new AGMDiseaseAnnotation();
 		AffectedGenomicModel agm;
 
@@ -58,27 +63,15 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			if (agm == null) {
 				adaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmIdentifier() + ")");
 			} else {
-				String annotationId;
-				String identifyingField;
 				String uniqueId = AnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getAgmIdentifier(), refCurie);
-
-				if (StringUtils.isNotBlank(dto.getModEntityId())) {
-					annotationId = dto.getModEntityId();
-					annotation.setModEntityId(annotationId);
-					identifyingField = "modEntityId";
-				} else if (StringUtils.isNotBlank(dto.getModInternalId())) {
-					annotationId = dto.getModInternalId();
-					annotation.setModInternalId(annotationId);
-					identifyingField = "modInternalId";
-				} else {
-					annotationId = uniqueId;
-					identifyingField = "uniqueId";
-				}
+				String annotationId = UniqueIdentifierHelper.setAnnotationID(dto, annotation, uniqueId);
+				String identifyingField = UniqueIdentifierHelper.getIdentifyingField(dto);
 
 				SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
 				annotation = AnnotationRetrievalHelper.getCurrentAnnotation(annotation, annotationList);
 				annotation.setUniqueId(uniqueId);
 				annotation.setDiseaseAnnotationSubject(agm);
+				UniqueIdentifierHelper.setObsoleteAndInternal(dto, annotation);
 
 				if (dataProvider != null
 					&& (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN"))

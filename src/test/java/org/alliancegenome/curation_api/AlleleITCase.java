@@ -206,8 +206,8 @@ public class AlleleITCase extends BaseITCase {
 		nonPersistedOrganization = new Organization();
 		nonPersistedOrganization.setAbbreviation("INV");
 		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		gene = createGene("TEST:AssociatedGene1", "NCBITaxon:6239", false, symbolNameType);
-		gene2 = createGene("TEST:AssociatedGene2", "NCBITaxon:6239", false, symbolNameType);
+		gene = createGene("TEST:AssociatedGene1", "NCBITaxon:6239", symbolNameType, false);
+		gene2 = createGene("TEST:AssociatedGene2", "NCBITaxon:6239", symbolNameType, false);
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY);
 		geneAssociationRelation = getVocabularyTerm(relationVocabulary, "is_allele_of");
 		geneAssociationRelation2 = getVocabularyTerm(relationVocabulary, "duplication");

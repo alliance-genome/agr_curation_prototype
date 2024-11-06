@@ -2,28 +2,25 @@ package org.alliancegenome.curation_api.jobs;
 
 import java.io.File;
 import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.concurrent.Semaphore;
 
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
+import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadGroupDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
-import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadFileJobEvent;
 import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadJobEvent;
-import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadFileJobEvent;
+import org.alliancegenome.curation_api.jobs.events.PendingLoadJobEvent;
 import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadJobEvent;
+import org.alliancegenome.curation_api.jobs.events.StartedLoadJobEvent;
 import org.alliancegenome.curation_api.jobs.util.SlackNotifier;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadGroup;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkScheduledLoad;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.cronutils.model.Cron;
@@ -38,7 +35,7 @@ import io.quarkus.scheduler.Scheduled;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
-import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.event.ObservesAsync;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
@@ -51,9 +48,11 @@ public class JobScheduler {
 
 	@Inject Event<StartedBulkLoadJobEvent> startedJobEvents;
 
-	@Inject Event<StartedBulkLoadFileJobEvent> startedFileJobEvents;
+	@Inject Event<StartedLoadJobEvent> startedFileJobEvents;
 
+	
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
+	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadGroupDAO groupDAO;
 	@Inject BulkLoadDAO bulkLoadDAO;
 	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
@@ -75,21 +74,23 @@ public class JobScheduler {
 			if (g.getLoads().size() > 0) {
 				for (BulkLoad b : g.getLoads()) {
 					boolean isFirst = true;
-					for (BulkLoadFile bf : b.getLoadFiles()) {
-						if (bf.getBulkloadStatus() == null || bf.getBulkloadStatus().isRunning() || bf.getBulkloadStatus().isStarted() || bf.getLocalFilePath() != null) {
-							if (bf.getLocalFilePath() != null) {
-								File file = new File(bf.getLocalFilePath());
+					for (BulkLoadFileHistory bfh : b.getHistory()) {
+						BulkLoadFile bulkLoadFile = bfh.getBulkLoadFile();
+						if (bfh.getBulkloadStatus() == null || bfh.getBulkloadStatus().isPending() || bfh.getBulkloadStatus().isRunning() || bfh.getBulkloadStatus().isStarted() || bulkLoadFile.getLocalFilePath() != null) {
+							if (bulkLoadFile.getLocalFilePath() != null) {
+								File file = new File(bulkLoadFile.getLocalFilePath());
 								if (file.exists()) {
 									file.delete();
 								}
 							}
-							bf.setLocalFilePath(null);
-							bf.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
-							bf.setBulkloadStatus(JobStatus.FAILED);
+							bulkLoadFile.setLocalFilePath(null);
+							bfh.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
+							bfh.setBulkloadStatus(JobStatus.FAILED);
 							if (isFirst) {
-								slackNotifier.slackalert(bf); // Only notify on the first failed file not all the failed files under a load
+								slackNotifier.slackalert(bfh); // Only notify on the first failed file not all the failed files under a load
 							}
-							bulkLoadFileDAO.merge(bf);
+							bulkLoadFileDAO.merge(bulkLoadFile);
+							bulkLoadFileHistoryDAO.merge(bfh);
 						}
 						isFirst = false;
 					}
@@ -136,7 +137,7 @@ public class JobScheduler {
 												bsl.setSchedulingErrorMessage(null);
 												bsl.setBulkloadStatus(JobStatus.SCHEDULED_PENDING);
 												bulkLoadDAO.merge(bsl);
-												pendingJobEvents.fire(new PendingBulkLoadJobEvent(bsl.getId()));
+												pendingJobEvents.fireAsync(new PendingBulkLoadJobEvent(bsl.getId()));
 											}
 										}
 									} catch (Exception e) {
@@ -160,78 +161,33 @@ public class JobScheduler {
 		}
 	}
 
-	public void pendingJobs(@Observes PendingBulkLoadJobEvent event) {
-		// Log.info("pendingJobs: " + event.getId());
+	public void pendingJobs(@ObservesAsync PendingBulkLoadJobEvent event) {
 		BulkLoad load = bulkLoadDAO.find(event.getId());
 		if (load != null) {
 			if (load.getBulkloadStatus().isPending()) {
 				load.setBulkloadStatus(load.getBulkloadStatus().getNextStatus());
 				bulkLoadDAO.merge(load);
-				// Log.info("Firing Start Job Event: " + load.getId());
-				startedJobEvents.fire(new StartedBulkLoadJobEvent(load.getId()));
+				Log.debug("Firing Start Job Event: " + load.getId());
+				startedJobEvents.fireAsync(new StartedBulkLoadJobEvent(load.getId()));
 			}
 		}
 	}
 
-	public void pendingFileJobs(@Observes PendingBulkLoadFileJobEvent event) {
-		// Log.info("pendingFileJobs: " + event.getId());
-		BulkLoadFile fileLoad = bulkLoadFileDAO.find(event.getId());
-		if (fileLoad != null) {
-			if (fileLoad.getBulkloadStatus().isPending()) {
-				fileLoad.setBulkloadStatus(fileLoad.getBulkloadStatus().getNextStatus());
-				bulkLoadFileDAO.merge(fileLoad);
-				// Log.info("Firing Start File Job Event: " + fileLoad.getId());
-				startedFileJobEvents.fire(new StartedBulkLoadFileJobEvent(fileLoad.getId()));
+	public void pendingFileJobs(@ObservesAsync PendingLoadJobEvent event) {
+		BulkLoadFileHistory fileLoadHistory = bulkLoadFileHistoryDAO.find(event.getId());
+		if (fileLoadHistory != null) {
+			if (fileLoadHistory.getBulkloadStatus().isPending()) {
+				fileLoadHistory.setBulkloadStatus(fileLoadHistory.getBulkloadStatus().getNextStatus());
+				bulkLoadFileHistoryDAO.merge(fileLoadHistory);
+				Log.debug("Firing Start File History Job Event: " + fileLoadHistory.getId());
+				startedFileJobEvents.fireAsync(new StartedLoadJobEvent(fileLoadHistory.getId()));
 			}
 		}
 	}
 
-	@Scheduled(cron = "0 0 0 ? * SAT")
+	@Scheduled(cron = "0 0 0 ? * *")
 	public void cleanUpFileExceptions() {
-		SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
-
-		Comparator<BulkLoadFile> c = new Comparator<BulkLoadFile>() {
-			@Override
-			public int compare(BulkLoadFile blf1, BulkLoadFile blf2) {
-				if (blf1.getDateLastLoaded() == null && blf2.getDateLastLoaded() == null) {
-					return 0;
-				}
-				if (blf1.getDateLastLoaded() == null) {
-					return 1;
-				}
-				if (blf2.getDateLastLoaded() == null) {
-					return -1;
-				}
-				return blf2.getDateLastLoaded().compareTo(blf1.getDateLastLoaded());
-			}
-		};
-
-		int historyExceptionsToKeep = 3;
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.startProcess("Bulk Load File History Exception Cleanup");
-
-		for (BulkLoadGroup g : groups.getResults()) {
-			Log.debug("Group Clean Up: " + g.getName());
-			if (g.getLoads().size() > 0) {
-				for (BulkLoad b : g.getLoads()) {
-					Log.debug("Load Clean Up: " + b.getName());
-					Collections.sort(b.getLoadFiles(), c);
-					if (b.getLoadFiles().size() > historyExceptionsToKeep) {
-						for (int i = historyExceptionsToKeep; i < b.getLoadFiles().size(); i++) {
-							Log.debug("File Clean Up: " + b.getLoadFiles().get(i).getDateLastLoaded());
-							for (BulkLoadFileHistory h : b.getLoadFiles().get(i).getHistory()) {
-								for (BulkLoadFileException e : h.getExceptions()) {
-									bulkLoadFileExceptionDAO.remove(e.getId());
-									ph.progressProcess();
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		ph.finishProcess();
+		bulkLoadFileExceptionDAO.cleanUpTwoWeekOldExceptions();
 	}
 
 	@Scheduled(cron = "0 0 0 ? * SUN")

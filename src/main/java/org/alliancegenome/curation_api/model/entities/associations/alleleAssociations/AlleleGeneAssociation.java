@@ -29,12 +29,19 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AlleleGenomicEntityAssociation.class })
 @Schema(name = "AlleleGeneAssociation", description = "POJO representing an association between an allele and a gene")
-@Table(
-	indexes = {
-		@Index(name = "allelegeneassociation_alleleassociationsubject_index", columnList = "alleleassociationsubject_id"),
-		@Index(name = "allelegeneassociation_allelegeneassociationobject_index", columnList = "allelegeneassociationobject_id")
-	}
-)
+
+@Table(indexes = {
+	@Index(name = "AlleleGeneAssociation_internal_index", columnList = "internal"),
+	@Index(name = "AlleleGeneAssociation_obsolete_index", columnList = "obsolete"),
+	@Index(name = "AlleleGeneAssociation_createdBy_index", columnList = "createdBy_id"),
+	@Index(name = "AlleleGeneAssociation_updatedBy_index", columnList = "updatedBy_id"),
+	@Index(name = "AlleleGeneAssociation_evidenceCode_index", columnList = "evidencecode_id"),
+	@Index(name = "AlleleGeneAssociation_relatedNote_index", columnList = "relatedNote_id"),
+	@Index(name = "AlleleGeneAssociation_relation_index", columnList = "relation_id"),
+	@Index(name = "AlleleGeneAssociation_alleleAssociationSubject_index", columnList = "alleleAssociationSubject_id"),
+	@Index(name = "AlleleGeneAssociation_alleleGeneAssociationObject_index", columnList = "alleleGeneAssociationObject_id")
+})
+
 public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 
 	@IndexedEmbedded(includePaths = {
@@ -43,7 +50,7 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 		"alleleFullName.formatText_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword" })
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@JsonIgnoreProperties("alleleGeneAssociations")
+	@JsonIgnoreProperties({"alleleGeneAssociations", "alleleVariantAssociations"})
 	@Fetch(FetchMode.JOIN)
 	private Allele alleleAssociationSubject;
 
@@ -54,6 +61,6 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class, View.AlleleView.class })
-	@JsonIgnoreProperties({ "alleleGeneAssociations", "constructGenomicEntityAssociations" })
+	@JsonIgnoreProperties({ "alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations", "transcriptGeneAssociations" })
 	private Gene alleleGeneAssociationObject;
 }

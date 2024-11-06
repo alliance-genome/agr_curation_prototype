@@ -36,13 +36,18 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { LocationAssociation.class })
 @Schema(name = "ExonGenomicLocationAssociation", description = "POJO representing an association between an exon and a genomic location")
-@Table(
-	indexes = {
-		@Index(name = "exonlocationassociation_relation_index", columnList = "relation_id"),
-		@Index(name = "exonlocationassociation_subject_index", columnList = "exonassociationsubject_id"),
-		@Index(name = "exonlocationassociation_object_index", columnList = "exongenomiclocationassociationobject_id")
-	}
-)
+
+@Table(indexes = {
+	@Index(columnList = "internal"),
+	@Index(columnList = "obsolete"),
+	@Index(columnList = "strand"),
+	@Index(columnList = "createdBy_id"),
+	@Index(columnList = "updatedBy_id"),
+	@Index(columnList = "relation_id"),
+	@Index(columnList = "exonassociationsubject_id"),
+	@Index(columnList = "exongenomiclocationassociationobject_id")
+})
+
 public class ExonGenomicLocationAssociation extends LocationAssociation {
 
 	@IndexedEmbedded(includePaths = {
@@ -66,7 +71,7 @@ public class ExonGenomicLocationAssociation extends LocationAssociation {
 	private AssemblyComponent exonGenomicLocationAssociationObject;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "phenotypeAnnotationObject_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "strand_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class })
 	@Column(length = 1)
 	private String strand;

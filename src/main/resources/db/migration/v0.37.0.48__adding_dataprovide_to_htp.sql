@@ -1,0 +1,8 @@
+ALTER TABLE htpexpressiondatasetannotation ADD COLUMN dataprovider_id BIGINT;
+ALTER TABLE htpexpressiondatasetannotation ADD CONSTRAINT htpexpressiondatasetannotation_dataprovider_id_fk FOREIGN KEY (dataprovider_id) REFERENCES dataprovider(id);
+CREATE INDEX htpdatasetannotation_dataprovider_index ON htpexpressiondatasetannotation USING btree (dataprovider_id);
+
+CREATE INDEX htpdatasetannotation_htpExpressionDataset_index ON htpexpressiondatasetannotation USING btree (htpExpressionDataset_id);
+CREATE INDEX htpdatasetannotation_relatednote_index ON htpexpressiondatasetannotation USING btree (relatednote_id);
+CREATE INDEX htpdatasetannotation_createdby_index ON htpexpressiondatasetannotation USING btree (createdby_id);
+CREATE INDEX htpdatasetannotation_updatedby_index ON htpexpressiondatasetannotation USING btree (updatedby_id);

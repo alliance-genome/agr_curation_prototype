@@ -76,7 +76,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 	private Gene validateGene(Gene uiEntity, Gene dbEntity) {
 
-		dbEntity = (Gene) validateGenomicEntityFields(uiEntity, dbEntity);
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity);
 
 		SOTerm geneType = validateGeneType(uiEntity, dbEntity);
 		dbEntity.setGeneType(geneType);

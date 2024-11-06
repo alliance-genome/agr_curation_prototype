@@ -133,7 +133,7 @@ public class ConstructITCase extends BaseITCase {
 		constructFullName = createConstructFullNameSlotAnnotation(List.of(reference), "Test name", fullNameType, exactSynonymScope, "https://test.org");
 		constructSynonym = createConstructSynonymSlotAnnotation(List.of(reference), "Test synonym", systematicNameType, exactSynonymScope, "https://test.org");
 		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		gene = createGene("TEST:AssociatedGenomicEntity1", "NCBITaxon:6239", false, symbolNameType);
+		gene = createGene("TEST:AssociatedGenomicEntity1", "NCBITaxon:6239", symbolNameType, false);
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY);
 		geAssociationRelation = getVocabularyTerm(relationVocabulary, "is_regulated_by");
 	}

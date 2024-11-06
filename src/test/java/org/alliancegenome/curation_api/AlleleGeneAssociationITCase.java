@@ -67,12 +67,12 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	private void loadRequiredEntities() {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		allele = createAllele("AGA:Allele0001", "NCBITaxon:6239", false, symbolNameType);
-		allele2 = createAllele("AGA:Allele0002", "NCBITaxon:6239", false, symbolNameType);
-		obsoleteAllele = createAllele("AGA:Allele0003", "NCBITaxon:6239", true, symbolNameType);
-		gene = createGene("AGA:Gene0001", "NCBITaxon:6239", false, symbolNameType);
-		gene2 = createGene("AGA:Gene0002", "NCBITaxon:6239", false, symbolNameType);
-		obsoleteGene = createGene("AGA:Gene0003", "NCBITaxon:6239", true, symbolNameType);
+		allele = createAllele("AGA:Allele0001", "NCBITaxon:6239", symbolNameType, false);
+		allele2 = createAllele("AGA:Allele0002", "NCBITaxon:6239", symbolNameType, false);
+		obsoleteAllele = createAllele("AGA:Allele0003", "NCBITaxon:6239", symbolNameType, true);
+		gene = createGene("AGA:Gene0001", "NCBITaxon:6239", symbolNameType, false);
+		gene2 = createGene("AGA:Gene0002", "NCBITaxon:6239", symbolNameType, false);
+		obsoleteGene = createGene("AGA:Gene0003", "NCBITaxon:6239", symbolNameType, true);
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY);
 		relation = getVocabularyTerm(relationVocabulary, "is_allele_of");
 		relation2 = getVocabularyTerm(relationVocabulary, "mutation_excludes");

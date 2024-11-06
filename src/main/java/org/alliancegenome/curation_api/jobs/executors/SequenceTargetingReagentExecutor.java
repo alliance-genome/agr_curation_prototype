@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUp
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentIngestFmsDTO;
@@ -34,24 +33,20 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 	@Inject
 	SequenceTargetingReagentGeneAssociationService sqtrGeneAssociationService;
 
-	public void execLoad(BulkLoadFile bulkLoadFile) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 
 		try {
 
-			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFile.getBulkLoad();
+			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 
-			SequenceTargetingReagentIngestFmsDTO sqtrIngestFmsDTO = mapper.readValue(
-					new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())),
-					SequenceTargetingReagentIngestFmsDTO.class);
-			bulkLoadFile.setRecordCount(sqtrIngestFmsDTO.getData().size());
+			SequenceTargetingReagentIngestFmsDTO sqtrIngestFmsDTO = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), SequenceTargetingReagentIngestFmsDTO.class);
+			bulkLoadFileHistory.getBulkLoadFile().setRecordCount(sqtrIngestFmsDTO.getData().size());
 
-			AGRCurationSchemaVersion version = SequenceTargetingReagent.class
-					.getAnnotation(AGRCurationSchemaVersion.class);
-			bulkLoadFile.setLinkMLSchemaVersion(version.max());
+			AGRCurationSchemaVersion version = SequenceTargetingReagent.class.getAnnotation(AGRCurationSchemaVersion.class);
+			bulkLoadFileHistory.getBulkLoadFile().setLinkMLSchemaVersion(version.max());
 
-			if (sqtrIngestFmsDTO.getMetaData() != null
-					&& StringUtils.isNotBlank(sqtrIngestFmsDTO.getMetaData().getRelease())) {
-				bulkLoadFile.setAllianceMemberReleaseVersion(sqtrIngestFmsDTO.getMetaData().getRelease());
+			if (sqtrIngestFmsDTO.getMetaData() != null && StringUtils.isNotBlank(sqtrIngestFmsDTO.getMetaData().getRelease())) {
+				bulkLoadFileHistory.getBulkLoadFile().setAllianceMemberReleaseVersion(sqtrIngestFmsDTO.getMetaData().getRelease());
 			}
 
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
@@ -62,20 +57,22 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 
 			Map<String, List<Long>> previousIds = getPreviouslyLoadedIds(dataProvider);
 
-			bulkLoadFileDAO.merge(bulkLoadFile);
+			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			BulkLoadFileHistory history = new BulkLoadFileHistory(sqtrIngestFmsDTO.getData().size() * 2);
+			bulkLoadFileHistory.setCount((long) sqtrIngestFmsDTO.getData().size() * 2);
+			updateHistory(bulkLoadFileHistory);
+			
+			runLoad(bulkLoadFileHistory, dataProvider, sqtrIngestFmsDTO.getData(), idsAdded.get("SQTR"), idsAdded.get("SQTRGeneAssociation"));
 
-			runLoad(history, dataProvider, sqtrIngestFmsDTO.getData(), idsAdded.get("SQTR"), idsAdded.get("SQTRGeneAssociation"));
+			runCleanup(sqtrService, bulkLoadFileHistory, dataProvider.name(), previousIds.get("SQTR"), idsAdded.get("SQTR"), "SQTR");
+			runCleanup(sqtrService, bulkLoadFileHistory, dataProvider.name(), previousIds.get("SQTRGeneAssociation"), idsAdded.get("SQTRGeneAssociation"), "SQTR Gene Associations");
 
-			runCleanup(sqtrService, history, dataProvider.name(), previousIds.get("SQTR"), idsAdded.get("SQTR"), "SQTR", bulkLoadFile.getMd5Sum());
-			runCleanup(sqtrService, history, dataProvider.name(), previousIds.get("SQTRGeneAssociation"), idsAdded.get("SQTRGeneAssociation"), "SQTR Gene Associations", bulkLoadFile.getMd5Sum());
+			bulkLoadFileHistory.finishLoad();
 
-			history.finishLoad();
-
-			updateHistory(history);
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 		} catch (Exception e) {
-			failLoad(bulkLoadFile, e);
+			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
 		}
 	}
@@ -94,6 +91,7 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 		List<Long> sqtrGeneAssociationIdsLoaded = new ArrayList<>();
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(sqtrDTOs.size() * 2);
+		history = bulkLoadFileHistoryDAO.persist(history);
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, dataProvider, sqtrDTOs, sqtrIdsLoaded, sqtrGeneAssociationIdsLoaded);
 		history.finishLoad();

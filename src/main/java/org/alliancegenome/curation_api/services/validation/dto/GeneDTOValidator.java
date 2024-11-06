@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
@@ -51,7 +52,7 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	private ObjectResponse<Gene> geneResponse;
 
 	@Transactional
-	public Gene validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public Gene validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		geneResponse = new ObjectResponse<Gene>();
 

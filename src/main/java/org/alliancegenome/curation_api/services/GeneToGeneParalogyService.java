@@ -7,7 +7,7 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneToGeneParalogyDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.GeneToGeneParalogy;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ParalogyFmsDTO;
@@ -31,7 +31,7 @@ public class GeneToGeneParalogyService extends BaseEntityCrudService<GeneToGeneP
 		setSQLDao(geneToGeneParalogyDAO);
 	}
 
-	public GeneToGeneParalogy upsert(ParalogyFmsDTO paralogyData, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
+	public GeneToGeneParalogy upsert(ParalogyFmsDTO paralogyData, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		return paralogyFmsDtoValidator.validateParalogyFmsDTO(paralogyData);
 	}
 

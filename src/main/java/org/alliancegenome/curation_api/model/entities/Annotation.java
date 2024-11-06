@@ -7,8 +7,6 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -22,36 +20,23 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Entity
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "annotation", description = "POJO that represents an annotation")
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-@Table(
-	indexes = {
-		@Index(name = "annotation_curie_index", columnList = "curie"),
-		@Index(name = "annotation_uniqueId_index", columnList = "uniqueId"),
-		@Index(name = "annotation_modEntityId_index", columnList = "modEntityId"),
-		@Index(name = "annotation_modInternalId_index", columnList = "modInternalId"),
-		@Index(name = "annotation_dataprovider_index", columnList = "dataProvider_id")
-	}, uniqueConstraints = {
-		@UniqueConstraint(name = "annotation_modentityid_uk", columnNames = "modEntityId"),
-		@UniqueConstraint(name = "annotation_modinternalid_uk", columnNames = "modInternalId")
-	}
-)
 public class Annotation extends SingleReferenceAssociation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -86,7 +71,14 @@ public class Annotation extends SingleReferenceAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
-	@JoinTable(indexes = { @Index(name = "annotation_conditionrelation_annotation_index", columnList = "annotation_id"), @Index(name = "annotation_conditionrelation_conditionrelations_index", columnList = "conditionrelations_id")})
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "annotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "conditionRelations_id"),
+		indexes = {
+			@Index(columnList = "annotation_id"),
+			@Index(columnList = "conditionRelations_id")
+		}
+	)
 	private List<ConditionRelation> conditionRelations;
 
 	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie",
@@ -96,14 +88,20 @@ public class Annotation extends SingleReferenceAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
-	@JoinTable(indexes = { @Index(name = "annotation_note_annotation_index", columnList = "annotation_id"), @Index(name = "annotation_note_relatednotes_index", columnList = "relatednotes_id")})
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "annotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "relatedNotes_id"),
+		indexes = {
+			@Index(columnList = "annotation_id"),
+			@Index(columnList = "relatedNotes_id")
+		}
+	)
 	private List<Note> relatedNotes;
 
 	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
 			"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	protected DataProvider dataProvider;
 

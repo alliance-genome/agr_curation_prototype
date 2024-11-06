@@ -16,7 +16,7 @@ export const SingleReferenceTemplate = ({ singleReference }) => {
 					__html: refString,
 				}}
 			/>
-			<Tooltip target={`.${targetClass}`}>
+			<Tooltip target={`.${targetClass}`} mouseTrack position="bottom">
 				<div
 					dangerouslySetInnerHTML={{
 						__html: refString,

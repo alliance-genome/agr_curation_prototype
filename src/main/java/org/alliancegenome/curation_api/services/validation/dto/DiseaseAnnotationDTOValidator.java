@@ -1,17 +1,12 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
-import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
@@ -25,20 +20,28 @@ import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequestScoped
 public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 
-	@Inject DoTermService doTermService;
-	@Inject EcoTermService ecoTermService;
-	@Inject ReferenceService referenceService;
-	@Inject VocabularyTermService vocabularyTermService;
-	@Inject GeneService geneService;
-	@Inject BiologicalEntityService biologicalEntityService;
-	@Inject DataProviderDTOValidator dataProviderDtoValidator;
-	@Inject DataProviderDAO dataProviderDAO;
+	@Inject
+	DoTermService doTermService;
+	@Inject
+	EcoTermService ecoTermService;
+	@Inject
+	ReferenceService referenceService;
+	@Inject
+	VocabularyTermService vocabularyTermService;
+	@Inject
+	GeneService geneService;
+	@Inject
+	BiologicalEntityService biologicalEntityService;
+	@Inject
+	DataProviderDTOValidator dataProviderDtoValidator;
+	@Inject
+	DataProviderDAO dataProviderDAO;
 
 	public <E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> ObjectResponse<E> validateDiseaseAnnotationDTO(E annotation, D dto) {
 		ObjectResponse<E> daResponse = validateAnnotationDTO(annotation, dto, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET);
@@ -132,20 +135,34 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 				if (diseaseGeneticModifierRelation == null) {
 					daResponse.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseGeneticModifierRelationName() + ")");
 				}
-				List<BiologicalEntity> diseaseGeneticModifiers = new ArrayList<>();
+				List<Gene> diseaseGeneticModifierGenes = new ArrayList<>();
+				List<Allele> diseaseGeneticModifierAlleles = new ArrayList<>();
+				List<AffectedGenomicModel> diseaseGeneticModifierAgms = new ArrayList<>();
 				for (String modifierIdentifier : dto.getDiseaseGeneticModifierIdentifiers()) {
 					BiologicalEntity diseaseGeneticModifier = biologicalEntityService.findByIdentifierString(modifierIdentifier);
 					if (diseaseGeneticModifier == null) {
 						daResponse.addErrorMessage("disease_genetic_modifier_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + modifierIdentifier + ")");
 					} else {
-						diseaseGeneticModifiers.add(diseaseGeneticModifier);
+						if (diseaseGeneticModifier instanceof Gene) {
+							diseaseGeneticModifierGenes.add((Gene) diseaseGeneticModifier);
+						} else if (diseaseGeneticModifier instanceof Allele) {
+							diseaseGeneticModifierAlleles.add((Allele) diseaseGeneticModifier);
+						} else if (diseaseGeneticModifier instanceof AffectedGenomicModel) {
+							diseaseGeneticModifierAgms.add((AffectedGenomicModel) diseaseGeneticModifier);
+						} else {
+							daResponse.addErrorMessage("disease_genetic_modifier_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + modifierIdentifier + ")");
+						}
 					}
 				}
-				annotation.setDiseaseGeneticModifiers(diseaseGeneticModifiers);
+				annotation.setDiseaseGeneticModifierGenes(diseaseGeneticModifierGenes);
+				annotation.setDiseaseGeneticModifierAlleles(diseaseGeneticModifierAlleles);
+				annotation.setDiseaseGeneticModifierAgms(diseaseGeneticModifierAgms);
 				annotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
 			}
 		} else {
-			annotation.setDiseaseGeneticModifiers(null);
+			annotation.setDiseaseGeneticModifierGenes(null);
+			annotation.setDiseaseGeneticModifierAlleles(null);
+			annotation.setDiseaseGeneticModifierAgms(null);
 			annotation.setDiseaseGeneticModifierRelation(null);
 		}
 

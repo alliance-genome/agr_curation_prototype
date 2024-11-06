@@ -8,17 +8,15 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.event.ObservesAsync;
 import jakarta.inject.Inject;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @ApplicationScoped
 public class BulkLoadURLProcessor extends BulkLoadProcessor {
 
 	@Inject BulkLoadDAO bulkLoadDAO;
 
-	public void processBulkURLLoad(@Observes StartedBulkLoadJobEvent load) {
+	public void processBulkURLLoad(@ObservesAsync StartedBulkLoadJobEvent load) {
 
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		if (bulkLoad instanceof BulkURLLoad bulkURLLoad) {
@@ -31,17 +29,17 @@ public class BulkLoadURLProcessor extends BulkLoadProcessor {
 				String localFilePath = fileHelper.compressInputFile(filePath);
 
 				if (filePath == null) {
-					log.info("Load: " + bulkURLLoad.getName() + " failed");
+					Log.info("Load: " + bulkURLLoad.getName() + " failed");
 					endLoad(bulkURLLoad, "Load: " + bulkURLLoad.getName() + " failed: to download URL: " + bulkURLLoad.getBulkloadUrl(), JobStatus.FAILED);
 				} else if (localFilePath == null) {
-					log.info("Load: " + bulkURLLoad.getName() + " failed");
+					Log.info("Load: " + bulkURLLoad.getName() + " failed");
 					endLoad(bulkURLLoad, "Load: " + bulkURLLoad.getName() + " failed: to save local file: " + filePath, JobStatus.FAILED);
 				} else {
 					processFilePath(bulkURLLoad, localFilePath);
 					endLoad(bulkURLLoad, null, JobStatus.FINISHED);
 				}
 			} else {
-				log.info("Load: " + bulkURLLoad.getName() + " failed: URL is missing");
+				Log.info("Load: " + bulkURLLoad.getName() + " failed: URL is missing");
 				endLoad(bulkURLLoad, "Load: " + bulkURLLoad.getName() + " failed: URL is missing", JobStatus.FAILED);
 			}
 		}

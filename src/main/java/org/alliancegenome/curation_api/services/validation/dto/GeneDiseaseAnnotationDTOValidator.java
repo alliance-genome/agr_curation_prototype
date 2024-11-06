@@ -7,16 +7,13 @@ import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.helpers.UniqueIdentifierHelper;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationRetrievalHelper;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +33,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 	public GeneDiseaseAnnotation validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		GeneDiseaseAnnotation annotation = new GeneDiseaseAnnotation();
 		Gene gene;
-		ObjectResponse<GeneDiseaseAnnotation> gdaResponse = new ObjectResponse<GeneDiseaseAnnotation>();
+		ObjectResponse<GeneDiseaseAnnotation> gdaResponse = new ObjectResponse<>();
 
 		ObjectResponse<GeneDiseaseAnnotation> refResponse = validateReference(annotation, dto);
 		gdaResponse.addErrorMessages(refResponse.getErrorMessages());
@@ -51,27 +48,16 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 			if (gene == null) {
 				gdaResponse.addErrorMessage("gene_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneIdentifier() + ")");
 			} else {
-				String annotationId;
-				String identifyingField;
 				String uniqueId = AnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getGeneIdentifier(), refCurie);
-
-				if (StringUtils.isNotBlank(dto.getModEntityId())) {
-					annotationId = dto.getModEntityId();
-					annotation.setModEntityId(annotationId);
-					identifyingField = "modEntityId";
-				} else if (StringUtils.isNotBlank(dto.getModInternalId())) {
-					annotationId = dto.getModInternalId();
-					annotation.setModInternalId(annotationId);
-					identifyingField = "modInternalId";
-				} else {
-					annotationId = uniqueId;
-					identifyingField = "uniqueId";
-				}
+				String annotationId = UniqueIdentifierHelper.setAnnotationID(dto, annotation, uniqueId);
+				String identifyingField = UniqueIdentifierHelper.getIdentifyingField(dto);
 
 				SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
 				annotation = AnnotationRetrievalHelper.getCurrentAnnotation(annotation, annotationList);
 				annotation.setUniqueId(uniqueId);
 				annotation.setDiseaseAnnotationSubject(gene);
+				UniqueIdentifierHelper.setObsoleteAndInternal(dto, annotation);
+
 
 				if (dataProvider != null && (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN")) && !gene.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie)
 					|| !dataProvider.sourceOrganization.equals(gene.getDataProvider().getSourceOrganization().getAbbreviation())) {
@@ -111,4 +97,5 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 
 		return annotation;
 	}
+
 }

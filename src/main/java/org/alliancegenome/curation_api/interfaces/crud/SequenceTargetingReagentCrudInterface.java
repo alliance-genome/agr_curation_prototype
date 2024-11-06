@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.HashMap;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -28,7 +28,7 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - SQTR")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface SequenceTargetingReagentCrudInterface extends BaseIdCrudInterface<SequenceTargetingReagent> {
+public interface SequenceTargetingReagentCrudInterface extends BaseSubmittedObjectCrudInterface<SequenceTargetingReagent> {
 
 	@POST
 	@Path("/bulk/{dataProvider}/sqtrfile")
@@ -49,10 +49,9 @@ public interface SequenceTargetingReagentCrudInterface extends BaseIdCrudInterfa
 	@JsonView({ View.SequenceTargetingReagentView.class })
 	SearchResponse<SequenceTargetingReagent> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
-
 	@Override
 	@GET
-	@Path("/{id}")
+	@Path("/{identifierString}")
 	@JsonView(View.SequenceTargetingReagentDetailView.class)
-	ObjectResponse<SequenceTargetingReagent> getById(@PathParam("id") Long id);
+	ObjectResponse<SequenceTargetingReagent> getByIdentifier(@PathParam("identifierString") String identifierString);
 }

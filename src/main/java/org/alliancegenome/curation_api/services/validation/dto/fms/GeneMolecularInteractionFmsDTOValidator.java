@@ -6,6 +6,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -29,7 +30,7 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 
 	private ObjectResponse<GeneMolecularInteraction> gmiResponse;
 
-	public GeneMolecularInteraction validateGeneMolecularInteractionFmsDTO(PsiMiTabDTO dto) throws ObjectValidationException {
+	public GeneMolecularInteraction validateGeneMolecularInteractionFmsDTO(PsiMiTabDTO dto) throws ValidationException {
 
 		GeneMolecularInteraction interaction = null;
 		gmiResponse = new ObjectResponse<GeneMolecularInteraction>();

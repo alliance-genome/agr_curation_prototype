@@ -56,8 +56,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	private final String geneTestFilePath = "src/test/resources/bulk/01_gene/";
 	
 	private void loadRequiredEntities() throws Exception {
-		loadReference(requiredReference, requiredReferenceXref);
-		loadReference(requiredReference2, requiredReferenceXref2);
+		createReference(requiredReference, requiredReferenceXref);
+		createReference(requiredReference2, requiredReferenceXref2);
 		ResourceDescriptor rd = createResourceDescriptor("TEST");
 		createResourceDescriptorPage("homepage", "http://test.org", rd);
 		ResourceDescriptor rd2 = createResourceDescriptor("TEST2");

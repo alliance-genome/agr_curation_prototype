@@ -23,10 +23,20 @@
 		},
 		"whereExpressed" : {
 			"whereExpressedStatement" : "trunk",
-			"anatomicalStructureTermId" : "ZFA:001",
-			"anatomicalStructureUberonSlimTermIds" : [ {
-				"uberonTerm" : "Other"
-			} ]
+			"anatomicalStructureTermId" : "ANAT:001",
+			"anatomicalSubStructureTermId" : "ANAT:002",
+			"cellularComponentTermId" : "GOTEST:0012",
+			"anatomicalStructureQualifierTermId": "UBERON:002",
+			"anatomicalSubStructureQualifierTermId": "UBERON:003",
+			"cellularComponentQualifierTermId": "FBCV:001",
+			"anatomicalStructureUberonSlimTermIds" : [
+				{"uberonTerm" : "UBERON:004"},
+				{"uberonTerm" : "UBERON:005"}
+			],
+			"anatomicalSubStructureUberonSlimTermIds" : [
+				{"uberonTerm" : "UBERON:006"},
+				{"uberonTerm" : "UBERON:007"}
+			]
 		}
 	}
 ]

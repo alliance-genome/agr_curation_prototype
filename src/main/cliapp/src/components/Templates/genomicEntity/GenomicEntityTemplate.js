@@ -18,7 +18,7 @@ export const GenomicEntityTemplate = ({ genomicEntity }) => {
 					__html: `${subjectText} (${indentifier})`,
 				}}
 			/>
-			<Tooltip target={`.${targetClass}`}>
+			<Tooltip target={`.${targetClass}`} mouseTrack position="bottom">
 				<div
 					dangerouslySetInnerHTML={{
 						__html: `${subjectText} (${indentifier})`,

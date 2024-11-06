@@ -38,12 +38,12 @@ describe('<ResourceDescriptorPagesPage />', () => {
 	it('The table contains correct data', async () => {
 		let result = await renderWithClient(<ResourceDescriptorPagesPage />);
 
-		const prefixTd = await result.findByText(/ZFIN_prefix/i);
-		const nameTd = await result.findByText(/ZFIN_name/i);
+		const resourceDescriptorTd = await result.findByText('ZFIN_prefix (ZFIN_name)');
+		const nameTd = await result.findByText('gene/wild_type_expression');
 		const urlTemplateTd = await result.findByText('https://zfin.org/[%s]/wt-expression');
-		const pageDescriptionTd = await result.findByText(/Wild type expression data/i);
+		const pageDescriptionTd = await result.findByText('Wild type expression data');
 		await waitFor(() => {
-			expect(prefixTd).toBeInTheDocument();
+			expect(resourceDescriptorTd).toBeInTheDocument();
 			expect(nameTd).toBeInTheDocument();
 			expect(urlTemplateTd).toBeInTheDocument();
 			expect(pageDescriptionTd).toBeInTheDocument();

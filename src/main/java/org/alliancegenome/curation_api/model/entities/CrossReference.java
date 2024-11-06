@@ -60,7 +60,7 @@ public class CrossReference extends AuditedObject {
 	private ResourceDescriptorPage resourceDescriptorPage;
 
 	public String getPrefix() {
-		if (referencedCurie.indexOf(":") == -1) {
+		if (!referencedCurie.contains(":")) {
 			return referencedCurie;
 		}
 		

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
@@ -22,12 +21,12 @@ public class VariantExecutor extends LoadFileExecutor {
 	@Inject VariantDAO variantDAO;
 	@Inject VariantService variantService;
 
-	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
-		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile, VariantDTO.class);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, VariantDTO.class);
 		if (ingestDto == null) {
 			return;
 		}
@@ -46,17 +45,19 @@ public class VariantExecutor extends LoadFileExecutor {
 			Log.debug("runLoad: Before: total " + variantIdsBefore.size());
 		}
 
-		bulkLoadFile.setRecordCount(variants.size() + bulkLoadFile.getRecordCount());
-		bulkLoadFileDAO.merge(bulkLoadFile);
+		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(variants.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		BulkLoadFileHistory history = new BulkLoadFileHistory(variants.size());
-		createHistory(history, bulkLoadFile);
-		boolean success = runLoad(variantService, history, dataProvider, variants, variantIdsLoaded);
+		bulkLoadFileHistory.setCount(variants.size());
+		updateHistory(bulkLoadFileHistory);
+		
+		boolean success = runLoad(variantService, bulkLoadFileHistory, dataProvider, variants, variantIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(variantService, history, dataProvider.name(), variantIdsBefore, variantIdsLoaded, "variant", bulkLoadFile.getMd5Sum());
+			runCleanup(variantService, bulkLoadFileHistory, dataProvider.name(), variantIdsBefore, variantIdsLoaded, "variant");
 		}
-		history.finishLoad();
-		finalSaveHistory(history);
+		bulkLoadFileHistory.finishLoad();
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 
 	}
 

@@ -5,7 +5,6 @@ import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Molecule;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeIngestFmsDTO;
 import org.alliancegenome.curation_api.services.MoleculeService;
@@ -19,24 +18,26 @@ public class MoleculeExecutor extends LoadFileExecutor {
 
 	@Inject MoleculeService moleculeService;
 
-	public void execLoad(BulkLoadFile bulkLoadFile) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
-			MoleculeIngestFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeIngestFmsDTO.class);
-			bulkLoadFile.setRecordCount(moleculeData.getData().size());
-			if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
+			MoleculeIngestFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), MoleculeIngestFmsDTO.class);
+			bulkLoadFileHistory.getBulkLoadFile().setRecordCount(moleculeData.getData().size());
+			if (bulkLoadFileHistory.getBulkLoadFile().getLinkMLSchemaVersion() == null) {
 				AGRCurationSchemaVersion version = Molecule.class.getAnnotation(AGRCurationSchemaVersion.class);
-				bulkLoadFile.setLinkMLSchemaVersion(version.max());
+				bulkLoadFileHistory.getBulkLoadFile().setLinkMLSchemaVersion(version.max());
 			}
 			if (moleculeData.getMetaData() != null && StringUtils.isNotBlank(moleculeData.getMetaData().getRelease())) {
-				bulkLoadFile.setAllianceMemberReleaseVersion(moleculeData.getMetaData().getRelease());
+				bulkLoadFileHistory.getBulkLoadFile().setAllianceMemberReleaseVersion(moleculeData.getMetaData().getRelease());
 			}
-			bulkLoadFileDAO.merge(bulkLoadFile);
+			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			BulkLoadFileHistory history = new BulkLoadFileHistory(moleculeData.getData().size());
-			createHistory(history, bulkLoadFile);
-			runLoad(moleculeService, history, null, moleculeData.getData(), null);
-			history.finishLoad();
-			finalSaveHistory(history);
+			bulkLoadFileHistory.setCount(moleculeData.getData().size());
+			updateHistory(bulkLoadFileHistory);
+
+			runLoad(moleculeService, bulkLoadFileHistory, null, moleculeData.getData(), null);
+			bulkLoadFileHistory.finishLoad();
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
