@@ -168,7 +168,7 @@ public class VepTranscriptFmsDTOValidator {
 		String variantAminoAcids = null;
 		if (StringUtils.isNotBlank(dto.getAminoAcids())) {
 			String[] refVarAminoAcids = dto.getAminoAcids().split("/");
-			if (refVarAminoAcids.length == 1 && dto.getConsequence().contains("synonymous_variant")) {
+			if (refVarAminoAcids.length == 1 && (Objects.equals(dto.getAminoAcids(), "X") || dto.getConsequence().contains("synonymous_variant"))) {
 				referenceAminoAcids = refVarAminoAcids[0];
 				variantAminoAcids = refVarAminoAcids[0];
 			} else if (refVarAminoAcids.length == 2) {
