@@ -16,11 +16,6 @@ import java.util.List;
 @Tag(name = "CRUD - GAF")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface GafCrudInterface extends BaseCreateControllerInterface<CrossReference> {
-
-	@POST
-	@Path("/bulk/{dataProvider}_{assemblyName}/transcripts")
-	@JsonView(View.FieldsAndLists.class)
-	APIResponse updateExpressionAtlas(@PathParam("dataProvider") String dataProvider, @PathParam("assemblyName") String assemblyName, List<CrossReferenceDTO> crossRefData);
+public interface GeneOntologyAnnotationCrudInterface extends BaseCreateControllerInterface<CrossReference> {
 
 }

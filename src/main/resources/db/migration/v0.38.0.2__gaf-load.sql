@@ -203,6 +203,14 @@ ALTER TABLE GeneOntologyAnnotation
         FOREIGN KEY (goterm_id) REFERENCES ontologyterm (id);
 
 ALTER TABLE GeneOntologyAnnotation
+    ADD CONSTRAINT GeneOntologyAnnotation_createdBy_fk
+        FOREIGN KEY (createdBy_id) REFERENCES person (id);
+
+ALTER TABLE GeneOntologyAnnotation
+    ADD CONSTRAINT GeneOntologyAnnotation_updatedBy_fk
+        FOREIGN KEY (updatedBy_id) REFERENCES person (id);
+
+ALTER TABLE GeneOntologyAnnotation
     ADD UNIQUE (singlegene_id, goterm_id);
 
 CREATE INDEX GeneOntologyAnnotation_createdby_index ON GeneOntologyAnnotation USING btree (createdby_id);

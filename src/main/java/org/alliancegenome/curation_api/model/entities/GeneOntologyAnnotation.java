@@ -19,11 +19,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId
 @AGRCurationSchemaVersion(min = "2.8.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
 public class GeneOntologyAnnotation extends AuditedObject {
 
-	@Id
-	@DocumentId
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	protected Long id;
-
 	@ManyToOne
 	private GOTerm goTerm;
 	@ManyToOne

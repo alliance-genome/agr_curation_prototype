@@ -29,6 +29,8 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 	Map<String, Long> accessionGeneMap = new HashMap<>();
 	Map<String, Long> goTermMap = new HashMap<>();
 	HashMap<String, DataProvider> dataProviderMap = new HashMap<>();
+	private Map<Long, GeneOntologyAnnotationDTO> gafMap = new HashMap<>();
+
 
 
 	@Inject
@@ -118,8 +120,6 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 		return dataProviderValidator.validateDataProvider(uiEntity, null, true);
 	}
 
-
-	private Map<Long, GeneOntologyAnnotationDTO> gafMap = new HashMap<>();
 
 	public Map<Long, GeneOntologyAnnotationDTO> getGafMap(Organization organization) {
 		if (gafMap.size() > 0) {
