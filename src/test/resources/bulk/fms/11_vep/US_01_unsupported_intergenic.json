@@ -1,0 +1,11 @@
+[
+	{
+		"uploadedVariation": "NC_003279.8:g.1A>T",
+		"location": "I:1-1000",
+		"consequence": "intergenic_variant",
+		"extra": [
+			"IMPACT=LOW"
+		]
+	}
+]
+
