@@ -34,7 +34,7 @@ public class BioSampleAge extends AuditedObject {
 
 	@IndexedEmbedded(includePaths = {"age", "age_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JsonView({ View.FieldsOnly.class })
 	private TemporalContext stage;
 

@@ -1,0 +1,35 @@
+package org.alliancegenome.curation_api.controllers.crud;
+
+import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
+import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
+import org.alliancegenome.curation_api.interfaces.crud.HTPExpressionDatasetSampleAnnotationCrudInterface;
+import org.alliancegenome.curation_api.jobs.executors.HTPExpressionDatasetSampleAnnotationExecutor;
+import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetSampleAnnotationIngestFmsDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.services.HTPExpressionDatasetSampleAnnotationService;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+
+@RequestScoped
+public class HTPExpressionDatasetSampleAnnotationCrudController extends BaseEntityCrudController<HTPExpressionDatasetSampleAnnotationService, HTPExpressionDatasetSampleAnnotation, HTPExpressionDatasetSampleAnnotationDAO> implements HTPExpressionDatasetSampleAnnotationCrudInterface {
+
+	@Inject
+	HTPExpressionDatasetSampleAnnotationService htpExpressionDatasetSampleAnnotationService;
+	@Inject
+	HTPExpressionDatasetSampleAnnotationExecutor htpExpressionDatasetSampleAnnotationExecutor;
+
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(htpExpressionDatasetSampleAnnotationService);
+	}
+
+	@Override
+	public APIResponse updateHTPExpressionDatasetSampleAnnotation(String dataProvider, HTPExpressionDatasetSampleAnnotationIngestFmsDTO htpDatasetSampleData) {
+		return htpExpressionDatasetSampleAnnotationExecutor.runLoadApi(htpExpressionDatasetSampleAnnotationService, dataProvider, htpDatasetSampleData.getData());
+	}
+	
+}

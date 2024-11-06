@@ -19,6 +19,8 @@ public enum BackendBulkLoadType {
 	CONSTRUCT_ASSOCIATION("json"),
 	VARIANT("json"),
 	VARIATION("json"), // FMS variants as opposed to direct submission for VARIANT
+	VEPTRANSCRIPT("tsv"),
+	VEPGENE("tsv"),
 
 	// GFF all from the same file but split out
 	GFF("gff"), // For Database entries
@@ -29,6 +31,7 @@ public enum BackendBulkLoadType {
 	
 	INTERACTION_MOL("tsv"),
 	EXPRESSION_ATLAS("tsv"),
+	GAF("tsv"),
 	INTERACTION_GEN("tsv"),
 	BIOGRID_ORCS("tsv"),
 	PARALOGY("json"),

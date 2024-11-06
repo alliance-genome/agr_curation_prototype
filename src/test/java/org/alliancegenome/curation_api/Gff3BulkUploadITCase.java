@@ -78,6 +78,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.modInternalId", is(transcriptId)).
 			body("entity.name", is("Y74C9A.2a.1")).
+			body("entity.transcriptId", is("WB:Y74C9A.2a.1")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
 			body("entity.transcriptType.curie", is("SO:0000234")).
@@ -192,6 +193,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.modInternalId", is(transcriptId)).
 			body("entity.name", is("Y74C9A.2a.1")).
+			body("entity.transcriptId", is("RefSeq:Y74C9A.2a.1")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
 			body("entity.transcriptType.curie", is("SO:0001035")).
