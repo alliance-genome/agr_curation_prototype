@@ -131,8 +131,7 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 
 	@Transactional
 	public GeneOntologyAnnotation deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
-		gafDAO.remove(id);
-		return null;
+		return gafDAO.remove(id);
 	}
 
 }
