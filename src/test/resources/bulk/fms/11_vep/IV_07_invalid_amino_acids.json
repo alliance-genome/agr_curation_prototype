@@ -8,7 +8,7 @@
 		"cdnaPosition": "3-800",
 		"cdsPosition": "1-600",
 		"proteinPosition": "246-?",
-		"aminoAcids": "TI",
+		"aminoAcids": "T/I/A",
 		"codons": "aCc/aTc",
 		"extra": [
 			"IMPACT=MODERATE",
