@@ -196,4 +196,11 @@ public class VepFmsITCase extends BaseITCase {
 			body("entity.curatedVariantGenomicLocations[0].predictedVariantConsequences[0].geneLevelConsequence", is(true));
 	}
 	
+	@Test
+	@Order(7)
+	public void vepSkipIntergenic() throws Exception {
+		checkSkippedBulkLoad(vepTranscriptFmsBulkPostEndpoint, vepFmsTestFilePath + "US_01_unsupported_intergenic.json");
+		checkSkippedBulkLoad(vepGeneFmsBulkPostEndpoint, vepFmsTestFilePath + "US_01_unsupported_intergenic.json");
+	}
+	
 }
