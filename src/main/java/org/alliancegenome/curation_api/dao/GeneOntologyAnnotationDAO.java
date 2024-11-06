@@ -56,12 +56,4 @@ public class GeneOntologyAnnotationDAO extends BaseSQLDAO<GeneOntologyAnnotation
 		return map;
 	}
 
-	public void delete(Long id) {
-		String sql = """
-			delete from GeneOntologyAnnotation where id = :id
-						""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("id", id);
-		query.executeUpdate();
-	}
 }
