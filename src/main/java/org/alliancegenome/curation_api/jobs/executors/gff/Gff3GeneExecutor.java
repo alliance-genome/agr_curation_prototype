@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
@@ -26,6 +27,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -101,6 +103,9 @@ public class Gff3GeneExecutor extends Gff3Executor {
 				} catch (ObjectUpdateException e) {
 					history.incrementFailed(countType);
 					addException(history, e.getData());
+				} catch (KnownIssueValidationException e) {
+					Log.debug(e.getMessage());
+					history.incrementSkipped();
 				} catch (Exception e) {
 					e.printStackTrace();
 					history.incrementFailed(countType);
