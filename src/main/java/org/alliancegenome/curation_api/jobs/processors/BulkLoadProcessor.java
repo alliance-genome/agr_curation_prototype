@@ -148,6 +148,8 @@ public class BulkLoadProcessor {
 			Log.info("Cleaning up downloaded file: " + localFilePath);
 			new File(localFilePath).delete();
 			bulkLoadFile.setLocalFilePath(null);
+			Log.info("File already exists not running load");
+			return;
 		}
 		
 		history.setBulkLoad(bulkLoad);
