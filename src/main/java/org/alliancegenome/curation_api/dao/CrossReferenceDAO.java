@@ -4,11 +4,16 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Query;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 
+import io.quarkus.logging.Log;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @ApplicationScoped
 public class CrossReferenceDAO extends BaseSQLDAO<CrossReference> {
@@ -30,6 +35,22 @@ public class CrossReferenceDAO extends BaseSQLDAO<CrossReference> {
 			ensemblGeneMap.put((String) object[1], (Long) object[0]);
 		});
 		return ensemblGeneMap;
+	}
+
+	public Map<String, Long> getGenesWithCrossRefs(Set<String> referencedCuries) {
+		String sql = """
+			select gc.genomicentity_id, cr.referencedcurie from genomicentity_crossreference as gc, crossreference as cr
+				where gc.crossreferences_id = cr.id AND cr.referencedCurie IN (:referencedCuries)
+			""";
+		Query query = entityManager.createNativeQuery(sql);
+		query.setParameter("referencedCuries", referencedCuries);
+		List<Object[]> objects = query.getResultList();
+		Map<String, Long> idCurieMap = new HashMap<>();
+		objects.forEach(object -> {
+			idCurieMap.put((String) object[1], (Long) object[0]);
+		});
+		return idCurieMap;
+
 	}
 
 	public Integer persistAccessionGeneAssociated(Long crossReferenceID, Long geneID) {

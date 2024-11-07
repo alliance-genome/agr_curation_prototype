@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RequestScoped
 public class CrossReferenceService extends BaseEntityCrudService<CrossReference, CrossReferenceDAO> {
@@ -108,5 +109,9 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 
 	public Map<String, Long> getGenomicEntityCrossRefMap(ResourceDescriptorPage page) {
 		return crossReferenceDAO.getGenesWithCrossRefs(page);
+	}
+
+	public Map<String, Long> getGenomicEntityCrossRefMap(Set<String> referencedCuries) {
+		return crossReferenceDAO.getGenesWithCrossRefs(referencedCuries);
 	}
 }
