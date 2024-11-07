@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.dao.ExonDAO;
 import org.alliancegenome.curation_api.dao.GenomeAssemblyDAO;
 import org.alliancegenome.curation_api.dao.TranscriptDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
@@ -171,7 +172,7 @@ public class Gff3Service {
 		
 		Gene gene = geneService.findByIdentifierString(geneCurie);
 		if (gene == null) {
-			throw new ObjectValidationException(gffEntry, "attributes - " + identifyingAttribute + " - " + ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("ID") + ")");
+			throw new KnownIssueValidationException(ValidationConstants.UNRECOGNIZED_MESSAGE + " (" + attributes.get(identifyingAttribute) + ")");
 		}
 
 		GeneGenomicLocationAssociation geneLocation = gff3DtoValidator.validateGeneLocation(gffEntry, gene, assemblyId, dataProvider);

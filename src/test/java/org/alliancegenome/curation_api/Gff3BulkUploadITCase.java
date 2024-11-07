@@ -295,5 +295,11 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.geneGenomicLocationAssociations[0].strand", is("+"));
 
 	}
+	
+	@Test
+	@Order(9)
+	public void gff3SkipUnrecognisedGene() throws Exception {
+		checkSkippedBulkLoad(geneLocationBulkPostEndpoint, gffDataTestFilePath + "UR_01_unrecognised_gene.json");
+	}
 
 }
