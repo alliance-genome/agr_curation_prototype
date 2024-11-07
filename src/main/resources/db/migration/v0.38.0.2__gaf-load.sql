@@ -168,7 +168,7 @@ from bulkload
 where name = 'RGD GAF';
 
 insert into bulkurlload (id, bulkloadurl)
-select id, 'https://download.alliancegenome.org/2.3.0/GAF/HUMAN/GAF_HUMAN_1.gaf'
+select id, 'https://www.ebi.ac.uk/gxa/species/Homo_sapiens/sitemap.xml?allEntries=true'
 from bulkload
 where name = 'HUMAN GAF';
 
