@@ -21,6 +21,7 @@ import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssocia
 import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3ExonExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3GeneExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 
@@ -60,6 +61,7 @@ public class BulkLoadJobExecutor {
 
 	@Inject Gff3ExonExecutor gff3ExonExecutor;
 	@Inject Gff3CDSExecutor gff3CDSExecutor;
+	@Inject Gff3GeneExecutor gff3GeneExecutor;
 	@Inject Gff3TranscriptExecutor gff3TranscriptExecutor;
 	@Inject VepTranscriptExecutor vepTranscriptExecutor;
 	@Inject VepGeneExecutor vepGeneExecutor;
@@ -138,6 +140,8 @@ public class BulkLoadJobExecutor {
 			gff3CDSExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT) {
 			gff3TranscriptExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_GENE) {
+			gff3GeneExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.HTPDATASET) {
 			htpExpressionDatasetAnnotationExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION_ATLAS) {

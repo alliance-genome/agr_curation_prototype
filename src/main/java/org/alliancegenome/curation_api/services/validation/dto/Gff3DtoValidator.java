@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.dao.ExonDAO;
 import org.alliancegenome.curation_api.dao.TranscriptDAO;
 import org.alliancegenome.curation_api.dao.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.exonAssociations.ExonGenomicLocationAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.geneAssociations.GeneGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.transcriptAssociations.TranscriptCodingSequenceAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.transcriptAssociations.TranscriptExonAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.transcriptAssociations.TranscriptGeneAssociationDAO;
@@ -30,6 +31,7 @@ import org.alliancegenome.curation_api.model.entities.LocationAssociation;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.exonAssociations.ExonGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.geneAssociations.GeneGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptCodingSequenceAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptExonAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGeneAssociation;
@@ -60,6 +62,7 @@ public class Gff3DtoValidator {
 	@Inject GeneService geneService;
 	@Inject ExonGenomicLocationAssociationDAO exonLocationDAO;
 	@Inject TranscriptGenomicLocationAssociationDAO transcriptLocationDAO;
+	@Inject GeneGenomicLocationAssociationDAO geneLocationDAO;
 	@Inject TranscriptGeneAssociationDAO transcriptGeneDAO;
 	@Inject TranscriptExonAssociationDAO transcriptExonDAO;
 	@Inject TranscriptCodingSequenceAssociationDAO transcriptCdsDAO;
@@ -280,6 +283,33 @@ public class Gff3DtoValidator {
 		}
 		
 		return transcriptLocationDAO.persist(locationResponse.getEntity());
+	}
+
+	@Transactional
+	public GeneGenomicLocationAssociation validateGeneLocation(Gff3DTO gffEntry, Gene gene, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+		AssemblyComponent assemblyComponent = null;
+		GeneGenomicLocationAssociation locationAssociation = new GeneGenomicLocationAssociation();
+		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
+			Map<String, Object> params = new HashMap<>();
+			params.put(EntityFieldConstants.GENE_ASSOCIATION_SUBJECT + ".id", gene.getId());
+			params.put(EntityFieldConstants.GENE_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assemblyId);
+			SearchResponse<GeneGenomicLocationAssociation> locationSearchResponse = geneLocationDAO.findByParams(params);
+			if (locationSearchResponse != null && locationSearchResponse.getSingleResult() != null) {
+				locationAssociation = locationSearchResponse.getSingleResult();
+			}
+			locationAssociation.setGeneGenomicLocationAssociationObject(assemblyComponent);
+		}
+		locationAssociation.setGeneAssociationSubject(gene);
+		
+		locationAssociation.setStrand(gffEntry.getStrand());
+		
+		ObjectResponse<GeneGenomicLocationAssociation> locationResponse = validateLocationAssociation(locationAssociation, gffEntry, assemblyComponent);
+		if (locationResponse.hasErrors()) {
+			throw new ObjectValidationException(gffEntry, locationResponse.errorMessagesString());
+		}
+		
+		return geneLocationDAO.persist(locationResponse.getEntity());
 	}
 	
 	@Transactional
