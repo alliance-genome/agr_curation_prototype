@@ -708,7 +708,9 @@ export const DataLoadsComponent = () => {
 	};
 
 	const exemptTypes = (loadType) => {
-		return loadType === 'GFF_EXON' || loadType === 'GFF_TRANSCRIPT' || loadType === 'GFF_CDS';
+		return (
+			loadType === 'GFF_EXON' || loadType === 'GFF_TRANSCRIPT' || loadType === 'GFF_CDS' || loadType === 'GFF_GENE'
+		);
 	};
 
 	const fileWithinSchemaRange = (fileVersion, loadType) => {

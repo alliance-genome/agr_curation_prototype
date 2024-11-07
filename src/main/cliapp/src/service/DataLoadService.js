@@ -83,8 +83,9 @@ export class DataLoadService extends BaseAuthService {
 			BulkFMSLoad: [
 				'BIOGRID-ORCS',
 				'GFF', // This needs to be removed at some point
-				'GFF_EXON',
 				'GFF_CDS',
+				'GFF_EXON',
+				'GFF_GENE',
 				'GFF_TRANSCRIPT',
 				'HTPDATASET',
 				'HTPDATASAMPLE',

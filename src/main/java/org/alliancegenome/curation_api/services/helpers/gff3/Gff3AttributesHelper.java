@@ -98,6 +98,21 @@ public class Gff3AttributesHelper {
 		ph.finishProcess();
 		return retGffData;
 	}
+	
+	
+	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getGeneGffData(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData = new ArrayList<>();
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
+		ph.startProcess("GFF Gene pre-processing for " + dataProvider.name(), gffData.size());
+		for (Gff3DTO originalGffEntry : gffData) {
+			if (Gff3Constants.GENE_TYPES.contains(originalGffEntry.getType())) {
+				processGffEntry(originalGffEntry, retGffData, dataProvider);
+			}
+			ph.progressProcess();
+		}
+		ph.finishProcess();
+		return retGffData;
+	}
 
 	private static void processGffEntry(Gff3DTO originalGffEntry, List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData, BackendBulkDataProvider dataProvider) {
 		Map<String, String> attributes = getAttributes(originalGffEntry, dataProvider);

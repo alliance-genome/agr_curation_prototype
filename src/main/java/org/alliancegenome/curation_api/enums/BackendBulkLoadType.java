@@ -28,6 +28,7 @@ public enum BackendBulkLoadType {
 	GFF_EXON("gff"),
 	GFF_CDS("gff"),
 	GFF_TRANSCRIPT("gff"),
+	GFF_GENE("gff"),
 	
 	INTERACTION_MOL("tsv"),
 	EXPRESSION_ATLAS("tsv"),
