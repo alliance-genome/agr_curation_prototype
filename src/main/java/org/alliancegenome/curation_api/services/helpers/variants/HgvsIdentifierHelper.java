@@ -20,12 +20,12 @@ public abstract class HgvsIdentifierHelper {
 	
 		String refSeq = "";
 		if (StringUtils.isNotBlank(dto.getGenomicReferenceSequence()) && !Objects.equals(dto.getGenomicReferenceSequence(), "N/A")) {
-			refSeq = dto.getGenomicReferenceSequence();
+			refSeq = StringUtils.deleteWhitespace(dto.getGenomicReferenceSequence().toUpperCase());
 		}
 		
 		String varSeq = "";
 		if (StringUtils.isNotBlank(dto.getGenomicVariantSequence()) && !Objects.equals(dto.getGenomicVariantSequence(), "N/A")) {
-			varSeq = dto.getGenomicVariantSequence();
+			varSeq = StringUtils.deleteWhitespace(dto.getGenomicVariantSequence().toUpperCase());
 		}
 		
 		String chrAccession = "";
