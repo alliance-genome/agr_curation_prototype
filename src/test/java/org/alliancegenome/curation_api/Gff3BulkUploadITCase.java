@@ -299,7 +299,9 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(9)
 	public void gff3SkipUnrecognisedGene() throws Exception {
-		checkSkippedBulkLoad(geneLocationBulkPostEndpoint, gffDataTestFilePath + "UR_01_unrecognised_gene.json");
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Locations", createCountParams(1, 0, 0, 1));
+		checkBulkLoadRecordCounts(geneLocationBulkPostEndpoint, gffDataTestFilePath + "UR_01_unrecognised_gene.json", params);
 	}
 
 }
