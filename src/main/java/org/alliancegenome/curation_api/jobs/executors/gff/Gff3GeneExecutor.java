@@ -105,7 +105,7 @@ public class Gff3GeneExecutor extends Gff3Executor {
 					addException(history, e.getData());
 				} catch (KnownIssueValidationException e) {
 					Log.debug(e.getMessage());
-					history.incrementSkipped();
+					history.incrementSkipped(countType);
 				} catch (Exception e) {
 					e.printStackTrace();
 					history.incrementFailed(countType);
