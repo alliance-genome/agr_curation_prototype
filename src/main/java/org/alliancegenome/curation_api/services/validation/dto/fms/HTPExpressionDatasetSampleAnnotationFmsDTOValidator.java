@@ -168,7 +168,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 						} else if (htpSampleAnnotation.getGenomicInformation().getBioSampleAllele() != null) {
 							identifierString = htpSampleAnnotation.getGenomicInformation().getBioSampleAllele().getIdentifier();
 						}
-						if (!identifierString.equals(dto.getGenomicInformation().getBiosampleId()) || (htpSampleAnnotation.getGenomicInformation().getBioSampleAgmType() == null && StringUtils.isNotEmpty(dto.getGenomicInformation().getIdType()))) {
+						if (!identifierString.equals(dto.getGenomicInformation().getBiosampleId()) || htpSampleAnnotation.getGenomicInformation().getBioSampleAgmType() == null && StringUtils.isNotEmpty(dto.getGenomicInformation().getIdType())) {
 							validateGenomicInformation(dto.getGenomicInformation(), htpSampleAnnotation, htpSampleAnnotationResponse);
 						}
 						if (StringUtils.isNotEmpty(dto.getGenomicInformation().getBioSampleText())) {
