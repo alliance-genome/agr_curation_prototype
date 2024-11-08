@@ -60,7 +60,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 				String orgID = token[0];
 				String modID = token[1];
 				String goID = token[4];
-				if (abbr.equalsIgnoreCase(orgID) || abbr.equals("HUMAN") && orgID.equals("RGD")) {
+				if (abbr.equalsIgnoreCase(orgID) || orgID.equalsIgnoreCase("Xenbase") || abbr.equals("HUMAN") && orgID.equals("RGD")) {
 					List<String> goIDs = uiMap.computeIfAbsent(modID, list -> new ArrayList<>());
 					goIDs.add(goID);
 				}
@@ -84,7 +84,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 			.map(entry -> entry.getValue().stream().map(goID -> {
 				GeneOntologyAnnotationDTO dto = new GeneOntologyAnnotationDTO();
 				String prefix = abbr;
-				if (abbr.equalsIgnoreCase("Xenbase")) {
+				if (abbr.equalsIgnoreCase("XB")) {
 					prefix = "Xenbase";
 				}
 				if (abbr.equalsIgnoreCase("HUMAN")) {

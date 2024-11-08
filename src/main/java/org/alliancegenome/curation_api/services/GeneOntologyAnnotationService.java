@@ -113,7 +113,7 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 		if (CollectionUtils.isNotEmpty(species)) {
 			return species;
 		}
-		if (orgAbbreviation.equalsIgnoreCase("xenbase")) {
+		if (orgAbbreviation.equalsIgnoreCase("XB")) {
 			species = new ArrayList<>();
 			species.add(getSingleSpecies("XBXL"));
 			species.add(getSingleSpecies("XBXT"));
