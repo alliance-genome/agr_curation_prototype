@@ -45,7 +45,7 @@ public class GeneGenomicLocationAssociationService extends BaseEntityCrudService
 	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.GENE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
+		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
 			params.put(EntityFieldConstants.GENE_ASSOCIATION_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
 		}
 		List<Long> associationIds = geneGenomicLocationAssociationDAO.findIdsByParams(params);

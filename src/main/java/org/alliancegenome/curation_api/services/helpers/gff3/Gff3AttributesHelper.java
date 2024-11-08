@@ -27,7 +27,7 @@ public class Gff3AttributesHelper {
 		}
 
 		// Ensure identifiers have MOD prefix
-		for (String key : List.of("ID", "Parent")) {
+		for (String key : List.of("ID", "Parent", "gene_id")) {
 			if (attributes.containsKey(key)) {
 				String idsString = attributes.get(key);
 				if (StringUtils.equals(dataProvider.sourceOrganization, "WB")) {

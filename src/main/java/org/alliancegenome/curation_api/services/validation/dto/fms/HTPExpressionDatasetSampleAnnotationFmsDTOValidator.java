@@ -29,6 +29,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.BioSampleGenomicInformationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetSampleAnnotationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.WhereExpressedFmsDTO;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
@@ -167,7 +168,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 						} else if (htpSampleAnnotation.getGenomicInformation().getBioSampleAllele() != null) {
 							identifierString = htpSampleAnnotation.getGenomicInformation().getBioSampleAllele().getIdentifier();
 						}
-						if (!identifierString.equals(dto.getGenomicInformation().getBiosampleId())) {
+						if (!identifierString.equals(dto.getGenomicInformation().getBiosampleId()) || htpSampleAnnotation.getGenomicInformation().getBioSampleAgmType() == null && StringUtils.isNotEmpty(dto.getGenomicInformation().getIdType())) {
 							validateGenomicInformation(dto.getGenomicInformation(), htpSampleAnnotation, htpSampleAnnotationResponse);
 						}
 						if (StringUtils.isNotEmpty(dto.getGenomicInformation().getBioSampleText())) {
@@ -181,9 +182,22 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		}
 
 		if (StringUtils.isNotEmpty(dto.getSex())) {
-			VocabularyTerm geneticSex = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.GENETIC_SEX_VOCABULARY, dto.getSex()).getEntity();
-			if (geneticSex != null) {
-				htpSampleAnnotation.setGeneticSex(geneticSex);
+			Map<String, Object> params = new HashMap<>();
+			params.put("name", dto.getSex());
+			params.put("query_operator", "or");
+			params.put("synonyms", dto.getSex());
+			SearchResponse<VocabularyTerm> searchResponse = vocabularyTermService.findByParams(new Pagination(), params);
+			boolean added = false;
+			if (searchResponse.getTotalResults() > 0) {
+				for (VocabularyTerm tag : searchResponse.getResults()) {
+					if (tag.getVocabulary().getName().equals("Genetic Sex") && (tag.getName().equals(dto.getSex()) || tag.getSynonyms().contains(dto.getSex()))) {
+						htpSampleAnnotation.setGeneticSex(tag);
+						added = true;
+					}
+				}
+			}
+			if (!added) {
+				htpSampleAnnotationResponse.addErrorMessage("Sex", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSex() + ")");
 			}
 		}
 
@@ -221,7 +235,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		}
 
 		if (StringUtils.isNotEmpty(dto.getSequencingFormat())) {
-			VocabularyTerm sequencingFormat = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.HTP_DATASET_SAMPLE_SEQUENCE_FORMAT_VOCABULARY, dto.getSequencingFormat()).getEntity();
+			VocabularyTerm sequencingFormat = vocabularyTermService.getTermInVocabulary(VocabularyConstants.HTP_DATASET_SAMPLE_SEQUENCE_FORMAT_VOCABULARY, dto.getSequencingFormat()).getEntity();
 			if (sequencingFormat != null) {
 				htpSampleAnnotation.setSequencingFormat(sequencingFormat);
 			}
@@ -281,9 +295,11 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 					htpSampleAnnotationResponse.addErrorMessage("GenomicInformation - BioSampleId", ValidationConstants.INVALID_MESSAGE + " (" + identifierString + ")");
 				} else {
 					htpSampleAnnotation.getGenomicInformation().setBioSampleAgm(agm);
-					VocabularyTerm agmType = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.AGM_SUBTYPE_VOCABULARY, dto.getIdType()).getEntity();
+					VocabularyTerm agmType = vocabularyTermService.getTermInVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY, dto.getIdType()).getEntity();
 					if (agmType != null) {
 						htpSampleAnnotation.getGenomicInformation().setBioSampleAgmType(agmType);
+					} else {
+						htpSampleAnnotationResponse.addErrorMessage("GenomicInformation - IdType", ValidationConstants.INVALID_MESSAGE + " (" + dto.getIdType() + ")");
 					}
 				}
 			}
