@@ -375,7 +375,7 @@ export const SiteLayout = (props) => {
 						{
 							label: 'Search index UI (cerebro)',
 							icon: 'pi pi-fw pi-home',
-							url: `http://cerebro.alliancegenome.org:9000/#!/overview?host=https://${siteContext?.apiVersion?.esHost}`,
+							url: `http://cerebro.alliancegenome.org:9000/#!/overview?host=http://${siteContext?.apiVersion?.esHost}`,
 							target: '_blank',
 						},
 						{
