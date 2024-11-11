@@ -32,7 +32,11 @@ import lombok.ToString;
 @JsonSubTypes({
 	@JsonSubTypes.Type(value = AffectedGenomicModel.class, name = "AffectedGenomicModel"),
 	@JsonSubTypes.Type(value = Allele.class, name = "Allele"),
+	@JsonSubTypes.Type(value = AssemblyComponent.class, name = "AssemblyComponent"),
+	@JsonSubTypes.Type(value = CodingSequence.class, name = "CodingSequence"),
+	@JsonSubTypes.Type(value = Exon.class, name = "Exon"),
 	@JsonSubTypes.Type(value = Gene.class, name = "Gene"),
+	@JsonSubTypes.Type(value = Transcript.class, name = "Transcript"),
 	@JsonSubTypes.Type(value = Variant.class, name = "Variant"),
 	@JsonSubTypes.Type(value = SequenceTargetingReagent.class, name = "SequenceTargetingReagent")
 })

@@ -28,6 +28,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.TypeBindin
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
@@ -61,7 +62,9 @@ public class Reference extends InformationContentEntity {
 
 	@JsonView({ View.FieldsOnly.class })
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "shortCitation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer") private String shortCitation;
+	@KeywordField(name = "shortCitation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(columnDefinition = "TEXT")
+	private String shortCitation;
 
 	/**
 	 * Retrieve PMID if available in the crossReference collection otherwise MOD ID

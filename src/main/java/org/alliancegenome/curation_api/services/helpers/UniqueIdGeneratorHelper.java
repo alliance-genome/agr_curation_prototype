@@ -26,6 +26,12 @@ public class UniqueIdGeneratorHelper extends ArrayList<String> {
 		}
 		return false;
 	}
+	
+	public void add(Integer i) {
+		if (i != null) {
+			add(Integer.toString(i));
+		}
+	}
 
 	public void addList(List<String> list) {
 		if (CollectionUtils.isNotEmpty(list)) {

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -46,7 +46,7 @@ public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<G
 	}
 
 	@Transactional
-	public GeneDiseaseAnnotation upsert(GeneDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public GeneDiseaseAnnotation upsert(GeneDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		GeneDiseaseAnnotation annotation = geneDiseaseAnnotationDtoValidator.validateGeneDiseaseAnnotationDTO(dto, dataProvider);
 
 		return geneDiseaseAnnotationDAO.persist(annotation);

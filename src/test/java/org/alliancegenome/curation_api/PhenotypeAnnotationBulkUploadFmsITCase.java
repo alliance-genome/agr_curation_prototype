@@ -5,8 +5,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import java.util.List;
-
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -73,21 +71,21 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	private final String phenotypeStatement = "test phenotype statement";
 
 	private void loadRequiredEntities() throws Exception {
-		loadGOTerm(goTerm, "Test GOTerm");
-		loadExperimentalConditionTerm(expCondTerm, "Test ExperimentalConditionOntologyTerm");
-		loadZecoTerm(zecoTerm, "Test ExperimentalConditionOntologyTerm", OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		loadZecoTerm(nonSlimZecoTerm, "Test ExperimentalConditionOntologyTerm", null);
-		loadChemicalTerm(chemicalTerm, "Test ChemicalTerm");
-		loadAnatomyTerm(anatomyTerm, "Test AnatomicalTerm");
+		createGoTerm(goTerm, "Test GOTerm", false);
+		createExperimentalConditionOntologyTerm(expCondTerm, "Test ExperimentalConditionOntologyTerm");
+		createZecoTerm(zecoTerm, "Test ExperimentalConditionOntologyTerm", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		createZecoTerm(nonSlimZecoTerm, "Test ExperimentalConditionOntologyTerm", false);
+		createChemicalTerm(chemicalTerm, "Test ChemicalTerm");
+		createAnatomicalTerm(anatomyTerm, "Test AnatomicalTerm");
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		DataProvider dataProvider = createDataProvider("WB", false);
-		loadGenes(List.of(gene), "NCBITaxon:6239", symbolTerm, dataProvider);
-		loadAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm, dataProvider);
-		loadAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm, dataProvider);
-		loadAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "strain", dataProvider);
-		loadAffectedGenomicModel(agm2, "Test AGM2", "NCBITaxon:6239", "strain", dataProvider);
-		loadMPTerm(mpTerm, "Test PhenotypeTerm");
+		createGene(gene, "NCBITaxon:6239", symbolTerm, false, dataProvider);
+		createAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm, false, dataProvider);
+		createAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm, false, dataProvider);
+		createAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "strain", false, dataProvider);
+		createAffectedGenomicModel(agm2, "Test AGM2", "NCBITaxon:6239", "strain", false, dataProvider);
+		createMpTerm(mpTerm, "Test PhenotypeTerm");
 		ResourceDescriptor rd = createResourceDescriptor("PMID");
 		createResourceDescriptorPage("default", "https://www.ncbi.nlm.nih.gov/pubmed/[%s]", rd);
 	}

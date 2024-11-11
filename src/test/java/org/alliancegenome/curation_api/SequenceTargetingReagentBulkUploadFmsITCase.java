@@ -45,7 +45,7 @@ public class SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 	@Order(1)
 	public void sqtrBulkUploadCheckFields() throws Exception {
 		
-		checkSuccessfulBulkLoad(sqtrBulkPostEndpoint, sqtrTestFilePath + "AF_01_all_fields.json");
+		checkSuccessfulBulkLoad(sqtrBulkPostEndpoint, sqtrTestFilePath + "AF_01_all_fields.json", 2);
 
 		RestAssured.given().
 				when().
@@ -67,16 +67,16 @@ public class SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 	@Order(2)
 	public void sqtrBulkUploadMissingRequiredFields() throws Exception {
 		
-		checkFailedBulkLoad(sqtrBulkPostEndpoint, sqtrTestFilePath + "MR_01_no_name.json");
-		checkFailedBulkLoad(sqtrBulkPostEndpoint, sqtrTestFilePath + "MR_02_no_taxon.json");
+		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrTestFilePath + "MR_01_no_name.json", "Records", 2, 1, 1, 0);
+		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrTestFilePath + "MR_02_no_taxon.json", "Records", 2, 1, 1, 0);
 	}
 
 	@Test
 	@Order(3)
 	public void sqtrBulkUploadEmptyRequiredFields() throws Exception {
 
-		checkFailedBulkLoad(sqtrBulkPostEndpoint, sqtrTestFilePath + "ER_01_empty_name.json");
-		checkFailedBulkLoad(sqtrBulkPostEndpoint, sqtrTestFilePath + "ER_02_empty_taxon.json");
+		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrTestFilePath + "ER_01_empty_name.json", "Records", 2, 1, 1, 0);
+		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrTestFilePath + "ER_02_empty_taxon.json", "Records", 2, 1, 1, 0);
 		
 	}
 
@@ -84,7 +84,7 @@ public class SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 	@Order(4)
 	public void sqtrBulkUploadUpdateMissingNonRequiredFields() throws Exception {
 
-		checkSuccessfulBulkLoad(sqtrBulkPostEndpoint, sqtrTestFilePath + "UM_01_update_no_non_required_fields.json");
+		checkSuccessfulBulkLoad(sqtrBulkPostEndpoint, sqtrTestFilePath + "UM_01_update_no_non_required_fields.json", 2);
 		
 		RestAssured.given().
 			when().
@@ -104,7 +104,7 @@ public class SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 	@Order(5)
 	public void sqtrBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
 
-		checkSuccessfulBulkLoad(sqtrBulkPostEndpoint, sqtrTestFilePath + "AF_01_all_fields.json");
+		checkSuccessfulBulkLoad(sqtrBulkPostEndpoint, sqtrTestFilePath + "AF_01_all_fields.json", 2);
 
 		RestAssured.given().
 			when().
@@ -122,7 +122,7 @@ public class SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 			body("results[0]" , hasKey("synonyms")).
 			body("results[0]" , hasKey("secondaryIdentifiers"));
 
-		checkSuccessfulBulkLoad(sqtrBulkPostEndpoint, sqtrTestFilePath + "UE_01_update_empty_non_required_fields.json");
+		checkSuccessfulBulkLoad(sqtrBulkPostEndpoint, sqtrTestFilePath + "UE_01_update_empty_non_required_fields.json", 2);
 		
 		RestAssured.given().
 			when().

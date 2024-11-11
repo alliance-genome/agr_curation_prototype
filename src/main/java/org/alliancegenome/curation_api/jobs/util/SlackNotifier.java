@@ -7,7 +7,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.slack.api.Slack;
@@ -84,24 +84,24 @@ public class SlackNotifier {
 		}
 	}
 
-	public void slackalert(BulkLoadFile bulkLoadFile) {
+	public void slackalert(BulkLoadFileHistory bulkLoadFileHistory) {
 
-		if (bulkLoadFile.getBulkloadStatus() == JobStatus.FAILED) {
+		if (bulkLoadFileHistory.getBulkloadStatus() == JobStatus.FAILED) {
 			List<Field> fields = new ArrayList<>();
-			fields.add(new Field("Load Type", String.valueOf(bulkLoadFile.getBulkLoad().getBackendBulkLoadType()), true));
-			if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
-				fields.add(new Field("Ontology Type", String.valueOf(bulkLoadFile.getBulkLoad().getOntologyType()), true));
+			fields.add(new Field("Load Type", String.valueOf(bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType()), true));
+			if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
+				fields.add(new Field("Ontology Type", String.valueOf(bulkLoadFileHistory.getBulkLoad().getOntologyType()), true));
 			}
-			fields.add(new Field("MD5Sum", bulkLoadFile.getMd5Sum(), true));
-			fields.add(new Field("File Size", String.valueOf(bulkLoadFile.getFileSize()), true));
-			if (bulkLoadFile.getLinkMLSchemaVersion() != null) {
-				fields.add(new Field("LinkML Version", bulkLoadFile.getLinkMLSchemaVersion(), true));
+			fields.add(new Field("MD5Sum", bulkLoadFileHistory.getBulkLoadFile().getMd5Sum(), true));
+			fields.add(new Field("File Size", String.valueOf(bulkLoadFileHistory.getBulkLoadFile().getFileSize()), true));
+			if (bulkLoadFileHistory.getBulkLoadFile().getLinkMLSchemaVersion() != null) {
+				fields.add(new Field("LinkML Version", bulkLoadFileHistory.getBulkLoadFile().getLinkMLSchemaVersion(), true));
 			}
-			if (bulkLoadFile.getAllianceMemberReleaseVersion() != null) {
-				fields.add(new Field("Alliance Member Release Version", bulkLoadFile.getAllianceMemberReleaseVersion(), false));
+			if (bulkLoadFileHistory.getBulkLoadFile().getAllianceMemberReleaseVersion() != null) {
+				fields.add(new Field("Alliance Member Release Version", bulkLoadFileHistory.getBulkLoadFile().getAllianceMemberReleaseVersion(), false));
 			}
 
-			slackalert(bulkLoadFile.getBulkLoad().getGroup().getName(), bulkLoadFile.getBulkLoad().getName(), bulkLoadFile.getErrorMessage(), fields);
+			slackalert(bulkLoadFileHistory.getBulkLoad().getGroup().getName(), bulkLoadFileHistory.getBulkLoad().getName(), bulkLoadFileHistory.getErrorMessage(), fields);
 		}
 	}
 }

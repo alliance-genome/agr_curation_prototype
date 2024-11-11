@@ -19,7 +19,7 @@ public class ConstructComponentSlotAnnotationDAO extends BaseSQLDAO<ConstructCom
 	}
 
 	public void deleteAttachedNote(Long id) {
-		Query jpqlQuery = entityManager.createNativeQuery("DELETE FROM constructcomponentslotannotation_note WHERE relatednotes_id = '" + id + "'");
+		Query jpqlQuery = entityManager.createNativeQuery("DELETE FROM slotannotation_note WHERE relatednotes_id = '" + id + "'");
 		jpqlQuery.executeUpdate();
 
 		noteDAO.remove(id);

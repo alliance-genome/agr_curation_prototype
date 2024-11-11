@@ -4,8 +4,6 @@ import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { Messages } from 'primereact/messages';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ListTableCell } from '../../components/ListTableCell';
 import { Button } from 'primereact/button';
 import { VocabularyTermSetService } from '../../service/VocabularyTermSetService';
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
@@ -24,9 +22,11 @@ import {
 import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { Tooltip } from 'primereact/tooltip';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+
+import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 
 export const VocabularyTermSetTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -54,12 +54,6 @@ export const VocabularyTermSetTable = () => {
 
 	const handleNewVocabularyTermSetOpen = () => {
 		newVocabularyTermSetDispatch({ type: 'OPEN_DIALOG' });
-	};
-
-	const vocabularyTemplate = (rowData) => {
-		if (rowData.vocabularyTermSetVocabulary) {
-			return <EllipsisTableCell>{rowData.vocabularyTermSetVocabulary.name}</EllipsisTableCell>;
-		}
 	};
 
 	const onVocabularyChange = (event, setFieldValue, props) => {
@@ -100,19 +94,6 @@ export const VocabularyTermSetTable = () => {
 				/>
 			</>
 		);
-	};
-
-	const memberTermsTemplate = (rowData) => {
-		if (rowData.memberTerms) {
-			const listTemplate = (memberTerm) => {
-				return <EllipsisTableCell>{memberTerm.name}</EllipsisTableCell>;
-			};
-			return (
-				<>
-					<ListTableCell template={listTemplate} listData={rowData.memberTerms} showBullets={true} />
-				</>
-			);
-		}
 	};
 
 	const onMemberTermsChange = (event, setFieldValue, props) => {
@@ -182,24 +163,11 @@ export const VocabularyTermSetTable = () => {
 		);
 	};
 
-	const stringBodyTemplate = (rowData, field) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`${field}${rowData.id}`}>{rowData[field]}</EllipsisTableCell>
-				<Tooltip
-					target={`.${field}${rowData.id}`}
-					content={rowData[field]}
-					style={{ width: '450px', maxWidth: '450px' }}
-				/>
-			</>
-		);
-	};
-
 	const columns = [
 		{
 			field: 'name',
 			header: 'Name',
-			body: (rowData) => stringBodyTemplate(rowData, 'name'),
+			body: (rowData) => <StringTemplate string={rowData.name} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => nameEditor(props),
@@ -208,7 +176,7 @@ export const VocabularyTermSetTable = () => {
 			field: 'vocabularyTermSetVocabulary.name',
 			header: 'Vocabulary',
 			sortable: true,
-			body: (rowData) => vocabularyTemplate(rowData),
+			body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetVocabulary?.name} />,
 			filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
 			editor: (props) => vocabularyEditorTemplate(props),
 		},
@@ -216,14 +184,14 @@ export const VocabularyTermSetTable = () => {
 			field: 'memberTerms.name',
 			header: 'Member Terms',
 			sortable: true,
-			body: memberTermsTemplate,
+			body: (rowData) => <StringListTemplate list={rowData.memberTerms?.map((memberTerm) => memberTerm?.name)} />,
 			filterConfig: FILTER_CONFIGS.vocabularyMemberTermsFilterConfig,
 			editor: (props) => memberTermsEditorTemplate(props),
 		},
 		{
 			field: 'vocabularyTermSetDescription',
 			header: 'Description',
-			body: (rowData) => stringBodyTemplate(rowData, 'vocabularyTermSetDescription'),
+			body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetDescription} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.vocabularyTermSetDescriptionFilterConfig,
 			editor: (props) => descriptionEditor(props),
@@ -231,8 +199,8 @@ export const VocabularyTermSetTable = () => {
 		{
 			field: 'vocabularyLabel',
 			header: 'Label',
+			body: (rowData) => <StringTemplate string={rowData.vocabularyLabel} />,
 			filterConfig: FILTER_CONFIGS.vocabularyLabelFilterConfig,
-			body: (rowData) => stringBodyTemplate(rowData, 'vocabularyLabel'),
 		},
 	];
 

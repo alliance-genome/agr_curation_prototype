@@ -24,7 +24,7 @@ public class TestContainerResource {
 			DockerImageName esImage = DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch:7.10.2").asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch");
 			
 			//esContainer = new ElasticsearchContainer(esImage);
-			osContainer = new OpenSearchContainer("opensearchproject/opensearch:1.2.4");
+			osContainer = new OpenSearchContainer("opensearchproject/opensearch:2.16.0");
 			pgContainer = new PostgreSQLContainer("postgres:14.2");
 			
 			

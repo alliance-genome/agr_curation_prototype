@@ -1,0 +1,54 @@
+{
+    "data": [
+        {
+            "categoryTags": [
+            "anatomical structure"
+            ],
+            "datasetId": {
+                "alternateIds": [
+                    "GEO:GSE38764"
+                ],
+                "crossReferences": [
+                    {
+                        "id": "TEST:TestMol00000001",
+                        "pages": [
+                          "homepage"
+                        ]
+                    },
+                    {
+                        "id": "TEST:TestMol00000002",
+                        "pages": [
+                          "homepage"
+                        ]
+                    }
+                ],
+                "preferredCrossReference": {
+                    "id": "TEST:TestMol00000001",
+                    "pages": [
+                    "homepage"
+                    ]
+                },
+                "primaryId": "FB:FBlc0003342"
+            },
+            "dateAssigned": "2024-07-12T12:36:21-04:00",
+            "publications": [],
+            "title": "TEST TITLE",
+            "summary" : "",
+            "numChannels" : 2,
+            "subSeries": []
+        }
+    ],
+    "metaData": {
+        "dataProvider": {
+        "crossReference": {
+            "id": "FB",
+            "pages": [
+            "homepage"
+            ]
+        },
+        "type": "curated"
+        },
+        "dateProduced": "2024-07-12T12:36:21-04:00",
+        "release": "2024_03"
+    }
+}

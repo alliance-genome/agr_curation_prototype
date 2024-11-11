@@ -24,7 +24,7 @@ public interface BaseReadIdentifierControllerInterface<E extends AuditedObject> 
 
 	@GET
 	@Path("/{identifierString}")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(View.FieldsAndLists.class)
 	@APIResponses(
 		@APIResponse(
 			description = "Get the Entity by Identifier String",

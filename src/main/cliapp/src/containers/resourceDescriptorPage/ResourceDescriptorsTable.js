@@ -1,14 +1,14 @@
 import React, { useRef, useState } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ListTableCell } from '../../components/ListTableCell';
-import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
+
+import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 
 export const ResourceDescriptorsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -22,118 +22,46 @@ export const ResourceDescriptorsTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	const nameBodyTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`a${rowData.id}`}>{rowData.name}</EllipsisTableCell>
-				<Tooltip target={`.a${rowData.id}`} content={rowData.name} style={{ width: '450px', maxWidth: '450px' }} />
-			</>
-		);
-	};
-
-	const prefixBodyTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`b${rowData.id}`}>{rowData.prefix}</EllipsisTableCell>
-				<Tooltip target={`.b${rowData.id}`} content={rowData.prefix} style={{ width: '450px', maxWidth: '450px' }} />
-			</>
-		);
-	};
-
-	const idPatternBodyTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`c${rowData.id}`}>{rowData.idPattern}</EllipsisTableCell>
-				<Tooltip target={`.c${rowData.id}`} content={rowData.idPattern} style={{ width: '450px', maxWidth: '450px' }} />
-			</>
-		);
-	};
-
-	const idExampleBodyTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`d${rowData.id}`}>{rowData.idExample}</EllipsisTableCell>
-				<Tooltip target={`.d${rowData.id}`} content={rowData.idExample} style={{ width: '450px', maxWidth: '450px' }} />
-			</>
-		);
-	};
-
-	const defaultUrlTemplateBodyTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`e${rowData.id}`}>{rowData.defaultUrlTemplate}</EllipsisTableCell>
-				<Tooltip
-					target={`.e${rowData.id}`}
-					content={rowData.defaultUrlTemplate}
-					style={{ width: '450px', maxWidth: '450px' }}
-				/>
-			</>
-		);
-	};
-
-	const synonymsBodyTemplate = (rowData) => {
-		if (rowData?.synonyms && rowData.synonyms.length > 0) {
-			const sortedSynonyms = rowData.synonyms.sort();
-			const listTemplate = (item) => {
-				return <EllipsisTableCell>{item}</EllipsisTableCell>;
-			};
-			return (
-				<>
-					<div className={`f${rowData.id}${rowData.synonyms[0]}`}>
-						<ListTableCell template={listTemplate} listData={sortedSynonyms} />
-					</div>
-					<Tooltip
-						target={`.f${rowData.id}${rowData.synonyms[0]}`}
-						style={{ width: '450px', maxWidth: '450px' }}
-						position="left"
-					>
-						<ListTableCell template={listTemplate} listData={sortedSynonyms} />
-					</Tooltip>
-				</>
-			);
-		}
-	};
-
 	const columns = [
 		{
 			field: 'prefix',
 			header: 'Prefix',
 			sortable: true,
-			body: prefixBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.prefix} />,
 			filterConfig: FILTER_CONFIGS.prefixFilterConfig,
 		},
 		{
 			field: 'name',
 			header: 'Name',
 			sortable: true,
-			body: nameBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.name} />,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 		},
 		{
 			field: 'synonyms',
 			header: 'Synonyms',
-			body: synonymsBodyTemplate,
+			body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
 			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
 		},
 		{
 			field: 'idPattern',
 			header: 'ID Pattern',
 			sortable: true,
-			body: idPatternBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.idPattern} />,
 			filterConfig: FILTER_CONFIGS.idPatternFilterConfig,
 		},
 		{
 			field: 'idExample',
 			header: 'ID Example',
 			sortable: true,
-			body: idExampleBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.idExample} />,
 			filterConfig: FILTER_CONFIGS.idExampleFilterConfig,
 		},
 		{
 			field: 'defaultUrlTemplate',
 			header: 'Default URL Template',
 			sortable: true,
-			body: defaultUrlTemplateBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.defaultUrlTemplate} />,
 			filterConfig: FILTER_CONFIGS.defaultUrlTemplateFilterConfig,
 		},
 	];

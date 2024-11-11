@@ -54,7 +54,7 @@ export const CLASSES = Object.freeze({
 	WBPhenotypeTerm: { name: 'WBPheno', link: '/#/ontology/wbpheno', type: 'ontology' },
 	PATOTerm: { name: 'PATO', link: '/#/ontology/pato', type: 'ontology' },
 	HPTerm: { name: 'HP', link: '/#/ontology/hp', type: 'ontology' },
-	DPOTerm: { name: 'DPO', link: '/#/ontology/dpo', type: 'ontology' },
+	FBCVTerm: { name: 'FBCV', link: '/#/ontology/fbcv', type: 'ontology' },
 	MMOTerm: { name: 'MMO', link: '/#/ontology/mmo', type: 'ontology' },
 	APOTerm: { name: 'APO', link: '/#/ontology/apo', type: 'ontology' },
 	MITerm: { name: 'MI', link: '/#/ontology/mi', type: 'ontology' },

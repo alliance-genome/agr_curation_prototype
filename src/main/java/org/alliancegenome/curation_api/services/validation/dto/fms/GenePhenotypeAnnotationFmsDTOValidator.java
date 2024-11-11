@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto.fms;
 import org.alliancegenome.curation_api.dao.GenePhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GenePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -23,7 +24,7 @@ public class GenePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationF
 	@Inject GenomicEntityService genomicEntityService;
 	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
 
-	public GenePhenotypeAnnotation validatePrimaryAnnotation(Gene subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public GenePhenotypeAnnotation validatePrimaryAnnotation(Gene subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		ObjectResponse<GenePhenotypeAnnotation> apaResponse = new ObjectResponse<GenePhenotypeAnnotation>();
 		GenePhenotypeAnnotation annotation = new GenePhenotypeAnnotation();

@@ -182,7 +182,7 @@ public class AlleleITCase extends BaseITCase {
 		datetime2 = OffsetDateTime.parse("2022-04-10T22:10:11+00:00");
 		soTerm = getSoTerm("SO:00001");
 		soTerm2 = getSoTerm("SO:00002");
-		obsoleteSoTerm = createSoTerm("SO:00000", true);
+		obsoleteSoTerm = createSoTerm("SO:00000", "obsoleteTest", true);
 		mpTerm = getMpTerm("MP:00001");
 		mpTerm2 = getMpTerm("MP:00002");
 		obsoleteMpTerm = createMpTerm("MP:00000", true);
@@ -206,8 +206,8 @@ public class AlleleITCase extends BaseITCase {
 		nonPersistedOrganization = new Organization();
 		nonPersistedOrganization.setAbbreviation("INV");
 		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		gene = createGene("TEST:AssociatedGene1", "NCBITaxon:6239", false, symbolNameType);
-		gene2 = createGene("TEST:AssociatedGene2", "NCBITaxon:6239", false, symbolNameType);
+		gene = createGene("TEST:AssociatedGene1", "NCBITaxon:6239", symbolNameType, false);
+		gene2 = createGene("TEST:AssociatedGene2", "NCBITaxon:6239", symbolNameType, false);
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY);
 		geneAssociationRelation = getVocabularyTerm(relationVocabulary, "is_allele_of");
 		geneAssociationRelation2 = getVocabularyTerm(relationVocabulary, "duplication");

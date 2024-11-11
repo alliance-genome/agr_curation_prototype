@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -34,10 +35,12 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "Allele_Phenotype_Annotation", description = "Annotation class representing a allele phenotype annotation")
 @JsonTypeName("AllelePhenotypeAnnotation")
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { PhenotypeAnnotation.class })
+
 @Table(indexes = {
 	@Index(name = "AllelePhenotypeAnnotation_inferredGene_index", columnList = "inferredGene_id"),
-	@Index(name = "AllelePhenotypeAnnotation_PhenotypeAnnotationSubject_index", columnList = "phenotypeAnnotationSubject_id")
+	@Index(name = "AllelePhenotypeAnnotation_phenotypeAnnotationSubject_index", columnList = "phenotypeAnnotationSubject_id")
 })
+
 public class AllelePhenotypeAnnotation extends PhenotypeAnnotation {
 
 	@IndexedEmbedded(includePaths = {
@@ -79,11 +82,15 @@ public class AllelePhenotypeAnnotation extends PhenotypeAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JoinTable(indexes = {
-		@Index(name = "allelephenotypeannotationgene_phenotypeannotation_index", columnList = "allelephenotypeannotation_id"),
-		@Index(name = "allelephenotypeannotationgene_assertedgenes_index", columnList = "assertedgenes_id")
-	})
 	@JsonView({ View.FieldsAndLists.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "allelephenotypeannotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "assertedgenes_id"),
+		indexes = {
+			@Index(name = "allelephenotypeannotation_gene_allelepa_index", columnList = "allelephenotypeannotation_id"),
+			@Index(name = "allelephenotypeannotation_gene_assertedgenes_index", columnList = "assertedgenes_id")
+		}
+	)
 	private List<Gene> assertedGenes;
 
 	@Transient

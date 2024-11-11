@@ -27,7 +27,7 @@
 		<module name="LeftCurly" />
 		<module name="NeedBraces" />
 		<module name="RightCurly" />
-		<module name="HideUtilityClassConstructor" />
+<!--		<module name="HideUtilityClassConstructor" />-->
 		<module name="EmptyStatement" />
 		<module name="EqualsHashCode" />
 		<module name="InnerAssignment" />

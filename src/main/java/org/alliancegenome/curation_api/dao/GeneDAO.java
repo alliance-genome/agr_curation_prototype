@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.Query;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyDAO;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -108,5 +110,25 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		Map<String, Object> params = new HashMap<>();
 		params.put("expressionAnnotationSubject.id", geneId);
 		return geneExpressionAnnotationDAO.findIdsByParams(params);
+	}
+
+	public Map<String, Long> getAllGeneIdsPerSpecies(Species species) {
+		String sql = """
+						select g.id, be.modentityid, s.displaytext
+						from biologicalentity as be, gene as g, slotannotation as s
+						where be.taxon_id = :ID
+						AND be.id = g.id
+						AND s.singlegene_id = g.id
+						AND s.slotannotationtype = 'GeneSymbolSlotAnnotation'
+			""";
+		Query query = entityManager.createNativeQuery(sql);
+		query.setParameter("ID", species.getTaxon().getId());
+		List<Object[]> objects = query.getResultList();
+		Map<String, Long> ensemblGeneMap = new HashMap<>();
+		objects.forEach(object -> {
+			ensemblGeneMap.put((String) object[1], (Long) object[0]);
+			ensemblGeneMap.put((String) object[2], (Long) object[0]);
+		});
+		return ensemblGeneMap;
 	}
 }

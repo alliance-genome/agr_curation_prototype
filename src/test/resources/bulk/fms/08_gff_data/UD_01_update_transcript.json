@@ -1,0 +1,16 @@
+[
+	{
+		"seqId": "II",
+		"source": "WormBase",
+		"type": "piRNA",
+		"start": 2,
+		"end": 2000,
+		"strand": "-",
+		"phase": 1,
+		"attributes": [
+			"ID=Transcript:Y74C9A.2a.1",
+			"Parent=Gene:WBGene00022276",
+			"Name=Y74C9A.2a.1"
+		]
+	}
+]

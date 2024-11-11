@@ -1,6 +1,8 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
@@ -10,6 +12,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.references.ReferenceSynchronisationHelper;
 
+import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -20,6 +23,9 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 
 	@Inject ReferenceDAO referenceDAO;
 	@Inject ReferenceSynchronisationHelper refSyncHelper;
+	
+	Date referenceRequest;
+	HashMap<String, Reference> referenceCacheMap = new HashMap<>();
 
 	@Override
 	@PostConstruct
@@ -44,6 +50,23 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 
 	@Transactional
 	public Reference retrieveFromDbOrLiteratureService(String curieOrXref) {
+		Reference reference = null;
+		if (referenceRequest != null) {
+			if (referenceCacheMap.containsKey(curieOrXref)) {
+				reference = referenceCacheMap.get(curieOrXref);
+			} else {
+				Log.debug("Reference not cached, caching reference: (" + curieOrXref + ")");
+				reference = findOrCreateReference(curieOrXref);
+				referenceCacheMap.put(curieOrXref, reference);
+			}
+		} else {
+			reference = findOrCreateReference(curieOrXref);
+			referenceRequest = new Date();
+		}
+		return reference;
+	}
+	
+	private Reference findOrCreateReference(String curieOrXref) {
 		Reference reference = null;
 
 		if (curieOrXref.startsWith("AGRKB:")) {

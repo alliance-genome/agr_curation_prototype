@@ -2,9 +2,13 @@ package org.alliancegenome.curation_api.model.bridges;
 
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.CodingSequence;
+import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
+import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.hibernate.search.engine.backend.document.DocumentElement;
 import org.hibernate.search.engine.backend.document.IndexFieldReference;
 import org.hibernate.search.engine.backend.document.model.dsl.IndexSchemaElement;
@@ -77,6 +81,22 @@ public class BiologicalEntityTypeBridge implements TypeBinder {
 				} else if (bridgedElement instanceof SequenceTargetingReagent) {
 					SequenceTargetingReagent sqtr = (SequenceTargetingReagent) bridgedElement;
 					name = sqtr.getName();
+					symbol = null;
+				} else if (bridgedElement instanceof Transcript) {
+					Transcript transcript = (Transcript) bridgedElement;
+					name = transcript.getName();
+					symbol = null;
+				} else if (bridgedElement instanceof Exon) {
+					Exon exon = (Exon) bridgedElement;
+					name = exon.getName();
+					symbol = null;
+				} else if (bridgedElement instanceof CodingSequence) {
+					CodingSequence cds = (CodingSequence) bridgedElement;
+					name = cds.getName();
+					symbol = null;
+				} else if (bridgedElement instanceof AssemblyComponent) {
+					AssemblyComponent ac = (AssemblyComponent) bridgedElement;
+					name = ac.getName();
 					symbol = null;
 				} else {
 					name = null;

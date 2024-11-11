@@ -53,24 +53,24 @@ public class SequenceTargetingReagent extends GenomicEntity {
 		@Index(name = "sequencetargetingreagent_reference_sqtr_index", columnList = "sequencetargetingreagent_id"),
 		@Index(name = "sequencetargetingreagent_reference_references_index", columnList = "references_id")
 	})
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentView.class })
 	private List<Reference> references;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "synonyms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JoinTable(indexes = @Index(name = "sequencetargetingreagent_synonyms_sequencetargetingreagent_index", columnList = "sequencetargetingreagent_id"))
-	@JsonView({ View.FieldsAndLists.class })
+	@JoinTable(indexes = @Index(name = "sqtr_synonyms_sqtr_index", columnList = "sequencetargetingreagent_id"))
+	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentView.class })
 	private List<String> synonyms;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JoinTable(indexes = @Index(name = "sequencetargetingreagent_secondaryIdentifiers_sequencetargetingreagent_index", columnList = "sequencetargetingreagent_id"))
-	@JsonView({ View.FieldsAndLists.class })
+	@JoinTable(indexes = @Index(name = "sqtr_secondaryIdentifiers_sqtr_index", columnList = "sequencetargetingreagent_id"))
+	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentView.class })
 	private List<String> secondaryIdentifiers;
 
 	@OneToMany(mappedBy = "sequenceTargetingReagentAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentDetailView.class })
 	private List<SequenceTargetingReagentGeneAssociation> sequenceTargetingReagentGeneAssociations;
 }

@@ -46,6 +46,7 @@ describe('<GenesPage />', () => {
 		const systematicNameTd = await result.findByText('C35C5.5');
 		const taxonTd = await result.findByText(/Caenorhabditis elegans/i);
 		const xrefsTd = await result.findByText(/WBGene00003771Xref \(gene\)/);
+		const geneTypeTd = await result.findByText(/protein_coding_gene/i);
 
 		await waitFor(() => {
 			expect(modEntityIdTd).toBeInTheDocument();
@@ -56,6 +57,7 @@ describe('<GenesPage />', () => {
 			expect(systematicNameTd).toBeInTheDocument();
 			expect(taxonTd).toBeInTheDocument();
 			expect(xrefsTd).toBeInTheDocument();
+			expect(geneTypeTd).toBeInTheDocument();
 		});
 	});
 });

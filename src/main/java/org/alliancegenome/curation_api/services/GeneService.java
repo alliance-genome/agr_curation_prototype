@@ -10,7 +10,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -64,12 +64,12 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	}
 
 	@Override
-	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
+	public Gene upsert(GeneDTO dto) throws ValidationException {
 		return upsert(dto, null);
 	}
 
 	@Override
-	public Gene upsert(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public Gene upsert(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return geneDtoValidator.validateGeneDTO(dto, dataProvider);
 	}
 

@@ -219,7 +219,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		if (StringUtils.isNotBlank(uiEntity.getConditionTaxon().getCurie())) {
 			taxonTerm = ncbiTaxonTermService.findByCurie(uiEntity.getConditionTaxon().getCurie());
 			if (taxonTerm == null) {
-				taxonTerm = ncbiTaxonTermService.downloadAndSave(uiEntity.getConditionTaxon().getCurie());
+				taxonTerm = ncbiTaxonTermService.getTaxonFromDB(uiEntity.getConditionTaxon().getCurie());
 			}
 			if (taxonTerm == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);

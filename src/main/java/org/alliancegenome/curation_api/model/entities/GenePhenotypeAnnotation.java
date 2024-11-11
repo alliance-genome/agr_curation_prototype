@@ -28,10 +28,12 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "Gene_Phenotype_Annotation", description = "Annotation class representing a gene phenotype annotation")
 @JsonTypeName("GenePhenotypeAnnotation")
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { PhenotypeAnnotation.class })
+
 @Table(indexes = {
-	@Index(name = "genephenotypeannotation_phenotypeannotationsubject_index", columnList = "phenotypeannotationsubject_id"),
-	@Index(name = "genephenotypeannotation_sgdstrainbackground_index", columnList = "sgdstrainbackground_id")
+	@Index(name = "GenePhenotypeAnnotation_phenotypeAnnotationSubject_index", columnList = "phenotypeAnnotationSubject_id"),
+	@Index(name = "GenePhenotypeAnnotation_sgdStrainBackground_index", columnList = "sgdStrainBackground_id")
 })
+
 public class GenePhenotypeAnnotation extends PhenotypeAnnotation {
 
 	@IndexedEmbedded(includePaths = {

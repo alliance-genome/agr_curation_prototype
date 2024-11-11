@@ -300,4 +300,15 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		}
 	}
 
+	public <T extends OntologyTerm> T findSubsetTerm(T childTerm, String subsetName) {
+		for (OntologyTerm term : childTerm.getIsaAncestors()) {
+			for (String subset : term.getSubsets()) {
+				if (subset.contains(subsetName)) {
+					return (T) term;
+				}
+			}
+		}
+		return null;
+	}
+
 }

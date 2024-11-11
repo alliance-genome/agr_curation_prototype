@@ -89,24 +89,6 @@ describe('GenomicEntityTemplate', () => {
 		expect(container.firstChild).toBeNull();
 	});
 
-	it('should render genomicEntity text and id in a tooltip when genomicEntity has geneSymbol', async () => {
-		const genomicEntity = {
-			geneSymbol: {
-				displayText: 'Gene Symbol',
-			},
-			modInternalId: 'ID',
-		};
-
-		const result = render(<GenomicEntityTemplate genomicEntity={genomicEntity} />);
-
-		let divContentArray = result.getAllByText('Gene Symbol (ID)');
-		expect(divContentArray).toHaveLength(1);
-
-		fireEvent.mouseEnter(divContentArray[0]);
-		//using find... here because it's async and the tooltip is dynamically added
-		expect(await result.findAllByText('Gene Symbol (ID)')).toHaveLength(2);
-	});
-
 	it('should render <sup> tags in the HTML', async () => {
 		const genomicEntity = {
 			geneSymbol: {

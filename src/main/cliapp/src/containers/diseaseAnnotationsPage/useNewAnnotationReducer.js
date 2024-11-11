@@ -26,7 +26,9 @@ const DEFAULT_ANNOTATION = {
 	sgdStrainBackground: null,
 	annotationType: null,
 	diseaseGeneticModifierRelation: null,
-	diseaseGeneticModifiers: [],
+	diseaseGeneticModifierAgm: [],
+	diseaseGeneticModifierAlleles: [],
+	diseaseGeneticModifierGenes: [],
 	internal: false,
 };
 const initialNewAnnotationState = {
@@ -68,8 +70,12 @@ const buildAnnotation = (rowData) => {
 		diseaseGeneticModifierRelation:
 			global.structuredClone(rowData.diseaseGeneticModifierRelation) ||
 			DEFAULT_ANNOTATION.diseaseGeneticModifierRelation,
-		diseaseGeneticModifiers:
-			global.structuredClone(rowData.diseaseGeneticModifiers) || DEFAULT_ANNOTATION.diseaseGeneticModifiers,
+		diseaseGeneticModifierAgms:
+			global.structuredClone(rowData.diseaseGeneticModifierAgms) || DEFAULT_ANNOTATION.diseaseGeneticModifierAgms,
+		diseaseGeneticModifierAlleles:
+			global.structuredClone(rowData.diseaseGeneticModifierAlleles) || DEFAULT_ANNOTATION.diseaseGeneticModifierAlleles,
+		diseaseGeneticModifierGenes:
+			global.structuredClone(rowData.diseaseGeneticModifierGenes) || DEFAULT_ANNOTATION.diseaseGeneticModifierGenes,
 		internal: rowData.internal || DEFAULT_ANNOTATION.internal,
 	};
 };

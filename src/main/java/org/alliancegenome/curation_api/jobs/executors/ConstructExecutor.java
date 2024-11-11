@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
@@ -26,12 +25,12 @@ public class ConstructExecutor extends LoadFileExecutor {
 
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
-	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
-		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile, ConstructDTO.class);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, ConstructDTO.class);
 		if (ingestDto == null) {
 			return;
 		}
@@ -50,17 +49,20 @@ public class ConstructExecutor extends LoadFileExecutor {
 			Log.debug("runLoad: Before: total " + constructIdsBefore.size());
 		}
 
-		bulkLoadFile.setRecordCount(constructs.size() + bulkLoadFile.getRecordCount());
-		bulkLoadFileDAO.merge(bulkLoadFile);
+		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(constructs.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		BulkLoadFileHistory history = new BulkLoadFileHistory(constructs.size());
-		createHistory(history, bulkLoadFile);
-		boolean success = runLoad(constructService, history, dataProvider, constructs, constructIdsLoaded);
+		bulkLoadFileHistory.setCount("Deleted", constructs.size());
+		
+		updateHistory(bulkLoadFileHistory);
+		
+		boolean success = runLoad(constructService, bulkLoadFileHistory, dataProvider, constructs, constructIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(constructService, history, dataProvider.name(), constructIdsBefore, constructIdsLoaded, "construct", bulkLoadFile.getMd5Sum());
+			runCleanup(constructService, bulkLoadFileHistory, dataProvider.name(), constructIdsBefore, constructIdsLoaded, "construct");
 		}
-		history.finishLoad();
-		finalSaveHistory(history);
+		bulkLoadFileHistory.finishLoad();
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 	}
 
 }

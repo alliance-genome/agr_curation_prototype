@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -37,10 +38,27 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Schema(name = "Gene_Genetic_Interaction", description = "Class representing an interaction between genes")
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GeneInteraction.class })
+
 @Table(indexes = {
-	@Index(name = "genegeneticinteraction_interactorageneticperturbarion_index", columnList = "interactorageneticperturbation_id"),
-	@Index(name = "genegeneticinteraction_interactorbgeneticperturbarion_index", columnList = "interactorbgeneticperturbation_id")
+	@Index(name = "GeneGeneticInteraction_internal_index", columnList = "internal"),
+	@Index(name = "GeneGeneticInteraction_obsolete_index", columnList = "obsolete"),
+	@Index(name = "GeneGeneticInteraction_interactionId_index", columnList = "interactionId"),
+	@Index(name = "GeneGeneticInteraction_uniqueId_index", columnList = "uniqueId"),
+	@Index(name = "GeneGeneticInteraction_createdBy_index", columnList = "createdBy_id"),
+	@Index(name = "GeneGeneticInteraction_updatedBy_index", columnList = "updatedBy_id"),
+	@Index(name = "GeneGeneticInteraction_geneAssociationSubject_index", columnList = "geneAssociationSubject_id"),
+	@Index(name = "GeneGeneticInteraction_geneGeneAssociationObject_index", columnList = "geneGeneAssociationObject_id"),
+	@Index(name = "GeneGeneticInteraction_relation_index", columnList = "relation_id"),
+	@Index(name = "GeneGeneticInteraction_interactionSource_index", columnList = "interactionSource_id"),
+	@Index(name = "GeneGeneticInteraction_interactionType_index", columnList = "interactionType_id"),
+	@Index(name = "GeneGeneticInteraction_interactorARole_index", columnList = "interactorARole_id"),
+	@Index(name = "GeneGeneticInteraction_interactorAType_index", columnList = "interactorAType_id"),
+	@Index(name = "GeneGeneticInteraction_interactorBRole_index", columnList = "interactorBRole_id"),
+	@Index(name = "GeneGeneticInteraction_interactorBType_index", columnList = "interactorBType_id"),
+	@Index(name = "GeneGeneticInteraction_interactorAGeneticPerturbation_index", columnList = "interactorAGeneticPerturbation_id"),
+	@Index(name = "GeneGeneticInteraction_interactorBGeneticPerturbation_index", columnList = "interactorBGeneticPerturbation_id")
 })
+
 public class GeneGeneticInteraction extends GeneInteraction {
 
 	@IndexedEmbedded(includePaths = {
@@ -75,6 +93,12 @@ public class GeneGeneticInteraction extends GeneInteraction {
 	@KeywordField(name = "phenotypesOrTraits_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JsonView({View.FieldsAndLists.class, View.GeneInteractionView.class})
-	@JoinTable(indexes = @Index(name = "genegeneticinteraction_phenotypesortraits_interaction_index", columnList = "genegeneticinteraction_id"))
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "genegeneticinteraction_id"),
+		indexes = {
+			@Index(name = "genegeneticinteraction_phenotypesortraits_interaction_index", columnList = "genegeneticinteraction_id"),
+			@Index(name = "genegeneticinteraction_phenotypesortraits_pt_index", columnList = "phenotypesOrTraits")
+		}
+	)
 	private List<String> phenotypesOrTraits;
 }

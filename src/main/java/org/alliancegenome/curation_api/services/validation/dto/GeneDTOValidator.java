@@ -9,7 +9,9 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
@@ -21,6 +23,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryI
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
+import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotationDTOValidator;
@@ -44,11 +47,12 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	@Inject GeneSynonymSlotAnnotationDTOValidator geneSynonymDtoValidator;
 	@Inject GeneSecondaryIdSlotAnnotationDTOValidator geneSecondaryIdDtoValidator;
 	@Inject SlotAnnotationIdentityHelper identityHelper;
+	@Inject SoTermService soTermService;
 
 	private ObjectResponse<Gene> geneResponse;
 
 	@Transactional
-	public Gene validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public Gene validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		geneResponse = new ObjectResponse<Gene>();
 
@@ -102,6 +106,16 @@ public class GeneDTOValidator extends BaseDTOValidator {
 				gene.setGeneSecondaryIds(new ArrayList<>());
 			}
 			gene.getGeneSecondaryIds().addAll(secondaryIds);
+		}
+		
+		if (StringUtils.isBlank(dto.getGeneTypeCurie())) {
+			geneResponse.addErrorMessage("gene_type_curie", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			SOTerm geneType = soTermService.findByCurieOrSecondaryId(dto.getGeneTypeCurie());
+			if (geneType == null) {
+				geneResponse.addErrorMessage("gene_type_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneTypeCurie() + ")");
+			}
+			gene.setGeneType(geneType);
 		}
 
 		geneResponse.convertErrorMessagesToMap();

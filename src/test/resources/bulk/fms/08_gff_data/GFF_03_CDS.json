@@ -1,0 +1,15 @@
+[
+	{
+		"seqId": "I",
+		"source": "WormBase",
+		"type": "CDS",
+		"start": 10,
+		"end": 100,
+		"strand": "+",
+		"phase": 1,
+		"attributes": [
+			"ID=CDS:Y74C9A.2a",
+			"Parent=Transcript:Y74C9A.2a.1"
+		]
+	}
+]

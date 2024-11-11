@@ -1,8 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { VariantService } from '../../service/VariantService';
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
@@ -11,7 +9,6 @@ import { VariantTypeTableEditor } from '../../components/Editors/variantType/Var
 import { SourceGeneralConsequenceTableEditor } from '../../components/Editors/sourceGeneralConsequence/SourceGeneralConsequenceTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
 
-import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
@@ -19,9 +16,17 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
+
+import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
+import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { IdTemplate } from '../../components/Templates/IdTemplate';
+
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 
 import { SearchService } from '../../service/SearchService';
 
@@ -58,59 +63,6 @@ export const VariantsTable = () => {
 
 	const variantStatusTerms = useControlledVocabularyService('variant_status');
 
-	const taxonTemplate = (rowData) => {
-		if (rowData?.taxon) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`${'TAXON_NAME_'}${rowData.id}${rowData.taxon.curie.replace(':', '')}`}>
-						{rowData.taxon.name} ({rowData.taxon.curie})
-					</EllipsisTableCell>
-					<Tooltip
-						target={`.${'TAXON_NAME_'}${rowData.id}${rowData.taxon.curie.replace(':', '')}`}
-						content={`${rowData.taxon.name} (${rowData.taxon.curie})`}
-						style={{ width: '250px', maxWidth: '450px' }}
-					/>
-				</>
-			);
-		}
-	};
-
-	const sourceGeneralConsequenceTemplate = (rowData) => {
-		if (rowData?.sourceGeneralConsequence) {
-			return (
-				<>
-					<EllipsisTableCell
-						otherClasses={`${'SGC_'}${rowData.id}${rowData.sourceGeneralConsequence.curie.replace(':', '')}`}
-					>
-						{rowData.sourceGeneralConsequence?.name} ({rowData.sourceGeneralConsequence?.curie})
-					</EllipsisTableCell>
-					<Tooltip
-						target={`.${'SGC_'}${rowData.id}${rowData.sourceGeneralConsequence?.curie.replace(':', '')}`}
-						content={`${rowData.sourceGeneralConsequence?.name} (${rowData.sourceGeneralConsequence?.curie})`}
-						style={{ width: '250px', maxWidth: '450px' }}
-					/>
-				</>
-			);
-		}
-	};
-
-	const variantTypeTemplate = (rowData) => {
-		if (rowData?.variantType) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`${'SGC_'}${rowData.id}${rowData.variantType.curie.replace(':', '')}`}>
-						{rowData.variantType?.name} ({rowData.variantType?.curie})
-					</EllipsisTableCell>
-					<Tooltip
-						target={`.${'SGC_'}${rowData.id}${rowData.variantType?.curie.replace(':', '')}`}
-						content={`${rowData.variantType?.name} (${rowData.variantType?.curie})`}
-						style={{ width: '250px', maxWidth: '450px' }}
-					/>
-				</>
-			);
-		}
-	};
-
 	const onVariantStatusEditorValueChange = (props, event) => {
 		let updatedVariants = [...props.props.value];
 		updatedVariants[props.rowIndex].variantStatus = event.value;
@@ -131,11 +83,11 @@ export const VariantsTable = () => {
 		);
 	};
 
-	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
+	const handleRelatedNotesOpen = (relatedNotes) => {
 		let _relatedNotesData = {};
-		_relatedNotesData['originalRelatedNotes'] = rowData.relatedNotes;
+		_relatedNotesData['originalRelatedNotes'] = relatedNotes;
 		_relatedNotesData['dialog'] = true;
-		_relatedNotesData['isInEdit'] = isInEdit;
+		_relatedNotesData['isInEdit'] = false;
 		setRelatedNotesData(() => ({
 			..._relatedNotesData,
 		}));
@@ -154,21 +106,6 @@ export const VariantsTable = () => {
 		setRelatedNotesData(() => ({
 			..._relatedNotesData,
 		}));
-	};
-
-	const relatedNotesTemplate = (rowData) => {
-		if (rowData?.relatedNotes) {
-			return (
-				<Button
-					className="p-button-text"
-					onClick={(event) => {
-						handleRelatedNotesOpen(event, rowData, false);
-					}}
-				>
-					<span style={{ textDecoration: 'underline' }}>{`Notes(${rowData.relatedNotes.length})`}</span>
-				</Button>
-			);
-		}
 	};
 
 	const relatedNotesEditor = (props) => {
@@ -230,33 +167,36 @@ export const VariantsTable = () => {
 			field: 'curie',
 			header: 'Curie',
 			sortable: { isInEditMode },
+			body: (rowData) => <IdTemplate id={rowData.curie} />,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
 			field: 'modEntityId',
 			header: 'MOD Entity ID',
 			sortable: true,
+			body: (rowData) => <IdTemplate id={rowData.modEntityId} />,
 			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 		},
 		{
 			field: 'modInternalId',
 			header: 'MOD Internal ID',
 			sortable: true,
+			body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
 			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
 			field: 'taxon.name',
 			header: 'Taxon',
-			body: taxonTemplate,
 			sortable: true,
+			body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
 		},
 		{
 			field: 'variantType.name',
 			header: 'Variant Type',
-			body: variantTypeTemplate,
 			sortable: true,
+			body: (rowData) => <OntologyTermTemplate term={rowData.variantType} />,
 			filterConfig: FILTER_CONFIGS.variantTypeFilterConfig,
 			editor: (props) => <VariantTypeTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
 		},
@@ -264,22 +204,25 @@ export const VariantsTable = () => {
 			field: 'variantStatus.name',
 			header: 'Variant Status',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.variantStatus?.name} />,
 			filterConfig: FILTER_CONFIGS.variantStatusFilterConfig,
 			editor: (props) => variantStatusEditor(props),
 		},
 		{
 			field: 'relatedNotes.freeText',
 			header: 'Related Notes',
-			body: relatedNotesTemplate,
 			sortable: true,
+			body: (rowData) => (
+				<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
+			),
 			filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
 			editor: relatedNotesEditor,
 		},
 		{
 			field: 'sourceGeneralConsequence.name',
 			header: 'Source General Consequence',
-			body: sourceGeneralConsequenceTemplate,
 			sortable: true,
+			body: (rowData) => <OntologyTermTemplate term={rowData.sourceGeneralConsequence} />,
 			filterConfig: FILTER_CONFIGS.sourceGeneralConsequenceFilterConfig,
 			editor: (props) => <SourceGeneralConsequenceTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
 		},
@@ -287,6 +230,7 @@ export const VariantsTable = () => {
 			field: 'dataProvider.sourceOrganization.abbreviation',
 			header: 'Data Provider',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.dataProvider?.sourceOrganization?.abbreviation} />,
 			filterConfig: FILTER_CONFIGS.variantDataProviderFilterConfig,
 		},
 		{
@@ -294,12 +238,19 @@ export const VariantsTable = () => {
 			header: 'Cross References',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => <CrossReferencesTemplate xrefs={rowData.crossReferences} />,
+			body: (rowData) => (
+				<ObjectListTemplate
+					list={rowData.crossReferences}
+					sortMethod={crossReferencesSort}
+					stringTemplate={(item) => `${item.displayName} (${item.resourceDescriptorPage.name})`}
+				/>
+			),
 		},
 		{
 			field: 'updatedBy.uniqueId',
 			header: 'Updated By',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
@@ -307,6 +258,7 @@ export const VariantsTable = () => {
 			header: 'Date Updated',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 		},
 		{
@@ -314,6 +266,7 @@ export const VariantsTable = () => {
 			header: 'Created By',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 		},
 		{
@@ -321,13 +274,14 @@ export const VariantsTable = () => {
 			header: 'Date Created',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 		},
 		{
 			field: 'internal',
 			header: 'Internal',
-			body: internalTemplate,
 			filter: true,
+			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: true,
 			editor: (props) => (
@@ -337,8 +291,8 @@ export const VariantsTable = () => {
 		{
 			field: 'obsolete',
 			header: 'Obsolete',
-			body: obsoleteTemplate,
 			filter: true,
+			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: true,
 			editor: (props) => (

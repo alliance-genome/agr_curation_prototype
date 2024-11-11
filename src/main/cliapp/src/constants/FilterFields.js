@@ -326,14 +326,33 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'geneSystematicNameFilter',
 		fields: ['geneSystematicName.displayText', 'geneSystematicName.formatText'],
 	},
-	geneticModifiersFieldSet: {
-		filterName: 'geneticModifiersFilter',
+	geneticModifierAgmsFieldSet: {
+		filterName: 'geneticModifierAgmsFilter',
 		fields: [
-			'diseaseGeneticModifiers.symbol',
-			'diseaseGeneticModifiers.name',
-			'diseaseGeneticModifiers.curie',
-			'diseaseGeneticModifiers.modEntityId',
-			'diseaseGeneticModifiers.modInternalId',
+			'diseaseGeneticModifierAgms.name',
+			'diseaseGeneticModifierAgms.curie',
+			'diseaseGeneticModifierAgms.modEntityId',
+			'diseaseGeneticModifierAgms.modInternalId',
+		],
+	},
+	geneticModifierAllelesFieldSet: {
+		filterName: 'geneticModifierAllelesFilter',
+		fields: [
+			'diseaseGeneticModifierAlleles.alleleSymbol.displayText',
+			'diseaseGeneticModifierAlleles.alleleSymbol.formatText',
+			'diseaseGeneticModifierAlleles.curie',
+			'diseaseGeneticModifierAlleles.modEntityId',
+			'diseaseGeneticModifierAlleles.modInternalId',
+		],
+	},
+	geneticModifierGenesFieldSet: {
+		filterName: 'geneticModifierGenesFilter',
+		fields: [
+			'diseaseGeneticModifierGenes.geneSymbol.displayText',
+			'diseaseGeneticModifierGenes.geneSymbol.formatText',
+			'diseaseGeneticModifierGenes.curie',
+			'diseaseGeneticModifierGenes.modEntityId',
+			'diseaseGeneticModifierGenes.modInternalId',
 		],
 	},
 	geneticModifierRelationFieldSet: {
@@ -343,6 +362,10 @@ export const FIELD_SETS = Object.freeze({
 	geneticSexFieldSet: {
 		filterName: 'geneticSexFilter',
 		fields: ['geneticSex.name'],
+	},
+	geneTypeFieldSet: {
+		filterName: 'geneTypeFilter',
+		fields: ['geneType.curie', 'geneType.name'],
 	},
 	gmiAggregationFieldSet: {
 		filterName: 'gmiAggregationFilter',
@@ -788,7 +811,19 @@ export const FILTER_CONFIGS = Object.freeze({
 	geneSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSymbolFieldSet] },
 	geneSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSynonymsFieldSet] },
 	geneSystematicNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSystematicNameFieldSet] },
-	geneticModifiersFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneticModifiersFieldSet] },
+	geneTypeFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneTypeFieldSet] },
+	geneticModifierAgmsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geneticModifierAgmsFieldSet],
+	},
+	geneticModifierAllelesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geneticModifierAllelesFieldSet],
+	},
+	geneticModifierGenesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geneticModifierGenesFieldSet],
+	},
 	idExampleFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.idExampleFieldSet] },
 	idPatternFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.idPatternFieldSet] },
 	inchiFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.inchiFieldSet] },

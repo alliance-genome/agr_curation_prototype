@@ -1,10 +1,9 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
@@ -13,16 +12,18 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RequestScoped
 public class CrossReferenceService extends BaseEntityCrudService<CrossReference, CrossReferenceDAO> {
 
-	@Inject CrossReferenceDAO crossReferenceDAO;
-	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
+	@Inject
+	ResourceDescriptorPageService resourceDescriptorPageService;
 
 	@Override
 	@PostConstruct
@@ -103,5 +104,9 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 			return xref.getReferencedCurie();
 		}
 		return StringUtils.join(List.of(xref.getReferencedCurie(), xref.getResourceDescriptorPage().getId()), "|");
+	}
+
+	public Map<String, Long> getGenomicEntityCrossRefMap(ResourceDescriptorPage page) {
+		return crossReferenceDAO.getGenesWithCrossRefs(page);
 	}
 }

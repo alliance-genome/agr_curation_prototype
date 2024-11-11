@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-public class ObjectUpdateException extends Exception {
+public class ObjectUpdateException extends ValidationException {
 
 	private ObjectUpdateExceptionData data;
 

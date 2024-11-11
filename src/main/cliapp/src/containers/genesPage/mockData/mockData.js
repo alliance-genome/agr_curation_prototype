@@ -28,6 +28,13 @@ export const data = {
 				curie: 'NCBITaxon:6239',
 				name: 'Caenorhabditis elegans',
 			},
+			geneType: {
+				internal: false,
+				obsolete: false,
+				curie: 'SO:0001272',
+				name: 'tRNA_gene',
+				id: 25665,
+			},
 			dataProvider: {
 				internal: false,
 				obsolete: false,

@@ -39,6 +39,7 @@
       "internal": false,
       "obsolete": false,
       "source_organization_abbreviation": "WB"
-    }
+    },
+    "gene_type_curie": "SO:0001217"
   }
 ]

@@ -98,6 +98,7 @@
         "display_name": "TEST2:Xref02Display",
         "prefix": "TEST2"
       }
-    ]
+    ],
+    "gene_type_curie": "SO:0000336"
   }
 ]

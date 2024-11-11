@@ -27,10 +27,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -41,12 +41,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "ConstructComponentSlotAnnotation", description = "POJO representing a construct component slot annotation")
-@Table(indexes = {
-	@Index(name = "constructcomponentslotannotation_singleconstruct_index", columnList = "singleConstruct_id"),
-	@Index(name = "constructcomponentslotannotation_componentsymbol_index", columnList = "componentSymbol"),
-	@Index(name = "constructcomponentslotannotation_taxon_index", columnList = "taxon_id"),
-	@Index(name = "constructcomponentslotannotation_relation_index", columnList = "relation_id")
-})
 public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne
@@ -84,9 +78,11 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 	@OneToMany
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(
+		joinColumns = @JoinColumn(name = "slotannotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "relatednotes_id"),
 		indexes = {
-			@Index(name = "constructcomponentsa_note_ccsa_index", columnList = "constructcomponentslotannotation_id"),
-			@Index(name = "constructcomponentsa_note_relatednotes_index", columnList = "relatednotes_id")
+			@Index(name = "slotannotation_note_ccsa_index", columnList = "slotannotation_id"),
+			@Index(name = "slotannotation_note_relatednotes_index", columnList = "relatednotes_id")
 		}
 	)
 	private List<Note> relatedNotes;

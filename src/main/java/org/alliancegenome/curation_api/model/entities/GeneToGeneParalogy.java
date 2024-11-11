@@ -22,7 +22,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "GeneToGeneParalogy", description = "POJO that represents paralogy between two genes")
-@AGRCurationSchemaVersion(min = "1.7.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "2.3.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
 		@Index(name = "genetogeneparalogy_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "genetogeneparalogy_updatedby_index", columnList = "updatedBy_id"),

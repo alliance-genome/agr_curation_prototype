@@ -59,10 +59,10 @@ public class VariantBulkUploadITCase extends BaseITCase {
 	private final String variantTestFilePath = "src/test/resources/bulk/06_variant/";
 
 	private void loadRequiredEntities() throws Exception {
-		loadSOTerm(variantType, "Test variant type SOTerm");
-		loadSOTerm(variantType2, "Second test variant type SOTerm");
-		loadSOTerm(sourceGeneralConsequence, "Test source general consequence SOTerm");
-		loadSOTerm(sourceGeneralConsequence2, "Second test source general consequence SOTerm");
+		createSoTerm(variantType, "Test variant type SOTerm", false);
+		createSoTerm(variantType2, "Second test variant type SOTerm", false);
+		createSoTerm(sourceGeneralConsequence, "Test source general consequence SOTerm", false);
+		createSoTerm(sourceGeneralConsequence2, "Second test source general consequence SOTerm", false);
 		Vocabulary variantStatusVocabulary = getVocabulary(VocabularyConstants.VARIANT_STATUS_VOCABULARY);
 		createVocabularyTerm(variantStatusVocabulary, variantStatus, false);
 		createVocabularyTerm(variantStatusVocabulary, variantStatus2, false);

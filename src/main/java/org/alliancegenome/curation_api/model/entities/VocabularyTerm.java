@@ -59,6 +59,7 @@ public class VocabularyTerm extends AuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "definition_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class })
+	@Column(columnDefinition = "TEXT")
 	private String definition;
 
 	@IndexedEmbedded(includeDepth = 1)

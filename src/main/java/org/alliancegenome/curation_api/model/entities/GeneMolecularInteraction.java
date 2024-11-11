@@ -29,10 +29,27 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Schema(name = "Gene_Molecular_Interaction", description = "Class representing an interaction between gene products")
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GeneInteraction.class })
+
 @Table(indexes = {
-	@Index(name = "genemolecularinteraction_aggregationdatabase_index", columnList = "aggregationdatabase_id"),
-	@Index(name = "genemolecularinteraction_detectionmethod_index", columnList = "detectionmethod_id")
+	@Index(name = "GeneMolecularInteraction_internal_index", columnList = "internal"),
+	@Index(name = "GeneMolecularInteraction_obsolete_index", columnList = "obsolete"),
+	@Index(name = "GeneMolecularInteraction_interactionId_index", columnList = "interactionId"),
+	@Index(name = "GeneMolecularInteraction_uniqueId_index", columnList = "uniqueId"),
+	@Index(name = "GeneMolecularInteraction_createdBy_index", columnList = "createdBy_id"),
+	@Index(name = "GeneMolecularInteraction_updatedBy_index", columnList = "updatedBy_id"),
+	@Index(name = "GeneMolecularInteraction_geneAssociationSubject_index", columnList = "geneAssociationSubject_id"),
+	@Index(name = "GeneMolecularInteraction_geneGeneAssociationObject_index", columnList = "geneGeneAssociationObject_id"),
+	@Index(name = "GeneMolecularInteraction_relation_index", columnList = "relation_id"),
+	@Index(name = "GeneMolecularInteraction_interactionSource_index", columnList = "interactionSource_id"),
+	@Index(name = "GeneMolecularInteraction_interactionType_index", columnList = "interactionType_id"),
+	@Index(name = "GeneMolecularInteraction_interactorARole_index", columnList = "interactorARole_id"),
+	@Index(name = "GeneMolecularInteraction_interactorAType_index", columnList = "interactorAType_id"),
+	@Index(name = "GeneMolecularInteraction_interactorBRole_index", columnList = "interactorBRole_id"),
+	@Index(name = "GeneMolecularInteraction_interactorBType_index", columnList = "interactorBType_id"),
+	@Index(name = "GeneMolecularInteraction_aggregationDatabase_index", columnList = "aggregationDatabase_id"),
+	@Index(name = "GeneMolecularInteraction_detectionMethod_index", columnList = "detectionMethod_id")
 })
+
 public class GeneMolecularInteraction extends GeneInteraction {
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",

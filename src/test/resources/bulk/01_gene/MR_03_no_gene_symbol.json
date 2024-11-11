@@ -64,6 +64,7 @@
         "display_name": "TEST:0001",
         "prefix": "TEST"
       }
-    }
+    },
+    "gene_type_curie": "SO:0001217"
   }
 ]

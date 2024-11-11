@@ -31,6 +31,9 @@ uirun:
 	make -B -C src/main/cliapp
 	make -B -C src/main/cliapp run
 
+pretty:
+	make -B -C src/main/cliapp pretty
+
 uirunalpha:
 	export API_URL=https://alpha-curation.alliancegenome.org; make -B -C src/main/cliapp run; unset API_URL
 

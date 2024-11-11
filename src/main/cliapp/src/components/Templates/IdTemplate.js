@@ -1,5 +1,6 @@
 import { EllipsisTableCell } from '../EllipsisTableCell';
 import { Tooltip } from 'primereact/tooltip';
+import './styles.scss';
 
 export const IdTemplate = ({ id }) => {
 	if (!id) return null;
@@ -10,7 +11,7 @@ export const IdTemplate = ({ id }) => {
 	return (
 		<>
 			<EllipsisTableCell otherClasses={targetClass}>{id}</EllipsisTableCell>
-			<Tooltip target={`.${targetClass}`} content={id} />
+			<Tooltip target={`.${targetClass}`} content={id} className="tooltip" mouseTrack position="right" />
 		</>
 	);
 };

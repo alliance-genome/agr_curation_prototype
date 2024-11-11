@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -39,7 +40,7 @@ public class VariantDTOValidator extends BaseDTOValidator {
 	private ObjectResponse<Variant> variantResponse;
 
 	@Transactional
-	public Variant validateVariantDTO(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public Variant validateVariantDTO(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		variantResponse = new ObjectResponse<Variant>();
 

@@ -16,6 +16,8 @@ import { EntityDetailsAction } from '../Actions/EntityDetailsAction';
 import { filterColumns, orderColumns, getIdentifier } from '../../utils/utils';
 import { useGenericDataTable } from './useGenericDataTable';
 
+import './styles.scss';
+import { DataTableFooter } from './DataTableFooter';
 export const GenericDataTable = (props) => {
 	const {
 		tableName,
@@ -160,8 +162,8 @@ export const GenericDataTable = (props) => {
 
 	const rowEditorFilterNameHeader = (options) => {
 		return (
-			<div className="p-column-header-content">
-				<span className="p-column-title">Filters</span>
+			<div>
+				<span className="p-column-title text-center">Filters</span>
 			</div>
 		);
 	};
@@ -308,30 +310,32 @@ export const GenericDataTable = (props) => {
 				columnResizeMode="expand"
 				showGridlines={true}
 				onColumnResizeEnd={handleColumnResizeEnd}
-				paginator={!isInEditMode}
 				totalRecords={totalRecords}
-				onPage={onLazyLoad}
 				lazy={true}
-				first={tableState.first}
-				paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-				currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-				rows={tableState.rows}
-				rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
 				rowClassName={(props) => getRowClass(props)}
 				loading={fetching}
 				loadingIcon="pi pi-spin pi-spinner"
+				footer={
+					<DataTableFooter
+						first={tableState.first}
+						rows={tableState.rows}
+						totalRecords={totalRecords}
+						onLazyLoad={onLazyLoad}
+						isInEditMode={isInEditMode}
+					/>
+				}
 			>
 				{isEditable && (
 					<Column
 						field="rowEditor"
 						rowEditor
-						className={'p-text-center p-0 min-w-3rem max-w-3rem text-base'}
+						className={`text-center row-editor-column p-0 text-base`}
 						filter
 						filterElement={rowEditorFilterNameHeader}
 						showFilterMenu={false}
 						bodyStyle={{ textAlign: 'center' }}
 						frozen
-						headerClassName="surface-0 w-3rem sticky"
+						headerClassName={`surface-0 row-editor-column sticky`}
 					/>
 				)}
 				{deletionEnabled && (
@@ -341,10 +345,10 @@ export const GenericDataTable = (props) => {
 						body={(props) => deleteAction(props, isInEditMode)}
 						filterElement={rowEditorFilterNameHeader}
 						showFilterMenu={false}
-						className={`p-text-center p-0 min-w-3rem max-w-3rem ${isEditable ? 'visible' : 'hidden'}`}
+						className={`text-center p-0 action-column ${isEditable ? 'visible' : 'hidden'}`}
 						bodyStyle={{ textAlign: 'center' }}
 						frozen
-						headerClassName="surface-0 w-3rem sticky"
+						headerClassName="surface-0 action-column sticky"
 					/>
 				)}
 				{duplicationEnabled && (
@@ -357,10 +361,10 @@ export const GenericDataTable = (props) => {
 							<DuplicationAction props={props} handleDuplication={handleDuplication} disabled={isInEditMode} />
 						)}
 						showFilterMenu={false}
-						className={`p-text-center p-0 min-w-3rem max-w-3rem ${isEditable ? 'visible' : 'hidden'}`}
+						className={`text-center p-0 action-column ${isEditable ? 'visible' : 'hidden'}`}
 						bodyStyle={{ textAlign: 'center' }}
 						frozen
-						headerClassName="surface-0 w-3rem sticky"
+						headerClassName="surface-0 action-column sticky"
 					/>
 				)}
 				{hasDetails && (
@@ -369,10 +373,10 @@ export const GenericDataTable = (props) => {
 						editor={(props) => <EntityDetailsAction identifier={getIdentifier(props.rowData)} disabled={true} />}
 						body={(props) => <EntityDetailsAction identifier={getIdentifier(props)} disabled={isInEditMode} />}
 						showFilterMenu={false}
-						className={`p-text-center p-0 min-w-3rem max-w-3rem ${isEditable ? 'visible' : 'hidden'}`}
+						className={`text-center p-0 action-column ${isEditable ? 'visible' : 'hidden'}`}
 						bodyStyle={{ textAlign: 'center' }}
 						frozen
-						headerClassName="surface-0 w-3rem sticky"
+						headerClassName="surface-0 action-column sticky"
 					/>
 				)}
 				{columnList}

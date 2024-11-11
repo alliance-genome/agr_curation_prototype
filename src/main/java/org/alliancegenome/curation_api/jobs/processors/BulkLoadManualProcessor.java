@@ -16,17 +16,15 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
-import lombok.extern.jbosslog.JBossLog;
+import jakarta.enterprise.event.ObservesAsync;
 
-@JBossLog
 @ApplicationScoped
 public class BulkLoadManualProcessor extends BulkLoadProcessor {
 
-	public void processBulkManualLoad(@Observes StartedBulkLoadJobEvent load) {
+	public void processBulkManualLoad(@ObservesAsync StartedBulkLoadJobEvent load) {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		if (bulkLoad instanceof BulkManualLoad bulkURLLoad) {
-			Log.info("processBulkManualLoad: " + load.getId());
+			Log.debug("processBulkManualLoad: " + load.getId());
 			// We do nothing because at the load level we don't try to figure out what the
 			// next file to run is
 		}
@@ -36,7 +34,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 		Map<String, List<InputPart>> form = input.getFormDataMap();
 
 		if (form.containsKey(loadType)) {
-			log.warn("Key not found: " + loadType);
+			Log.warn("Key not found: " + loadType);
 			return;
 		}
 
@@ -59,7 +57,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 			endLoad(bulkManualLoad, null, JobStatus.FINISHED);
 
 		} else {
-			log.warn("BulkManualLoad not found: " + loadType);
+			Log.warn("BulkManualLoad not found: " + loadType);
 			endLoad(bulkManualLoad, "BulkManualLoad not found: " + loadType, JobStatus.FAILED);
 		}
 

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
@@ -27,13 +26,13 @@ public class GeneExecutor extends LoadFileExecutor {
 
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
-	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
-		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider : " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile, GeneDTO.class);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, GeneDTO.class);
 		if (ingestDto == null) {
 			return;
 		}
@@ -50,17 +49,19 @@ public class GeneExecutor extends LoadFileExecutor {
 			log.debug("runLoad: Before: total " + geneIdsBefore.size());
 		}
 
-		bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
-		bulkLoadFileDAO.merge(bulkLoadFile);
+		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(genes.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
-		createHistory(history, bulkLoadFile);
-		boolean success = runLoad(geneService, history, dataProvider, genes, geneIdsLoaded);
+		bulkLoadFileHistory.setCount(genes.size());
+		updateHistory(bulkLoadFileHistory);
+		
+		boolean success = runLoad(geneService, bulkLoadFileHistory, dataProvider, genes, geneIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(geneService, history, dataProvider.name(), geneIdsBefore, geneIdsLoaded, "gene", bulkLoadFile.getMd5Sum());
+			runCleanup(geneService, bulkLoadFileHistory, dataProvider.name(), geneIdsBefore, geneIdsLoaded, "gene");
 		}
-		history.finishLoad();
-		finalSaveHistory(history);
+		bulkLoadFileHistory.finishLoad();
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 
 	}
 

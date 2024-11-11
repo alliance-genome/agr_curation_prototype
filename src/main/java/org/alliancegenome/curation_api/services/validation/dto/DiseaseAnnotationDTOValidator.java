@@ -135,20 +135,34 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 				if (diseaseGeneticModifierRelation == null) {
 					daResponse.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseGeneticModifierRelationName() + ")");
 				}
-				List<BiologicalEntity> diseaseGeneticModifiers = new ArrayList<>();
+				List<Gene> diseaseGeneticModifierGenes = new ArrayList<>();
+				List<Allele> diseaseGeneticModifierAlleles = new ArrayList<>();
+				List<AffectedGenomicModel> diseaseGeneticModifierAgms = new ArrayList<>();
 				for (String modifierIdentifier : dto.getDiseaseGeneticModifierIdentifiers()) {
 					BiologicalEntity diseaseGeneticModifier = biologicalEntityService.findByIdentifierString(modifierIdentifier);
 					if (diseaseGeneticModifier == null) {
 						daResponse.addErrorMessage("disease_genetic_modifier_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + modifierIdentifier + ")");
 					} else {
-						diseaseGeneticModifiers.add(diseaseGeneticModifier);
+						if (diseaseGeneticModifier instanceof Gene) {
+							diseaseGeneticModifierGenes.add((Gene) diseaseGeneticModifier);
+						} else if (diseaseGeneticModifier instanceof Allele) {
+							diseaseGeneticModifierAlleles.add((Allele) diseaseGeneticModifier);
+						} else if (diseaseGeneticModifier instanceof AffectedGenomicModel) {
+							diseaseGeneticModifierAgms.add((AffectedGenomicModel) diseaseGeneticModifier);
+						} else {
+							daResponse.addErrorMessage("disease_genetic_modifier_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + modifierIdentifier + ")");
+						}
 					}
 				}
-				annotation.setDiseaseGeneticModifiers(diseaseGeneticModifiers);
+				annotation.setDiseaseGeneticModifierGenes(diseaseGeneticModifierGenes);
+				annotation.setDiseaseGeneticModifierAlleles(diseaseGeneticModifierAlleles);
+				annotation.setDiseaseGeneticModifierAgms(diseaseGeneticModifierAgms);
 				annotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
 			}
 		} else {
-			annotation.setDiseaseGeneticModifiers(null);
+			annotation.setDiseaseGeneticModifierGenes(null);
+			annotation.setDiseaseGeneticModifierAlleles(null);
+			annotation.setDiseaseGeneticModifierAgms(null);
 			annotation.setDiseaseGeneticModifierRelation(null);
 		}
 

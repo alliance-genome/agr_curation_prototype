@@ -5,7 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.dao.AllelePhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
@@ -45,13 +45,13 @@ public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<
 	}
 
 	@Transactional
-	public AllelePhenotypeAnnotation upsertPrimaryAnnotation(Allele subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public AllelePhenotypeAnnotation upsertPrimaryAnnotation(Allele subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
 		return allelePhenotypeAnnotationDAO.persist(annotation);
 	}
 
 	@Transactional
-	public List<AllelePhenotypeAnnotation> addInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public List<AllelePhenotypeAnnotation> addInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		List<AllelePhenotypeAnnotation> annotations = allelePhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, dataProvider);
 		for (AllelePhenotypeAnnotation annotation : annotations) {
 			allelePhenotypeAnnotationDAO.persist(annotation);

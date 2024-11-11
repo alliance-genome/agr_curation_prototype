@@ -1,23 +1,23 @@
 import { Tooltip } from 'primereact/tooltip';
 import { EllipsisTableCell } from '../EllipsisTableCell';
 
-export const OntologyTermTemplate = ({ object }) => {
-	if (!object) return null;
+export const OntologyTermTemplate = ({ term }) => {
+	if (!term) return null;
 
 	const targetClass = `a${global.crypto.randomUUID()}`;
-	const textString = getTextString(object);
+	const textString = getTextString(term);
 
 	return (
 		<>
 			<EllipsisTableCell otherClasses={targetClass}>{textString}</EllipsisTableCell>
-			<Tooltip target={`.${targetClass}`} content={textString} />
+			<Tooltip target={`.${targetClass}`} content={textString} mouseTrack position="bottom" />
 		</>
 	);
 };
 
-const getTextString = (object) => {
-	if (!object.name) return object.curie;
-	if (!object.curie) return object.name;
-	if (!object.curie && !object.name) return '';
-	return `${object.name} (${object.curie})`;
+const getTextString = (term) => {
+	if (!term.name) return term.curie;
+	if (!term.curie) return term.name;
+	if (!term.curie && !term.name) return '';
+	return `${term.name} (${term.curie})`;
 };

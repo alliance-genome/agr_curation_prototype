@@ -84,9 +84,9 @@ public class GeneITCase extends BaseITCase {
 	
 	private void loadRequiredEntities() {
 
-		soTerm = createSoTerm("SO:0001", false);
-		soTerm2 = createSoTerm("SO:0002", false);
-		obsoleteSoTerm = createSoTerm("SO:0000", true);
+		soTerm = createSoTerm("SO:0001", "test1", false);
+		soTerm2 = createSoTerm("SO:0002", "test2", false);
+		obsoleteSoTerm = createSoTerm("SO:0000", "testObsolete", true);
 		nameType = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		synonymScope = getVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY);
 		symbolNameType = getVocabularyTerm(nameType, "nomenclature_symbol");
@@ -301,10 +301,11 @@ public class GeneITCase extends BaseITCase {
 			post("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(3))).
+			body("errorMessages", is(aMapWithSize(4))).
 			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.geneSymbol", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.geneSymbol", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.geneType", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -331,6 +332,7 @@ public class GeneITCase extends BaseITCase {
 		gene.setTaxon(null);
 		gene.setGeneSymbol(null);
 		gene.setDataProvider(null);
+		gene.setGeneType(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -339,10 +341,11 @@ public class GeneITCase extends BaseITCase {
 			put("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(3))).
+			body("errorMessages", is(aMapWithSize(4))).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.geneSymbol", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.geneType", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -353,6 +356,7 @@ public class GeneITCase extends BaseITCase {
 		gene.setModEntityId("");
 		gene.setTaxon(taxon);
 		gene.setGeneSymbol(geneSymbol);
+		gene.setGeneType(soTerm);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -389,6 +393,7 @@ public class GeneITCase extends BaseITCase {
 		Gene gene = new Gene();
 		gene.setModEntityId("GENE:0008");
 		gene.setTaxon(taxon);
+		gene.setGeneType(soTerm);
 		
 		GeneSymbolSlotAnnotation invalidSymbol = new GeneSymbolSlotAnnotation();
 		GeneFullNameSlotAnnotation invalidFullName = new GeneFullNameSlotAnnotation();
@@ -494,6 +499,7 @@ public class GeneITCase extends BaseITCase {
 		Gene gene = new Gene();
 		gene.setModEntityId("GENE:0010");
 		gene.setTaxon(taxon);
+		gene.setGeneType(soTerm);
 		
 		GeneSymbolSlotAnnotation invalidSymbol = createGeneSymbolSlotAnnotation(null, "", symbolNameType, null, null);
 		GeneFullNameSlotAnnotation invalidFullName = createGeneFullNameSlotAnnotation(null, "", fullNameType, null, null);
@@ -898,7 +904,6 @@ public class GeneITCase extends BaseITCase {
 	public void editGeneWithNullNonRequiredFieldsLevel1() {
 		Gene gene = getGene(GENE);
 		
-		gene.setGeneType(null);
 		gene.setGeneFullName(null);
 		gene.setGeneSynonyms(null);
 		gene.setGeneSystematicName(null);
@@ -917,7 +922,6 @@ public class GeneITCase extends BaseITCase {
 			get("/api/gene/" + GENE).
 			then().
 			statusCode(200).
-			body("entity", not(hasKey("geneType"))).
 			body("entity", not(hasKey("geneFullName"))).
 			body("entity", not(hasKey("geneSynonyms"))).
 			body("entity", not(hasKey("geneSystematicName"))).
@@ -931,6 +935,7 @@ public class GeneITCase extends BaseITCase {
 		gene.setModEntityId("GENE:0020");
 		gene.setTaxon(taxon);
 		gene.setGeneSymbol(geneSymbol);
+		gene.setGeneType(soTerm);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -947,6 +952,7 @@ public class GeneITCase extends BaseITCase {
 		Gene gene = new Gene();
 		gene.setModEntityId("GENE:0021");
 		gene.setTaxon(taxon);
+		gene.setGeneType(soTerm);
 
 		GeneSymbolSlotAnnotation minimalGeneSymbol = createGeneSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);
 		GeneFullNameSlotAnnotation minimalGeneFullName = createGeneFullNameSlotAnnotation(null, "Test name", fullNameType, null, null);

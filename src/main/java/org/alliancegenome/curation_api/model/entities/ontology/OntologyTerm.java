@@ -38,7 +38,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "OntologyTermType")
+@DiscriminatorColumn(name = "OntologyTermType", length = 64)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Entity
@@ -47,6 +47,7 @@ import lombok.ToString;
 @Table(
 	indexes = {
 		@Index(name = "ontologyterm_curie_index", columnList = "curie"),
+		@Index(name = "ontologyterm_name_index", columnList = "name"),
 		@Index(name = "ontologyterm_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "ontologyterm_updatedby_index", columnList = "updatedBy_id")
 	},

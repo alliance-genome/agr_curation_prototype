@@ -101,8 +101,8 @@ public class OrthologyBulkUploadFmsITCase extends BaseITCase {
 	@Order(4)
 	public void orthologyBulkUploadInvalidFields() throws Exception {
 
-		checkFailedBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "IV_01_invalid_gene1.json");
-		checkFailedBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "IV_02_invalid_gene2.json");
+		checkSkippedBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "IV_01_invalid_gene1.json");
+		checkSkippedBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "IV_02_invalid_gene2.json");
 		checkFailedBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "IV_03_invalid_gene1Species.json");
 		checkFailedBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "IV_04_invalid_gene2Species.json");
 		checkFailedBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "IV_05_invalid_isBestScore.json");

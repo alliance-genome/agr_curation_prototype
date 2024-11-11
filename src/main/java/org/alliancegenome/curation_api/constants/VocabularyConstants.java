@@ -27,6 +27,9 @@ public final class VocabularyConstants {
 
 	public static final String ALLELE_RELATION_VOCABULARY = "allele_relation";
 	public static final String ALLELE_GENE_RELATION_VOCABULARY_TERM_SET = "allele_gene_relation";
+	public static final String ALLELE_VARIANT_RELATION_VOCABULARY_TERM_SET = "allele_variant_relation";
+	
+	public static final String LOCATION_ASSOCIATION_RELATION_VOCABULARY = "location_association_relation";
 
 	public static final String FULL_NAME_TYPE_TERM_SET = "full_name_type";
 	public static final String SYSTEMATIC_NAME_TYPE_TERM_SET = "systematic_name_type";
@@ -70,4 +73,18 @@ public final class VocabularyConstants {
 	public static final String GENE_EXPRESSION_VOCABULARY = "gene_expression";
 	public static final String GENE_EXPRESSION_RELATION_TERM = "is_expressed_in";
 
+	public static final String TRANSCRIPT_RELATION_VOCABULARY = "transcript_relation";
+	public static final String TRANSCRIPT_CHILD_TERM = "is_child_of";
+	public static final String TRANSCRIPT_PARENT_TERM = "is_parent_of";
+
+	public static final String STAGE_UBERON_SLIM_TERMS = "stage_uberon_slim_terms";
+	public static final String ANATOMICAL_STRUCTURE_UBERON_SLIM_TERMS = "anatomical_structure_uberon_slim_terms";
+	public static final String SPATIAL_EXPRESSION_QUALIFIERS = "spatial_expression_qualifiers";
+	public static final String ANATOMICAL_STRUCTURE_QUALIFIER = "anatomical_structure_qualifier";
+	public static final String ANATOMICAL_SUBSTRUCTURE_QUALIFIER = "anatomical_subtructure_qualifier";
+	public static final String CELLULAR_COMPONENT_QUALIFIER = "cellular_component_qualifier";
+
+	public static final String HTP_DATASET_CATEGORY_TAGS = "data_set_category_tags";
+	public static final String HTP_DATASET_NOTE_TYPE_VOCABULARY_TERM_SET = "htp_expression_dataset_note_type";
+	public static final String HTP_DATASET_SAMPLE_NOTE_TYPE_VOCABULARY_TERM_SET = "htp_expression_dataset_sample_note_type";
 }

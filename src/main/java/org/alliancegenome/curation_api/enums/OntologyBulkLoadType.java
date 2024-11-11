@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.CLTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DAOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.DPOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.FBCVTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EMAPATerm;
 import org.alliancegenome.curation_api.model.entities.ontology.FBDVTerm;
@@ -75,7 +75,7 @@ public enum OntologyBulkLoadType {
 	WBPheno(WBPhenotypeTerm.class),
 	VT(VTTerm.class),
 	HP(HPTerm.class),
-	DPO(DPOTerm.class),
+	FBCV(FBCVTerm.class),
 	MMO(MMOTerm.class),
 	APO(APOTerm.class),
 	MI(MITerm.class),

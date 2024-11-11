@@ -29,16 +29,14 @@ import org.semanticweb.owlapi.model.OWLObjectVisitor;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
-import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
+import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 
 import io.quarkus.logging.Log;
 
 public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObjectVisitor {
 
-	private OWLReasonerFactory reasonerFactory = new StructuralReasonerFactory();
-	// private OWLDataFactory df = OWLManager.getOWLDataFactory();
+	private ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
 	private OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	private OWLReasoner reasoner;
 	private OWLOntology ontology;

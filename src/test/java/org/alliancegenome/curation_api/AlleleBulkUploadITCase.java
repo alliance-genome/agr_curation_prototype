@@ -56,10 +56,10 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	private final String alleleTestFilePath = "src/test/resources/bulk/02_allele/";
 
 	private void loadRequiredEntities() throws Exception {
-		loadSOTerm(requiredSoTerm, "Test SOTerm");
-		loadSOTerm(requiredSoTerm2, "Test SOTerm2");
-		loadMPTerm(requiredMpTerm, "Test MPTerm");
-		loadMPTerm(requiredMpTerm2, "Test MPTerm2");
+		createSoTerm(requiredSoTerm, "Test SOTerm", false);
+		createSoTerm(requiredSoTerm2, "Test SOTerm2", false);
+		createMpTerm(requiredMpTerm, "Test MPTerm");
+		createMpTerm(requiredMpTerm2, "Test MPTerm2");
 	}
 	
 	@Test

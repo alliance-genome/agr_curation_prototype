@@ -46,6 +46,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	private String requiredReferenceXref2 = "PMID:25920551";
 	private String requiredDataProvider = "WB";
 	private String requiredDataProvider2 = "RGD";
+	private String soTerm = "SO:0001217";
+	private String soTerm2 = "SO:0000336";
 	
 	private final String geneBulkPostEndpoint = "/api/gene/bulk/WB/genes";
 	private final String geneBulkPostEndpointRGD = "/api/gene/bulk/RGD/genes";
@@ -54,12 +56,14 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	private final String geneTestFilePath = "src/test/resources/bulk/01_gene/";
 	
 	private void loadRequiredEntities() throws Exception {
-		loadReference(requiredReference, requiredReferenceXref);
-		loadReference(requiredReference2, requiredReferenceXref2);
+		createReference(requiredReference, requiredReferenceXref);
+		createReference(requiredReference2, requiredReferenceXref2);
 		ResourceDescriptor rd = createResourceDescriptor("TEST");
 		createResourceDescriptorPage("homepage", "http://test.org", rd);
 		ResourceDescriptor rd2 = createResourceDescriptor("TEST2");
 		createResourceDescriptorPage("homepage2", "http://test2.org", rd2);
+		createSoTerm(soTerm, "protein_coding_gene", false);
+		createSoTerm(soTerm2, "pseudogene", false);
 	}
 
 	@Test
@@ -147,7 +151,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.crossReferences", hasSize(1)).
 			body("entity.crossReferences[0].referencedCurie", is("TEST:Xref01")).
 			body("entity.crossReferences[0].displayName", is("TEST:Xref01Display")).
-			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage"));
+			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage")).
+			body("entity.geneType.curie", is(soTerm));
 	}
 	
 	@Test
@@ -233,7 +238,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.crossReferences", hasSize(1)).
 			body("entity.crossReferences[0].referencedCurie", is("TEST2:Xref02")).
 			body("entity.crossReferences[0].displayName", is("TEST2:Xref02Display")).
-			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage2"));
+			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage2")).
+			body("entity.geneType.curie", is(soTerm2));
 	}
 	
 	@Test
@@ -261,6 +267,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_20_no_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_21_no_data_provider_cross_reference_page_area.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_22_no_gene_secondary_id_secondary_id.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_23_no_gene_type.json");
 	}
 	
 	@Test
@@ -286,6 +293,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_18_empty_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_19_empty_data_provider_cross_reference_page_area.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_20_empty_gene_secondary_id_secondary_id.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_21_empty_gene_type.json");
 	}
 	
 	@Test
@@ -310,6 +318,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_17_invalid_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_18_invalid_data_provider_cross_reference_page_area.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_19_invalid_gene_secondary_id_evidence.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_20_invalid_gene_type.json");
 	}
 	
 	@Test

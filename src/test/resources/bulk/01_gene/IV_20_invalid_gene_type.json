@@ -1,0 +1,114 @@
+[
+  {
+    "mod_entity_id": "GENETEST:IV20",
+    "taxon_curie": "NCBITaxon:6239",
+    "internal": true,
+    "obsolete": true,
+    "created_by_curie": "GENETEST:Person0001",
+    "updated_by_curie": "GENETEST:Person0002",
+    "date_created": "2022-03-09T22:10:12+00:00",
+    "date_updated": "2022-03-10T22:10:12+00:00",
+    "gene_symbol_dto": {
+      "display_text": "Tg1",
+      "format_text": "Tg<sup>1</sup>",
+      "synonym_scope_name": "exact",
+      "synonym_url": "https://alliancegenome.org/test",
+      "name_type_name": "nomenclature_symbol",
+      "evidence_curies": [
+        "PMID:25920550"
+      ],
+      "internal": true,
+      "obsolete": true,
+      "created_by_curie": "GENETEST:Person0001",
+      "updated_by_curie": "GENETEST:Person0002",
+      "date_created": "2022-03-09T22:10:12+00:00",
+      "date_updated": "2022-03-10T22:10:12+00:00"
+    },
+    "gene_full_name_dto": {
+      "display_text": "Test gene 1",
+      "format_text": "Test gene<sup>1</sup>",
+      "synonym_scope_name": "exact",
+      "synonym_url": "https://alliancegenome.org/test",
+      "name_type_name": "full_name",
+      "evidence_curies": [
+        "PMID:25920550"
+      ],
+      "internal": true,
+      "obsolete": true,
+      "created_by_curie": "GENETEST:Person0001",
+      "updated_by_curie": "GENETEST:Person0002",
+      "date_created": "2022-03-09T22:10:12+00:00",
+      "date_updated": "2022-03-10T22:10:12+00:00"
+    },
+    "gene_systematic_name_dto": {
+      "display_text": "Tg1.1",
+      "format_text": "Tg1.1",
+      "synonym_scope_name": "exact",
+      "synonym_url": "https://alliancegenome.org/test",
+      "name_type_name": "systematic_name",
+      "evidence_curies": [
+        "PMID:25920550"
+      ],
+      "internal": true,
+      "obsolete": true,
+      "created_by_curie": "GENETEST:Person0001",
+      "updated_by_curie": "GENETEST:Person0002",
+      "date_created": "2022-03-09T22:10:12+00:00",
+      "date_updated": "2022-03-10T22:10:12+00:00"
+    },
+    "gene_synonym_dtos": [
+      {
+        "display_text": "Test gene synonym 1",
+        "format_text": "Test gene synonym <sup>1</sup>",
+        "synonym_scope_name": "exact",
+        "synonym_url": "https://alliancegenome.org/test",
+        "name_type_name": "unspecified",
+        "evidence_curies": [
+          "PMID:25920550"
+        ],
+        "internal": true,
+        "obsolete": true,
+        "created_by_curie": "GENETEST:Person0001",
+        "updated_by_curie": "GENETEST:Person0002",
+        "date_created": "2022-03-09T22:10:12+00:00",
+        "date_updated": "2022-03-10T22:10:12+00:00"
+      }
+    ],
+    "gene_secondary_id_dtos": [
+      {
+        "secondary_id": "TEST:Secondary",
+        "evidence_curies": [
+          "PMID:25920550"
+        ],
+        "internal": true,
+        "obsolete": true,
+        "created_by_curie": "GENETEST:Person0001",
+        "updated_by_curie": "GENETEST:Person0002",
+        "date_created": "2022-03-09T22:10:12+00:00",
+        "date_updated": "2022-03-10T22:10:12+00:00"
+      }
+    ],
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "WB",
+      "cross_reference_dto": {
+        "referenced_curie": "TEST:0001",
+        "page_area": "homepage",
+        "display_name": "TEST:0001",
+        "prefix": "TEST"
+      }
+    },
+    "cross_reference_dtos": [
+      {
+        "internal": false,
+        "obsolete": false,
+        "referenced_curie": "TEST:Xref01",
+        "page_area": "homepage",
+        "display_name": "TEST:Xref01Display",
+        "prefix": "TEST"
+      }
+    ],
+    "gene_type_curie": "SO:Invalid"
+  }
+]

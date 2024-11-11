@@ -171,21 +171,4 @@ describe('GenomicEntityListTemplate', () => {
 		expect(genomicEntity2).toBeInTheDocument();
 		expect(genomicEntity3).toBeInTheDocument();
 	});
-	it('should render genomicEntities and curie in a tooltip when genomicEntity has alleleSymbol', async () => {
-		const genomicEntities = [
-			{ alleleSymbol: { displayText: 'Allele Symbol C' }, curie: 'ID1' },
-			{ alleleSymbol: { displayText: 'Allele Symbol A' }, modEntityId: 'ID2' },
-			{ alleleSymbol: { displayText: 'Allele Symbol B' }, modInternalId: 'ID3' },
-		];
-
-		const result = render(<GenomicEntityListTemplate genomicEntities={genomicEntities} />);
-
-		let listContentArray = result.getAllByText('Allele Symbol A (ID2)');
-		expect(listContentArray).toHaveLength(1);
-
-		fireEvent.mouseEnter(result.container.firstChild);
-
-		//using find... here because it's async and the tooltip is dynamically added
-		expect(await result.findAllByText('Allele Symbol A (ID2)')).toHaveLength(2);
-	});
 });

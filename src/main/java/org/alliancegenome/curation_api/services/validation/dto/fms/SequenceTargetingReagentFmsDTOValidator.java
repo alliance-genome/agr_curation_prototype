@@ -4,12 +4,16 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
+import org.alliancegenome.curation_api.services.GeneService;
+import org.alliancegenome.curation_api.services.SequenceTargetingReagentService;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,15 +23,20 @@ import jakarta.inject.Inject;
 
 @RequestScoped
 public class SequenceTargetingReagentFmsDTOValidator {
-	@Inject
-	DataProviderService dataProviderService;
+	@Inject DataProviderService dataProviderService;
 
-	@Inject
-	SequenceTargetingReagentDAO sqtrDAO;
+	@Inject GeneService geneService;
+
+	@Inject SequenceTargetingReagentDAO sqtrDAO;
 
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
-	public SequenceTargetingReagent validateSQTRFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
+	@Inject SequenceTargetingReagentService sqtrService;
+
+	@Inject VocabularyTermService vocabularyTermService;
+
+
+	public SequenceTargetingReagent validateSQTRFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 		ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
 		
 		SequenceTargetingReagent sqtr;
@@ -78,7 +87,7 @@ public class SequenceTargetingReagentFmsDTOValidator {
 		}
 		
 		if (beDataProvider != null) {
-			sqtr.setDataProvider(dataProviderService.createOrganizationDataProvider(beDataProvider.sourceOrganization));
+			sqtr.setDataProvider(dataProviderService.getDefaultDataProvider(beDataProvider.sourceOrganization));
 		}
 		
 		if (sqtrResponse.hasErrors()) {
@@ -87,4 +96,5 @@ public class SequenceTargetingReagentFmsDTOValidator {
 
 		return sqtr;
 	}
+
 }

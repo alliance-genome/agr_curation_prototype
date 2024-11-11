@@ -16,6 +16,7 @@ import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialog
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 import { SearchService } from '../../service/SearchService';
 
@@ -257,6 +258,7 @@ export const ConstructsTable = () => {
 			field: 'updatedBy.uniqueId',
 			header: 'Updated By',
 			sortable: { isInEditMode },
+			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
@@ -264,6 +266,7 @@ export const ConstructsTable = () => {
 			header: 'Date Updated',
 			sortable: { isInEditMode },
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 		},
 		{
@@ -271,6 +274,7 @@ export const ConstructsTable = () => {
 			header: 'Created By',
 			sortable: { isInEditMode },
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 		},
 		{
@@ -278,6 +282,7 @@ export const ConstructsTable = () => {
 			header: 'Date Created',
 			sortable: { isInEditMode },
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 		},
 		{

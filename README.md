@@ -481,6 +481,7 @@ As the code goes through the different stages, it becomes more and more stable a
    *  Incrementing the `MAJOR` or `MINOR` release numbers as appropriate when
       the previous release candidate was (or will be) promoted to a full release
       and reset to rc1 for the next release.
+   *  When choosing an alpha release make sure to include the Pull Requests that may have fixed bugs shortly after the sprint review, if they needed to be included in beta release.
 4. Create a release/v`x`.`y`.`z`-rc`a` branch from the commit on the alpha branch
    that was chosen earlier to be promoted.
    ```bash

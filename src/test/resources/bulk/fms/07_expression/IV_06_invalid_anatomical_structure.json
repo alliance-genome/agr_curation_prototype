@@ -1,0 +1,43 @@
+[
+	{
+		"dateAssigned" : "2024-01-17T07:31:34-08:00",
+		"geneId" : "GEXPTEST:GENE001",
+		"evidence" : {
+			"crossReference" : {
+				"id" : "ZFIN:PUB001",
+				"pages" : [ "reference" ]
+			},
+			"publicationId" : "PMID:009"
+		},
+		"crossReference" : {
+			"id" : "ZFIN:ZDB-FIG-170413-34",
+			"pages" : [ "gene/expression/annotation/detail" ]
+		},
+		"assay" : "GEXPTEST:assay001",
+		"whenExpressed" : {
+			"stageName" : "stage1",
+			"stageTermId" : "ZFS:001",
+			"stageUberonSlimTerm" : {
+				"uberonTerm" : "UBERON:001"
+			}
+		},
+		"whereExpressed" : {
+			"whereExpressedStatement" : "trunk",
+			"anatomicalStructureTermId" : "ANAT:NOTFOUND",
+			"anatomicalSubStructureTermId" : "ANAT:002",
+			"cellularComponentTermId" : "GOTEST:0012",
+			"anatomicalStructureQualifierTermId": "UBERON:002",
+			"anatomicalSubStructureQualifierTermId": "UBERON:003",
+			"cellularComponentQualifierTermId": "FBCV:001",
+			"anatomicalStructureUberonSlimTermIds" : [
+				{"uberonTerm" : "UBERON:004"},
+				{"uberonTerm" : "UBERON:005"}
+			],
+			"anatomicalSubStructureUberonSlimTermIds" : [
+				{"uberonTerm" : "UBERON:006"},
+				{"uberonTerm" : "UBERON:007"}
+			]
+		}
+	}
+]
+

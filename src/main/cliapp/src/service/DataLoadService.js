@@ -19,8 +19,6 @@ export class DataLoadService extends BaseAuthService {
 				delete newLoad[objectKey];
 			}
 		}
-		console.log('Creating: ');
-		console.log(newLoad);
 		return this.api.post(`/${endpoint}`, newLoad);
 	}
 
@@ -44,13 +42,12 @@ export class DataLoadService extends BaseAuthService {
 		return this.api.delete(`/${endpoint}/${id}`);
 	}
 
-	restartLoad(loadType, id) {
-		let endpoint = loadType.toLowerCase();
-		return this.api.get(`/${endpoint}/restart/${id}`);
+	restartLoad(id) {
+		return this.api.get(`/bulkloadfilehistory/restartload/${id}`);
 	}
 
-	restartLoadFile(id) {
-		return this.api.get(`/bulkloadfile/restart/${id}`);
+	restartHistoryLoad(id) {
+		return this.api.get(`/bulkloadfilehistory/restartloadhistory/${id}`);
 	}
 
 	getFileHistoryFile(id) {
@@ -77,9 +74,20 @@ export class DataLoadService extends BaseAuthService {
 		return this.api.delete(`/bulkloadfile/${id}`);
 	}
 
+	deleteLoadFileHistory(id) {
+		return this.api.delete(`/bulkloadfilehistory/${id}`);
+	}
+
 	getBackendBulkLoadTypes(loadType) {
 		const bulkLoadTypes = {
 			BulkFMSLoad: [
+				'GFF', // This needs to be removed at some point
+
+				'GFF_EXON',
+				'GFF_CDS',
+				'GFF_TRANSCRIPT',
+				'HTPDATASET',
+				'HTPDATASAMPLE',
 				'INTERACTION-GEN',
 				'INTERACTION-MOL',
 				'MOLECULE',
@@ -87,8 +95,18 @@ export class DataLoadService extends BaseAuthService {
 				'PHENOTYPE',
 				'PARALOGY',
 				'SEQUENCE_TARGETING_REAGENT',
+				// 'VARIATION',
+				'BIOGRID-ORCS',
 			],
-			BulkURLLoad: ['ONTOLOGY', 'GENE', 'ALLELE', 'AGM', 'DISEASE_ANNOTATION', 'RESOURCE_DESCRIPTOR'],
+			BulkURLLoad: [
+				'ONTOLOGY',
+				'GENE',
+				'ALLELE',
+				'AGM',
+				'DISEASE_ANNOTATION',
+				'RESOURCE_DESCRIPTOR',
+				'EXPRESSION_ATLAS',
+			],
 			BulkManualLoad: [
 				'FULL_INGEST',
 				'DISEASE_ANNOTATION',
@@ -98,7 +116,7 @@ export class DataLoadService extends BaseAuthService {
 				'GENE',
 				'ALLELE',
 				'AGM',
-				'VARIANT',
+				// 'VARIANT',
 				'CONSTRUCT',
 				'ALLELE_ASSOCIATION',
 				'CONSTRUCT_ASSOCIATION',
@@ -121,9 +139,9 @@ export class DataLoadService extends BaseAuthService {
 			'CMO',
 			'DAO',
 			'DO',
-			'DPO',
 			'ECO',
 			'EMAPA',
+			'FBCV',
 			'FBDV',
 			'GENO',
 			'GO',

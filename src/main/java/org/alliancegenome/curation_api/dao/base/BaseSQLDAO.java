@@ -1,15 +1,14 @@
 package org.alliancegenome.curation_api.dao.base;
 
-import static org.reflections.scanners.Scanners.TypesAnnotated;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
+import io.quarkus.logging.Log;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.IdentifiableType;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.transaction.Transactional;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.input.Pagination;
@@ -17,7 +16,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.processing.IndexProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.elasticsearch.index.query.Operator;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.sqm.internal.QuerySqmImpl;
@@ -40,31 +38,20 @@ import org.jboss.logging.Logger;
 import org.jboss.logging.Logger.Level;
 import org.reflections.Reflections;
 
-import io.quarkus.logging.Log;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.metamodel.IdentifiableType;
-import jakarta.persistence.metamodel.Metamodel;
-import jakarta.transaction.Transactional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
-	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts") String esHosts;
-
-	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.protocol") String esProtocol;
-
-	@Inject protected EntityManager entityManager;
-	@Inject protected SearchSession searchSession;
-	@Inject protected IndexProcessDisplayService indexProcessDisplayService;
+	@Inject
+	protected EntityManager entityManager;
+	@Inject
+	protected SearchSession searchSession;
+	@Inject
+	protected IndexProcessDisplayService indexProcessDisplayService;
 
 	protected BaseSQLDAO(Class<E> myClass) {
 		super(myClass);
@@ -361,7 +348,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(Indexed.class).asClass(reflections.getConfiguration().getClassLoaders()));
 
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(5000);
 		ph.addDisplayHandler(indexProcessDisplayService);
 		ph.startProcess("Mass Index Everything");
 		MassIndexer indexer = searchSession.massIndexer(annotatedClasses).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true).mergeSegmentsOnFinish(false).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects)
@@ -402,7 +389,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		MassIndexer indexer = searchSession.massIndexer(objectClass).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true).mergeSegmentsOnFinish(false).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects)
 			.monitor(new MassIndexingMonitor() {
 
-				ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+				ProcessDisplayHelper ph = new ProcessDisplayHelper(5000);
 
 				@Override
 				public void documentsAdded(long increment) {
@@ -485,8 +472,9 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 										BooleanPredicateClausesStep<?> clause = p.bool();
 										if (useKeywordFields != null && useKeywordFields) {
 											clause.should(p.match().field(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost + 500));
+										} else {
+											clause.should(p.match().field(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost));
 										}
-										clause.should(p.match().field(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost));
 										q.should(clause);
 									} else { // assume simple query
 										BooleanPredicateClausesStep<?> clause = p.bool();
@@ -721,6 +709,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public E getShallowEntity(Class<E> entityClass, long id) {
+		return entityManager.getReference(entityClass, id);
 	}
 
 }

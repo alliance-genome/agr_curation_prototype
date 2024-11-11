@@ -1,6 +1,7 @@
 import React, { useReducer, useRef, useState, useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DataTable } from 'primereact/datatable';
+import Moment from 'react-moment';
 import { Column } from 'primereact/column';
 import { FileUpload } from 'primereact/fileupload';
 import { Toast } from 'primereact/toast';
@@ -19,6 +20,8 @@ import { HistoryDialog } from './HistoryDialog';
 import { useQueryClient } from '@tanstack/react-query';
 import { SiteContext } from '../layout/SiteContext';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
+import moment from 'moment-timezone';
+import { NumberTemplate } from '../../components/Templates/NumberTemplate';
 
 export const DataLoadsComponent = () => {
 	const { authState } = useOktaAuth();
@@ -45,7 +48,7 @@ export const DataLoadsComponent = () => {
 	const [bulkLoadDialog, setBulkLoadDialog] = useState(false);
 	const [expandedGroupRows, setExpandedGroupRows] = useState(null);
 	const [expandedLoadRows, setExpandedLoadRows] = useState(null);
-	const [expandedFileRows, setExpandedFileRows] = useState(null);
+	//const [expandedFileRows, setExpandedFileRows] = useState(null);
 	const [expandedErrorLoadRows, setExpandedErrorLoadRows] = useState(null);
 	const [disableFormFields, setDisableFormFields] = useState(false);
 	const errorMessage = useRef(null);
@@ -81,7 +84,10 @@ export const DataLoadsComponent = () => {
 				'GeneDTO',
 				'AlleleDTO',
 				'AffectedGenomicModelDTO',
+				// 'VariantDTO',
 				'ConstructDTO',
+				'AlleleGeneAssociationDTO',
+				'ConstructGenomicEntityAssociationDTO',
 			],
 		],
 		['DISEASE_ANNOTATION', ['GeneDiseaseAnnotationDTO', 'AlleleDiseaseAnnotationDTO', 'AGMDiseaseAnnotationDTO']],
@@ -91,7 +97,7 @@ export const DataLoadsComponent = () => {
 		['GENE', ['GeneDTO']],
 		['ALLELE', ['AlleleDTO']],
 		['AGM', ['AffectedGenomicModelDTO']],
-		['VARIANT', ['VariantDTO']],
+		// ['VARIANT', ['VariantDTO']],
 		['CONSTRUCT', ['ConstructDTO']],
 		['ALLELE_ASSOCIATION', ['AlleleGeneAssociationDTO']],
 		['CONSTRUCT_ASSOCIATION', ['ConstructGenomicEntityAssociationDTO']],
@@ -105,8 +111,8 @@ export const DataLoadsComponent = () => {
 					if (group.loads) {
 						for (let load of group.loads) {
 							load.group = group.id;
-							if (load.loadFiles) {
-								let sortedFiles = sortFilesByDate(load.loadFiles);
+							if (load.history) {
+								let sortedFiles = sortFilesByDate(load.history);
 								if (sortedFiles[0].bulkloadStatus === 'FAILED') {
 									_errorLoads.push(load);
 								}
@@ -161,7 +167,7 @@ export const DataLoadsComponent = () => {
 	};
 
 	const urlTemplate = (rowData) => {
-		return <a href={rowData.s3Url}>Download</a>;
+		return <a href={rowData.bulkLoadFile.s3Url}>Download</a>;
 	};
 
 	const refresh = () => {
@@ -170,15 +176,15 @@ export const DataLoadsComponent = () => {
 
 	const runLoad = (rowData) => {
 		getService()
-			.restartLoad(rowData.type, rowData.id)
+			.restartLoad(rowData.id)
 			.then((response) => {
 				queryClient.invalidateQueries(['bulkloadtable']);
 			});
 	};
 
-	const runLoadFile = (rowData) => {
+	const runHistoryLoad = (rowData) => {
 		getService()
-			.restartLoadFile(rowData.id)
+			.restartHistoryLoad(rowData.id)
 			.then((response) => {
 				queryClient.invalidateQueries(['bulkloadtable']);
 			});
@@ -190,9 +196,9 @@ export const DataLoadsComponent = () => {
 		setDisableFormFields(true);
 	};
 
-	const deleteLoadFile = (rowData) => {
+	const deleteLoadFileHistory = (rowData) => {
 		getService()
-			.deleteLoadFile(rowData.id)
+			.deleteLoadFileHistory(rowData.id)
 			.then((response) => {
 				queryClient.invalidateQueries(['bulkloadtable']);
 			});
@@ -236,12 +242,13 @@ export const DataLoadsComponent = () => {
 					</a>
 				}*/}
 
-				{rowData.failedRecords > 0 && (
-					<Button className="p-button-rounded p-button-warning" onClick={() => downloadFileExceptions(rowData.id)}>
-						<i className="pi pi-exclamation-triangle"></i>
-						<i className="pi pi-download ml-1"></i>
-					</Button>
-				)}
+				{rowData.counts &&
+					Object.values(rowData.counts).some((field) => field.failed !== undefined && field.failed > 0) && (
+						<Button className="p-button-rounded p-button-warning" onClick={() => downloadFileExceptions(rowData.id)}>
+							<i className="pi pi-exclamation-triangle"></i>
+							<i className="pi pi-download ml-1"></i>
+						</Button>
+					)}
 			</nobr>
 		);
 	};
@@ -276,21 +283,25 @@ export const DataLoadsComponent = () => {
 		setUploadConfirmDialog(false);
 	};
 
-	const loadFileActionBodyTemplate = (rowData) => {
+	const loadFileActionBodyTemplate = (rowData, bulkload) => {
 		let ret = [];
+		// console.log(rowData);
 		if (
 			!rowData.bulkloadStatus ||
 			rowData.bulkloadStatus === 'FINISHED' ||
 			rowData.bulkloadStatus === 'FAILED' ||
 			rowData.bulkloadStatus === 'STOPPED'
 		) {
-			if (fileWithinSchemaRange(rowData.linkMLSchemaVersion, rowData.loadType)) {
+			if (
+				fileWithinSchemaRange(rowData.bulkLoadFile.linkMLSchemaVersion, bulkload.backendBulkLoadType) ||
+				exemptTypes(bulkload.backendBulkLoadType)
+			) {
 				ret.push(
 					<Button
 						key="run"
 						icon="pi pi-play"
 						className="p-button-rounded p-button-success mr-2"
-						onClick={() => runLoadFile(rowData)}
+						onClick={() => runHistoryLoad(rowData)}
 					/>
 				);
 			}
@@ -306,7 +317,7 @@ export const DataLoadsComponent = () => {
 					key="delete"
 					icon="pi pi-trash"
 					className="p-button-rounded p-button-danger mr-2"
-					onClick={() => deleteLoadFile(rowData)}
+					onClick={() => deleteLoadFileHistory(rowData)}
 				/>
 			);
 		}
@@ -354,7 +365,7 @@ export const DataLoadsComponent = () => {
 			);
 		}
 
-		if (!rowData.loadFiles || rowData.loadFiles.length === 0) {
+		if (!rowData.history || rowData.history.length === 0) {
 			ret.push(
 				<Button
 					key="delete"
@@ -450,6 +461,7 @@ export const DataLoadsComponent = () => {
 		if (rowData.bulkloadStatus === 'FAILED') {
 			styleClass = 'p-button-danger';
 		}
+
 		if (
 			rowData.bulkloadStatus &&
 			(rowData.bulkloadStatus.endsWith('STARTED') ||
@@ -470,12 +482,12 @@ export const DataLoadsComponent = () => {
 
 	const bulkloadStatusTemplate = (rowData) => {
 		let sortedFiles = [];
-		if (rowData.loadFiles) {
-			sortedFiles = sortFilesByDate(rowData.loadFiles);
+		if (rowData.history) {
+			sortedFiles = sortFilesByDate(rowData.history);
 		}
 		let latestStatus = null;
 		let latestError = null;
-		if (rowData.loadFiles) {
+		if (rowData.history) {
 			latestStatus = sortedFiles[0].bulkloadStatus;
 			latestError = sortedFiles[0].errorMessage;
 		}
@@ -493,27 +505,89 @@ export const DataLoadsComponent = () => {
 		return <Button label={latestStatus} tooltip={latestError} className={`p-button-rounded ${styleClass}`} />;
 	};
 
-	const historyTable = (file) => {
+	const durationTemplate = (rowData) => {
+		moment.tz.setDefault('GMT');
+
+		let started = moment(rowData.loadStarted);
+		let finished = moment(Date.now());
+
+		if (rowData.loadFinished) {
+			finished = moment(rowData.loadFinished);
+		}
+
+		return (
+			<>
+				Start: <Moment format="YYYY-MM-DD HH:mm:ss" date={started} />
+				<br />
+				{rowData.loadFinished && (
+					<>
+						End: <Moment format="YYYY-MM-DD HH:mm:ss" date={finished} />
+						<br />
+						Duration: <Moment format="HH:mm:ss" duration={started} date={finished} />
+					</>
+				)}
+				{!rowData.loadFinished && rowData.bulkloadStatus !== 'FAILED' && rowData.bulkloadStatus !== 'STOPPED' && (
+					<>
+						Running Time: <Moment tz="GMT" interval={1000} format="HH:mm:ss" duration={started} date={finished} />
+					</>
+				)}
+			</>
+		);
+	};
+
+	const countsTemplate = (rowData) => {
+		let countsArray = [];
+		for (let count in rowData.counts) {
+			countsArray.push({ ...rowData.counts[count], name: count });
+		}
+
+		return (
+			<DataTable key="countsTable" value={countsArray}>
+				<Column field="name" />
+				<Column
+					field="completed"
+					header="Completed"
+					body={(rowData) => <NumberTemplate number={rowData.completed} />}
+				/>
+				<Column field="failed" header="Failed" body={(rowData) => <NumberTemplate number={rowData.failed} />} />
+				<Column field="skipped" header="Skipped" body={(rowData) => <NumberTemplate number={rowData.skipped} />} />
+				<Column field="total" header="Total" body={(rowData) => <NumberTemplate number={rowData.total} />} />
+			</DataTable>
+		);
+	};
+
+	const historyTable = (bulkload) => {
 		let sortedHistory = [];
-		if (file.history != null) {
-			sortedHistory = file.history.sort(function (a, b) {
+		if (bulkload.history != null) {
+			sortedHistory = bulkload.history.sort(function (a, b) {
 				const start1 = new Date(a.loadStarted);
 				const start2 = new Date(b.loadStarted);
 				return start2 - start1;
 			});
 		}
+
 		return (
 			<div className="card">
 				<DataTable key="historyTable" value={sortedHistory} responsiveLayout="scroll">
-					<Column field="loadStarted" header="Load Started" />
-					<Column field="loadFinished" header="Load Finished" />
-					<Column field="completedRecords" header="Records Completed" />
-					<Column field="failedRecords" header="Records Failed" />
-					<Column field="totalRecords" header="Total Records" />
-					<Column field="deletedRecords" header="Deletes Completed" />
-					<Column field="deleteFailedRecords" header="Deletes Failed" />
-					<Column field="totalDeleteRecords" header="Total Deletes" />
+					<Column field="duration" header="Time" body={durationTemplate} />
+					<Column field="bulkloadStatus" body={bulkloadFileStatusTemplate} header="Status" />
+					<Column field="counts" body={countsTemplate} header="Counts" />
+					<Column field="bulkLoadFile.md5Sum" header="MD5 Sum" />
+					<Column
+						field="bulkLoadFile.fileSize"
+						header="Compressed File Size"
+						body={(rowData) => <NumberTemplate number={rowData.bulkLoadFile.fileSize} />}
+					/>
+					<Column field="bulkLoadFile.s3Url" header="S3 Url (Download)" body={urlTemplate} />
+					<Column field="bulkLoadFile.linkMLSchemaVersion" header="LinkML Schema Version" />
+					{showModRelease(bulkload)}
+
 					<Column body={historyActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+					<Column
+						body={(rowData) => loadFileActionBodyTemplate(rowData, bulkload)}
+						exportable={false}
+						style={{ minWidth: '8rem' }}
+					></Column>
 				</DataTable>
 			</div>
 		);
@@ -551,6 +625,7 @@ export const DataLoadsComponent = () => {
 		return sortedFiles;
 	};
 
+	/*
 	const fileTable = (load) => {
 		let sortedFiles = [];
 		if (load.loadFiles) {
@@ -584,6 +659,7 @@ export const DataLoadsComponent = () => {
 			</div>
 		);
 	};
+*/
 
 	const loadTable = (group) => {
 		let sortedLoads = [];
@@ -599,7 +675,7 @@ export const DataLoadsComponent = () => {
 					responsiveLayout="scroll"
 					expandedRows={expandedLoadRows}
 					onRowToggle={(e) => setExpandedLoadRows(e.data)}
-					rowExpansionTemplate={fileTable}
+					rowExpansionTemplate={historyTable}
 					dataKey="id"
 				>
 					<Column expander style={{ width: '3em' }} />
@@ -629,6 +705,10 @@ export const DataLoadsComponent = () => {
 		} else {
 			return [];
 		}
+	};
+
+	const exemptTypes = (loadType) => {
+		return loadType === 'GFF_EXON' || loadType === 'GFF_TRANSCRIPT' || loadType === 'GFF_CDS';
 	};
 
 	const fileWithinSchemaRange = (fileVersion, loadType) => {
@@ -795,7 +875,7 @@ export const DataLoadsComponent = () => {
 							responsiveLayout="scroll"
 							expandedRows={expandedErrorLoadRows}
 							onRowToggle={(e) => setExpandedErrorLoadRows(e.data)}
-							rowExpansionTemplate={fileTable}
+							rowExpansionTemplate={historyTable}
 							dataKey="id"
 						>
 							<Column expander style={{ width: '3em' }} />

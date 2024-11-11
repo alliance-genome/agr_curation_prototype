@@ -15,26 +15,19 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Entity
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "AlleleGenomicEntityAssociation", description = "POJO representing an association between an allele and a genomic entity")
-@Table(
-	indexes = {
-		@Index(name = "allelegenomicentityassociation_relation_index", columnList = "relation_id")
-	}
-)
 public class AlleleGenomicEntityAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includePaths = { "name", "name_keyword" })

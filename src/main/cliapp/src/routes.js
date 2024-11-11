@@ -472,10 +472,10 @@ export default (
 			)}
 		/>
 		<SecureRoute
-			path="/ontology/dpo"
+			path="/ontology/fbcv"
 			render={() => (
 				<ErrorBoundary>
-					<GeneralOntologyComponent name="DPO" endpoint="dpoterm" />
+					<GeneralOntologyComponent showNamespace={true} name="FBcv" endpoint="fbcvterm" />
 				</ErrorBoundary>
 			)}
 		/>

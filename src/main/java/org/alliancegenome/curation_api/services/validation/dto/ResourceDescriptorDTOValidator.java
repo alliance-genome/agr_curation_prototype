@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorDAO;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.ingest.dto.ResourceDescriptorDTO;
@@ -29,7 +30,7 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 	@Inject ResourceDescriptorPageDAO resourceDescriptorPageDAO;
 	@Inject ResourceDescriptorPageDTOValidator resourceDescriptorPageDtoValidator;
 
-	public ResourceDescriptor validateResourceDescriptorDTO(ResourceDescriptorDTO dto) throws ObjectValidationException {
+	public ResourceDescriptor validateResourceDescriptorDTO(ResourceDescriptorDTO dto) throws ValidationException {
 		ObjectResponse<ResourceDescriptor> rdResponse = new ObjectResponse<ResourceDescriptor>();
 
 		ResourceDescriptor rd = null;

@@ -6,9 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
-import { Tooltip } from 'primereact/tooltip';
 import { Button } from 'primereact/button';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { NewConditionForm } from './NewConditionForm';
@@ -24,6 +22,11 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { IdTemplate } from '../../components/Templates/IdTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { NumberTemplate } from '../../components/Templates/NumberTemplate';
+import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 
 export const ExperimentalConditionsTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
@@ -71,115 +74,6 @@ export const ExperimentalConditionsTable = () => {
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={fieldname} />
 			</>
 		);
-	};
-
-	const uniqueIdBodyTemplate = (rowData) => {
-		if (rowData) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`a${rowData.id}`}>{rowData.uniqueId}</EllipsisTableCell>
-					<Tooltip target={`.a${rowData.id}`} content={rowData.uniqueId} />
-				</>
-			);
-		}
-	};
-
-	const summaryBodyTemplate = (rowData) => {
-		if (rowData) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`b${rowData.id}`}>{rowData.conditionSummary}</EllipsisTableCell>
-					<Tooltip target={`.b${rowData.id}`} content={rowData.conditionSummary} />
-				</>
-			);
-		}
-	};
-
-	const conditionClassBodyTemplate = (rowData) => {
-		if (rowData?.conditionClass) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`.a${rowData.id}${rowData.conditionClass.curie.replace(':', '')}`}>
-						{rowData.conditionClass.name} ({rowData.conditionClass.curie})
-					</EllipsisTableCell>
-					<Tooltip
-						target={`.a${rowData.id}${rowData.conditionClass.curie.replace(':', '')}`}
-						content={`${rowData.conditionClass.name} ${rowData.conditionClass.curie}`}
-					/>
-				</>
-			);
-		}
-	};
-
-	const conditionIdBodyTemplate = (rowData) => {
-		if (rowData?.conditionId) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`.a${rowData.id}${rowData.conditionId.curie.replace(':', '')}`}>
-						{rowData.conditionId.name} ({rowData.conditionId.curie})
-					</EllipsisTableCell>
-					<Tooltip
-						target={`.a${rowData.id}${rowData.conditionId.curie.replace(':', '')}`}
-						content={`${rowData.conditionId.name} ${rowData.conditionId.curie}`}
-					/>
-				</>
-			);
-		}
-	};
-
-	const conditionGeneOntologyBodyTemplate = (rowData) => {
-		if (rowData?.conditionGeneOntology) {
-			return (
-				<EllipsisTableCell>
-					{rowData.conditionGeneOntology.name} ({rowData.conditionGeneOntology.curie})
-				</EllipsisTableCell>
-			);
-		}
-	};
-
-	const conditionChemicalBodyTemplate = (rowData) => {
-		if (rowData?.conditionChemical) {
-			return (
-				<EllipsisTableCell>
-					{rowData.conditionChemical.name} ({rowData.conditionChemical.curie})
-				</EllipsisTableCell>
-			);
-		}
-	};
-
-	const conditionAnatomyBodyTemplate = (rowData) => {
-		if (rowData?.conditionAnatomy) {
-			return (
-				<EllipsisTableCell>
-					{rowData.conditionAnatomy.name} ({rowData.conditionAnatomy.curie})
-				</EllipsisTableCell>
-			);
-		}
-	};
-
-	const conditionTaxonBodyTemplate = (rowData) => {
-		if (rowData?.conditionTaxon) {
-			return (
-				<>
-					<EllipsisTableCell
-						otherClasses={`${'TAXON_NAME_'}${rowData.id}${rowData.conditionTaxon.curie.replace(':', '')}`}
-					>
-						{rowData.conditionTaxon.name} ({rowData.conditionTaxon.curie})
-					</EllipsisTableCell>
-					<Tooltip
-						target={`.${'TAXON_NAME_'}${rowData.id}${rowData.conditionTaxon.curie.replace(':', '')}`}
-						content={`${rowData.conditionTaxon.name} (${rowData.conditionTaxon.curie})`}
-						style={{ width: '250px', maxWidth: '450px' }}
-					/>
-				</>
-			);
-		}
-	};
-
-	const internalBodyTemplate = (rowData) => {
-		if (rowData && rowData.internal !== null && rowData.internal !== undefined) {
-			return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
-		}
 	};
 
 	const onInternalEditorValueChange = (props, event) => {
@@ -273,21 +167,21 @@ export const ExperimentalConditionsTable = () => {
 			field: 'uniqueId',
 			header: 'Unique ID',
 			sortable: true,
-			body: uniqueIdBodyTemplate,
+			body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		},
 		{
 			field: 'conditionSummary',
 			header: 'Summary',
 			sortable: true,
-			body: summaryBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.conditionSummary} />,
 			filterConfig: FILTER_CONFIGS.conditionRelationSummaryFilterConfig,
 		},
 		{
 			field: 'conditionClass.name',
 			header: 'Class',
 			sortable: true,
-			body: conditionClassBodyTemplate,
+			body: (rowData) => <OntologyTermTemplate term={rowData.conditionClass} />,
 			filterConfig: FILTER_CONFIGS.conditionClassFilterConfig,
 			editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields),
 		},
@@ -295,7 +189,7 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionId.name',
 			header: 'Condition Term',
 			sortable: true,
-			body: conditionIdBodyTemplate,
+			body: (rowData) => <OntologyTermTemplate term={rowData.conditionId} />,
 			filterConfig: FILTER_CONFIGS.conditionIdFilterConfig,
 			editor: (props) =>
 				singleOntologyEditorTemplate(
@@ -309,16 +203,16 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionGeneOntology.name',
 			header: 'Gene Ontology',
 			sortable: true,
+			body: (rowData) => <OntologyTermTemplate term={rowData.conditionGeneOntology} />,
 			filterConfig: FILTER_CONFIGS.conditionGeneOntologyFilterConfig,
 			editor: (props) =>
 				singleOntologyEditorTemplate(props, 'conditionGeneOntology', 'goterm', curieAutocompleteFields),
-			body: conditionGeneOntologyBodyTemplate,
 		},
 		{
 			field: 'conditionChemical.name',
 			header: 'Chemical',
 			sortable: true,
-			body: conditionChemicalBodyTemplate,
+			body: (rowData) => <OntologyTermTemplate term={rowData.conditionChemical} />,
 			filterConfig: FILTER_CONFIGS.conditionChemicalFilterConfig,
 			editor: (props) =>
 				singleOntologyEditorTemplate(props, 'conditionChemical', 'chemicalterm', curieAutocompleteFields),
@@ -327,7 +221,7 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionAnatomy.name',
 			header: 'Anatomy',
 			sortable: true,
-			body: conditionAnatomyBodyTemplate,
+			body: (rowData) => <OntologyTermTemplate term={rowData.conditionAnatomy} />,
 			filterConfig: FILTER_CONFIGS.conditionAnatomyFilterConfig,
 			editor: (props) =>
 				singleOntologyEditorTemplate(props, 'conditionAnatomy', 'anatomicalterm', curieAutocompleteFields),
@@ -336,7 +230,7 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionTaxon.name',
 			header: 'Condition Taxon',
 			sortable: true,
-			body: conditionTaxonBodyTemplate,
+			body: (rowData) => <OntologyTermTemplate term={rowData.conditionTaxon} />,
 			filterConfig: FILTER_CONFIGS.conditionTaxonFilterConfig,
 			editor: (props) =>
 				singleOntologyEditorTemplate(props, 'conditionTaxon', 'ncbitaxonterm', curieAutocompleteFields),
@@ -345,6 +239,7 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionQuantity',
 			header: 'Quantity',
 			sortable: true,
+			body: (rowData) => <NumberTemplate number={rowData.conditionQuantity} />,
 			filterConfig: FILTER_CONFIGS.conditionQuantityFilterConfig,
 			editor: (props) => freeTextEditor(props, 'conditionQuantity'),
 		},
@@ -352,13 +247,14 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionFreeText',
 			header: 'Free Text',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.conditionFreeText} />,
 			filterConfig: FILTER_CONFIGS.conditionFreeTextFilterConfig,
 			editor: (props) => freeTextEditor(props, 'conditionFreeText'),
 		},
 		{
 			field: 'internal',
 			header: 'Internal',
-			body: internalBodyTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: true,
 			editor: (props) => internalEditor(props),

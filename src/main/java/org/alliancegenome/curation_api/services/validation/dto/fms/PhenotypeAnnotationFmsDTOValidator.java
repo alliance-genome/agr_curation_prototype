@@ -88,7 +88,7 @@ public class PhenotypeAnnotationFmsDTOValidator {
 			annotation.setConditionRelations(null);
 		}
 
-		annotation.setDataProvider(dataProviderService.createOrganizationDataProvider(beDataProvider.sourceOrganization));
+		annotation.setDataProvider(dataProviderService.getDefaultDataProvider(beDataProvider.sourceOrganization));
 		annotation.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.PHENOTYPE_RELATION_VOCABULARY, "has_phenotype").getEntity());
 
 		CrossReference evidenceXref = null;

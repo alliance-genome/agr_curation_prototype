@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
@@ -26,13 +25,13 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 	@Inject AlleleDiseaseAnnotationService alleleDiseaseAnnotationService;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
 
-	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
-		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile, AlleleDiseaseAnnotationDTO.class);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AlleleDiseaseAnnotationDTO.class);
 		if (ingestDto == null) {
 			return;
 		}
@@ -49,17 +48,20 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 			annotationIdsBefore.removeIf(Objects::isNull);
 		}
 
-		bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
-		bulkLoadFileDAO.merge(bulkLoadFile);
+		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(annotations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		createHistory(history, bulkLoadFile);
-		boolean success = runLoad(alleleDiseaseAnnotationService, history, dataProvider, annotations, annotationIdsLoaded);
+		bulkLoadFileHistory.setCount(annotations.size());
+		
+		updateHistory(bulkLoadFileHistory);
+		
+		boolean success = runLoad(alleleDiseaseAnnotationService, bulkLoadFileHistory, dataProvider, annotations, annotationIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "allele disease annotation", bulkLoadFile.getMd5Sum());
+			runCleanup(diseaseAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "allele disease annotation");
 		}
-		history.finishLoad();
-		finalSaveHistory(history);
+		bulkLoadFileHistory.finishLoad();
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 	}
 
 }

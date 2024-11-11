@@ -7,7 +7,6 @@ import java.util.Objects;
 import org.alliancegenome.curation_api.dao.associations.constructAssociations.ConstructGenomicEntityAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
@@ -25,13 +24,13 @@ public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor 
 	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
 	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
-	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
-		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile, ConstructGenomicEntityAssociationDTO.class);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, ConstructGenomicEntityAssociationDTO.class);
 		if (ingestDto == null) {
 			return;
 		}
@@ -48,17 +47,19 @@ public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor 
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 
-		bulkLoadFile.setRecordCount(associations.size() + bulkLoadFile.getRecordCount());
-		bulkLoadFileDAO.merge(bulkLoadFile);
+		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(associations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		BulkLoadFileHistory history = new BulkLoadFileHistory(associations.size());
-		createHistory(history, bulkLoadFile);
-		runLoad(constructGenomicEntityAssociationService, history, dataProvider, associations, associationIdsLoaded);
+		bulkLoadFileHistory.setCount(associations.size());
+		updateHistory(bulkLoadFileHistory);
+
+		runLoad(constructGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
 		if (cleanUp) {
-			runCleanup(constructGenomicEntityAssociationService, history, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "construct genomic entity association", bulkLoadFile.getMd5Sum());
+			runCleanup(constructGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "construct genomic entity association");
 		}
-		history.finishLoad();
-		finalSaveHistory(history);
+		bulkLoadFileHistory.finishLoad();
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 	}
 
 }

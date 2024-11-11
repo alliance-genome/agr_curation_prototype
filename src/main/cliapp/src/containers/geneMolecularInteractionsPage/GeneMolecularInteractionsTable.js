@@ -10,6 +10,7 @@ import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTem
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 import { SearchService } from '../../service/SearchService';
 
@@ -76,6 +77,7 @@ export const GeneMolecularInteractionsTable = () => {
 			field: 'relation.name',
 			header: 'Interaction Relation',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.relation?.name} />,
 			filterConfig: FILTER_CONFIGS.gmiRelationFilterConfig,
 		},
 		{
@@ -88,56 +90,56 @@ export const GeneMolecularInteractionsTable = () => {
 		{
 			field: 'interactionType.name',
 			header: 'Interaction Type',
-			body: (rowData) => <OntologyTermTemplate object={rowData.interactionType} />,
+			body: (rowData) => <OntologyTermTemplate term={rowData.interactionType} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.interactionTypeFilterConfig,
 		},
 		{
 			field: 'interactorARole.name',
 			header: 'Interactor A Role',
-			body: (rowData) => <OntologyTermTemplate object={rowData.interactorARole} />,
+			body: (rowData) => <OntologyTermTemplate term={rowData.interactorARole} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.interactorARoleFilterConfig,
 		},
 		{
 			field: 'interactorBRole.name',
 			header: 'Interactor B Role',
-			body: (rowData) => <OntologyTermTemplate object={rowData.interactorBRole} />,
+			body: (rowData) => <OntologyTermTemplate term={rowData.interactorBRole} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.interactorBRoleFilterConfig,
 		},
 		{
 			field: 'interactorAType.name',
 			header: 'Interactor A Type',
-			body: (rowData) => <OntologyTermTemplate object={rowData.interactorAType} />,
+			body: (rowData) => <OntologyTermTemplate term={rowData.interactorAType} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.interactorATypeFilterConfig,
 		},
 		{
 			field: 'interactorBType.name',
 			header: 'Interactor B Type',
-			body: (rowData) => <OntologyTermTemplate object={rowData.interactorBType} />,
+			body: (rowData) => <OntologyTermTemplate term={rowData.interactorBType} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.interactorBTypeFilterConfig,
 		},
 		{
 			field: 'interactionSource.name',
 			header: 'Interaction Source',
-			body: (rowData) => <OntologyTermTemplate object={rowData.interactionSource} />,
+			body: (rowData) => <OntologyTermTemplate term={rowData.interactionSource} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.interactionSourceFilterConfig,
 		},
 		{
 			field: 'aggregationDatabase.name',
 			header: 'Aggregation DB',
-			body: (rowData) => <OntologyTermTemplate object={rowData.aggregationDatabase} />,
+			body: (rowData) => <OntologyTermTemplate term={rowData.aggregationDatabase} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.aggregationDatabaseFilterConfig,
 		},
 		{
 			field: 'detectionMethod.name',
 			header: 'Detection Method',
-			body: (rowData) => <OntologyTermTemplate object={rowData.detectionMethod} />,
+			body: (rowData) => <OntologyTermTemplate term={rowData.detectionMethod} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.detectionMethodFilterConfig,
 		},

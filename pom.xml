@@ -23,7 +23,7 @@
 		<okta.version>3.0.1</okta.version>
 		<okta.authn.version>2.0.0</okta.authn.version>
 		<okta-jwt.version>0.5.1</okta-jwt.version>
-		<quarkus.platform.version>3.5.0</quarkus.platform.version>
+		<quarkus.platform.version>3.13.3</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
 		<maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
 		<checkstyle.version>10.17.0</checkstyle.version>
@@ -120,7 +120,13 @@
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
-			<version>5.1.19</version>
+			<version>5.5.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.github.liveontologies</groupId>
+			<artifactId>elk-owlapi</artifactId>
+			<version>0.6.0</version>
 		</dependency>
 
 		<dependency>
@@ -240,6 +246,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
 			<version>4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.27.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>

@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGenerate
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyIngestFmsDTO;
@@ -27,17 +26,17 @@ public class OrthologyExecutor extends LoadFileExecutor {
 	@Inject GeneToGeneOrthologyGeneratedService generatedOrthologyService;
 	@Inject GeneToGeneOrthologyGeneratedDAO generatedOrthologyDAO;
 
-	public void execLoad(BulkLoadFile bulkLoadFile) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
-			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFile.getBulkLoad();
+			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 
-			OrthologyIngestFmsDTO orthologyData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), OrthologyIngestFmsDTO.class);
-			bulkLoadFile.setRecordCount(orthologyData.getData().size());
+			OrthologyIngestFmsDTO orthologyData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), OrthologyIngestFmsDTO.class);
+			bulkLoadFileHistory.getBulkLoadFile().setRecordCount(orthologyData.getData().size());
 
 			AGRCurationSchemaVersion version = GeneToGeneOrthologyGenerated.class.getAnnotation(AGRCurationSchemaVersion.class);
-			bulkLoadFile.setLinkMLSchemaVersion(version.max());
+			bulkLoadFileHistory.getBulkLoadFile().setLinkMLSchemaVersion(version.max());
 			if (orthologyData.getMetaData() != null && StringUtils.isNotBlank(orthologyData.getMetaData().getRelease())) {
-				bulkLoadFile.setAllianceMemberReleaseVersion(orthologyData.getMetaData().getRelease());
+				bulkLoadFileHistory.getBulkLoadFile().setAllianceMemberReleaseVersion(orthologyData.getMetaData().getRelease());
 			}
 
 			List<Long> orthoPairIdsLoaded = new ArrayList<>();
@@ -45,18 +44,20 @@ public class OrthologyExecutor extends LoadFileExecutor {
 			List<Long> orthoPairIdsBefore = generatedOrthologyService.getAllOrthologyPairIdsBySubjectGeneDataProvider(dataProvider);
 			log.debug("runLoad: Before: total " + orthoPairIdsBefore.size());
 
-			bulkLoadFileDAO.merge(bulkLoadFile);
+			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			BulkLoadFileHistory history = new BulkLoadFileHistory(orthologyData.getData().size());
-			createHistory(history, bulkLoadFile);
-			boolean success = runLoad(generatedOrthologyService, history, dataProvider, orthologyData.getData(), orthoPairIdsLoaded);
+			bulkLoadFileHistory.setCount(orthologyData.getData().size());
+			updateHistory(bulkLoadFileHistory);
+
+			boolean success = runLoad(generatedOrthologyService, bulkLoadFileHistory, dataProvider, orthologyData.getData(), orthoPairIdsLoaded);
 			if (success) {
-				runCleanup(generatedOrthologyService, history, fms.getFmsDataSubType(), orthoPairIdsBefore, orthoPairIdsLoaded, fms.getFmsDataType(), bulkLoadFile.getMd5Sum(), false);
+				runCleanup(generatedOrthologyService, bulkLoadFileHistory, fms.getFmsDataSubType(), orthoPairIdsBefore, orthoPairIdsLoaded, fms.getFmsDataType(), false);
 			}
-			history.finishLoad();
-			finalSaveHistory(history);
+			bulkLoadFileHistory.finishLoad();
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 		} catch (Exception e) {
-			failLoad(bulkLoadFile, e);
+			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
 		}
 	}

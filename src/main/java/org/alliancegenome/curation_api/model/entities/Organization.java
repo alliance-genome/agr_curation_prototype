@@ -33,6 +33,7 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.4.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Agent.class })
 @Table(indexes = {
 		@Index(name = "organization_homepageresourcedescriptorpage_id_index", columnList = "homepageresourcedescriptorpage_id"),
+		@Index(name = "organization_abbreviation_index", columnList = "abbreviation"),
 		@Index(name = "organization_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "organization_updatedby_index", columnList = "updatedBy_id")
 })

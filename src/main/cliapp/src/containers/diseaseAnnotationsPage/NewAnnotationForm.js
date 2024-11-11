@@ -36,7 +36,9 @@ import { SGDStrainBackgroundAdditionalFieldData } from '../../components/FieldDa
 import { AssertedGenesAdditionalFieldData } from '../../components/FieldData/AssertedGenesAdditionalFieldData';
 import { EvidenceCodesAdditionalFieldData } from '../../components/FieldData/EvidenceCodesAdditionalFieldData';
 import { WithAdditionalFieldData } from '../../components/FieldData/WithAdditionalFieldData';
-import { GeneticModifiersAdditionalFieldData } from '../../components/FieldData/GeneticModifiersAdditionalFieldData';
+import { GeneticModifierAgmsAdditionalFieldData } from '../../components/FieldData/GeneticModifierAgmsAdditionalFieldData';
+import { GeneticModifierAllelesAdditionalFieldData } from '../../components/FieldData/GeneticModifierAllelesAdditionalFieldData';
+import { GeneticModifierGenesAdditionalFieldData } from '../../components/FieldData/GeneticModifierGenesAdditionalFieldData';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { ConfirmButton } from '../../components/ConfirmButton';
 import { getDefaultFormState, getModFormFields } from '../../service/TableStateService';
@@ -94,7 +96,9 @@ export const NewAnnotationForm = ({
 		'SGD Strain Background',
 		'Annotation Type',
 		'Genetic Modifier Relation',
-		'Genetic Modifiers',
+		'Genetic Modifier AGMs',
+		'Genetic Modifier Alleles',
+		'Genetic Modifier Genes',
 		'Internal',
 	];
 	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
@@ -232,23 +236,45 @@ export const NewAnnotationForm = ({
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 	};
 
-	const geneticModifiersSearch = (event, setFiltered, setQuery) => {
+	const geneticModifierAgmsSearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields = ['modEntityId', 'modInternalId', 'name', 'curie', 'crossReferences.referencedCurie'];
+		const endpoint = 'agm';
+		const filterName = 'geneticModifierAgmsFilter';
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	};
+
+	const geneticModifierAllelesSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = [
-			'geneSymbol.displayText',
-			'geneFullName.displayText',
 			'alleleSymbol.displayText',
 			'alleleFullName.displayText',
 			'modEntityId',
 			'modInternalId',
-			'name',
 			'curie',
 			'crossReferences.referencedCurie',
 			'alleleSecondaryIds.secondaryId',
-			'geneSynonyms.displayText',
 			'alleleSynonyms.displayText',
 		];
-		const endpoint = 'biologicalentity';
-		const filterName = 'geneticModifiersFilter';
+		const endpoint = 'allele';
+		const filterName = 'geneticModifierAllelesFilter';
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	};
+
+	const geneticModifierGenesSearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields = [
+			'geneSymbol.displayText',
+			'geneFullName.displayText',
+			'modEntityId',
+			'modInternalId',
+			'curie',
+			'crossReferences.referencedCurie',
+			'geneSynonyms.displayText',
+		];
+		const endpoint = 'gene';
+		const filterName = 'geneticModifierGenesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
@@ -1027,18 +1053,18 @@ export const NewAnnotationForm = ({
 							</>
 						)}
 
-						{selectedFormFields?.includes('Genetic Modifiers') && (
+						{selectedFormFields?.includes('Genetic Modifier AGMs') && (
 							<>
 								<div className="grid">
 									<div className={labelColumnSize}>
-										<label htmlFor="diseaseGeneticModifier">Genetic Modifiers</label>
+										<label htmlFor="diseaseGeneticModifierAgm">Genetic Modifier AGMs</label>
 									</div>
 									<div className={widgetColumnSize}>
 										<AutocompleteFormMultiEditor
-											search={geneticModifiersSearch}
-											initialValue={newAnnotation.diseaseGeneticModifiers}
-											fieldName="diseaseGeneticModifiers"
-											name="diseaseGeneticModifiers"
+											search={geneticModifierAgmsSearch}
+											initialValue={newAnnotation.diseaseGeneticModifierAgms}
+											fieldName="diseaseGeneticModifierAgms"
+											name="diseaseGeneticModifierAgms"
 											subField="modEntityId"
 											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 												<SubjectAutocompleteTemplate
@@ -1049,12 +1075,89 @@ export const NewAnnotationForm = ({
 												/>
 											)}
 											onValueChangeHandler={onArrayFieldChange}
-											classNames={classNames({ 'p-invalid': submitted && errorMessages.diseaseGeneticModifiers })}
+											classNames={classNames({ 'p-invalid': submitted && errorMessages.diseaseGeneticModifierAgms })}
 										/>
 									</div>
 									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'diseaseGeneticModifiers'} />
-										<GeneticModifiersAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifiers} />
+										<FormErrorMessageComponent
+											errorMessages={errorMessages}
+											errorField={'diseaseGeneticModifierAgms'}
+										/>
+										<GeneticModifierAgmsAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifierAgms} />
+									</div>
+								</div>
+							</>
+						)}
+
+						{selectedFormFields?.includes('Genetic Modifier Alleles') && (
+							<>
+								<div className="grid">
+									<div className={labelColumnSize}>
+										<label htmlFor="diseaseGeneticModifierAllele">Genetic Modifier Alleles</label>
+									</div>
+									<div className={widgetColumnSize}>
+										<AutocompleteFormMultiEditor
+											search={geneticModifierAllelesSearch}
+											initialValue={newAnnotation.diseaseGeneticModifierAlleles}
+											fieldName="diseaseGeneticModifierAlleles"
+											name="diseaseGeneticModifierAlleles"
+											subField="modEntityId"
+											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
+												<SubjectAutocompleteTemplate
+													item={item}
+													setAutocompleteHoverItem={setAutocompleteHoverItem}
+													op={op}
+													query={query}
+												/>
+											)}
+											onValueChangeHandler={onArrayFieldChange}
+											classNames={classNames({ 'p-invalid': submitted && errorMessages.diseaseGeneticModifierAlleles })}
+										/>
+									</div>
+									<div className={fieldDetailsColumnSize}>
+										<FormErrorMessageComponent
+											errorMessages={errorMessages}
+											errorField={'diseaseGeneticModifierAlleles'}
+										/>
+										<GeneticModifierAllelesAdditionalFieldData
+											fieldData={newAnnotation.diseaseGeneticModifierAlleles}
+										/>
+									</div>
+								</div>
+							</>
+						)}
+
+						{selectedFormFields?.includes('Genetic Modifier Genes') && (
+							<>
+								<div className="grid">
+									<div className={labelColumnSize}>
+										<label htmlFor="diseaseGeneticModifierGene">Genetic Modifier Genes</label>
+									</div>
+									<div className={widgetColumnSize}>
+										<AutocompleteFormMultiEditor
+											search={geneticModifierGenesSearch}
+											initialValue={newAnnotation.diseaseGeneticModifierGenes}
+											fieldName="diseaseGeneticModifierGenes"
+											name="diseaseGeneticModifierGenes"
+											subField="modEntityId"
+											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
+												<SubjectAutocompleteTemplate
+													item={item}
+													setAutocompleteHoverItem={setAutocompleteHoverItem}
+													op={op}
+													query={query}
+												/>
+											)}
+											onValueChangeHandler={onArrayFieldChange}
+											classNames={classNames({ 'p-invalid': submitted && errorMessages.diseaseGeneticModifierGenes })}
+										/>
+									</div>
+									<div className={fieldDetailsColumnSize}>
+										<FormErrorMessageComponent
+											errorMessages={errorMessages}
+											errorField={'diseaseGeneticModifierGenes'}
+										/>
+										<GeneticModifierGenesAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifierGenes} />
 									</div>
 								</div>
 							</>

@@ -1,0 +1,15 @@
+[
+	{
+		"seqId": "I",
+		"source": "WormBase",
+		"type": "mRNA",
+		"start": 1,
+		"strand": "+",
+		"phase": 0,
+		"attributes": [
+			"ID=Transcript:Y74C9A.2a.1",
+			"Parent=Gene:WBGene00022276",
+			"Name=Y74C9A.2a.1"
+		]
+	}
+]

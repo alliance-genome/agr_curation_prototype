@@ -1,0 +1,7 @@
+ALTER TABLE htpexpressiondatasetannotation DROP CONSTRAINT htpexpressiondatasetannotation_dataprovider_id_fk;
+
+ALTER TABLE htpexpressiondatasetannotation DROP COLUMN curie;
+ALTER TABLE htpexpressiondatasetannotation DROP COLUMN modentityid;
+ALTER TABLE htpexpressiondatasetannotation DROP COLUMN modinternalid;
+ALTER TABLE htpexpressiondatasetannotation DROP COLUMN dataprovider_id;
+

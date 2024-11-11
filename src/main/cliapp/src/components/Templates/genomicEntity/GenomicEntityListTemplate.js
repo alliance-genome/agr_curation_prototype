@@ -32,7 +32,7 @@ export const GenomicEntityListTemplate = ({ genomicEntities }) => {
 			<div className={`-my-4 p-1 ${targetClass}`}>
 				<ListTableCell template={listTemplate} listData={sortedGenomicEntityStrings} />
 			</div>
-			<Tooltip target={`.${targetClass}`} style={{ width: '450px', maxWidth: '450px' }} position="left">
+			<Tooltip target={`.${targetClass}`} mouseTrack position="bottom">
 				<ListTableCell template={listTemplate} listData={sortedGenomicEntityStrings} />
 			</Tooltip>
 		</>

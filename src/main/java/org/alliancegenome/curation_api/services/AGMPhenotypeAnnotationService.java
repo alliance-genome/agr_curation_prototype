@@ -5,7 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
@@ -45,13 +45,13 @@ public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGM
 	}
 
 	@Transactional
-	public AGMPhenotypeAnnotation upsertPrimaryAnnotation(AffectedGenomicModel subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public AGMPhenotypeAnnotation upsertPrimaryAnnotation(AffectedGenomicModel subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
 		return agmPhenotypeAnnotationDAO.persist(annotation);
 	}
 
 	@Transactional
-	public List<AGMPhenotypeAnnotation> addInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public List<AGMPhenotypeAnnotation> addInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		List<AGMPhenotypeAnnotation> annotations = agmPhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, dataProvider);
 		for (AGMPhenotypeAnnotation annotation : annotations) {
 			agmPhenotypeAnnotationDAO.persist(annotation);

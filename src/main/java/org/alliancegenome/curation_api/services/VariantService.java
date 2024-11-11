@@ -10,14 +10,14 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.VariantValidator;
 import org.alliancegenome.curation_api.services.validation.dto.VariantDTOValidator;
+import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
@@ -55,7 +55,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		return new ObjectResponse<Variant>(dbEntity);
 	}
 
-	public Variant upsert(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public Variant upsert(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return variantDtoValidator.validateVariantDTO(dto, dataProvider);
 	}
 
@@ -64,7 +64,8 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	public Variant deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Variant variant = variantDAO.find(id);
 		if (variant != null) {
-			if (forceDeprecate || variantDAO.hasReferencingDiseaseAnnotationIds(id)) {
+			if (forceDeprecate || variantDAO.hasReferencingDiseaseAnnotationIds(id)
+					|| CollectionUtils.isNotEmpty(variant.getAlleleVariantAssociations())) {
 				if (!variant.getObsolete()) {
 					variant.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					variant.setDateUpdated(OffsetDateTime.now());
@@ -79,7 +80,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		} else {
 			String errorMessage = "Could not find Variant with id: " + id;
 			if (throwApiError) {
-				ObjectResponse<AffectedGenomicModel> response = new ObjectResponse<>();
+				ObjectResponse<Variant> response = new ObjectResponse<>();
 				response.addErrorMessage("id", errorMessage);
 				throw new ApiErrorException(response);
 			}

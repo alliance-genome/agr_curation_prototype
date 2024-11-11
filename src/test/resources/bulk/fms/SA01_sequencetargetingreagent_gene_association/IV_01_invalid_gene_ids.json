@@ -1,0 +1,31 @@
+{
+  "data": [
+    {
+      "primaryId": "ZFIN:ZDB-TALEN-180503-1",
+      "name": "TALEN-inhbaa",
+      "soTermId": "SO:0000059",
+      "taxonId": "NCBITaxon:7955",
+      "synonyms": [
+        "#4"
+      ],
+      "secondaryIds": [
+        "ZFIN:ZDB-MRKRSEQ-100429-7"
+      ],
+      "targetGeneIds": [
+        "GENETEST:GeneInvalid0001"
+      ]
+    }
+  ],
+  "metaData": {
+    "dateProduced": "2024-04-18T20:10:35-07:00",
+    "dataProvider": {
+      "crossReference": {
+        "id": "ZFIN",
+        "pages": [
+          "homepage"
+        ]
+      },
+      "type": "curated"
+    }
+  }
+}

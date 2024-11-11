@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
@@ -23,13 +22,13 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 
 	@Inject AlleleGeneAssociationService alleleGeneAssociationService;
 
-	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
-		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile, AlleleGeneAssociationDTO.class);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AlleleGeneAssociationDTO.class);
 		if (ingestDto == null) {
 			return;
 		}
@@ -46,17 +45,19 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 
-		bulkLoadFile.setRecordCount(associations.size() + bulkLoadFile.getRecordCount());
-		bulkLoadFileDAO.merge(bulkLoadFile);
+		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(associations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		BulkLoadFileHistory history = new BulkLoadFileHistory(associations.size());
-		createHistory(history, bulkLoadFile);
-		boolean success = runLoad(alleleGeneAssociationService, history, dataProvider, associations, associationIdsLoaded);
+		bulkLoadFileHistory.setCount(associations.size());
+		updateHistory(bulkLoadFileHistory);
+		
+		boolean success = runLoad(alleleGeneAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(alleleGeneAssociationService, history, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "allele gene association", bulkLoadFile.getMd5Sum());
+			runCleanup(alleleGeneAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "allele gene association");
 		}
-		history.finishLoad();
-		finalSaveHistory(history);
+		bulkLoadFileHistory.finishLoad();
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 	}
 
 }

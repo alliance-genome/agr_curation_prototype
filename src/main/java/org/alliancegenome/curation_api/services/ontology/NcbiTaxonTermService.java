@@ -16,6 +16,7 @@ import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import si.mazi.rescu.RestProxyFactory;
 
 @RequestScoped
@@ -58,6 +59,7 @@ public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm,
 		return response;
 	}
 
+	@Transactional
 	public NCBITaxonTerm getTaxonFromDB(String taxonCurie) {
 		NCBITaxonTerm taxon = findByCurie(taxonCurie);
 		if (taxon == null) {
@@ -69,7 +71,7 @@ public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm,
 		return taxon;
 	}
 
-	public NCBITaxonTerm downloadAndSave(String taxonCurie) {
+	private NCBITaxonTerm downloadAndSave(String taxonCurie) {
 
 		Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:(\\d+)$");
 		Matcher taxonIdMatcher = taxonIdPattern.matcher(taxonCurie);

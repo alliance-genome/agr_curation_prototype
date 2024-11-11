@@ -19,6 +19,9 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
 import { setNewEntity } from '../../utils/utils';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { IdTemplate } from '../../components/Templates/IdTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 
 export const ControlledVocabularyTable = () => {
 	const newTermReducer = (state, action) => {
@@ -184,41 +187,12 @@ export const ControlledVocabularyTable = () => {
 		);
 	};
 
-	const nameBodyTemplate = (rowData) => {
-		if (rowData.name) {
-			return <div>{rowData.name}</div>;
-		}
-	};
-
-	const abbreviationBodyTemplate = (rowData) => {
-		if (rowData.abbreviation) {
-			return <div>{rowData.abbreviation}</div>;
-		}
-	};
-
-	const vocabularyBodyTemplate = (rowData) => {
-		if (rowData.vocabulary && rowData.vocabulary.name) {
-			return <div>{rowData.vocabulary.name}</div>;
-		}
-	};
-
-	const definitionBodyTemplate = (rowData) => {
-		if (rowData.definition) {
-			return <div>{rowData.definition}</div>;
-		}
-	};
-
-	const obsoleteBodyTemplate = (rowData) => {
-		if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
-			return <div>{JSON.stringify(rowData.obsolete)}</div>;
-		}
-	};
-
 	const columns = [
 		{
 			field: 'id',
 			header: 'Id',
 			sortable: false,
+			body: (rowData) => <IdTemplate id={rowData.id} />,
 		},
 		{
 			field: 'name',
@@ -226,7 +200,7 @@ export const ControlledVocabularyTable = () => {
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => nameEditorTemplate(props),
-			body: nameBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.name} />,
 		},
 		{
 			field: 'abbreviation',
@@ -234,7 +208,7 @@ export const ControlledVocabularyTable = () => {
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
 			editor: (props) => abbreviationEditorTemplate(props),
-			body: abbreviationBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.abbreviation} />,
 		},
 		{
 			field: 'synonyms',
@@ -249,7 +223,7 @@ export const ControlledVocabularyTable = () => {
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.vocabularyNameFilterConfig,
 			editor: (props) => vocabularyEditorTemplate(props),
-			body: vocabularyBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.vocabulary?.name} />,
 		},
 		{
 			field: 'definition',
@@ -257,7 +231,7 @@ export const ControlledVocabularyTable = () => {
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.definitionFilterConfig,
 			editor: (props) => definitionEditorTemplate(props),
-			body: definitionBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.definition} />,
 		},
 		{
 			field: 'obsolete',
@@ -265,7 +239,7 @@ export const ControlledVocabularyTable = () => {
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			editor: (props) => obsoleteEditorTemplate(props),
-			body: obsoleteBodyTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 		},
 	];
 
