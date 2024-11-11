@@ -222,9 +222,9 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		} else {
 			newSynonyms = incomingTerm.getSynonyms().stream().collect(Collectors.toSet());
 		}
-		List<String> newSynonymNames = currentSynonyms.stream().map(Synonym::getName).collect(Collectors.toList());
+		List<String> newSynonymNames = newSynonyms.stream().map(Synonym::getName).collect(Collectors.toList());
 
-		newSynonyms.forEach(syn -> {
+		for (Synonym syn: newSynonyms) {
 			if (!currentSynonymNames.contains(syn.getName())) {
 				SearchResponse<Synonym> response = synonymDAO.findByField("name", syn.getName());
 				Synonym synonym;
@@ -235,13 +235,12 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				}
 				dbTerm.getSynonyms().add(synonym);
 			}
-		});
-
-		currentSynonyms.forEach(syn -> {
+		}
+		for (Synonym syn: currentSynonyms) {
 			if (!newSynonymNames.contains(syn.getName())) {
 				dbTerm.getSynonyms().remove(syn);
 			}
-		});
+		}
 
 	}
 

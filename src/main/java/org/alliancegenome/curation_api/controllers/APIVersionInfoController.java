@@ -59,7 +59,12 @@ public class APIVersionInfoController implements APIVersionInterface {
 		info.setName(name);
 		info.setAgrCurationSchemaVersions(linkMLClassVersions);
 		info.setSubmittedClassSchemaVersions(submittedClassVersions);
-		info.setEsHost(esHost);
+		String[] array = esHost.split(",");
+		if (array.length > 0) {
+			info.setEsHost(array[0]);
+		} else {
+			info.setEsHost(esHost);
+		}
 		info.setEnv(env);
 		return info;
 	}

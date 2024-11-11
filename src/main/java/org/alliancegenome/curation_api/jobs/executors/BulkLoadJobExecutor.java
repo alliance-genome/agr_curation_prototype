@@ -21,6 +21,7 @@ import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssocia
 import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3ExonExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3GeneExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 
@@ -55,12 +56,19 @@ public class BulkLoadJobExecutor {
 	@Inject GeneExpressionExecutor geneExpressionExecutor;
 	@Inject SequenceTargetingReagentExecutor sqtrExecutor;
 	@Inject VariantFmsExecutor variantFmsExecutor;
+	@Inject HTPExpressionDatasetAnnotationExecutor htpExpressionDatasetAnnotationExecutor;
+	@Inject HTPExpressionDatasetSampleAnnotationExecutor htpExpressionDatasetSampleAnnotationExecutor;
+
 	@Inject Gff3ExonExecutor gff3ExonExecutor;
 	@Inject Gff3CDSExecutor gff3CDSExecutor;
+	@Inject Gff3GeneExecutor gff3GeneExecutor;
 	@Inject Gff3TranscriptExecutor gff3TranscriptExecutor;
+	@Inject VepTranscriptExecutor vepTranscriptExecutor;
+	@Inject VepGeneExecutor vepGeneExecutor;
 	
-	@Inject HTPExpressionDatasetAnnotationExecutor htpExpressionDatasetAnnotationExecutor;
 	@Inject ExpressionAtlasExecutor expressionAtlasExecutor;
+	@Inject
+	GeneOntologyAnnotationExecutor gafExecutor;
 
 	@Inject BiogridOrcExecutor biogridOrcExecutor;
 
@@ -132,12 +140,22 @@ public class BulkLoadJobExecutor {
 			gff3CDSExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT) {
 			gff3TranscriptExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_GENE) {
+			gff3GeneExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.HTPDATASET) {
 			htpExpressionDatasetAnnotationExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION_ATLAS) {
 			expressionAtlasExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.BIOGRID_ORCS) {
 			biogridOrcExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.VEPTRANSCRIPT) {
+			vepTranscriptExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.VEPGENE) {
+			vepGeneExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.HTPDATASAMPLE) {
+			htpExpressionDatasetSampleAnnotationExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GAF) {
+			gafExecutor.execLoad(bulkLoadFileHistory);
 		} else {
 			log.info("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");

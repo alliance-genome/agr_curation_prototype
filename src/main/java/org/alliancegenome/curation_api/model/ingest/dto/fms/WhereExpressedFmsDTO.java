@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class WhereExpressedDTO extends BaseDTO {
+public class WhereExpressedFmsDTO extends BaseDTO {
 	private String whereExpressedStatement;
 	private String cellularComponentTermId;
 	private String cellularComponentQualifierTermId;

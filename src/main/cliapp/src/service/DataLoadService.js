@@ -81,10 +81,11 @@ export class DataLoadService extends BaseAuthService {
 	getBackendBulkLoadTypes(loadType) {
 		const bulkLoadTypes = {
 			BulkFMSLoad: [
+				'BIOGRID-ORCS',
 				'GFF', // This needs to be removed at some point
-
-				'GFF_EXON',
 				'GFF_CDS',
+				'GFF_EXON',
+				'GFF_GENE',
 				'GFF_TRANSCRIPT',
 				'HTPDATASET',
 				'HTPDATASAMPLE',
@@ -95,8 +96,9 @@ export class DataLoadService extends BaseAuthService {
 				'PHENOTYPE',
 				'PARALOGY',
 				'SEQUENCE_TARGETING_REAGENT',
-				// 'VARIATION',
-				'BIOGRID-ORCS',
+				'VARIATION',
+				'VEPGENE',
+				'VEPTRANSCRIPT',
 			],
 			BulkURLLoad: [
 				'ONTOLOGY',
@@ -106,6 +108,7 @@ export class DataLoadService extends BaseAuthService {
 				'DISEASE_ANNOTATION',
 				'RESOURCE_DESCRIPTOR',
 				'EXPRESSION_ATLAS',
+				'GAF',
 			],
 			BulkManualLoad: [
 				'FULL_INGEST',

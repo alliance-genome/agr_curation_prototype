@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services.helpers.variants;
 
+import java.util.Objects;
+
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,9 +17,16 @@ public abstract class HgvsIdentifierHelper {
 		if (dto.getEnd() != null) {
 			end = Integer.toString(dto.getEnd());
 		}
+	
+		String refSeq = "";
+		if (StringUtils.isNotBlank(dto.getGenomicReferenceSequence()) && !Objects.equals(dto.getGenomicReferenceSequence(), "N/A")) {
+			refSeq = StringUtils.deleteWhitespace(dto.getGenomicReferenceSequence().toUpperCase());
+		}
 		
-		String varSeq = StringUtils.isBlank(dto.getGenomicVariantSequence()) ? "" : dto.getGenomicVariantSequence();
-		String refSeq = StringUtils.isBlank(dto.getGenomicReferenceSequence()) ? "" : dto.getGenomicReferenceSequence();
+		String varSeq = "";
+		if (StringUtils.isNotBlank(dto.getGenomicVariantSequence()) && !Objects.equals(dto.getGenomicVariantSequence(), "N/A")) {
+			varSeq = StringUtils.deleteWhitespace(dto.getGenomicVariantSequence().toUpperCase());
+		}
 		
 		String chrAccession = "";
 		if (StringUtils.isNotBlank(dto.getSequenceOfReferenceAccessionNumber())) {
