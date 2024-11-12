@@ -92,6 +92,21 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 		return new ObjectResponse<>(dbEntity);
 	}
 
+	@Transactional
+	public ObjectResponse<DataProvider> insertBioGridOrcDataProvider(DataProvider entity, Long geneticEntityId) {
+		String referencedCurie = entity.getCrossReference().getReferencedCurie();
+		
+		DataProvider dbEntity = getDataProvider(entity.getSourceOrganization(), referencedCurie, entity.getCrossReference().getResourceDescriptorPage());
+		
+		// we only create new records, no updates
+		if (dbEntity == null) {
+			dataProviderDAO.persist(entity);
+			crossReferenceDAO.persistAccessionGeneAssociated(entity.getCrossReference().getId(), geneticEntityId);
+			return new ObjectResponse<>(entity);
+		}
+		return new ObjectResponse<>(dbEntity);
+	}
+
 	@NotNull
 	public static String getFullReferencedCurie(String localReferencedCurie) {
 		return RESOURCE_DESCRIPTOR_PREFIX + ":" + localReferencedCurie;
