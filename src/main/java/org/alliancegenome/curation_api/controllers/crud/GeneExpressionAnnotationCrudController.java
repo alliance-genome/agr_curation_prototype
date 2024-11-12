@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.controllers.crud;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.GeneExpressionAnnotationCrudInterface;
@@ -16,6 +17,7 @@ import org.alliancegenome.curation_api.services.GeneExpressionAnnotationService;
 import java.util.List;
 
 @RequestScoped
+@JBossLog
 public class GeneExpressionAnnotationCrudController extends BaseEntityCrudController<GeneExpressionAnnotationService, GeneExpressionAnnotation, GeneExpressionAnnotationDAO> implements GeneExpressionAnnotationCrudInterface {
 
 	@Inject GeneExpressionAnnotationService geneExpressionAnnotationService;
@@ -32,7 +34,7 @@ public class GeneExpressionAnnotationCrudController extends BaseEntityCrudContro
 	}
 
 	public APIResponse updateExpressionAnnotations(String dataProvider, List<GeneExpressionFmsDTO> annotations) {
-		return geneExpressionExecutor.runLoadApi(geneExpressionAnnotationService, dataProvider, annotations);
+		APIResponse response = geneExpressionExecutor.runLoadApi(geneExpressionAnnotationService, dataProvider, annotations);
+		return response;
 	}
 }
-

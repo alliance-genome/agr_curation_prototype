@@ -25,4 +25,13 @@ public class GeneExpressionAnnotationUniqueIdHelper {
 		}
 		return uniqueIdGeneratorHelper.getUniqueId();
 	}
+
+	//	UniqueID =	geneId | evidenceReferenceCurie | assayId
+	public String generateExperimentId(GeneExpressionFmsDTO geneExpressionFmsDTO, String referenceCurie) {
+		UniqueIdGeneratorHelper uniqueIdGeneratorHelper = new UniqueIdGeneratorHelper();
+		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getGeneId());
+		uniqueIdGeneratorHelper.add(referenceCurie);
+		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getAssay());
+		return uniqueIdGeneratorHelper.getUniqueId();
+	}
 }

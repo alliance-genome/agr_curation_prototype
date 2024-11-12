@@ -6,8 +6,8 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionFmsDTO;
@@ -27,8 +27,7 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RequestScoped
 public class GeneExpressionAnnotationFmsDTOValidator {
@@ -46,17 +45,19 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 	@Inject StageTermService stageTermService;
 	@Inject OntologyTermService ontologyTermService;
 
-	public GeneExpressionAnnotation validateAnnotation(GeneExpressionFmsDTO geneExpressionFmsDTO, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public GeneExpressionAnnotation validateAnnotation(GeneExpressionFmsDTO geneExpressionFmsDTO, BackendBulkDataProvider dataProvider, Map<String, Set<String>> experiments) throws ValidationException {
 		ObjectResponse<GeneExpressionAnnotation> response = new ObjectResponse<>();
 		GeneExpressionAnnotation geneExpressionAnnotation;
+		String uniqueId;
+		String referenceCurie;
 
 		ObjectResponse<Reference> singleReferenceResponse = validateEvidence(geneExpressionFmsDTO);
 		if (singleReferenceResponse.hasErrors()) {
 			response.addErrorMessage("singleReference", singleReferenceResponse.errorMessagesString());
 			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
 		} else {
-			String referenceCurie = singleReferenceResponse.getEntity().getCurie();
-			String uniqueId = geneExpressionAnnotationUniqueIdHelper.generateUniqueId(geneExpressionFmsDTO, referenceCurie);
+			referenceCurie = singleReferenceResponse.getEntity().getCurie();
+			uniqueId = geneExpressionAnnotationUniqueIdHelper.generateUniqueId(geneExpressionFmsDTO, referenceCurie);
 			SearchResponse<GeneExpressionAnnotation> annotationDB = geneExpressionAnnotationDAO.findByField("uniqueId", uniqueId);
 			if (annotationDB != null && annotationDB.getSingleResult() != null) {
 				geneExpressionAnnotation = annotationDB.getSingleResult();
@@ -129,6 +130,14 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
+		}
+		String experimentId = geneExpressionAnnotationUniqueIdHelper.generateExperimentId(geneExpressionFmsDTO, referenceCurie);
+		if (experiments.containsKey(experimentId)) {
+			experiments.get(experimentId).add(uniqueId);
+		} else {
+			Set<String> expressionIds = new HashSet<>();
+			expressionIds.add(uniqueId);
+			experiments.put(experimentId, expressionIds);
 		}
 		return geneExpressionAnnotation;
 	}
