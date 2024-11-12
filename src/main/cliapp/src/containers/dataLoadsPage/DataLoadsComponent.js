@@ -599,8 +599,8 @@ export const DataLoadsComponent = () => {
 		let filesWithoutDates = [];
 		files.forEach((file) => {
 			if (file.bulkloadStatus === 'FINISHED' || file.bulkloadStatus === 'STOPPED' || file.bulkloadStatus === 'FAILED') {
-				if (file.dateLastLoaded) {
-					lastLoadedDates.set(file.dateLastLoaded, file);
+				if (file.loadStarted) {
+					lastLoadedDates.set(file.loadStarted, file);
 				} else {
 					filesWithoutDates.push(file);
 				}
