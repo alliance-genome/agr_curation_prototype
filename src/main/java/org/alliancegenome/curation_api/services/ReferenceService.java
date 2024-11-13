@@ -26,7 +26,9 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 	ReferenceSynchronisationHelper refSyncHelper;
 
 	Date referenceRequest;
+	Date referenceRequestShallow;
 	HashMap<String, Reference> referenceCacheMap = new HashMap<>();
+	HashMap<String, Reference> shallowReferenceCacheMap = new HashMap<>();
 
 	@Override
 	@PostConstruct
@@ -67,6 +69,26 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 		} else {
 			reference = findOrCreateReference(curieOrXref);
 			referenceRequest = new Date();
+		}
+		return reference;
+	}
+
+	@Transactional
+	public Reference retrieveShallowReferenceFromDbOrLiteratureService(String pmid) {
+		Reference reference = null;
+		if (shallowReferenceCacheMap.containsKey(pmid)) {
+			reference = shallowReferenceCacheMap.get(pmid);
+		} else {
+			Log.debug("Reference not cached, caching reference: (" + pmid + ")");
+			if (shallowReferenceCacheMap.isEmpty()) {
+				shallowReferenceCacheMap = referenceDAO.getShallowReferenceMap();
+				reference = shallowReferenceCacheMap.get(pmid);
+			} else {
+/*
+					reference = findOrCreateReference(curieOrXref);
+					referenceCacheMap.put(curieOrXref, reference);
+*/
+			}
 		}
 		return reference;
 	}

@@ -22,7 +22,6 @@ public class EvidenceAssociationDTOValidator extends BaseDTOValidator {
 
 	public <E extends EvidenceAssociation, D extends EvidenceAssociationDTO> ObjectResponse<E> validateEvidenceAssociationDTO(E association, D dto) {
 		ObjectResponse<E> assocResponse = validateAuditedObjectDTO(association, dto);
-		association = assocResponse.getEntity();
 
 		if (CollectionUtils.isNotEmpty(dto.getEvidenceCuries())) {
 			List<InformationContentEntity> evidence = new ArrayList<>();

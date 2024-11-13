@@ -59,9 +59,11 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 			return null;
 		}
 		dbEntity = constructGenomicEntityAssociationDAO.persist(dbEntity);
+/*
 		addAssociationToConstruct(dbEntity);
 		addAssociationToGenomicEntity(dbEntity);
-		return new ObjectResponse<ConstructGenomicEntityAssociation>(dbEntity);
+*/
+		return new ObjectResponse<>(dbEntity);
 	}
 
 	public ObjectResponse<ConstructGenomicEntityAssociation> validate(ConstructGenomicEntityAssociation uiEntity) {
@@ -150,6 +152,7 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		constructDAO.persist(construct);
 	}
 
+/*
 	private void addAssociationToGenomicEntity(ConstructGenomicEntityAssociation association) {
 		GenomicEntity genomicEntity = association.getConstructGenomicEntityAssociationObject();
 		List<ConstructGenomicEntityAssociation> currentAssociations = genomicEntity.getConstructGenomicEntityAssociations();
@@ -164,4 +167,5 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		genomicEntity.setConstructGenomicEntityAssociations(currentAssociations);
 		genomicEntityDAO.persist(genomicEntity);
 	}
+*/
 }
