@@ -163,7 +163,6 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				ph.progressProcess();
 			}
-			history.incrementCompleted();
 			updateHistory(history);
 			updateExceptions(history);
 			ph.finishProcess();

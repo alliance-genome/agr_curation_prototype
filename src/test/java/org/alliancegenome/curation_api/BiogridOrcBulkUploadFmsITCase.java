@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,27 +37,32 @@ public class BiogridOrcBulkUploadFmsITCase extends BaseITCase {
 						.setParam("http.connection.timeout", 100000));
 	}
 
-	private final String biogridOrcBulkPostEndpoint = "/api/cross-reference/bulk/FB/biogridfile";
+	ResourceDescriptorPage resourceDescriptorPage;
+
+	private final String biogridOrcBulkPostEndpoint = "/api/biogrid-orc/bulk/FB/biogridfile";
 	private final String biogridOrcTestFilePath = "src/test/resources/bulk/fms/12_biogrid/";
 	private final String biogridOrcFindEndpoint = "/api/cross-reference/find?limit=100&page=0";
+
+	private void loadRequiredEntities() throws Exception {
+		ResourceDescriptor rd = createResourceDescriptor("FB");
+		createResourceDescriptorPage("biogrid/orcs", "http://test.org", rd);
+	}
 
 	@Test
 	@Order(1)
 	public void biogridOrcBulkUploadCheckFields() throws Exception {
-		
+		loadRequiredEntities();
 		checkSuccessfulBulkLoad(biogridOrcBulkPostEndpoint, biogridOrcTestFilePath + "AF_01_all_fields.json", 1);
 
-		RestAssured.given().
-				when().
-				header("Content-Type", "application/json").
-				body("{}").
-				post(biogridOrcFindEndpoint).
-				then().
-				statusCode(200).
-				body("totalResults", is(1)).
-				body("results", hasSize(1)).
-				body("results[0].referencedCurie", is("NCBI_Gene:108101")).
-				body("results[0].displayName", is("BioGRID CRISPR Screen Cell Line Phenotypes"));
+		RestAssured.given()
+		.when()
+			.header("Content-Type", "application/json")
+			.body("{\"referencedCurie\": \"NCBI_Gene:108101\"}").post(biogridOrcFindEndpoint)
+			.then().statusCode(200)
+			.body("totalResults", is(1))
+			.body("results", hasSize(1))
+			.body("results[0].referencedCurie", is("NCBI_Gene:108101"))
+			.body("results[0].displayName", is("BioGRID CRISPR Screen Cell Line Phenotypes"));
 	}
 
 }
