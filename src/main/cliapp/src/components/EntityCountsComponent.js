@@ -29,7 +29,6 @@ export const EntityCountsComponent = () => {
 						name: CLASSES[key].name,
 						link: CLASSES[key].link,
 						type: CLASSES[key].type,
-						hasTable: CLASSES[key].hasTable,
 						isIndexed: CLASSES[key].isIndexed,
 						dbCount: res.entity[key]['dbCount'],
 						esCount: res.entity[key]['esCount'],
@@ -45,7 +44,7 @@ export const EntityCountsComponent = () => {
 	}, []);
 
 	const nameHyperlinkTemplate = (rowData) => {
-		if (!rowData.hasTable) {
+		if (!rowData.link) {
 			return rowData.name;
 		}
 		return <a href={rowData.link}>{rowData.name}</a>;
