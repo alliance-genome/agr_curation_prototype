@@ -44,6 +44,9 @@ export const EntityCountsComponent = () => {
 	}, []);
 
 	const nameHyperlinkTemplate = (rowData) => {
+		if (!rowData.link) {
+			return rowData.name;
+		}
 		return <a href={rowData.link}>{rowData.name}</a>;
 	};
 
