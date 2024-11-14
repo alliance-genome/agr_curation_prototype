@@ -14,8 +14,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 @JBossLog
@@ -37,7 +36,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 	@Transactional
 	public GeneExpressionExperiment upsert(String experimentId, Set<String> geneExpressionAnnotationIds) throws ValidationException {
 		GeneExpressionExperiment geneExpressionExperiment;
-		List<GeneExpressionAnnotation> annotations;
+		Set<GeneExpressionAnnotation> annotations;
 
 		//	example of experimentId: Xenbase:XB-GENE-972235|AGRKB:101000000874667|MMO:0000658
 		String[] definingFields = experimentId.split("\\|", 3);
@@ -60,7 +59,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 
 		annotations = geneExpressionExperiment.getExpressionAnnotations();
 		if (annotations == null) {
-			annotations = new ArrayList<>();
+			annotations = new HashSet<>();
 		}
 		for (String geneExpressionAnnotationId: geneExpressionAnnotationIds) {
 			annotations.add(geneExpressionAnnotationDAO.findByField("uniqueId", geneExpressionAnnotationId).getSingleResult());

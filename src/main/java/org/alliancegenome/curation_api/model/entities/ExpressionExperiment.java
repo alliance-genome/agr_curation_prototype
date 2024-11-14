@@ -18,6 +18,7 @@ import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @MappedSuperclass
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
@@ -55,7 +56,7 @@ public abstract class ExpressionExperiment extends SubmittedObject {
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({View.FieldsAndLists.class})
-	private List<GeneExpressionAnnotation> expressionAnnotations;
+	private Set<GeneExpressionAnnotation> expressionAnnotations;
 
 	@Transient private Allele specimenGenomicModel;
 	@Transient private List<Reagent> detectionReagents;
