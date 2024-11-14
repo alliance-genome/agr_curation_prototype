@@ -9,22 +9,13 @@ export const Dashboard = () => {
 
 	useEffect(() => {
 		let _tableData = {};
-		const excludedEntities = [
-			'AGMDiseaseAnnotation',
-			'AlleleDiseaseAnnotation',
-			'GeneDiseaseAnnotation',
-			'AGMPhenotypeAnnotation',
-			'AllelePhenotypeAnnotation',
-			'GenePhenotypeAnnotation',
-		];
-
 		for (const key in CLASSES) {
 			const { type } = CLASSES[key];
 
 			if (!_tableData[type]) {
 				_tableData[type] = [];
 			}
-			if (!excludedEntities.includes(key)) {
+			if (CLASSES[key].hasTable) {
 				_tableData[type].push({
 					name: CLASSES[key].name,
 					link: CLASSES[key].link,
