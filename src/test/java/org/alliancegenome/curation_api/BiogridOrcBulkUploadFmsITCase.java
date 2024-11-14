@@ -55,14 +55,31 @@ public class BiogridOrcBulkUploadFmsITCase extends BaseITCase {
 		checkSuccessfulBulkLoad(biogridOrcBulkPostEndpoint, biogridOrcTestFilePath + "AF_01_all_fields.json", 1);
 
 		RestAssured.given()
-		.when()
-			.header("Content-Type", "application/json")
-			.body("{\"referencedCurie\": \"NCBI_Gene:108101\"}").post(biogridOrcFindEndpoint)
-			.then().statusCode(200)
-			.body("totalResults", is(1))
-			.body("results", hasSize(1))
-			.body("results[0].referencedCurie", is("NCBI_Gene:108101"))
-			.body("results[0].displayName", is("BioGRID CRISPR Screen Cell Line Phenotypes"));
+				.when()
+				.header("Content-Type", "application/json")
+				.body("{\"referencedCurie\": \"NCBI_Gene:108101\"}").post(biogridOrcFindEndpoint)
+				.then().statusCode(200)
+				.body("totalResults", is(1))
+				.body("results", hasSize(1))
+				.body("results[0].referencedCurie", is("NCBI_Gene:108101"))
+				.body("results[0].displayName", is("BioGRID CRISPR Screen Cell Line Phenotypes"));
+	}
+
+	@Test
+	@Order(2)
+	public void biogridOrcBulkUploadDuplicateEntries() throws Exception {
+		checkBulkLoadRecordCounts(biogridOrcBulkPostEndpoint, biogridOrcTestFilePath + "DE_01_duplicate_entries.json",
+				"Records", 2, 0, 1, 0);
+
+		RestAssured.given()
+				.when()
+				.header("Content-Type", "application/json")
+				.body("{\"referencedCurie\": \"NCBI_Gene:100001\"}").post(biogridOrcFindEndpoint)
+				.then().statusCode(200)
+				.body("totalResults", is(1))
+				.body("results", hasSize(1))
+				.body("results[0].referencedCurie", is("NCBI_Gene:100001"))
+				.body("results[0].displayName", is("BioGRID CRISPR Screen Cell Line Phenotypes"));
 	}
 
 }
