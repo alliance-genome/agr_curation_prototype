@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -24,12 +23,15 @@ import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 @ApplicationScoped
-@JBossLog
 public class GeneExpressionExecutor extends LoadFileExecutor {
 	@Inject GeneExpressionAnnotationService geneExpressionAnnotationService;
 	@Inject GeneExpressionExperimentService geneExpressionExperimentService;
+	static final String ANNOTATIONS = "gene expression annotations";
+	static final String EXPERIMENTS = "gene expresion experiments";
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
+
+
 		try {
 			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
@@ -44,7 +46,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			}
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setCount(geneExpressionIngestFmsDTO.getData().size());
+			bulkLoadFileHistory.setCount(ANNOTATIONS, geneExpressionIngestFmsDTO.getData().size());
 			updateHistory(bulkLoadFileHistory);
 
 			List<Long> annotationIdsLoaded = new ArrayList<>();
@@ -53,7 +55,8 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			boolean success = runLoad(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider, geneExpressionIngestFmsDTO.getData(), annotationIdsLoaded);
 
 			if (success) {
-				runCleanup(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "gene expression annotation");
+				runCleanup(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, ANNOTATIONS);
+				bulkLoadFileHistory.setCount(EXPERIMENTS, geneExpressionAnnotationService.getExperiments().size());
 				loadExperiments(bulkLoadFileHistory);
 			}
 
@@ -70,7 +73,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 	private void loadExperiments(BulkLoadFileHistory history) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		Map<String, Set<String>> experiments = geneExpressionAnnotationService.getExperiments();
-		ph.startProcess("Saving experiments: ", experiments.size());
+		ph.startProcess("Saving " + EXPERIMENTS, experiments.size());
 		for (String experimentId: experiments.keySet()) {
 			try {
 				GeneExpressionExperiment experiment = geneExpressionExperimentService.upsert(experimentId, experiments.get(experimentId));

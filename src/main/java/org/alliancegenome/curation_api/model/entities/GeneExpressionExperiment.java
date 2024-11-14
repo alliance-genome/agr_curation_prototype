@@ -13,7 +13,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
-@AGRCurationSchemaVersion(min = "1.7.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ExpressionExperiment.class }, partial = true)
+@AGRCurationSchemaVersion(min = "2.8.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ExpressionExperiment.class }, partial = true)
 @Table(indexes = {
 	@Index(name = "on_index", columnList = "id")
 })
