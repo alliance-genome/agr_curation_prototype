@@ -28,6 +28,8 @@ export const EntityCountsComponent = () => {
 					_tableData[type].push({
 						name: CLASSES[key].name,
 						link: CLASSES[key].link,
+						type: CLASSES[key].type,
+						isIndexed: CLASSES[key].isIndexed,
 						dbCount: res.entity[key]['dbCount'],
 						esCount: res.entity[key]['esCount'],
 					});
@@ -45,10 +47,9 @@ export const EntityCountsComponent = () => {
 		return <a href={rowData.link}>{rowData.name}</a>;
 	};
 
-	const ROW_HIGHLIGHT_IGNORE = ['Disease Annotations', 'Literature References', 'Bulk Loads / Failed Loads'];
-
 	const getRowClass = (rowData) => {
-		if (ROW_HIGHLIGHT_IGNORE.includes(rowData.name)) return;
+		console.log(rowData);
+		if (!rowData.isIndexed) return;
 
 		if (rowData?.dbCount !== rowData.esCount) {
 			return 'bg-gray-500 text-white';
@@ -58,7 +59,7 @@ export const EntityCountsComponent = () => {
 	return (
 		<>
 			<div className="grid nested dashboard">
-				<div className="col-4">
+				<div className="col-3">
 					<DataTable
 						header="Entities"
 						value={tableData.entity}
@@ -79,7 +80,7 @@ export const EntityCountsComponent = () => {
 						/>
 					</DataTable>
 				</div>
-				<div className="col-4">
+				<div className="col-3">
 					<DataTable
 						header="Ontologies"
 						value={tableData.ontology}
@@ -100,7 +101,23 @@ export const EntityCountsComponent = () => {
 						/>
 					</DataTable>
 				</div>
-				<div className="col-4">
+				<div className="col-3">
+					<DataTable
+						header="Associations"
+						value={tableData.association}
+						sortField="name"
+						sortOrder={1}
+						rowClassName={(rowData) => getRowClass(rowData)}
+					>
+						<Column field="name" header="Association Type" body={nameHyperlinkTemplate} />
+						<Column
+							field="dbCount"
+							header="Database Term Count"
+							body={(rowData) => <NumberTemplate number={rowData.dbCount} />}
+						/>
+					</DataTable>
+				</div>
+				<div className="col-3">
 					<DataTable
 						header="System"
 						value={tableData.system}
