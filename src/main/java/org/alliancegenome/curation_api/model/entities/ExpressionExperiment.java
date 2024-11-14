@@ -25,7 +25,7 @@ import java.util.List;
 @Indexed
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
-@AGRCurationSchemaVersion(min = "1.7.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SubmittedObject.class }, partial = true)
+@AGRCurationSchemaVersion(min = "2.8.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SubmittedObject.class }, partial = true)
 public abstract class ExpressionExperiment extends SubmittedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
