@@ -125,7 +125,7 @@ export const CLASSES = Object.freeze({
 		link: '/#/genomeAssemblies',
 		type: 'entity',
 		hasTable: false,
-		isIndexed: false,
+		isIndexed: true,
 	},
 	GeneExpressionAnnotation: {
 		name: 'Gene Expression Annotations',
