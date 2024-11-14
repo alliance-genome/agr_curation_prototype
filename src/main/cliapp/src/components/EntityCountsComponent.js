@@ -115,7 +115,7 @@ export const EntityCountsComponent = () => {
 						<Column field="name" header="Association Type" body={nameHyperlinkTemplate} />
 						<Column
 							field="dbCount"
-							header="Database Term Count"
+							header="Database Association Count"
 							body={(rowData) => <NumberTemplate number={rowData.dbCount} />}
 						/>
 					</DataTable>
