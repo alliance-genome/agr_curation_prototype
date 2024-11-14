@@ -103,8 +103,8 @@ export const CLASSES = Object.freeze({
 		isIndexed: true,
 	},
 	Species: { name: 'Species', link: '/#/species', type: 'entity', hasTable: true, isIndexed: true },
-	Transcript: { name: 'Transcripts', link: '/#/transcripts', type: 'entity', hasTable: false, isIndexed: false },
-	Exon: { name: 'Exons', link: '/#/exons', type: 'entity', hasTable: false, isIndexed: false },
+	Transcript: { name: 'Transcripts', type: 'entity', hasTable: false, isIndexed: false },
+	Exon: { name: 'Exons', type: 'entity', hasTable: false, isIndexed: false },
 	CodingSequence: {
 		name: 'Coding Sequences',
 		type: 'entity',
@@ -153,8 +153,8 @@ export const CLASSES = Object.freeze({
 		hasTable: false,
 		isIndexed: false,
 	},
-	GeneToGeneParalogy: { name: 'Paralogy', link: '/#/paralogy', type: 'entity', hasTable: false, isIndexed: false },
-	GeneToGeneOrthology: { name: 'Orthology', link: '/#/orthology', type: 'entity', hasTable: false, isIndexed: false },
+	GeneToGeneParalogy: { name: 'Paralogy', type: 'entity', hasTable: false, isIndexed: false },
+	GeneToGeneOrthology: { name: 'Orthology', type: 'entity', hasTable: false, isIndexed: false },
 
 	DOTerm: { name: 'DO', link: '/#/ontology/do', type: 'ontology', hasTable: true, isIndexed: true },
 	CHEBITerm: { name: 'CHEBI', link: '/#/ontology/chebi', type: 'ontology', hasTable: true, isIndexed: true },
