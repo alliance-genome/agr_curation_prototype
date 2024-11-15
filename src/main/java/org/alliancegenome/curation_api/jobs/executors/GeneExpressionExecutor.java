@@ -26,9 +26,8 @@ import java.util.zip.GZIPInputStream;
 public class GeneExpressionExecutor extends LoadFileExecutor {
 	@Inject GeneExpressionAnnotationService geneExpressionAnnotationService;
 	@Inject GeneExpressionExperimentService geneExpressionExperimentService;
-	static final String ANNOTATIONS = "gene expression annotations";
-	static final String EXPERIMENTS = "gene expresion experiments";
-
+	static final String ANNOTATIONS = "gen_exp_annotations";
+	static final String EXPERIMENTS = "gen_exp_experiments";
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 
 
@@ -55,7 +54,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			boolean success = runLoad(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider, geneExpressionIngestFmsDTO.getData(), annotationIdsLoaded);
 
 			if (success) {
-				runCleanup(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, ANNOTATIONS);
+				runCleanup(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "gene expression annotations");
 				bulkLoadFileHistory.setCount(EXPERIMENTS, geneExpressionAnnotationService.getExperiments().size());
 				loadExperiments(bulkLoadFileHistory);
 			}
@@ -73,19 +72,19 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 	private void loadExperiments(BulkLoadFileHistory history) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		Map<String, Set<String>> experiments = geneExpressionAnnotationService.getExperiments();
-		ph.startProcess("Saving " + EXPERIMENTS, experiments.size());
+		ph.startProcess("Saving gene expression experiments: ", experiments.size());
 		for (String experimentId: experiments.keySet()) {
 			try {
 				GeneExpressionExperiment experiment = geneExpressionExperimentService.upsert(experimentId, experiments.get(experimentId));
 				if (experiment != null) {
-					history.incrementCompleted();
+					history.incrementCompleted(EXPERIMENTS);
 				}
 			} catch (ObjectUpdateException e) {
-				history.incrementFailed();
+				history.incrementFailed(EXPERIMENTS);
 				addException(history, e.getData());
 			} catch (Exception e) {
 				e.printStackTrace();
-				history.incrementFailed();
+				history.incrementFailed(EXPERIMENTS);
 				addException(history, new ObjectUpdateException.ObjectUpdateExceptionData(experimentId, e.getMessage(), e.getStackTrace()));
 			}
 			ph.progressProcess();
