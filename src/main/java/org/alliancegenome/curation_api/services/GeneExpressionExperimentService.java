@@ -5,8 +5,10 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.extern.jbosslog.JBossLog;
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
@@ -14,8 +16,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @JBossLog
 @RequestScoped
@@ -26,6 +27,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 	@Inject GeneService geneService;
 	@Inject MmoTermService mmoTermService;
 	@Inject ReferenceService referenceService;
+	@Inject DataProviderService dataProviderService;
 
 	@Override
 	@PostConstruct
@@ -33,8 +35,14 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 		setSQLDao(geneExpressionExperimentDAO);
 	}
 
+	public List<Long> getExperimentIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
+		return geneExpressionExperimentDAO.findIdsByParams(params);
+	}
+
 	@Transactional
-	public GeneExpressionExperiment upsert(String experimentId, Set<String> geneExpressionAnnotationIds) throws ValidationException {
+	public GeneExpressionExperiment upsert(String experimentId, Set<String> geneExpressionAnnotationIds, BackendBulkDataProvider dataProvider) throws ValidationException {
 		GeneExpressionExperiment geneExpressionExperiment;
 		Set<GeneExpressionAnnotation> annotations;
 
@@ -50,7 +58,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 			geneExpressionExperiment = new GeneExpressionExperiment();
 			geneExpressionExperiment.setUniqueId(experimentId);
 		}
-
+		geneExpressionExperiment.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));
 		geneExpressionExperiment.setEntityAssayed(geneService.findByIdentifierString(geneId));
 		geneExpressionExperiment.setSingleReference(referenceService.getByCurie(referenceId).getEntity());
 		geneExpressionExperiment.setExpressionAssayUsed(mmoTermService.findByCurie(assayId));
