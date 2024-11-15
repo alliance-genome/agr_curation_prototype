@@ -40,8 +40,8 @@ CREATE TABLE IF NOT EXISTS geneexpressionexperiment_geneexpressionannotation (
     geneexpressionexperiment_id bigint NOT NULL,
     expressionannotations_id bigint NOT NULL,
 
-	CONSTRAINT gen_exp_exp_experiment_fkey FOREIGN KEY (geneexpressionexperiment_id) REFERENCES geneexpressionexperiment (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
-    CONSTRAINT gen_exp_exp_annotation_fkey FOREIGN KEY (expressionannotations_id)  REFERENCES geneexpressionannotation (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION
+	CONSTRAINT geexperiment_geannotation_geexperiment_id_fk FOREIGN KEY (geneexpressionexperiment_id) REFERENCES geneexpressionexperiment (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+    CONSTRAINT geexperiment_geannotation_geannotation_id_fk FOREIGN KEY (expressionannotations_id)  REFERENCES geneexpressionannotation (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 CREATE INDEX geneexpressionexperiment_gea_experiment_index ON geneexpressionexperiment_geneexpressionannotation USING btree (geneexpressionexperiment_id);
