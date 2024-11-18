@@ -124,9 +124,7 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 	}
 
 	private Species getSingleSpecies(String orgAbbreviation) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("displayName", orgAbbreviation);
-		return speciesDAO.findByParams(map).getSingleResult();
+		return speciesDAO.findByField("displayName", orgAbbreviation).getSingleResult();
 	}
 
 	public ObjectResponse<DataProvider> validate(DataProvider uiEntity) {

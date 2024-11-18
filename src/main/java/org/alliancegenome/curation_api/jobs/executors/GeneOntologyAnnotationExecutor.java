@@ -6,6 +6,7 @@ import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
 import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
@@ -33,19 +34,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
-		String url = ((BulkURLLoad) bulkLoadFileHistory.getBulkLoad()).getBulkloadUrl();
-
-		String[] tok = url.split("/");
-		String orgAbbrev = tok[tok.length - 1].toUpperCase();
-		String abbrName = orgAbbrev.split("\\.")[0];
-		String abbr;
-		if (abbrName.contains("HUMAN")) {
-			abbr = "HUMAN";
-		} else if (abbrName.equalsIgnoreCase("xenbase")) {
-			abbr = "XB";
-		} else {
-			abbr = abbrName;
-		}
+		String abbr = ((BulkFMSLoad) bulkLoadFileHistory.getBulkLoad()).getFmsDataSubType();
 		Organization organization = organizationService.getByAbbr(abbr).getEntity();
 
 		// curie, List<GO curie>
