@@ -8,7 +8,6 @@ import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
 import org.alliancegenome.curation_api.services.GeneOntologyAnnotationService;
 import org.alliancegenome.curation_api.services.OrganizationService;
