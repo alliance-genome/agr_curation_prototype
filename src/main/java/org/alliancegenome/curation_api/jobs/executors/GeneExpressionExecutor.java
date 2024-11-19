@@ -83,7 +83,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 		if (dataProviderName != null) {
 			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		}
-		boolean success = runLoad(service, history, dataProvider, objectList, idsLoaded, true);
+		boolean success = runLoad(service, history, dataProvider, objectList, idsLoaded, true, "Records");
 		if (success) {
 			loadExperiments(history, dataProvider, new ArrayList<>());
 		}
