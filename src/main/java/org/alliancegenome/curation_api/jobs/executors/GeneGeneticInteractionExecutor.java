@@ -1,10 +1,11 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.GZIPInputStream;
-
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvParser;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.alliancegenome.curation_api.dao.GeneGeneticInteractionDAO;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -12,13 +13,10 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.services.GeneGeneticInteractionService;
 import org.alliancegenome.curation_api.services.GeneInteractionService;
 
-import com.fasterxml.jackson.databind.MappingIterator;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvParser;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 @ApplicationScoped
 public class GeneGeneticInteractionExecutor extends LoadFileExecutor {
@@ -41,7 +39,7 @@ public class GeneGeneticInteractionExecutor extends LoadFileExecutor {
 			bulkLoadFileHistory.setCount(interactionData.size());
 			updateHistory(bulkLoadFileHistory);
 
-			boolean success = runLoad(geneGeneticInteractionService, bulkLoadFileHistory, null, interactionData, interactionIdsLoaded, false, "Records");
+			boolean success = runLoad(geneGeneticInteractionService, bulkLoadFileHistory, null, interactionData, interactionIdsLoaded, false);
 			if (success) {
 				runCleanup(geneInteractionService, bulkLoadFileHistory, "COMBINED", interactionIdsBefore, interactionIdsLoaded, "gene genetic interaction");
 			}

@@ -193,6 +193,14 @@ public class LoadFileExecutor {
 		return runLoad(service, history, dataProvider, objectList, idsAdded, true, "Records");
 	}
 
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing) {
+		return runLoad(service, history, dataProvider, objectList, idsAdded, terminateFailing, "Records");
+	}
+
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, String countType) {
+		return runLoad(service, history, dataProvider, objectList, idsAdded, true, countType);
+	}
+
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
