@@ -1,10 +1,11 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.GZIPInputStream;
-
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvParser;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -12,13 +13,10 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.services.GeneInteractionService;
 import org.alliancegenome.curation_api.services.GeneMolecularInteractionService;
 
-import com.fasterxml.jackson.databind.MappingIterator;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvParser;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 @ApplicationScoped
 public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
@@ -37,10 +35,10 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 
 			List<Long> interactionIdsLoaded = new ArrayList<>();
 			List<Long> interactionIdsBefore = geneMolecularInteractionDAO.findAllIds().getResults();
-			
+
 			bulkLoadFileHistory.setCount(interactionData.size());
 			updateHistory(bulkLoadFileHistory);
-			
+
 			boolean success = runLoad(geneMolecularInteractionService, bulkLoadFileHistory, null, interactionData, interactionIdsLoaded, false);
 			if (success) {
 				runCleanup(geneInteractionService, bulkLoadFileHistory, "COMBINED", interactionIdsBefore, interactionIdsLoaded, "gene molecular interaction");
