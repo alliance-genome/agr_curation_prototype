@@ -53,6 +53,8 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	private final String anatomicalStructureUberonTermId2 = "UBERON:005";
 	private final String anatomicalSubstructureUberonTermId1 = "UBERON:006";
 	private final String anatomicalSubstructureUberonTermId2 = "UBERON:007";
+	private final String annotationUniqueIdExpected = String.join(pipe, mmoTerm, gene, agrPublicationId, stageTermId,
+		"stage1", "trunk", anatomicalStructureTermId, cellularComponentTermId);
 
 	@BeforeEach
 	public void init() {
@@ -78,7 +80,13 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results", hasSize(1))
 			.body("results[0].dataProvider.sourceOrganization.abbreviation", is("ZFIN"))
 			.body("results[0].uniqueId", is(experimentUniqueIdExpected))
-			.body("results[0].expressionAnnotations.size()", is(1));
+			.body("results[0].expressionAnnotations.size()", is(1))
+			.body("results[0].entityAssayed.modEntityId", is(gene))
+			.body("results[0].singleReference.crossReferences[0].referencedCurie", is(publicationId))
+			.body("results[0].expressionAssayUsed.curie", is(mmoTerm))
+			.body("results[0].obsolete", is(false))
+			.body("results[0].internal", is(false))
+			.body("results[0].expressionAnnotations[0].uniqueId", is(annotationUniqueIdExpected));
 
 		RestAssured.given().when()
 			.header("Content-Type", "application/json")
