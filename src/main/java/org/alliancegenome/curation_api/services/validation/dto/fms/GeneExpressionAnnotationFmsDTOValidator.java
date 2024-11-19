@@ -47,14 +47,13 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 
 	public GeneExpressionAnnotation validateAnnotation(GeneExpressionFmsDTO geneExpressionFmsDTO, BackendBulkDataProvider dataProvider, Map<String, Set<String>> experiments) throws ValidationException {
 		ObjectResponse<GeneExpressionAnnotation> response = new ObjectResponse<>();
-		GeneExpressionAnnotation geneExpressionAnnotation;
-		String uniqueId;
-		String referenceCurie;
+		GeneExpressionAnnotation geneExpressionAnnotation = new GeneExpressionAnnotation();
+		String uniqueId = "empty";
+		String referenceCurie = "empty";
 
 		ObjectResponse<Reference> singleReferenceResponse = validateEvidence(geneExpressionFmsDTO);
 		if (singleReferenceResponse.hasErrors()) {
 			response.addErrorMessage("singleReference", singleReferenceResponse.errorMessagesString());
-			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
 		} else {
 			referenceCurie = singleReferenceResponse.getEntity().getCurie();
 			uniqueId = geneExpressionAnnotationUniqueIdHelper.generateUniqueId(geneExpressionFmsDTO, referenceCurie);
@@ -62,7 +61,6 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			if (annotationDB != null && annotationDB.getSingleResult() != null) {
 				geneExpressionAnnotation = annotationDB.getSingleResult();
 			} else {
-				geneExpressionAnnotation = new GeneExpressionAnnotation();
 				geneExpressionAnnotation.setUniqueId(uniqueId);
 			}
 			if (geneExpressionAnnotation.getExpressionPattern() == null) {

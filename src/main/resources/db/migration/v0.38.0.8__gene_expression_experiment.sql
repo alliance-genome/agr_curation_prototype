@@ -34,8 +34,6 @@ CREATE INDEX geneexpressionexperiment_obsolete_index ON geneexpressionexperiment
 CREATE INDEX geneexpressionexperiment_createdby_index ON geneexpressionexperiment USING btree (createdby_id);
 CREATE INDEX geneexpressionexperiment_updatedby_index ON geneexpressionexperiment USING btree (updatedby_id);
 
-CREATE SEQUENCE geneexpressionexperiment_geneexpressionannotation_seq START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
-
 CREATE TABLE IF NOT EXISTS geneexpressionexperiment_geneexpressionannotation (
     geneexpressionexperiment_id bigint NOT NULL,
     expressionannotations_id bigint NOT NULL,

@@ -30,6 +30,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	private final String expressionBulkPostEndpoint = "/api/gene-expression-annotation/bulk/ZFIN/annotationFile";
 	private final String expressionTestFilePath = "src/test/resources/bulk/fms/07_expression/";
 	private final String expressionFindEndpoint = "/api/gene-expression-annotation/find?limit=100&page=0";
+	private final String experimentFindEndpoint = "/api/gene-expression-experiment/find?limit=100&page=0";
 	private final String taxon = "NCBITaxon:7955";
 	private final String gene = "GEXPTEST:GENE001";
 	private final String mmoTerm = "GEXPTEST:assay001";
@@ -37,10 +38,10 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	private final String agrReferenceId = "AGRKB:101000000668377";
 	private final String publicationId = "PMID:009";
 	private final String agrPublicationId = "AGRKB:101000000668376";
-
+	private final String pipe = "|";
+	private final String experimentUniqueIdExpected = gene + pipe + agrPublicationId + pipe + mmoTerm;
 	private final String stageTermId = "ZFS:001";
 	private final String stageUberonTermId = "UBERON:001";
-
 	private final String anatomicalStructureTermId = "ANAT:001";
 	private final String anatomicalSubstructureTermId = "ANAT:002";
 	private final String cellularComponentTermId = "GOTEST:0012";
@@ -66,6 +67,19 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	public void expressionBulkUploadAllFields() throws Exception {
 		loadRequiredEntities();
 		checkSuccessfulBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "AF_01_all_fields.json");
+
+		RestAssured.given().when()
+			.header("Content-Type", "application/json")
+			.body("{}")
+			.post(experimentFindEndpoint)
+			.then()
+			.statusCode(200)
+			.body("totalResults", is(1))
+			.body("results", hasSize(1))
+			.body("results[0].dataProvider.sourceOrganization.abbreviation", is("ZFIN"))
+			.body("results[0].uniqueId", is(experimentUniqueIdExpected))
+			.body("results[0].expressionAnnotations.size()", is(1));
+
 		RestAssured.given().when()
 			.header("Content-Type", "application/json")
 			.body("{}")

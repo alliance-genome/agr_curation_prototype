@@ -9,7 +9,10 @@ import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionIngestFmsDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.GeneExpressionAnnotationService;
 import org.alliancegenome.curation_api.services.GeneExpressionExperimentService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -26,8 +29,8 @@ import java.util.zip.GZIPInputStream;
 public class GeneExpressionExecutor extends LoadFileExecutor {
 	@Inject GeneExpressionAnnotationService geneExpressionAnnotationService;
 	@Inject GeneExpressionExperimentService geneExpressionExperimentService;
-	static final String ANNOTATIONS = "gen_exp_annotations";
-	static final String EXPERIMENTS = "gen_exp_experiments";
+	static final String ANNOTATIONS = "Annotations";
+	static final String EXPERIMENTS = "Experiments";
 
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
@@ -54,12 +57,10 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			List<Long> experimentIdsLoaded = new ArrayList<>();
 			List<Long> experimentIdsBefore = geneExpressionExperimentService.getExperimentIdsByDataProvider(dataProvider);
 
-			bulkLoadFileHistory.setCount(ANNOTATIONS, geneExpressionIngestFmsDTO.getData().size());
 			boolean success = runLoad(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider, geneExpressionIngestFmsDTO.getData(), annotationIdsLoaded);
 
 			if (success) {
 				runCleanup(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, ANNOTATIONS);
-				bulkLoadFileHistory.setCount(EXPERIMENTS, geneExpressionAnnotationService.getExperiments().size());
 				loadExperiments(bulkLoadFileHistory, dataProvider, experimentIdsLoaded);
 				runCleanup(geneExpressionExperimentService, bulkLoadFileHistory, dataProvider.name(), experimentIdsBefore, experimentIdsLoaded, EXPERIMENTS);
 			}
@@ -74,11 +75,27 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 		}
 	}
 
+	public APIResponse runLoadAPI(GeneExpressionAnnotationService service, String dataProviderName, List<GeneExpressionFmsDTO> objectList) {
+		List<Long> idsLoaded = new ArrayList<>();
+		BulkLoadFileHistory history = new BulkLoadFileHistory(objectList.size());
+		history = bulkLoadFileHistoryDAO.persist(history);
+		BackendBulkDataProvider dataProvider = null;
+		if (dataProviderName != null) {
+			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+		}
+		boolean success = runLoad(service, history, dataProvider, objectList, idsLoaded, true);
+		if (success) {
+			loadExperiments(history, dataProvider, new ArrayList<>());
+		}
+		history.finishLoad();
+		return new LoadHistoryResponce(history);
+	}
 
-	private void loadExperiments(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<Long> experimentIdsLoaded) {
+ 	private void loadExperiments(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<Long> experimentIdsLoaded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		Map<String, Set<String>> experiments = geneExpressionAnnotationService.getExperiments();
 		ph.startProcess("Saving gene expression experiments: ", experiments.size());
+		history.setCount(EXPERIMENTS, geneExpressionAnnotationService.getExperiments().size());
 		for (String experimentId: experiments.keySet()) {
 			try {
 				GeneExpressionExperiment experiment = geneExpressionExperimentService.upsert(experimentId, experiments.get(experimentId), dataProvider);
@@ -98,8 +115,4 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 		}
 		updateHistory(history);
 	}
-
-//	private void cleanUpExperiments(BulkLoadFileHistory bulkLoadFileHistory) {
-//		System.out.println("cleaning ...");
-//	}
 }

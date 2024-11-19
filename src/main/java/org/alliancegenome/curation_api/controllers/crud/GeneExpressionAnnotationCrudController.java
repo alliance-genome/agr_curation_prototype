@@ -32,7 +32,7 @@ public class GeneExpressionAnnotationCrudController extends BaseEntityCrudContro
 	}
 
 	public APIResponse updateExpressionAnnotations(String dataProvider, List<GeneExpressionFmsDTO> annotations) {
-		APIResponse response = geneExpressionExecutor.runLoadApi(geneExpressionAnnotationService, dataProvider, annotations);
+		APIResponse response = geneExpressionExecutor.runLoadAPI(geneExpressionAnnotationService, dataProvider, annotations);
 		return response;
 	}
 }
