@@ -74,7 +74,8 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({
 		"alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations",
-		"transcriptGenomicLocationAssociations", "exonGenomicLocationAssociations", "codingSequenceGenomicLocationAssociations"
+		"transcriptGenomicLocationAssociations", "exonGenomicLocationAssociations", "codingSequenceGenomicLocationAssociations",
+		"transcriptGeneAssociations", "geneGenomicLocationAssociations", "transcriptExonAssociations", "transcriptCodingSequenceAssociations"
 	})
 	private GenomicEntity constructGenomicEntityAssociationObject;
 
