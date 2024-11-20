@@ -15,14 +15,17 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDT
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.DataProviderValidator;
+import org.apache.commons.collections.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RequestScoped
 public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOntologyAnnotation, GeneOntologyAnnotationDAO> {
 
-	private Species species;
+	private List<Species> species;
 	public static final String RESOURCE_DESCRIPTOR_PREFIX = "ENSEMBL";
 	public static final String RESOURCE_DESCRIPTOR_PAGE_NAME = "default";
 	// <crossReference.referencedCurie, DataProvider>
@@ -30,7 +33,6 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 	Map<String, Long> goTermMap = new HashMap<>();
 	HashMap<String, DataProvider> dataProviderMap = new HashMap<>();
 	private Map<Long, GeneOntologyAnnotationDTO> gafMap = new HashMap<>();
-
 
 
 	@Inject
@@ -92,7 +94,8 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 
 	public Long getGeneID(GeneOntologyAnnotationDTO uiEntity, String orgAbbreviation) {
 		if (accessionGeneMap.isEmpty()) {
-			accessionGeneMap = geneDAO.getAllGeneIdsPerSpecies(getSpecies(orgAbbreviation));
+			List<Species> speciesList = getSpecies(orgAbbreviation);
+			speciesList.forEach(species -> accessionGeneMap.putAll(geneDAO.getAllGeneIdsPerSpecies(species)));
 		}
 		Long geneID = accessionGeneMap.get(uiEntity.getGeneIdentifier());
 		return geneID;
@@ -106,14 +109,22 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 		return goID;
 	}
 
-	private Species getSpecies(String orgAbbreviation) {
-		if (species != null) {
+	private List<Species> getSpecies(String orgAbbreviation) {
+		if (CollectionUtils.isNotEmpty(species)) {
 			return species;
 		}
-		Map<String, Object> map = new HashMap<>();
-		map.put("displayName", orgAbbreviation);
-		species = speciesDAO.findByParams(map).getSingleResult();
+		if (orgAbbreviation.equalsIgnoreCase("XB")) {
+			species = new ArrayList<>();
+			species.add(getSingleSpecies("XBXL"));
+			species.add(getSingleSpecies("XBXT"));
+		} else {
+			species = List.of(getSingleSpecies(orgAbbreviation));
+		}
 		return species;
+	}
+
+	private Species getSingleSpecies(String orgAbbreviation) {
+		return speciesDAO.findByField("displayName", orgAbbreviation).getSingleResult();
 	}
 
 	public ObjectResponse<DataProvider> validate(DataProvider uiEntity) {

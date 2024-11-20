@@ -6,8 +6,8 @@ import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
 import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
 import org.alliancegenome.curation_api.services.GeneOntologyAnnotationService;
 import org.alliancegenome.curation_api.services.OrganizationService;
@@ -33,16 +33,11 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
-		String url = ((BulkURLLoad) bulkLoadFileHistory.getBulkLoad()).getBulkloadUrl();
-
-		String[] tok = url.split("/");
-		String orgAbbrev = tok[tok.length - 1].toUpperCase();
-		String abbr = orgAbbrev.split("\\.")[0];
+		String abbr = ((BulkFMSLoad) bulkLoadFileHistory.getBulkLoad()).getFmsDataSubType();
 		Organization organization = organizationService.getByAbbr(abbr).getEntity();
 
 		// curie, List<GO curie>
 		Map<String, List<String>> uiMap = new HashMap<>();
-		Set<String> orgIDs = new HashSet<>();
 		GZIPInputStream stream = new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath()));
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(stream))) {
 			Stream<String> lines = br.lines();
@@ -51,10 +46,9 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 			lines.filter(s -> !s.startsWith("!") && StringUtils.isNotEmpty(s)).forEach(s -> {
 				String[] token = s.split("\t");
 				String orgID = token[0];
-				orgIDs.add(orgID);
 				String modID = token[1];
 				String goID = token[4];
-				if (abbr.equals(orgID)) {
+				if (abbr.equalsIgnoreCase(orgID) || orgID.equalsIgnoreCase("Xenbase") || abbr.equals("HUMAN") && orgID.equals("RGD")) {
 					List<String> goIDs = uiMap.computeIfAbsent(modID, list -> new ArrayList<>());
 					goIDs.add(goID);
 				}
@@ -77,7 +71,15 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 			.stream()
 			.map(entry -> entry.getValue().stream().map(goID -> {
 				GeneOntologyAnnotationDTO dto = new GeneOntologyAnnotationDTO();
-				dto.setGeneIdentifier(abbr + ":" + entry.getKey());
+				String prefix = abbr;
+				if (abbr.equalsIgnoreCase("XB")) {
+					prefix = "Xenbase";
+				}
+				if (abbr.equalsIgnoreCase("HUMAN")) {
+					prefix = null;
+				}
+				String geneIdentifier = prefix != null ? prefix + ":" + entry.getKey() : entry.getKey();
+				dto.setGeneIdentifier(geneIdentifier);
 				dto.setGoTermCurie(goID);
 				return dto;
 			}).toList()).flatMap(Collection::stream).toList();
