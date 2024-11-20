@@ -48,6 +48,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 	public GeneExpressionAnnotation validateAnnotation(GeneExpressionFmsDTO geneExpressionFmsDTO, BackendBulkDataProvider dataProvider, Map<String, Set<String>> experiments) throws ValidationException {
 		ObjectResponse<GeneExpressionAnnotation> response = new ObjectResponse<>();
 		GeneExpressionAnnotation geneExpressionAnnotation = new GeneExpressionAnnotation();
+		geneExpressionAnnotation.setExpressionPattern(new ExpressionPattern());
 		String uniqueId = "empty";
 		String referenceCurie = "empty";
 

@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.ontology.MmoTermService;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -38,6 +39,9 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 	public List<Long> getExperimentIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
+		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
+			params.put(EntityFieldConstants.EXP_EXPERIMENT_TAXON, dataProvider.canonicalTaxonCurie);
+		}
 		return geneExpressionExperimentDAO.findIdsByParams(params);
 	}
 
