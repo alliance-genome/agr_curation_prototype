@@ -1,10 +1,13 @@
 package org.alliancegenome.curation_api.services.associations.constructAssociations;
 
-import io.quarkus.logging.Log;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.GenomicEntityDAO;
@@ -25,28 +28,23 @@ import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudServi
 import org.alliancegenome.curation_api.services.validation.associations.constructAssociations.ConstructGenomicEntityAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTOValidator;
 
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import io.quarkus.logging.Log;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class ConstructGenomicEntityAssociationService extends BaseAssociationDTOCrudService<ConstructGenomicEntityAssociation, ConstructGenomicEntityAssociationDTO, ConstructGenomicEntityAssociationDAO>
 	implements BaseUpsertServiceInterface<ConstructGenomicEntityAssociation, ConstructGenomicEntityAssociationDTO> {
 
-	@Inject
-	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
-	@Inject
-	ConstructGenomicEntityAssociationValidator constructGenomicEntityAssociationValidator;
-	@Inject
-	ConstructGenomicEntityAssociationDTOValidator constructGenomicEntityAssociationDtoValidator;
-	@Inject
-	ConstructDAO constructDAO;
-	@Inject
-	GenomicEntityDAO genomicEntityDAO;
-	@Inject
-	PersonService personService;
-	@Inject
-	PersonDAO personDAO;
+	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
+	@Inject ConstructGenomicEntityAssociationValidator constructGenomicEntityAssociationValidator;
+	@Inject ConstructGenomicEntityAssociationDTOValidator constructGenomicEntityAssociationDtoValidator;
+	@Inject ConstructDAO constructDAO;
+	@Inject GenomicEntityDAO genomicEntityDAO;
+	@Inject PersonService personService;
+	@Inject PersonDAO personDAO;
 
 	@Override
 	@PostConstruct
@@ -166,23 +164,4 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		genomicEntity.setConstructGenomicEntityAssociations(currentAssociations);
 		genomicEntityDAO.persist(genomicEntity);
 	}
-
-	@Transactional
-	public ConstructGenomicEntityAssociation deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
-		ConstructGenomicEntityAssociation object = dao.getShallowEntity(ConstructGenomicEntityAssociation.class, id);
-
-		if (object == null) {
-			String errorMessage = "Could not find entity with id: " + id;
-			if (throwApiError) {
-				ObjectResponse<ConstructGenomicEntityAssociation> response = new ObjectResponse<>();
-				response.addErrorMessage("id", errorMessage);
-				throw new ApiErrorException(response);
-			}
-			Log.error(errorMessage);
-			return null;
-		}
-		dao.remove(id);
-		return null;
-	}
-
 }
