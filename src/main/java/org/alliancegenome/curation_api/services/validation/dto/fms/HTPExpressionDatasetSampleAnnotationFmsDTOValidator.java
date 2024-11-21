@@ -242,7 +242,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 
 		if (StringUtils.isNotEmpty(dto.getTaxonId())) {
 			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie(dto.getTaxonId());
-			if (backendBulkDataProvider != null && (backendBulkDataProvider.name().equals("RGD") || backendBulkDataProvider.name().equals("HUMAN")) && !taxonResponse.getEntity().getCurie().equals(backendBulkDataProvider.canonicalTaxonCurie) || taxonResponse.getEntity() == null) {
+			if (taxonResponse.getEntity() == null || backendBulkDataProvider != null && (backendBulkDataProvider.name().equals("RGD") || backendBulkDataProvider.name().equals("HUMAN")) && !taxonResponse.getEntity().getCurie().equals(backendBulkDataProvider.canonicalTaxonCurie)) {
 				htpSampleAnnotationResponse.addErrorMessage("taxonId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonId() + ") for " + backendBulkDataProvider.name() + " load");
 			}
 			htpSampleAnnotation.setTaxon(taxonResponse.getEntity());
