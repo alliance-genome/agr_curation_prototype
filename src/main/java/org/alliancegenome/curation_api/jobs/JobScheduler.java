@@ -109,9 +109,7 @@ public class JobScheduler {
 		}
 	}
 
-/*
 	@Scheduled(every = "1s")
-*/
 	public void scheduleCronGroupJobs() {
 		if (loadSchedulingEnabled) {
 			if (sem.tryAcquire()) {
