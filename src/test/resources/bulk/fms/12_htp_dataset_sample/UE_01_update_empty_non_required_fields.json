@@ -1,0 +1,39 @@
+{
+    "data": [
+        {
+            "datasetIds" : [
+                "GEO:GSE38764"
+            ],
+            "sampleId" : {
+              "primaryId" : "GEO:GSE38764"
+            },
+            "assayType" : "HTPMMO:assay001",
+            "sampleType" : "HTPOBI:sample001",
+            "abundance" : "",
+            "sampleTitle" : "",
+            "taxonId" : "",
+            "genomicInformation" : {
+                "biosampleId" : "AGA:Allele0001",
+                "idType" : "fish"
+              },
+            "sex" : "",
+            "sequencingFormat" : "",
+            "microarraySampleDetails" : {
+             },
+            "sampleLocations" : []
+        }
+    ],
+    "metaData": {
+        "dataProvider": {
+        "crossReference": {
+            "id": "FB",
+            "pages": [
+            "homepage"
+            ]
+        },
+        "type": "curated"
+        },
+        "dateProduced": "2024-07-12T12:36:21-04:00",
+        "release": "2024_03"
+    }
+}
