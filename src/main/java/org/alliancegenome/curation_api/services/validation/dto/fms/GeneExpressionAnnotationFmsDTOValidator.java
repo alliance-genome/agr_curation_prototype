@@ -63,10 +63,11 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			} else {
 				geneExpressionAnnotation.setUniqueId(uniqueId);
 			}
-			if (geneExpressionAnnotation.getExpressionPattern() == null) {
-				geneExpressionAnnotation.setExpressionPattern(new ExpressionPattern());
-			}
 			geneExpressionAnnotation.setSingleReference(singleReferenceResponse.getEntity());
+		}
+
+		if (geneExpressionAnnotation.getExpressionPattern() == null) {
+			geneExpressionAnnotation.setExpressionPattern(new ExpressionPattern());
 		}
 
 		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getGeneId())) {
