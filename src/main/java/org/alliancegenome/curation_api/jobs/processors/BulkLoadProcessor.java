@@ -208,6 +208,7 @@ public class BulkLoadProcessor {
 	protected void endLoad(BulkLoadFileHistory bulkLoadFileHistory, String message, JobStatus status) {
 		if (bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath() != null) {
 			Log.info("Removing old input file: " + bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath());
+			new File(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath()).delete();
 			bulkLoadFileHistory.getBulkLoadFile().setLocalFilePath(null);
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 		}
