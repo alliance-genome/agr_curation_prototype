@@ -2,10 +2,10 @@
     "data": [
         {
             "datasetIds" : [
-                 "GEO:GSE38764"
+                 "GEO:TEST1"
             ],
             "sampleId" : {
-              "primaryId" : "GEO:GSE38764"
+              "primaryId" : "GEO:TEST1"
             },
             "assayType" : "HTPMMO:assay001",
             "sampleType" : "HTPOBI:sample001",

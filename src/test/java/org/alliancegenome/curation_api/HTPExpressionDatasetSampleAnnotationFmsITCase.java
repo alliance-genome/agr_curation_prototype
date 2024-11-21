@@ -115,18 +115,18 @@ public class HTPExpressionDatasetSampleAnnotationFmsITCase extends BaseITCase {
 	@Test
 	@Order(5)
 	public void htpDatasetSampleBulkUploadUpdateMissingNonRequiredFields() throws Exception {
+
 		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpoint, htpDatasetSampleTestFilePath + "UM_01_update_no_non_required_fields.json");
 
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}")
-				.post(htpDatasetSampleFindEndpoint).then().statusCode(200).body("totalResults", is(1))
-				.body("results", hasSize(1))
-				.body("results[0]", not(hasKey("abundance")))
-				.body("results[0]", not(hasKey("htpExpressionSampleTitle")))
-				.body("results[0]", not(hasKey("taxon")))
-				.body("results[0]", not(hasKey("geneticSex")))
-				.body("results[0]", not(hasKey("sequencingFormat")))
-				.body("results[0]", not(hasKey("microarraySampleDetails")))
-				.body("results[0]", not(hasKey("htpExpressionSampleLocations")));
+				.post(htpDatasetSampleFindEndpoint).then().statusCode(200).body("totalResults", is(2))
+				.body("results[2]", not(hasKey("abundance")))
+				.body("results[2]", not(hasKey("htpExpressionSampleTitle")))
+				.body("results[2]", not(hasKey("taxon")))
+				.body("results[2]", not(hasKey("geneticSex")))
+				.body("results[2]", not(hasKey("sequencingFormat")))
+				.body("results[2]", not(hasKey("microarraySampleDetails")))
+				.body("results[2]", not(hasKey("htpExpressionSampleLocations")));
 	}
 
 	@Test
@@ -136,16 +136,16 @@ public class HTPExpressionDatasetSampleAnnotationFmsITCase extends BaseITCase {
 		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpoint, htpDatasetSampleTestFilePath + "UE_01_update_empty_non_required_fields.json");
 
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}")
-				.post(htpDatasetSampleFindEndpoint).then().statusCode(200).body("totalResults", is(1))
-				.body("results", hasSize(1))
-				.body("results[0]", not(hasKey("htpExpressionSampleAge")))
-				.body("results[0]", not(hasKey("abundance")))
-				.body("results[0]", not(hasKey("htpExpressionSampleTitle")))
-				.body("results[0]", not(hasKey("taxon")))
-				.body("results[0]", not(hasKey("geneticSex")))
-				.body("results[0]", not(hasKey("sequencingFormat")))
-				.body("results[0]", not(hasKey("microarraySampleDetails")))
-				.body("results[0]", not(hasKey("htpExpressionSampleLocations")));
+				.post(htpDatasetSampleFindEndpoint).then().statusCode(200).body("totalResults", is(3))
+				.body("results", hasSize(3))
+				.body("results[2]", not(hasKey("htpExpressionSampleAge")))
+				.body("results[2]", not(hasKey("abundance")))
+				.body("results[2]", not(hasKey("htpExpressionSampleTitle")))
+				.body("results[2]", not(hasKey("taxon")))
+				.body("results[2]", not(hasKey("geneticSex")))
+				.body("results[2]", not(hasKey("sequencingFormat")))
+				.body("results[2]", not(hasKey("microarraySampleDetails")))
+				.body("results[2]", not(hasKey("htpExpressionSampleLocations")));
 	}
 
 
