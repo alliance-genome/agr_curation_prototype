@@ -24,7 +24,6 @@ import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudServi
 import org.alliancegenome.curation_api.services.validation.associations.constructAssociations.ConstructGenomicEntityAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTOValidator;
 
-import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
