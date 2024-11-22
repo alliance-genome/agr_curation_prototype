@@ -88,7 +88,6 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 					htpSampleAnnotation = searchResponse.getSingleResult();
 				}
 			} else {
-				htpSampleAnnotationResponse.addErrorMessage("SampleId", ValidationConstants.INVALID_MESSAGE + " (" + curie + ")");
 				htpSampleAnnotation = new HTPExpressionDatasetSampleAnnotation();
 			}
 		} else {
@@ -190,7 +189,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 			boolean added = false;
 			if (searchResponse.getTotalResults() > 0) {
 				for (VocabularyTerm tag : searchResponse.getResults()) {
-					if (tag.getVocabulary().getName().equals("Genetic Sex") && (tag.getName().equals(dto.getSex()) || tag.getSynonyms().contains(dto.getSex()))) {
+					if (tag.getVocabulary().getVocabularyLabel().equals("genetic_sex") && (tag.getName().equals(dto.getSex()) || tag.getSynonyms().contains(dto.getSex()))) {
 						htpSampleAnnotation.setGeneticSex(tag);
 						added = true;
 					}
@@ -243,14 +242,14 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 
 		if (StringUtils.isNotEmpty(dto.getTaxonId())) {
 			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie(dto.getTaxonId());
-			if (backendBulkDataProvider != null && (backendBulkDataProvider.name().equals("RGD") || backendBulkDataProvider.name().equals("HUMAN")) && !taxonResponse.getEntity().getCurie().equals(backendBulkDataProvider.canonicalTaxonCurie)) {
+			if (taxonResponse.getEntity() == null || backendBulkDataProvider != null && (backendBulkDataProvider.name().equals("RGD") || backendBulkDataProvider.name().equals("HUMAN")) && !taxonResponse.getEntity().getCurie().equals(backendBulkDataProvider.canonicalTaxonCurie)) {
 				htpSampleAnnotationResponse.addErrorMessage("taxonId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonId() + ") for " + backendBulkDataProvider.name() + " load");
 			}
 			htpSampleAnnotation.setTaxon(taxonResponse.getEntity());
 		}
 
 		if (dto.getMicroarraySampleDetails() != null) {
-			if (htpSampleAnnotation.getMicroarraySampleDetails() == null) {
+			if (htpSampleAnnotation.getMicroarraySampleDetails() == null && (dto.getMicroarraySampleDetails().getChannelId() != null || dto.getMicroarraySampleDetails().getChannelNum() != null)) {
 				htpSampleAnnotation.setMicroarraySampleDetails(new MicroarraySampleDetails());
 			}
 			if (StringUtils.isNotEmpty(dto.getMicroarraySampleDetails().getChannelId())) {
