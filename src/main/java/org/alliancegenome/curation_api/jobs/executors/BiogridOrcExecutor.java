@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,7 +16,6 @@ import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -74,18 +72,8 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 
 			HashMap<String, Object> rdpParams = new HashMap<>();
 			rdpParams.put("name", "biogrid/orcs");
-			ResourceDescriptorPage resourceDescriptorPage = resourceDescriptorPageDAO.findByParams(rdpParams).getSingleResult();
-
-			List<Long> dataProviderIdsBefore = new ArrayList<>(
-					dataProviderService.getDataProviderMap(organization, resourceDescriptorPage)
-							.values()
-							.stream()
-							.map(DataProvider::getId)
-							.toList());
-
-			dataProviderIdsBefore.removeIf(Objects::isNull);
-
-			List<Long> dataProviderIdsLoaded = new ArrayList<>();
+			ResourceDescriptorPage resourceDescriptorPage = resourceDescriptorPageDAO.findByParams(rdpParams)
+					.getSingleResult();
 
 			while ((tarEntry = tarInputStream.getNextEntry()) != null) {
 
@@ -109,11 +97,8 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 				biogridData.addAll(it.readAll());
 
 			}
-			runLoad(bulkLoadFileHistory, biogridData, resourceDescriptorPage, organization, dataProviderService,
-					dataProviderIdsLoaded);
+			runLoad(bulkLoadFileHistory, biogridData, resourceDescriptorPage, organization, dataProviderService);
 
-			runCleanup(dataProviderService, bulkLoadFileHistory, dataProviderName, dataProviderIdsBefore,
-					dataProviderIdsLoaded, "Biogrid Orc Load Type");
 		} catch (Exception e) {
 			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
@@ -122,7 +107,7 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 
 	private boolean runLoad(BulkLoadFileHistory history, List<BiogridOrcFmsDTO> biogridList,
 			ResourceDescriptorPage resourceDescriptorPage, Organization organization,
-			DataProviderService dataProviderService, List<Long> dataProviderIdsLoaded) {
+			DataProviderService dataProviderService) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(biogridList)) {
@@ -142,16 +127,11 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 					newCrossRef.setDisplayName("BioGRID CRISPR Screen Cell Line Phenotypes");
 					newCrossRef.setResourceDescriptorPage(resourceDescriptorPage);
 
-					DataProvider provider = new DataProvider();
-					provider.setSourceOrganization(organization);
-					provider.setCrossReference(newCrossRef);
-
-					DataProvider entity = dataProviderService
-							.insertBioGridOrcDataProvider(provider, genomicEntityCrossRefMap.get(referencedCurie))
+					CrossReference entity = crossReferenceService
+							.insertBioGridOrcCrossReference(newCrossRef, genomicEntityCrossRefMap.get(referencedCurie))
 							.getEntity();
 
 					if (entity != null) {
-						dataProviderIdsLoaded.add(entity.getId());
 						history.incrementCompleted();
 					} else {
 						history.incrementSkipped();
@@ -172,16 +152,16 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 	}
 
 	public APIResponse runLoadApi(String dataProviderName, List<BiogridOrcFmsDTO> biogridDTOs) {
-		List<Long> dataProviderIdsLoaded = new ArrayList<>();
 		Organization organization = organizationService.getByAbbr(dataProviderName).getEntity();
 
 		HashMap<String, Object> rdpParams = new HashMap<>();
 		rdpParams.put("name", "biogrid/orcs");
-		ResourceDescriptorPage resourceDescriptorPage = resourceDescriptorPageDAO.findByParams(rdpParams).getSingleResult();
+		ResourceDescriptorPage resourceDescriptorPage = resourceDescriptorPageDAO.findByParams(rdpParams)
+				.getSingleResult();
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(biogridDTOs.size());
 		history = bulkLoadFileHistoryDAO.persist(history);
-		runLoad(history, biogridDTOs, resourceDescriptorPage, organization, dataProviderService, dataProviderIdsLoaded);
+		runLoad(history, biogridDTOs, resourceDescriptorPage, organization, dataProviderService);
 		history.finishLoad();
 
 		return new LoadHistoryResponce(history);

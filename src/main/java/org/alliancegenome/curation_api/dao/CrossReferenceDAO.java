@@ -5,6 +5,8 @@ import jakarta.persistence.Query;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.response.SearchResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,15 @@ public class CrossReferenceDAO extends BaseSQLDAO<CrossReference> {
 		});
 		return idCurieMap;
 
+	}
+
+	public List<CrossReference> getAllCrossRefsByPage(ResourceDescriptorPage page) {
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("resourceDescriptorPage.name", page.getName());
+		Pagination pagination = new Pagination();
+		pagination.setLimit(10_000_000);
+		SearchResponse<CrossReference> crossReferenceResponse = findByParams(pagination, params);
+		return crossReferenceResponse.getResults();
 	}
 
 	public Integer persistAccessionGeneAssociated(Long crossReferenceID, Long geneID) {

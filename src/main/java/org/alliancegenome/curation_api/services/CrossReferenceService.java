@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,10 +17,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @RequestScoped
 public class CrossReferenceService extends BaseEntityCrudService<CrossReference, CrossReferenceDAO> {
+	HashMap<String, CrossReference> crossReferenceCache = new HashMap<>();
 
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
@@ -113,5 +116,37 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 
 	public Map<String, Long> getGenomicEntityCrossRefMap(Set<String> referencedCuries) {
 		return crossReferenceDAO.getGenesWithCrossRefs(referencedCuries);
+	}
+
+	@Transactional
+	public ObjectResponse<CrossReference> insertBioGridOrcCrossReference(CrossReference crossReference, Long geneticEntityId) {
+		String referencedCurie = crossReference.getReferencedCurie();
+		
+		CrossReference dbEntity = getCrossReference(referencedCurie, crossReference.getResourceDescriptorPage());
+		
+		// we only create new records, no updates
+		if (dbEntity == null) {
+			crossReferenceDAO.persist(crossReference);
+			crossReferenceDAO.persistAccessionGeneAssociated(crossReference.getId(), geneticEntityId);
+			return new ObjectResponse<>(crossReference);
+		}
+		return new ObjectResponse<>(dbEntity);
+	}
+
+	private CrossReference getCrossReference(String crossReferenceCurie, ResourceDescriptorPage page) {
+		if (crossReferenceCache.size() > 0) {
+			return crossReferenceCache.get(crossReferenceCurie);
+		}
+		populateCrossReferenceCache(page);
+		return crossReferenceCache.get(crossReferenceCurie);
+	}
+
+	private void populateCrossReferenceCache(ResourceDescriptorPage page) {
+		List<CrossReference> allCrossRefs = crossReferenceDAO.getAllCrossRefsByPage(page);
+		allCrossRefs.stream()
+			.filter(crossRef -> Objects.equals(crossRef.getResourceDescriptorPage().getId(), page.getId()))
+			.forEach(crossRef -> {
+				crossReferenceCache.put(crossRef.getReferencedCurie(), crossRef);
+			});
 	}
 }
