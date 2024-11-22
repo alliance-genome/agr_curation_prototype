@@ -1,23 +1,23 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.Date;
-import java.util.HashMap;
-
+import io.quarkus.logging.Log;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
-import io.quarkus.logging.Log;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import java.util.Date;
+import java.util.HashMap;
 
 @RequestScoped
 public class OrganizationService extends BaseEntityCrudService<Organization, OrganizationDAO> {
 
-	@Inject OrganizationDAO organizationDAO;
+	@Inject
+	OrganizationDAO organizationDAO;
 
 	Date orgRequest;
 	HashMap<Long, Organization> orgIdCacheMap = new HashMap<>();
@@ -54,7 +54,7 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 	public ObjectResponse<Organization> getByAbbr(String abbr) {
 
 		Organization org = null;
-		SearchResponse<Organization> orgResponse = null;
+		SearchResponse<Organization> orgResponse;
 
 		if (orgRequest != null) {
 			if (orgAbbrCacheMap.containsKey(abbr)) {

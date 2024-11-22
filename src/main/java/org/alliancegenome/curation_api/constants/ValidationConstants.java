@@ -15,5 +15,6 @@ public final class ValidationConstants {
 	public static final String DUPLICATE_MESSAGE = "Duplicate entries found";
 	public static final String DUPLICATE_RELATION_PREFIX = "Entries found with same relation field - ";
 	public static final String UNRECOGNIZED_MESSAGE = "Unrecognized entry"; // To be used instead of INVALID_MESSAGE when entry to be skipped instead of failed
+	public static final String AMBIGUOUS_MESSAGE = "Could not be unambiguously resolved";
 	
 }

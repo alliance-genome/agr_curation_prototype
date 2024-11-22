@@ -11,9 +11,14 @@ import org.alliancegenome.curation_api.model.entities.associations.transcriptAss
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -33,12 +38,18 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "transcriptGenomicLocationAssociations", "transcriptGeneAssociations", "transcriptCodingSequenceAssociations", "transcriptExonAssociations" }, callSuper = true)
 @Schema(name = "Transcript", description = "POJO that represents the Transcript")
-@AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
+@AGRCurationSchemaVersion(min = "2.8.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
 @Table(indexes = {
+	@Index(name = "transcript_transcriptId_index", columnList = "transcriptId"),
 	@Index(name = "transcript_transcriptType_index", columnList = "transcriptType_id")
 })
 public class Transcript extends GenomicEntity {
 
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "transcriptId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({ View.FieldsOnly.class })
+	private String transcriptId;
+	
 	@JsonView({ View.FieldsOnly.class })
 	private String name;
 

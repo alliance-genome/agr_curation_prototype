@@ -57,7 +57,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 		}
 
 		AlleleGeneAssociation association = null;
-		if (subjectIds != null && subjectIds.size() == 1 && objectIds != null || objectIds.size() == 1 && StringUtils.isNotBlank(dto.getRelationName())) {
+		if (subjectIds != null && subjectIds.size() == 1 && objectIds != null && objectIds.size() == 1 && StringUtils.isNotBlank(dto.getRelationName())) {
 			HashMap<String, Object> params = new HashMap<>();
 
 			params.put("alleleAssociationSubject.id", subjectIds.get(0));

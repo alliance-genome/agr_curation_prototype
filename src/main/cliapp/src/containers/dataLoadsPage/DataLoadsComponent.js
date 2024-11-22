@@ -599,8 +599,8 @@ export const DataLoadsComponent = () => {
 		let filesWithoutDates = [];
 		files.forEach((file) => {
 			if (file.bulkloadStatus === 'FINISHED' || file.bulkloadStatus === 'STOPPED' || file.bulkloadStatus === 'FAILED') {
-				if (file.dateLastLoaded) {
-					lastLoadedDates.set(file.dateLastLoaded, file);
+				if (file.loadStarted) {
+					lastLoadedDates.set(file.loadStarted, file);
 				} else {
 					filesWithoutDates.push(file);
 				}
@@ -708,7 +708,9 @@ export const DataLoadsComponent = () => {
 	};
 
 	const exemptTypes = (loadType) => {
-		return loadType === 'GFF_EXON' || loadType === 'GFF_TRANSCRIPT' || loadType === 'GFF_CDS';
+		return (
+			loadType === 'GFF_EXON' || loadType === 'GFF_TRANSCRIPT' || loadType === 'GFF_CDS' || loadType === 'GFF_GENE'
+		);
 	};
 
 	const fileWithinSchemaRange = (fileVersion, loadType) => {

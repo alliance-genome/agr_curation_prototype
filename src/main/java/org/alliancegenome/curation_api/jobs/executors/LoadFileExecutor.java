@@ -1,14 +1,8 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.logging.Log;
+import jakarta.inject.Inject;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
@@ -35,10 +29,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.quarkus.logging.Log;
-import jakarta.inject.Inject;
+import java.io.FileInputStream;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 public class LoadFileExecutor {
 
@@ -124,9 +118,9 @@ public class LoadFileExecutor {
 			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion())) {
 				bulkLoadFileHistory.getBulkLoadFile().setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
 			}
-			
+
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
-			
+
 			if (!checkSchemaVersion(bulkLoadFileHistory, dtoClass)) {
 				return null;
 			}
@@ -190,16 +184,24 @@ public class LoadFileExecutor {
 		if (dataProviderName != null) {
 			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		}
-		runLoad(service, history, dataProvider, objectList, idsLoaded, true);
+		runLoad(service, history, dataProvider, objectList, idsLoaded, true, "Records");
 		history.finishLoad();
 		return new LoadHistoryResponce(history);
 	}
-	
+
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded) {
-		return runLoad(service, history, dataProvider, objectList, idsAdded, true);
+		return runLoad(service, history, dataProvider, objectList, idsAdded, true, "Records");
 	}
 
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing) {
+		return runLoad(service, history, dataProvider, objectList, idsAdded, terminateFailing, "Records");
+	}
+
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, String countType) {
+		return runLoad(service, history, dataProvider, objectList, idsAdded, true, countType);
+	}
+
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(objectList)) {
@@ -208,25 +210,24 @@ public class LoadFileExecutor {
 				loadMessage = loadMessage + " for " + dataProvider.name();
 			}
 			ph.startProcess(loadMessage, objectList.size());
-			
+
 			updateHistory(history);
 			for (T dtoObject : objectList) {
 				try {
 					E dbObject = service.upsert(dtoObject, dataProvider);
-					history.incrementCompleted();
+					history.incrementCompleted(countType);
 					if (idsAdded != null) {
 						idsAdded.add(dbObject.getId());
 					}
 				} catch (ObjectUpdateException e) {
-					// e.printStackTrace();
-					history.incrementFailed();
+					history.incrementFailed(countType);
 					addException(history, e.getData());
 				} catch (KnownIssueValidationException e) {
 					Log.debug(e.getMessage());
-					history.incrementSkipped();
+					history.incrementSkipped(countType);
 				} catch (Exception e) {
-					// e.printStackTrace();
-					history.incrementFailed();
+					e.printStackTrace();
+					history.incrementFailed(countType);
 					addException(history, new ObjectUpdateExceptionData(dtoObject, e.getMessage(), e.getStackTrace()));
 				}
 				if (terminateFailing && history.getErrorRate() > 0.25) {
@@ -260,12 +261,12 @@ public class LoadFileExecutor {
 		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
 
 		String countType = loadTypeString + " Deleted";
-		
+
 		long existingDeletes = history.getCount(countType).getTotal() == null ? 0 : history.getCount(countType).getTotal();
 		history.setCount(countType, idsToRemove.size() + existingDeletes);
 
 		String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + history.getBulkLoadFile().getMd5Sum() + ")";
-		
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 		ph.startProcess("Deletion/deprecation of: " + dataProviderName + " " + loadTypeString, idsToRemove.size());
 		//updateHistory(history);
@@ -303,7 +304,7 @@ public class LoadFileExecutor {
 		slackNotifier.slackalert(bulkLoadFileHistory);
 		updateHistory(bulkLoadFileHistory);
 	}
-	
+
 	protected void failLoadAboveErrorRateCutoff(BulkLoadFileHistory bulkLoadFileHistory) {
 		bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
 		bulkLoadFileHistory.setErrorMessage("Failure rate exceeded cutoff");
