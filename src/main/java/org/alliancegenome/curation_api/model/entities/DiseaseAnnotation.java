@@ -237,6 +237,9 @@ public abstract class DiseaseAnnotation extends Annotation {
 
 	@Transient
 	public String getFullRelationString() {
+		if (relation == null) {
+			return null;
+		}
 		if (!negated) {
 			return relation.getName();
 		}
