@@ -57,7 +57,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			List<Long> experimentIdsLoaded = new ArrayList<>();
 			List<Long> experimentIdsBefore = geneExpressionExperimentService.getExperimentIdsByDataProvider(dataProvider);
 
-			boolean success = runLoad(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider, geneExpressionIngestFmsDTO.getData(), annotationIdsLoaded);
+			boolean success = runLoad(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider, geneExpressionIngestFmsDTO.getData(), annotationIdsLoaded, ANNOTATIONS);
 
 			if (success) {
 				runCleanup(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, ANNOTATIONS);
