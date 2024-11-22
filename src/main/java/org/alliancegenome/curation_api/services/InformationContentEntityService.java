@@ -29,7 +29,4 @@ public class InformationContentEntityService extends BaseEntityCrudService<Infor
 		return ice;
 	}
 
-	public InformationContentEntity retrieveFromDbOrLiteratureServicea(String pmid) {
-			return referenceService.retrieveShallowReferenceFromDbOrLiteratureService(pmid);
-	}
 }

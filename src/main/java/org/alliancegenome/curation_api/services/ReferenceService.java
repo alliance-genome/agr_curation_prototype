@@ -74,20 +74,18 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 	}
 
 	@Transactional
-	public Reference retrieveShallowReferenceFromDbOrLiteratureService(String pmid) {
+	public Reference retrieveShallowReferenceFromDbOrLiteratureService(String curieOrXref) {
 		Reference reference = null;
-		if (shallowReferenceCacheMap.containsKey(pmid)) {
-			reference = shallowReferenceCacheMap.get(pmid);
+		if (shallowReferenceCacheMap.containsKey(curieOrXref)) {
+			reference = shallowReferenceCacheMap.get(curieOrXref);
 		} else {
-			Log.debug("Reference not cached, caching reference: (" + pmid + ")");
+			Log.debug("Reference not cached, caching reference: (" + curieOrXref + ")");
 			if (shallowReferenceCacheMap.isEmpty()) {
 				shallowReferenceCacheMap = referenceDAO.getShallowReferenceMap();
-				reference = shallowReferenceCacheMap.get(pmid);
+				reference = shallowReferenceCacheMap.get(curieOrXref);
 			} else {
-/*
-					reference = findOrCreateReference(curieOrXref);
-					referenceCacheMap.put(curieOrXref, reference);
-*/
+				reference = findOrCreateReference(curieOrXref);
+				referenceCacheMap.put(curieOrXref, reference);
 			}
 		}
 		return reference;
