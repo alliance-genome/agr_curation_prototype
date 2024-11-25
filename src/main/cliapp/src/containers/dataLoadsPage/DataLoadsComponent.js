@@ -22,6 +22,8 @@ import { SiteContext } from '../layout/SiteContext';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import moment from 'moment-timezone';
 import { NumberTemplate } from '../../components/Templates/NumberTemplate';
+import { StickyHeader } from '../../components/StickyHeader';
+import { Splitter, SplitterPanel } from 'primereact/splitter';
 
 export const DataLoadsComponent = () => {
 	const { authState } = useOktaAuth();
@@ -852,20 +854,26 @@ export const DataLoadsComponent = () => {
 		<>
 			<Toast ref={toast}></Toast>
 			<LoadingOverlay isLoading={isLoading} />
+			<StickyHeader>
+				<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
+					<SplitterPanel size={1} className="flex justify-content-start py-3">
+						<Button
+							label="New Group"
+							icon="pi pi-plus"
+							className="p-button-success mr-2"
+							onClick={handleNewBulkLoadGroupOpen}
+						/>
+						<Button
+							label="New Bulk Load"
+							icon="pi pi-plus"
+							className="p-button-success mr-2"
+							onClick={handleNewBulkLoadOpen}
+						/>
+						<Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
+					</SplitterPanel>
+				</Splitter>
+			</StickyHeader>
 			<div className="card">
-				<Button
-					label="New Group"
-					icon="pi pi-plus"
-					className="p-button-success mr-2"
-					onClick={handleNewBulkLoadGroupOpen}
-				/>
-				<Button
-					label="New Bulk Load"
-					icon="pi pi-plus"
-					className="p-button-success mr-2"
-					onClick={handleNewBulkLoadOpen}
-				/>
-				<Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
 				<Messages ref={errorMessage} />
 				{errorLoads.length > 0 && (
 					<div>
