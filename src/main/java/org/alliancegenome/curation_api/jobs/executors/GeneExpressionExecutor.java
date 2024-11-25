@@ -48,9 +48,6 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			}
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setCount(ANNOTATIONS, geneExpressionIngestFmsDTO.getData().size());
-			updateHistory(bulkLoadFileHistory);
-
 			List<Long> annotationIdsLoaded = new ArrayList<>();
 			List<Long> annotationIdsBefore = geneExpressionAnnotationService.getAnnotationIdsByDataProvider(dataProvider);
 
@@ -83,7 +80,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 		if (dataProviderName != null) {
 			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		}
-		boolean success = runLoad(service, history, dataProvider, objectList, idsLoaded, true, "Records");
+		boolean success = runLoad(service, history, dataProvider, objectList, idsLoaded, true, ANNOTATIONS);
 		if (success) {
 			loadExperiments(history, dataProvider, new ArrayList<>());
 		}
@@ -114,5 +111,6 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			ph.progressProcess();
 		}
 		updateHistory(history);
+		ph.finishProcess();
 	}
 }
