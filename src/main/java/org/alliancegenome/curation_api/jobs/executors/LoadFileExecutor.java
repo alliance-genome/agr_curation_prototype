@@ -211,6 +211,7 @@ public class LoadFileExecutor {
 			}
 			ph.startProcess(loadMessage, objectList.size());
 
+			history.setCount(countType, objectList.size());
 			updateHistory(history);
 			for (T dtoObject : objectList) {
 				try {
@@ -230,7 +231,7 @@ public class LoadFileExecutor {
 					history.incrementFailed(countType);
 					addException(history, new ObjectUpdateExceptionData(dtoObject, e.getMessage(), e.getStackTrace()));
 				}
-				if (terminateFailing && history.getErrorRate() > 0.25) {
+				if (terminateFailing && history.getErrorRate(countType) > 0.25) {
 					Log.error("Failure Rate > 25% aborting load");
 					updateHistory(history);
 					updateExceptions(history);
