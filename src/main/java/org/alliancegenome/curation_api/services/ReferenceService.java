@@ -55,16 +55,15 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 	public Reference retrieveFromDbOrLiteratureService(String curieOrXref) {
 		Reference reference = null;
 		if (referenceRequest != null) {
+			if (referenceCacheMap.isEmpty()) {
+				referenceCacheMap = referenceDAO.getReferenceMap();
+			}
 			if (referenceCacheMap.containsKey(curieOrXref)) {
 				reference = referenceCacheMap.get(curieOrXref);
 			} else {
 				Log.debug("Reference not cached, caching reference: (" + curieOrXref + ")");
-				if (referenceCacheMap.isEmpty()) {
-					referenceCacheMap = referenceDAO.getReferenceMap();
-				} else {
-					reference = findOrCreateReference(curieOrXref);
-					referenceCacheMap.put(curieOrXref, reference);
-				}
+				reference = findOrCreateReference(curieOrXref);
+				referenceCacheMap.put(curieOrXref, reference);
 			}
 		} else {
 			reference = findOrCreateReference(curieOrXref);
