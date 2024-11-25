@@ -1,0 +1,49 @@
+{
+    "data": [
+      {
+        "screenId": 1888,
+        "identifierId": "100001",
+        "identifierType": "ENTREZ_GENE",
+        "officialSymbol": "Fermt3",
+        "aliases": "C79673|Kindlin3",
+        "organismId": 10090,
+        "organismOfficial": "Mus musculus",
+        "score1": 205.0, 
+        "score2": -2.2,   
+        "score3": 1e-05,
+        "score4": null,
+        "score5": null,
+        "hit": "YES",
+        "source": "BioGRID ORCS"
+      }, 
+      {
+        "screenId": 1888,
+        "identifierId": "100001",
+        "identifierType": "ENTREZ_GENE",
+        "officialSymbol": "Fermt3",
+        "aliases": "C79673|Kindlin3",
+        "organismId": 10090,
+        "organismOfficial": "Mus musculus",
+        "score1": 205.0, 
+        "score2": -2.2,   
+        "score3": 1e-05,
+        "score4": null,
+        "score5": null,
+        "hit": "YES",
+        "source": "BioGRID ORCS"
+      }
+    ],
+    "metaData": {
+      "dateProduced": "2024-04-18T20:10:35-07:00",
+      "dataProvider": {
+        "crossReference": {
+          "id": "FB",
+          "pages": [
+            "biogrid/orc"
+          ]
+        },
+        "type": "curated"
+      }
+    }
+  }
+  

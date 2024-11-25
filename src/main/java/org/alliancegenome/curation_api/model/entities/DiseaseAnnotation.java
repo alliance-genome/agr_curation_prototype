@@ -251,4 +251,21 @@ public abstract class DiseaseAnnotation extends Annotation {
 		}
 		return builder.toString();
 	}
+
+	@Transient
+	public String getFullRelationString() {
+		if (relation == null) {
+			return null;
+		}
+		if (!negated) {
+			return relation.getName();
+		}
+
+		if (relation.getName().equals("is_model_of")) {
+			return "does_not_model";
+		}
+		return relation.getName().replaceFirst("_", "_not_");
+	}
+
+
 }
