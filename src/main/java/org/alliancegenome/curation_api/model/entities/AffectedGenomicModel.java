@@ -27,7 +27,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "agmDiseaseAnnotations" }, callSuper = true)
+@ToString(exclude = { "agmDiseaseAnnotations", "constructGenomicEntityAssociations" }, callSuper = true)
 @Schema(name = "AffectedGenomicModel", description = "POJO that represents the AGM")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 public class AffectedGenomicModel extends GenomicEntity {
