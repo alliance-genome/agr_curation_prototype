@@ -1,9 +1,7 @@
 package org.alliancegenome.curation_api.services.validation.dto.associations.constructAssociations;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.associations.constructAssociations.ConstructGenomicEntityAssociationDAO;
@@ -27,17 +25,23 @@ import org.alliancegenome.curation_api.services.validation.dto.associations.Evid
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @RequestScoped
 public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssociationDTOValidator {
 
-	@Inject ConstructService constructService;
-	@Inject GenomicEntityService genomicEntityService;
-	@Inject NoteDTOValidator noteDtoValidator;
-	@Inject VocabularyTermService vocabularyTermService;
-	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
+	@Inject
+	ConstructService constructService;
+	@Inject
+	GenomicEntityService genomicEntityService;
+	@Inject
+	NoteDTOValidator noteDtoValidator;
+	@Inject
+	VocabularyTermService vocabularyTermService;
+	@Inject
+	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
 
 	private ObjectResponse<ConstructGenomicEntityAssociation> assocResponse;
 
@@ -47,15 +51,13 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 
 		Construct construct = null;
 		if (StringUtils.isNotBlank(dto.getConstructIdentifier())) {
-			Long constructId = constructService.getIdByModID(dto.getConstructIdentifier());
-			if (constructId != null) {
-				construct = constructService.getShallowEntity(constructId);
-			}
+			construct = constructService.getShallowEntity(constructService.getIdByModID(dto.getConstructIdentifier()));
 			if (construct == null) {
 				assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE);
 			} else {
 				if (beDataProvider != null && !construct.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 					assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
+					return null;
 				}
 			}
 		} else {
@@ -66,15 +68,11 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		if (StringUtils.isBlank(dto.getGenomicEntityIdentifier())) {
 			assocResponse.addErrorMessage("genomic_entity_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			Long genomicEntityId = genomicEntityService.getIdByModID(dto.getGenomicEntityIdentifier());
-			if (genomicEntityId != null) {
-				genomicEntity = genomicEntityService.getShallowEntity(genomicEntityId);
-			}
+			genomicEntity = genomicEntityService.getShallowEntity(genomicEntityService.getIdByModID(dto.getGenomicEntityIdentifier()));
 			if (genomicEntity == null) {
 				assocResponse.addErrorMessage("genomic_entity_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityIdentifier() + ")");
 			}
 		}
-
 		ConstructGenomicEntityAssociation association = null;
 		if (construct != null && StringUtils.isNotBlank(dto.getGenomicEntityRelationName()) && genomicEntity != null) {
 			HashMap<String, Object> params = new HashMap<>();

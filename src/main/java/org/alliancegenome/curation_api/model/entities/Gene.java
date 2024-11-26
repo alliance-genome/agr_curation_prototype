@@ -5,6 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.geneAssociations.GeneGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGeneAssociation;
@@ -40,7 +41,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "geneDiseaseAnnotations", "geneGeneAssociations", "geneSymbol", "geneFullName", "geneSystematicName", "geneSynonyms", "geneSecondaryIds",
-		"geneGenomicLocationAssociations", "alleleGeneAssociations", "sequenceTargetingReagentGeneAssociations", "transcriptGeneAssociations" }, callSuper = true)
+		"geneGenomicLocationAssociations", "alleleGeneAssociations", "sequenceTargetingReagentGeneAssociations", "transcriptGeneAssociations", "constructGenomicEntityAssociations" }, callSuper = true)
 @Schema(name = "Gene", description = "POJO that represents the Gene")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 @Table(indexes = { @Index(name = "gene_genetype_index", columnList = "geneType_id") })
@@ -119,4 +120,16 @@ public class Gene extends GenomicEntity {
 	@OneToMany(mappedBy = "geneAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<GeneGenomicLocationAssociation> geneGenomicLocationAssociations;
+
+
+	@IndexedEmbedded(includePaths = {
+		"constructAssociationSubject.curie", "constructAssociationSubject.constructSymbol.displayText", "constructAssociationSubject.constructSymbol.formatText",
+		"constructAssociationSubject.constructFullName.displayText", "constructAssociationSubject.constructFullName.formatText", "constructAssociationSubject.modEntityId",
+		"constructAssociationSubject.curie_keyword", "constructAssociationSubject.constructSymbol.displayText_keyword", "constructAssociationSubject.constructSymbol.formatText_keyword",
+		"constructAssociationSubject.constructFullName.displayText_keyword", "constructAssociationSubject.constructFullName.formatText_keyword", "constructAssociationSubject.modEntityId_keyword"
+	})
+	@OneToMany(mappedBy = "constructGenomicEntityAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
+	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
+
 }

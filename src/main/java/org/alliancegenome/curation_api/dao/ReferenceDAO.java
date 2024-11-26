@@ -1,11 +1,13 @@
 package org.alliancegenome.curation_api.dao;
 
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
-import org.alliancegenome.curation_api.model.entities.Reference;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
+import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.model.entities.Reference;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class ReferenceDAO extends BaseSQLDAO<Reference> {
@@ -35,4 +37,53 @@ public class ReferenceDAO extends BaseSQLDAO<Reference> {
 		jpqlQuery.executeUpdate();
 	}
 
+	public HashMap<String, Reference> getReferenceMap() {
+		HashMap<String, Reference> referenceIdMap = new HashMap<>();
+		Query q = entityManager.createNativeQuery("""
+					SELECT ref.id, cr.referencedcurie
+					FROM Reference as ref, reference_crossreference as assoc, Crossreference as cr
+					where assoc.reference_id = ref.id
+					and assoc.crossreferences_id = cr.id
+			""");
+		List<Object[]> ids = q.getResultList();
+		Set<Long> refIDs = ids.stream().map(object -> (Long) object[0]).collect(Collectors.toSet());
+		Map<Long, List<Object[]>> idMap = ids.stream().collect(Collectors.groupingBy(o -> (Long) o[0]));
+		List<Reference> refs = new ArrayList<>();
+		refIDs.forEach(id -> {
+			Reference reference = entityManager.getReference(Reference.class, id);
+			refs.add(reference);
+			referenceIdMap.put(String.valueOf(id), reference);
+			if (idMap.get(id) != null) {
+				idMap.get(id).forEach(objects -> {
+					referenceIdMap.put((String) objects[1], reference);
+				});
+			}
+		});
+		return referenceIdMap;
+	}
+
+	public HashMap<String, Reference> getShallowReferenceMap() {
+		HashMap<String, Reference> referenceIdMap = new HashMap<>();
+		Query q = entityManager.createNativeQuery("""
+					SELECT ref.id, cr.referencedcurie
+					FROM Reference as ref, reference_crossreference as assoc, Crossreference as cr
+					where assoc.reference_id = ref.id
+					and assoc.crossreferences_id = cr.id
+			""");
+		List<Object[]> ids = q.getResultList();
+		Set<Long> refIDs = ids.stream().map(object -> (Long) object[0]).collect(Collectors.toSet());
+		Map<Long, List<Object[]>> idMap = ids.stream().collect(Collectors.groupingBy(o -> (Long) o[0]));
+		List<Reference> refs = new ArrayList<>();
+		refIDs.forEach(id -> {
+			Reference reference = getShallowEntity(Reference.class, id);
+			refs.add(reference);
+			referenceIdMap.put(String.valueOf(id), reference);
+			if (idMap.get(id) != null) {
+				idMap.get(id).forEach(objects -> {
+					referenceIdMap.put((String) objects[1], reference);
+				});
+			}
+		});
+		return referenceIdMap;
+	}
 }
