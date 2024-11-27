@@ -53,8 +53,8 @@ public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor 
 		bulkLoadFileHistory.setCount(associations.size());
 		updateHistory(bulkLoadFileHistory);
 
-		runLoad(constructGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
-		if (cleanUp) {
+		boolean success = runLoad(constructGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
+		if (cleanUp && success) {
 			runCleanup(constructGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "construct genomic entity association");
 		}
 		bulkLoadFileHistory.finishLoad();
