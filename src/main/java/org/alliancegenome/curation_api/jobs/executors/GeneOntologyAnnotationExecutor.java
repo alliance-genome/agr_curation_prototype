@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
@@ -67,7 +68,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 		List<Long> geneGoIdsLoaded = new ArrayList<>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		List<GeneOntologyAnnotationDTO> dtos = uiMap.entrySet()
+		Set<GeneOntologyAnnotationDTO> dtos = uiMap.entrySet()
 			.stream()
 			.map(entry -> entry.getValue().stream().map(goID -> {
 				GeneOntologyAnnotationDTO dto = new GeneOntologyAnnotationDTO();
@@ -82,7 +83,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 				dto.setGeneIdentifier(geneIdentifier);
 				dto.setGoTermCurie(goID);
 				return dto;
-			}).toList()).flatMap(Collection::stream).toList();
+			}).toList()).flatMap(Collection::stream).collect(Collectors.toSet());
 
 		ph.startProcess(name, dtos.size());
 		for (GeneOntologyAnnotationDTO modID : dtos) {
