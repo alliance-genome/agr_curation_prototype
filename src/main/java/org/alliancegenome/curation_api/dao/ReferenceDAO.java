@@ -51,6 +51,8 @@ public class ReferenceDAO extends BaseSQLDAO<Reference> {
 		List<Reference> refs = new ArrayList<>();
 		refIDs.forEach(id -> {
 			Reference reference = entityManager.getReference(Reference.class, id);
+			// populate cross references
+			reference.getCrossReferences().size();
 			refs.add(reference);
 			referenceIdMap.put(String.valueOf(id), reference);
 			if (idMap.get(id) != null) {
