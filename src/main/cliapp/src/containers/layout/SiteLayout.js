@@ -389,7 +389,7 @@ export const SiteLayout = (props) => {
 							icon: 'pi pi-fw pi-home',
 							url: `${siteContext?.apiVersion?.matiHost}q/swagger-ui/`,
 							target: '_blank',
-					},
+						},
 						{ label: 'Site Health', icon: 'pi pi-fw pi-plus', to: '/healthpage' },
 					],
 				},
