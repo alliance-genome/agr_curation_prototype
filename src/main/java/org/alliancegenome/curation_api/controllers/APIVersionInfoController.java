@@ -32,6 +32,9 @@ public class APIVersionInfoController implements APIVersionInterface {
 	@ConfigProperty(name = "NET")
 	String env;
 
+	@ConfigProperty(name = "mati.url")
+	String matiURL;
+
 	@Override
 	public APIVersionInfo get() {
 
@@ -64,17 +67,8 @@ public class APIVersionInfoController implements APIVersionInterface {
 		} else {
 			info.setEsHost(esHost);
 		}
-		info.setMatiHost(getMaTIHost());
+		info.setMatiHost(matiURL);
 		info.setEnv(env);
 		return info;
-	}
-
-	private String getMaTIHost() {
-		return switch (env) {
-			case "alpha" -> "https://alpha-mati.alliancegenome.org/";
-			case "beta" -> "https://beta-mati.alliancegenome.org/";
-			case "production" -> "https://mati.alliancegenome.org/";
-			default -> "http://localhost:8081/";
-		};
 	}
 }

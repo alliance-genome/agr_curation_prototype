@@ -387,7 +387,7 @@ export const SiteLayout = (props) => {
 						{
 							label: 'MaTI Swagger UI',
 							icon: 'pi pi-fw pi-home',
-							url: `${siteContext?.apiVersion?.matiHost}q/swagger-ui/`,
+							url: siteContext?.apiVersion?.matiHost + '/q/swagger-ui/',
 							target: '_blank',
 						},
 						{ label: 'Site Health', icon: 'pi pi-fw pi-plus', to: '/healthpage' },
