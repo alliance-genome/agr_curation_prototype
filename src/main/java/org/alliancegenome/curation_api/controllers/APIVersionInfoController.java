@@ -1,10 +1,7 @@
 package org.alliancegenome.curation_api.controllers;
 
-import static org.reflections.scanners.Scanners.TypesAnnotated;
-
-import java.util.Set;
-import java.util.TreeMap;
-
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.interfaces.APIVersionInterface;
 import org.alliancegenome.curation_api.model.output.APIVersionInfo;
@@ -12,8 +9,10 @@ import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.reflections.Reflections;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import java.util.Set;
+import java.util.TreeMap;
+
+import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 @RequestScoped
 public class APIVersionInfoController implements APIVersionInterface {
@@ -32,6 +31,9 @@ public class APIVersionInfoController implements APIVersionInterface {
 
 	@ConfigProperty(name = "NET")
 	String env;
+
+	@ConfigProperty(name = "mati.url")
+	String matiURL;
 
 	@Override
 	public APIVersionInfo get() {
@@ -65,8 +67,8 @@ public class APIVersionInfoController implements APIVersionInterface {
 		} else {
 			info.setEsHost(esHost);
 		}
+		info.setMatiHost(matiURL);
 		info.setEnv(env);
 		return info;
 	}
-
 }

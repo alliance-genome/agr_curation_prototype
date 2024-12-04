@@ -384,6 +384,12 @@ export const SiteLayout = (props) => {
 							url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${siteContext?.apiVersion?.env}.api.server&t=Now&i=logstash*&_g=()`,
 							target: '_blank',
 						},
+						{
+							label: 'MaTI Swagger UI',
+							icon: 'pi pi-fw pi-home',
+							url: siteContext?.apiVersion?.matiHost + '/q/swagger-ui/',
+							target: '_blank',
+						},
 						{ label: 'Site Health', icon: 'pi pi-fw pi-plus', to: '/healthpage' },
 					],
 				},

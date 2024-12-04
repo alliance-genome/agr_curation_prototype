@@ -84,7 +84,7 @@ okta.url = ""
 okta.client.secret = ""
 okta.api.token = ""
 okta.scopes = ""
-mati.url = ""
+mati.url = http://localhost:8081
 %dev.okta.authentication = false
 %test.okta.authentication = false
 
