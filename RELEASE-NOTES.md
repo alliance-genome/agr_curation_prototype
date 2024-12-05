@@ -2,6 +2,41 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.35.0
+* New features
+   * Load FBcv into the persistent store (SCRUM-2190)
+   * Implement Gene Type field/column for Genes data table (SCRUM-3983)
+   * Turn off auxiliary clean up for associated entities (e.g. clean up of disease annotations based on a gene load) - public site Indexer work	(SCRUM-4150)
+   * SQTR Gene Associations import into Persistent store (SCRUM-4185, SCRUM-4187, SCRUM-4188)
+   * HTPdataset loaded into persistent store (SCRUM-4192,SCRUM-4303, SCRUM-4341)
+   * Make obsolete disease annotations hidden by default for all MOD default settings	(SCRUM-4277)
+   * HTPdataset ZFIN Fms files having wrong naming of property	(SCRUM-4328)
+   * Clean up erroneous DOTerms (SCRUM-4337)
+   * Importing expression annotations into the persistent store - Load ExpressionPattern, TemporalContext, and AnatomicalSite (SCRUM-3952)
+   * Implement programmatic, regular purging of exception message history for all exceptions older than 2 weeks (SCRUM-4377)
+   * HTPdatasetSample import P1 - Creating entities and migration file (SCRUM-4426)
+   * Reenable downloading of all exception messages for a given data load (SCRUM-4452)
+   * P1: Expression Atlas Import: Load accession data files from Ensembl, etc... (SCRUM-4118)
+   * GFF Loading (Load assembly, transcripts, exons, and CDSs without positional information; Load positional information for Transcripts, Exons, and CDSs; Load associations between Genes, Transcripts, Exons, and CDSs) (SCRUM-4174, SCRUM-4175, SCRUM-4176)
+   * Associate Expression Annotations with Go Slim Terms	(SCRUM-4300)
+   * Implement caching of references for DQM loads	(SCRUM-4336)
+   * Accommodate BIOGRID-ORCS loader data type: to establish 3rd part link out to BIOGRID from gene page phenotypes section P1 - create DTO, load via migration, and loading infrastructure (SCRUM-4440)
+   * Investigate: Accommodate BIOGRID-ORCS loader data type: to establish 3rd part link out to BIOGRID from gene page phenotypes section (SCRUM-4471)
+   * Load VariantGenomicLocationAssociation from FMS submissions and generate HGVSg identifiers	(SCRUM-4499)
+   * Test effect of removing AuditedObject fields on disease annotation indexing speed	(SCRUM-4520)
+   * Java model changes for disease genetic modifier changes to split based on modifier type	(SCRUM-4523)
+   * Curation UI changes to Disease Annotations table to split out Genetic Modifiers into 3 separate fields for each of Gene, Allele and AGM modifier types	(SCRUM-4524)
+* Fixes and maintenance
+   * Edit cancelation button getting squeezed out of frame on alpha data tables (SCRUM-4236)
+   * Constructs data table on alpha-curation throwing 500 error and not loading	(SCRUM-4259)
+   * Fix SQTR Gene Association Integration Tests (SCRUM-4299)
+   * Curl timing out when uploading to persistent store (SCRUM-3683)
+   * Annotations and interactions not indexed on alpha-curation (despite attempts to reindex) (SCRUM-4254)
+   * Loads not showing in the Data Loads page "Data Processing Info Table" widget (SCRUM-4428)
+   * New "Running Time" showing negative time counting down	(SCRUM-4429)
+   * Molecule table columns expand automatically when sorting	(SCRUM-4531)
+
+
 ## v0.34.0
 * New features
   * Paralogy annotations loaded into persistent store (SCRUM-4086, SCRUM-4088, SCRUM-4089, SCRUM-4090)

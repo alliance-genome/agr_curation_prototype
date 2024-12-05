@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import lombok.Getter;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -18,17 +19,21 @@ import org.apache.commons.lang.StringUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RequestScoped
 public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<GeneExpressionAnnotation, GeneExpressionAnnotationDAO> implements BaseUpsertServiceInterface<GeneExpressionAnnotation, GeneExpressionFmsDTO> {
 
 	@Inject GeneExpressionAnnotationDAO geneExpressionAnnotationDAO;
 	@Inject GeneExpressionAnnotationFmsDTOValidator geneExpressionAnnotationFmsDTOValidator;
+	@Getter
+	private Map<String, Set<String>> experiments;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(geneExpressionAnnotationDAO);
+		experiments = new HashMap<>();
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
@@ -44,7 +49,7 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 	@Transactional
 	@Override
 	public GeneExpressionAnnotation upsert(GeneExpressionFmsDTO geneExpressionFmsDTO, BackendBulkDataProvider dataProvider) throws ValidationException {
-		GeneExpressionAnnotation geneExpressionAnnotation = geneExpressionAnnotationFmsDTOValidator.validateAnnotation(geneExpressionFmsDTO, dataProvider);
+		GeneExpressionAnnotation geneExpressionAnnotation = geneExpressionAnnotationFmsDTOValidator.validateAnnotation(geneExpressionFmsDTO, dataProvider, experiments);
 		return geneExpressionAnnotationDAO.persist(geneExpressionAnnotation);
 	}
 }

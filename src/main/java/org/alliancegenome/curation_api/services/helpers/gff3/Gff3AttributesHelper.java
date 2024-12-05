@@ -27,7 +27,7 @@ public class Gff3AttributesHelper {
 		}
 
 		// Ensure identifiers have MOD prefix
-		for (String key : List.of("ID", "Parent")) {
+		for (String key : List.of("ID", "Parent", "gene_id")) {
 			if (attributes.containsKey(key)) {
 				String idsString = attributes.get(key);
 				if (StringUtils.equals(dataProvider.sourceOrganization, "WB")) {
@@ -91,6 +91,21 @@ public class Gff3AttributesHelper {
 				originalGffEntry.setType("lncRNA");
 			}
 			if (Gff3Constants.TRANSCRIPT_TYPES.contains(originalGffEntry.getType())) {
+				processGffEntry(originalGffEntry, retGffData, dataProvider);
+			}
+			ph.progressProcess();
+		}
+		ph.finishProcess();
+		return retGffData;
+	}
+	
+	
+	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getGeneGffData(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData = new ArrayList<>();
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
+		ph.startProcess("GFF Gene pre-processing for " + dataProvider.name(), gffData.size());
+		for (Gff3DTO originalGffEntry : gffData) {
+			if (Gff3Constants.GENE_TYPES.contains(originalGffEntry.getType())) {
 				processGffEntry(originalGffEntry, retGffData, dataProvider);
 			}
 			ph.progressProcess();

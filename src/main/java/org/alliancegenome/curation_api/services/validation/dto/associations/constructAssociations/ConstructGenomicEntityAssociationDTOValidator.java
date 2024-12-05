@@ -1,9 +1,7 @@
 package org.alliancegenome.curation_api.services.validation.dto.associations.constructAssociations;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.associations.constructAssociations.ConstructGenomicEntityAssociationDAO;
@@ -27,17 +25,23 @@ import org.alliancegenome.curation_api.services.validation.dto.associations.Evid
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @RequestScoped
 public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssociationDTOValidator {
 
-	@Inject ConstructService constructService;
-	@Inject GenomicEntityService genomicEntityService;
-	@Inject NoteDTOValidator noteDtoValidator;
-	@Inject VocabularyTermService vocabularyTermService;
-	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
+	@Inject
+	ConstructService constructService;
+	@Inject
+	GenomicEntityService genomicEntityService;
+	@Inject
+	NoteDTOValidator noteDtoValidator;
+	@Inject
+	VocabularyTermService vocabularyTermService;
+	@Inject
+	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
 
 	private ObjectResponse<ConstructGenomicEntityAssociation> assocResponse;
 
@@ -53,6 +57,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 			} else {
 				if (beDataProvider != null && !construct.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 					assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
+					return null;
 				}
 			}
 		} else {
@@ -68,7 +73,6 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 				assocResponse.addErrorMessage("genomic_entity_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityIdentifier() + ")");
 			}
 		}
-
 		ConstructGenomicEntityAssociation association = null;
 		if (construct != null && StringUtils.isNotBlank(dto.getGenomicEntityRelationName()) && genomicEntity != null) {
 			HashMap<String, Object> params = new HashMap<>();

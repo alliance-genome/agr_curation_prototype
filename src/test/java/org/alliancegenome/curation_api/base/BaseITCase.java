@@ -50,6 +50,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalCondi
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
@@ -600,6 +601,25 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefMMOTerm());
+
+		return response.getEntity();
+	}
+
+	public OBITerm createObiTerm(String curie, String name) throws Exception {
+		OBITerm obiTerm = new OBITerm();
+		obiTerm.setCurie(curie);
+		obiTerm.setName(name);
+		obiTerm.setObsolete(false);
+		obiTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<OBITerm> response = RestAssured.given().
+			contentType("application/json").
+			body(obiTerm).
+			when().
+			put("/api/obiterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefOBITerm());
 
 		return response.getEntity();
 	}
@@ -1305,6 +1325,11 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<MMOTerm>> getObjectResponseTypeRefMMOTerm() {
 		return new TypeRef<ObjectResponse<MMOTerm>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<OBITerm>> getObjectResponseTypeRefOBITerm() {
+		return new TypeRef<ObjectResponse<OBITerm>>() {
 		};
 	}
 

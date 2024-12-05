@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -30,6 +31,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	private final String expressionBulkPostEndpoint = "/api/gene-expression-annotation/bulk/ZFIN/annotationFile";
 	private final String expressionTestFilePath = "src/test/resources/bulk/fms/07_expression/";
 	private final String expressionFindEndpoint = "/api/gene-expression-annotation/find?limit=100&page=0";
+	private final String experimentFindEndpoint = "/api/gene-expression-experiment/find?limit=100&page=0";
 	private final String taxon = "NCBITaxon:7955";
 	private final String gene = "GEXPTEST:GENE001";
 	private final String mmoTerm = "GEXPTEST:assay001";
@@ -37,10 +39,10 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	private final String agrReferenceId = "AGRKB:101000000668377";
 	private final String publicationId = "PMID:009";
 	private final String agrPublicationId = "AGRKB:101000000668376";
-
+	private final String pipe = "|";
+	private final String experimentUniqueIdExpected = gene + pipe + agrPublicationId + pipe + mmoTerm;
 	private final String stageTermId = "ZFS:001";
 	private final String stageUberonTermId = "UBERON:001";
-
 	private final String anatomicalStructureTermId = "ANAT:001";
 	private final String anatomicalSubstructureTermId = "ANAT:002";
 	private final String cellularComponentTermId = "GOTEST:0012";
@@ -52,6 +54,8 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	private final String anatomicalStructureUberonTermId2 = "UBERON:005";
 	private final String anatomicalSubstructureUberonTermId1 = "UBERON:006";
 	private final String anatomicalSubstructureUberonTermId2 = "UBERON:007";
+	private final String annotationUniqueIdExpected = String.join(pipe, mmoTerm, gene, agrPublicationId, stageTermId,
+		"stage1", "trunk", anatomicalStructureTermId, cellularComponentTermId);
 
 	@BeforeEach
 	public void init() {
@@ -65,7 +69,31 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	@Order(1)
 	public void expressionBulkUploadAllFields() throws Exception {
 		loadRequiredEntities();
-		checkSuccessfulBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "AF_01_all_fields.json");
+		
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Annotations", createCountParams(1, 0, 1, 0));
+		params.put("Experiments", createCountParams(1, 0, 1, 0));
+
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "AF_01_all_fields.json", params);
+
+		RestAssured.given().when()
+			.header("Content-Type", "application/json")
+			.body("{}")
+			.post(experimentFindEndpoint)
+			.then()
+			.statusCode(200)
+			.body("totalResults", is(1))
+			.body("results", hasSize(1))
+			.body("results[0].dataProvider.sourceOrganization.abbreviation", is("ZFIN"))
+			.body("results[0].uniqueId", is(experimentUniqueIdExpected))
+			.body("results[0].expressionAnnotations.size()", is(1))
+			.body("results[0].entityAssayed.modEntityId", is(gene))
+			.body("results[0].singleReference.crossReferences[0].referencedCurie", is(publicationId))
+			.body("results[0].expressionAssayUsed.curie", is(mmoTerm))
+			.body("results[0].obsolete", is(false))
+			.body("results[0].internal", is(false))
+			.body("results[0].expressionAnnotations[0].uniqueId", is(annotationUniqueIdExpected));
+
 		RestAssured.given().when()
 			.header("Content-Type", "application/json")
 			.body("{}")
@@ -101,43 +129,52 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void expressionBulkUploadMissingRequiredFields() throws Exception {
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_01_no_geneId.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_02_no_dateAssigned.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_03_no_evidence.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_04_no_assay.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_05_no_whenExpressed.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_06_no_whereExpressed.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_07_nowhenExpressedStageName.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_08_nowhereExpressedStatement.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_09_norCellComponentNORanatStructure.json");
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Annotations", createCountParams(1, 1, 0, 0));
+
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "MR_01_no_geneId.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "MR_02_no_dateAssigned.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "MR_03_no_evidence.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "MR_04_no_assay.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "MR_05_no_whenExpressed.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "MR_06_no_whereExpressed.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "MR_07_nowhenExpressedStageName.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "MR_08_nowhereExpressedStatement.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "MR_09_norCellComponentNORanatStructure.json", params);
 	}
 
 	@Test
 	@Order(3)
 	public void expressionBulkUploadEmptyRequiredFields() throws Exception {
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_01_empty_geneId.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_02_empty_dateAssigned.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_03_empty_assay.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_04_empty_whenExpressedStageName.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_05_empty_whereExpressedStatement.json");
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Annotations", createCountParams(1, 1, 0, 0));
+
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "ER_01_empty_geneId.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "ER_02_empty_dateAssigned.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "ER_03_empty_assay.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "ER_04_empty_whenExpressedStageName.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "ER_05_empty_whereExpressedStatement.json", params);
 	}
 
 	@Test
 	@Order(4)
 	public void expressionBulkUploadInvalidFields() throws Exception {
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_01_invalid_geneId.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_02_invalid_dateAssigned.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_03_invalid_assay.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_04_invalid_publicationId.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_05_invalid_stageterm.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_06_invalid_anatomical_structure.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_07_invalid_anatomical_substructure.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_08_invalid_cellularcomponent.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_09_invalid_anatomicalstructurequalifier.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_10_invalid_anatomicalsubstructurequalifier.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_11_invalid_cellularcomponentqualifier.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_12_invalid_anatomicalstructureuberonslimterms.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_13_invalid_anatomicalsubstructureuberonslimterms.json");
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Annotations", createCountParams(1, 1, 0, 0));
+
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_01_invalid_geneId.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_02_invalid_dateAssigned.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_03_invalid_assay.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_04_invalid_publicationId.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_05_invalid_stageterm.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_06_invalid_anatomical_structure.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_07_invalid_anatomical_substructure.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_08_invalid_cellularcomponent.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_09_invalid_anatomicalstructurequalifier.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_10_invalid_anatomicalsubstructurequalifier.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_11_invalid_cellularcomponentqualifier.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_12_invalid_anatomicalstructureuberonslimterms.json", params);
+		checkBulkLoadRecordCounts(expressionBulkPostEndpoint, expressionTestFilePath + "IV_13_invalid_anatomicalsubstructureuberonslimterms.json", params);
 	}
 
 	private void loadRequiredEntities() throws Exception {
@@ -154,7 +191,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		Vocabulary vocabulary2 = createVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, false);
 		createVocabularyTerm(vocabulary2, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM, false);
 		Vocabulary stageUberonTermVocabulary = getVocabulary(VocabularyConstants.STAGE_UBERON_SLIM_TERMS);
-		Vocabulary spatialExpressionQualififerVocabulary = getVocabulary(VocabularyConstants.SPATIAL_EXPRESSION_QUALIFIERS);
+		Vocabulary spatialExpressionQualifierVocabulary = getVocabulary(VocabularyConstants.SPATIAL_EXPRESSION_QUALIFIERS);
 		VocabularyTermSet anatatomicalStructureQualifierTermset = getVocabularyTermSet(VocabularyConstants.ANATOMICAL_STRUCTURE_QUALIFIER);
 		VocabularyTermSet anatatomicalSubstructureQualifierTermset = getVocabularyTermSet(VocabularyConstants.ANATOMICAL_SUBSTRUCTURE_QUALIFIER);
 		VocabularyTermSet cellularComponentQualifierTermset = getVocabularyTermSet(VocabularyConstants.CELLULAR_COMPONENT_QUALIFIER);

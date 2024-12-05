@@ -1,0 +1,21 @@
+[
+	{
+		"location": "I:1-1000",
+		"feature": "WB:Y74C9A.2a.1",
+		"featureType": "Transcript",
+		"consequence": "splice_acceptor_variant",
+		"cdnaPosition": "3-800",
+		"cdsPosition": "1-600",
+		"proteinPosition": "246-?",
+		"aminoAcids": "T/I",
+		"codons": "aCc/aTc",
+		"extra": [
+			"IMPACT=MODERATE",
+			"HGVSc=WB:Y74C9A.2a.1:c.29T>I",
+			"HGVSp=WB:CE49439:p.Thr10Ile",
+			"PolyPhen=probably_damaging(0.993)",
+			"SIFT=tolerated(0)"
+		]
+	}
+]
+
