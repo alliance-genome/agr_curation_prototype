@@ -62,6 +62,11 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 
 	@Transactional
 	public List<CrossReference> getUpdatedXrefList(List<CrossReference> incomingXrefs, List<CrossReference> existingXrefs) {
+		return getUpdatedXrefList(incomingXrefs, existingXrefs, false);
+	}
+	
+	@Transactional
+	public List<CrossReference> getUpdatedXrefList(List<CrossReference> incomingXrefs, List<CrossReference> existingXrefs, Boolean keepAllExisting) {
 		Map<String, CrossReference> existingXrefMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(existingXrefs)) {
 			for (CrossReference existingXref : existingXrefs) {
@@ -71,6 +76,11 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 
 		List<CrossReference> finalXrefs = new ArrayList<>();
 		List<String> addedXrefUniqueIds = new ArrayList<>();
+		
+		if (keepAllExisting && CollectionUtils.isNotEmpty(existingXrefs)) {
+			incomingXrefs.addAll(existingXrefs);
+		}
+		
 		if (CollectionUtils.isNotEmpty(incomingXrefs)) {
 			for (CrossReference incomingXref : incomingXrefs) {
 				String incomingXrefUniqueId = getCrossReferenceUniqueId(incomingXref);
