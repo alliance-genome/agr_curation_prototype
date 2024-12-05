@@ -24,7 +24,7 @@ import lombok.ToString;
 @Entity
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Table(indexes = {
 		@Index(name = "synonym_createdby_index", columnList = "createdBy_id"),
