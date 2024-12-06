@@ -2,6 +2,34 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.36.0
+* New features:
+  * GeneGenomicLocationAssociation loading, SCRUM-4539
+  * Load  VEP results, SCRUM-4442
+  * GAF Load, SCRUM-4190
+  * HTP Load, SCRUM-4509
+  * Load expression experiments after annotations, SCRUM-3953
+  * Left justify text in currently centered fields in curation data tables, SCRUM-4572
+  * Turn on created/modified by and date created/modified for controlled vocabulary terms, SCRUM-4606
+  * Accommodate BIOGRID-ORCS loader data type, SCRUM-4513
+  * Bulk load: Should not run the cleanup() logic in case the main load gets aborted due to 25% errors, SCRUM-4627
+  * Link to MaTI swagger UI, SCRUM-4618
+* Fixes and maintainance:
+  * Fix counts check
+  * Catch KnownIssueValidationException
+  * Skip unrecognised genes
+  * Load of ontology term synonyms, SCRUM-4507
+  * Relax amino acid criteria
+  * Handle ambiguous codon change
+  * Cannot connect to alpha indexes on Cerebro via link from curation site, SCRUM-4495
+  * DataProvider cleanup
+  * Bump LinkML version
+  * FB Allele load apparently failed but then not failed once expanded, SCRUM-4574
+  * Add missing XBXL load SCRUM-3953
+  * Fix broken XB GAF load on alpha-curation; creating (or not cleaning up) duplicate records, SCRUM-4626
+  * Populate cross references on reference, SCRUM-4625
+
+
 ## v0.35.0
 * New features
    * Load FBcv into the persistent store (SCRUM-2190)
