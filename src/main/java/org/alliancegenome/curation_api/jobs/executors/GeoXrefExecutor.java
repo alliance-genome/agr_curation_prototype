@@ -35,7 +35,7 @@ public class GeoXrefExecutor extends LoadFileExecutor {
 
 		XmlMapper mapper = new XmlMapper();
 		URL src = new URL(url);
-		List<String> entrezIds = mapper.readValue(src, eSearchResult.class).getIdList().getIds();
+		List<String> entrezIds = mapper.readValue(src, ESearchResult.class).getIdList().getIds();
 		
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(entrezIds.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
@@ -100,8 +100,8 @@ public class GeoXrefExecutor extends LoadFileExecutor {
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-class eSearchResult {
-	@JacksonXmlProperty(localName="IdList")
+class ESearchResult {
+	@JacksonXmlProperty(localName = "IdList")
 	public IdList idList;
 	
 	public IdList getIdList() {
