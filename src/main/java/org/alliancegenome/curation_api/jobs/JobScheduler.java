@@ -202,16 +202,12 @@ public class JobScheduler {
 		for (BulkLoad bulkLoad : bulkLoads) {
 			List<BulkLoadFileHistory> histories = bulkLoad.getHistory();
 
-			// Group objects by file
 			Map<String, List<BulkLoadFileHistory>> groupedByFile = histories.stream()
 				.collect(Collectors.groupingBy(history -> history.getBulkLoadFile().getMd5Sum()));
 
-			// Sort each group by dateCreated descending and limit to 2 objects and filter out entries without counts
 			Map<String, List<BulkLoadFileHistory>> limitedGroups = groupedByFile.entrySet().stream()
 				.collect(Collectors.toMap(
-					//keep the same key
 					Map.Entry::getKey,
-					//value is now a sorted, filtered, limited List
 					e -> e.getValue().stream()
 						.sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted()))
 						.filter(history -> !history.getCounts().isEmpty())
@@ -219,13 +215,11 @@ public class JobScheduler {
 						.collect(Collectors.toList())
 			));
 
-			// Flatten to a list and sort by dateCreated descending
 			List<BulkLoadFileHistory> sortedList = limitedGroups.values().stream()
 				.flatMap(List::stream)
 				.sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted()))
 				.collect(Collectors.toList());
 
-			// Pick at most 3 file types, preserving order
 			Set<String> selectedFiles = new HashSet<>();
 			List<BulkLoadFileHistory> historiesToKeep = new ArrayList<>();
 
