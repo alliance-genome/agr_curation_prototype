@@ -21,7 +21,7 @@ public class GeneXrefHelper {
 	@Inject CrossReferenceService xrefService;
 	@Inject GeneDAO geneDAO;
 	
-	ResourceDescriptorPage ncbiGeneOtherExpressionPage = null;
+	ResourceDescriptorPage ncbiGeneOtherExpressionPage;
 	
 	@Transactional
 	public void addGeoCrossReference(Gene gene, String entrezCurie) {
