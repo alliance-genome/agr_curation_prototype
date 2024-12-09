@@ -21,15 +21,19 @@ public class GeneXrefHelper {
 	@Inject CrossReferenceService xrefService;
 	@Inject GeneDAO geneDAO;
 	
+	ResourceDescriptorPage ncbiGeneOtherExpressionPage = null;
+	
 	@Transactional
 	public void addGeoCrossReference(Gene gene, String entrezCurie) {
 	
 		CrossReference xref = new CrossReference();
 		
-		ResourceDescriptorPage rdp = rdpService.getPageForResourceDescriptor("NCBI_Gene", "gene/other_expression");
+		if (ncbiGeneOtherExpressionPage == null) {
+			ncbiGeneOtherExpressionPage = rdpService.getPageForResourceDescriptor("NCBI_Gene", "gene/other_expression");
+		}
 		xref.setDisplayName("GEO");
 		xref.setReferencedCurie(entrezCurie);
-		xref.setResourceDescriptorPage(rdp);
+		xref.setResourceDescriptorPage(ncbiGeneOtherExpressionPage);
 		
 		List<CrossReference> updatedXrefs = xrefService.getUpdatedXrefList(List.of(xref), gene.getCrossReferences());
 		
