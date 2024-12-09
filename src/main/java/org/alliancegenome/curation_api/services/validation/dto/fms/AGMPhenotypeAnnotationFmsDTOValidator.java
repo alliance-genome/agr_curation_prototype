@@ -21,7 +21,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
-import org.alliancegenome.curation_api.services.helpers.annotations.GenePhenotypeAnnotationXrefHelper;
+import org.alliancegenome.curation_api.services.helpers.crossReferences.GenePhenotypeAnnotationXrefHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 

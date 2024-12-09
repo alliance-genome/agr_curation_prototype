@@ -30,6 +30,7 @@ public enum BackendBulkLoadType {
 	GFF_TRANSCRIPT("gff"),
 	GFF_GENE("gff"),
 	
+	GEOXREF("xml"),
 	INTERACTION_MOL("tsv"),
 	EXPRESSION_ATLAS("tsv"),
 	GAF("tsv"),
