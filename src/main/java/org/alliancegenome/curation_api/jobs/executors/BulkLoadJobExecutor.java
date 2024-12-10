@@ -58,7 +58,8 @@ public class BulkLoadJobExecutor {
 	@Inject VariantFmsExecutor variantFmsExecutor;
 	@Inject HTPExpressionDatasetAnnotationExecutor htpExpressionDatasetAnnotationExecutor;
 	@Inject HTPExpressionDatasetSampleAnnotationExecutor htpExpressionDatasetSampleAnnotationExecutor;
-
+	@Inject GeoXrefExecutor geoXrefExecutor;
+	
 	@Inject Gff3ExonExecutor gff3ExonExecutor;
 	@Inject Gff3CDSExecutor gff3CDSExecutor;
 	@Inject Gff3GeneExecutor gff3GeneExecutor;
@@ -146,6 +147,8 @@ public class BulkLoadJobExecutor {
 			htpExpressionDatasetAnnotationExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION_ATLAS) {
 			expressionAtlasExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GEOXREF) {
+			geoXrefExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.BIOGRID_ORCS) {
 			biogridOrcExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.VEPTRANSCRIPT) {
