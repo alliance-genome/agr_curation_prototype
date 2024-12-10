@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.services.helpers.crossReferences;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -22,6 +24,7 @@ public class GeneXrefHelper {
 	@Inject GeneDAO geneDAO;
 	
 	ResourceDescriptorPage ncbiGeneOtherExpressionPage;
+	Map<String, ResourceDescriptorPage> expressionAtlasPageMap = new HashMap<>();
 	
 	@Transactional
 	public void addGeoCrossReference(Gene gene, String entrezCurie) {
@@ -50,4 +53,32 @@ public class GeneXrefHelper {
 		geneDAO.persist(gene);
 	}
 
+
+	
+	@Transactional
+	public void addExpressionAtlasXref(Gene gene, String resourceDescriptorPrefix, String referencedCurie) {
+	
+		CrossReference xref = new CrossReference();
+		
+		if (!expressionAtlasPageMap.containsKey(resourceDescriptorPrefix)) {
+			expressionAtlasPageMap.put(resourceDescriptorPrefix, rdpService.getPageForResourceDescriptor(resourceDescriptorPrefix, "expression_atlas"));
+		}
+		xref.setDisplayName("Expression Atlas");
+		xref.setReferencedCurie(referencedCurie);
+		xref.setResourceDescriptorPage(expressionAtlasPageMap.get(resourceDescriptorPrefix));
+		
+		List<CrossReference> updatedXrefs = xrefService.getUpdatedXrefList(List.of(xref), gene.getCrossReferences());
+		
+		if (gene.getCrossReferences() != null) {
+			gene.getCrossReferences().clear();
+		}
+		if (updatedXrefs != null) {
+			if (gene.getCrossReferences() == null) {
+				gene.setCrossReferences(new ArrayList<>());
+			}
+			gene.getCrossReferences().addAll(updatedXrefs);
+		}
+		
+		geneDAO.persist(gene);
+	}
 }

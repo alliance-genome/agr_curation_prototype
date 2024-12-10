@@ -20,13 +20,6 @@ import java.util.Objects;
 @RequestScoped
 public class DataProviderService extends BaseEntityCrudService<DataProvider, DataProviderDAO> {
 
-	public static final String RESOURCE_DESCRIPTOR_PREFIX = "ENSEMBL";
-	public static final String RESOURCE_DESCRIPTOR_PAGE_NAME = "default";
-	// <crossReference.referencedCurie, DataProvider>
-	Map<String, Long> accessionGeneMap = new HashMap<>();
-	HashMap<String, DataProvider> dataProviderMap = new HashMap<>();
-
-
 	@Inject
 	@AuthenticatedUser
 	protected Person authenticatedPerson;
@@ -68,77 +61,6 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	@Transactional
 	public DataProvider getDefaultDataProvider(String sourceOrganizationAbbreviation) {
 		return dataProviderDAO.getOrCreateDataProvider(organizationDAO.getOrCreateOrganization(sourceOrganizationAbbreviation));
-	}
-
-	@Transactional
-	public ObjectResponse<DataProvider> insertExpressionAtlasDataProvider(DataProvider entity) {
-		String referencedCurie = entity.getCrossReference().getReferencedCurie();
-		// find associated gene
-		Long geneID = getAssociatedGeneId(referencedCurie, entity.getSourceOrganization());
-		// if no gene found skip (= don't import) the accession
-		if (geneID == null) {
-			return new ObjectResponse<>();
-		}
-
-		DataProvider dbEntity = getDataProvider(entity.getSourceOrganization(), referencedCurie, entity.getCrossReference().getResourceDescriptorPage());
-		// we only create new records, no updates
-		if (dbEntity == null) {
-			dataProviderDAO.persist(entity);
-			if (!List.of("FB", "SGD").contains(entity.getSourceOrganization().getAbbreviation())) {
-				crossReferenceDAO.persistAccessionGeneAssociated(entity.getCrossReference().getId(), geneID);
-			}
-			return new ObjectResponse<>(entity);
-		}
-		return new ObjectResponse<>(dbEntity);
-	}
-
-	@NotNull
-	public static String getFullReferencedCurie(String localReferencedCurie) {
-		return RESOURCE_DESCRIPTOR_PREFIX + ":" + localReferencedCurie;
-	}
-
-	private Long getAssociatedGeneId(String fullReferencedCurie, Organization sourceOrganization) {
-		String orgAbbreviation = sourceOrganization.getAbbreviation();
-		if (orgAbbreviation.equals("FB")) {
-			fullReferencedCurie = orgAbbreviation + ":" + fullReferencedCurie;
-		}
-		if (accessionGeneMap.size() == 0) {
-			if (List.of("FB", "SGD").contains(orgAbbreviation)) {
-				Map<String, Object> map = new HashMap<>();
-				map.put("displayName", orgAbbreviation);
-				Species species = speciesDAO.findByParams(map).getSingleResult();
-				accessionGeneMap = geneDAO.getAllGeneIdsPerSpecies(species);
-			} else {
-				ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(RESOURCE_DESCRIPTOR_PREFIX, RESOURCE_DESCRIPTOR_PAGE_NAME);
-				accessionGeneMap = crossReferenceDAO.getGenesWithCrossRefs(page);
-			}
-		}
-		return accessionGeneMap.get(fullReferencedCurie);
-	}
-
-	private DataProvider getDataProvider(Organization sourceOrganization, String crossReferenceCurie, ResourceDescriptorPage page) {
-		if (dataProviderMap.size() > 0) {
-			return dataProviderMap.get(crossReferenceCurie);
-		}
-		populateDataProviderMap(sourceOrganization, page);
-		return dataProviderMap.get(crossReferenceCurie);
-	}
-
-	private void populateDataProviderMap(Organization sourceOrganization, ResourceDescriptorPage page) {
-		List<DataProvider> allOrgProvider = dataProviderDAO.getAllDataProvider(sourceOrganization, page);
-		allOrgProvider.stream()
-			.filter(dataProvider -> dataProvider.getCrossReference() != null && Objects.equals(dataProvider.getCrossReference().getResourceDescriptorPage().getId(), page.getId()))
-			.forEach(dataProvider -> {
-				dataProviderMap.put(dataProvider.getCrossReference().getReferencedCurie(), dataProvider);
-			});
-	}
-
-	public HashMap<String, DataProvider> getDataProviderMap(Organization sourceOrganization, ResourceDescriptorPage page) {
-		if (dataProviderMap.size() > 0) {
-			return dataProviderMap;
-		}
-		populateDataProviderMap(sourceOrganization, page);
-		return dataProviderMap;
 	}
 
 	@Transactional
