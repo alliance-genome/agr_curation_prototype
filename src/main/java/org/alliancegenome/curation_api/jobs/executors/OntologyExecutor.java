@@ -258,12 +258,20 @@ public class OntologyExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(bulkLoadFileHistory.getBulkLoadFile().getRecordCount() + termMap.size());
 
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
+
+		bulkLoadFileHistory.setCount("Terms", termMap.size());
+		bulkLoadFileHistory.setCount("Closure", termMap.size());
+		bulkLoadFileHistory.setCount("Counts", termMap.size());
 		
+		String countType = null;
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Terms", termMap.size());
+		countType = "Terms";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdate(entry.getValue());
+			bulkLoadFileHistory.incrementCompleted(countType);
 			ph.progressProcess();
 		}
 		ph.finishProcess();
@@ -271,9 +279,10 @@ public class OntologyExecutor {
 		ProcessDisplayHelper ph1 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph1.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
+		countType = "Closure";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdateRelationships(entry.getValue());
-			// Thread.sleep(5000);
+			bulkLoadFileHistory.incrementCompleted(countType);
 			ph1.progressProcess();
 		}
 		ph1.finishProcess();
@@ -281,9 +290,10 @@ public class OntologyExecutor {
 		ProcessDisplayHelper ph2 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph2.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Counts", termMap.size());
+		countType = "Counts";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processCounts(entry.getValue());
-			// Thread.sleep(5000);
+			bulkLoadFileHistory.incrementCompleted(countType);
 			ph2.progressProcess();
 		}
 		ph2.finishProcess();
