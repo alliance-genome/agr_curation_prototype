@@ -152,7 +152,17 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.crossReferences[0].referencedCurie", is("TEST:Xref01")).
 			body("entity.crossReferences[0].displayName", is("TEST:Xref01Display")).
 			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage")).
-			body("entity.geneType.curie", is(soTerm));
+			body("entity.geneType.curie", is(soTerm)).
+			body("entity.relatedNotes", hasSize(1)).
+			body("entity.relatedNotes[0].internal", is(false)).
+			body("entity.relatedNotes[0].obsolete", is(true)).
+			body("entity.relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0002")).
+			body("entity.relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0001")).
+			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.relatedNotes[0].freeText", is("Test note")).
+			body("entity.relatedNotes[0].noteType.name", is("comment")).
+			body("entity.relatedNotes[0].references[0].curie", is(requiredReference));
 	}
 	
 	@Test
@@ -239,7 +249,17 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.crossReferences[0].referencedCurie", is("TEST2:Xref02")).
 			body("entity.crossReferences[0].displayName", is("TEST2:Xref02Display")).
 			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage2")).
-			body("entity.geneType.curie", is(soTerm2));
+			body("entity.geneType.curie", is(soTerm2)).
+			body("entity.relatedNotes", hasSize(1)).
+			body("entity.relatedNotes[0].internal", is(true)).
+			body("entity.relatedNotes[0].obsolete", is(false)).
+			body("entity.relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0001")).
+			body("entity.relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0002")).
+			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.relatedNotes[0].freeText", is("Test note")).
+			body("entity.relatedNotes[0].noteType.name", is("indel_verification")).
+			body("entity.relatedNotes[0].references[0].curie", is(requiredReference2));
 	}
 	
 	@Test
@@ -333,6 +353,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.modEntityId", is("GENETEST:Gene0001")).
+			body("entity", not(hasKey("relatedNotes"))).
 			body("entity", not(hasKey("crossReferences"))).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
@@ -355,6 +376,11 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			get(geneGetEndpoint + "GENETEST:Gene0001").then().
 			statusCode(200).
 			body("entity.modEntityId", is("GENETEST:Gene0001")).
+			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
+			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
+			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
+			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
+			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
 			body("entity.geneSymbol", not(hasKey("synonymScope"))).
 			body("entity.geneSymbol", not(hasKey("synonymUrl"))).
 			body("entity.geneSymbol", not(hasKey("evidence"))).
@@ -407,6 +433,11 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("crossReferences"))).
+			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
+			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
+			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
+			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
+			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
 			body("entity.geneSymbol", not(hasKey("synonymScope"))).
 			body("entity.geneSymbol", not(hasKey("synonymUrl"))).
 			body("entity.geneSymbol", not(hasKey("evidence"))).
@@ -486,5 +517,19 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.modEntityId", is("GENETEST:DX01")).
 			body("entity.crossReferences", hasSize(1));
+	}
+
+	@Test
+	@Order(13)
+	public void geneBulkUploadDuplicateNotes() throws Exception {
+		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "DN_01_duplicate_notes.json");
+		
+		RestAssured.given().
+			when().
+			get(geneGetEndpoint + "GENETEST:DN01").
+			then().
+			statusCode(200).
+			body("entity.modEntityId", is("GENETEST:DN01")).
+			body("entity.relatedNotes", hasSize(1));
 	}
 }

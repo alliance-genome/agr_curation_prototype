@@ -14,6 +14,7 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
+import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
@@ -454,6 +455,13 @@ export const GenesTable = () => {
 			<SystematicNameDialog
 				originalSystematicNameData={systematicNameData}
 				setOriginalSystematicNameData={setSystematicNameData}
+			/>
+			<RelatedNotesDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+				noteTypeVocabularyTermSet="variant_note_type"
 			/>
 		</>
 	);
