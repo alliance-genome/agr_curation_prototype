@@ -27,18 +27,21 @@ public class GeneXrefHelper {
 	Map<String, ResourceDescriptorPage> expressionAtlasPageMap = new HashMap<>();
 	
 	@Transactional
-	public void addGeoCrossReference(Gene gene, String entrezCurie) {
+	public Gene addGeoCrossReference(Gene gene, String entrezCurie) {
 	
 		CrossReference xref = new CrossReference();
 		
 		if (ncbiGeneOtherExpressionPage == null) {
 			ncbiGeneOtherExpressionPage = rdpService.getPageForResourceDescriptor("NCBI_Gene", "gene/other_expression");
+			if (ncbiGeneOtherExpressionPage == null) {
+				return null;
+			}
 		}
 		xref.setDisplayName("GEO");
 		xref.setReferencedCurie(entrezCurie);
 		xref.setResourceDescriptorPage(ncbiGeneOtherExpressionPage);
 		
-		List<CrossReference> updatedXrefs = xrefService.getUpdatedXrefList(List.of(xref), gene.getCrossReferences());
+		List<CrossReference> updatedXrefs = xrefService.getUpdatedXrefList(List.of(xref), gene.getCrossReferences(), true);
 		
 		if (gene.getCrossReferences() != null) {
 			gene.getCrossReferences().clear();
@@ -50,24 +53,28 @@ public class GeneXrefHelper {
 			gene.getCrossReferences().addAll(updatedXrefs);
 		}
 		
-		geneDAO.persist(gene);
+		return geneDAO.persist(gene);
 	}
 
 
 	
 	@Transactional
-	public void addExpressionAtlasXref(Gene gene, String resourceDescriptorPrefix, String referencedCurie) {
+	public Gene addExpressionAtlasXref(Gene gene, String resourceDescriptorPrefix, String referencedCurie) {
 	
 		CrossReference xref = new CrossReference();
 		
 		if (!expressionAtlasPageMap.containsKey(resourceDescriptorPrefix)) {
-			expressionAtlasPageMap.put(resourceDescriptorPrefix, rdpService.getPageForResourceDescriptor(resourceDescriptorPrefix, "expression_atlas"));
+			ResourceDescriptorPage rdp = rdpService.getPageForResourceDescriptor(resourceDescriptorPrefix, "expression_atlas");
+			if (rdp == null) {
+				return null;
+			}
+			expressionAtlasPageMap.put(resourceDescriptorPrefix, rdp);
 		}
 		xref.setDisplayName("Expression Atlas");
 		xref.setReferencedCurie(referencedCurie);
 		xref.setResourceDescriptorPage(expressionAtlasPageMap.get(resourceDescriptorPrefix));
 		
-		List<CrossReference> updatedXrefs = xrefService.getUpdatedXrefList(List.of(xref), gene.getCrossReferences());
+		List<CrossReference> updatedXrefs = xrefService.getUpdatedXrefList(List.of(xref), gene.getCrossReferences(), true);
 		
 		if (gene.getCrossReferences() != null) {
 			gene.getCrossReferences().clear();
@@ -79,6 +86,6 @@ public class GeneXrefHelper {
 			gene.getCrossReferences().addAll(updatedXrefs);
 		}
 		
-		geneDAO.persist(gene);
+		return geneDAO.persist(gene);
 	}
 }

@@ -162,7 +162,11 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			throw new KnownIssueValidationException("crossReferences - referencedCurie: " + ValidationConstants.INVALID_MESSAGE + " (NCBI_Gene:" + entrezId + ")");
 		}
 		
-		geneXrefHelper.addGeoCrossReference(allianceGene, "NCBI_Gene:" + entrezId);
+		allianceGene = geneXrefHelper.addGeoCrossReference(allianceGene, "NCBI_Gene:" + entrezId);
+		
+		if (allianceGene == null) {
+			throw new ObjectValidationException(entrezId, "resourceDescriptorPage: " + ValidationConstants.INVALID_MESSAGE + " (NCBI_Gene:gene/other_expression)");
+		}
 	}
 
 	@Transactional
@@ -219,7 +223,11 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			throw new KnownIssueValidationException(searchField + ": " + ValidationConstants.INVALID_MESSAGE + " (" + searchValue + ")");
 		}
 		
-		geneXrefHelper.addExpressionAtlasXref(allianceGene, resourceDescriptorPrefix, referencedCurie);
+		allianceGene = geneXrefHelper.addExpressionAtlasXref(allianceGene, resourceDescriptorPrefix, referencedCurie);
+		
+		if (allianceGene == null) {
+			throw new ObjectValidationException(identifier, "resourceDescriptorPage: " + ValidationConstants.INVALID_MESSAGE + " (" + resourceDescriptorPrefix + ":expression_atlas)");
+		}
 	}
 
 }

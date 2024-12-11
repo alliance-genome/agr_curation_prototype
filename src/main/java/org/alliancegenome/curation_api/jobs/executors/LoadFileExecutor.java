@@ -276,6 +276,7 @@ public class LoadFileExecutor {
 				service.deprecateOrDelete(id, false, loadDescription, deprecate);
 				history.incrementCompleted(countType);
 			} catch (Exception e) {
+				e.printStackTrace();
 				history.incrementFailed(countType);
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
 			}
