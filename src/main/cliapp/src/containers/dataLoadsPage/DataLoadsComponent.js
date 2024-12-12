@@ -258,7 +258,8 @@ export const DataLoadsComponent = () => {
 						<Button
 							tooltip="Download file exceptions"
 							className="p-button-rounded p-button-warning"
-							onClick={() => downloadFileExceptions(rowData.id)}>
+							onClick={() => downloadFileExceptions(rowData.id)}
+						>
 							<i className="pi pi-exclamation-triangle"></i>
 							<i className="pi pi-download ml-1"></i>
 						</Button>
@@ -322,14 +323,14 @@ export const DataLoadsComponent = () => {
 			}
 		} else {
 			ret.push(
-					<Button
-						key="stop"
-						tooltip="Stop this Load"
-						icon="pi pi-stop"
-						className="p-button-rounded p-button-help mr-2"
-						onClick={() => stopHistoryLoad(rowData)}
-					/>
-				);
+				<Button
+					key="stop"
+					tooltip="Stop this Load"
+					icon="pi pi-stop"
+					className="p-button-rounded p-button-help mr-2"
+					onClick={() => stopHistoryLoad(rowData)}
+				/>
+			);
 		}
 		if (
 			!rowData.bulkloadStatus ||
