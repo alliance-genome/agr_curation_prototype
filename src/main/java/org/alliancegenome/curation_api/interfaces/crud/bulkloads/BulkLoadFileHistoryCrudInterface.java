@@ -35,7 +35,13 @@ public interface BulkLoadFileHistoryCrudInterface extends BaseIdCrudInterface<Bu
 	ObjectResponse<BulkLoad> restartBulkLoad(@PathParam("id") Long id);
 	
 	@GET
+	@Path("/stoploadhistory/{id}")
+	@JsonView(View.FieldsOnly.class)
+	ObjectResponse<BulkLoadFile> stopBulkLoadHistory(@PathParam("id") Long id);
+	
+	@GET
 	@Path("/restartloadhistory/{id}")
 	@JsonView(View.FieldsOnly.class)
 	ObjectResponse<BulkLoadFile> restartBulkLoadHistory(@PathParam("id") Long id);
+
 }

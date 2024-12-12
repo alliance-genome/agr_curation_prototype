@@ -2,10 +2,8 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,8 +14,6 @@ import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.BiogridOrcFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -124,11 +120,16 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 					return;
 				}
 				ph.progressProcess();
+				if (Thread.currentThread().isInterrupted()) {
+					Log.info("Thread Interrupted:");
+					break;
+				}
 			}
 			
 			updateHistory(history);
 			updateExceptions(history);
 			ph.finishProcess();
+			
 		}
 	}
 
