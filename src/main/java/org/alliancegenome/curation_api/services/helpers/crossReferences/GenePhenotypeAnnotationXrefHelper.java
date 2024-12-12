@@ -41,7 +41,7 @@ public class GenePhenotypeAnnotationXrefHelper {
 		xref.setReferencedCurie(gene.getIdentifier());
 		xref.setResourceDescriptorPage(rdp);
 		
-		List<CrossReference> updatedXrefs = xrefService.getUpdatedXrefList(List.of(xref), gene.getCrossReferences());
+		List<CrossReference> updatedXrefs = xrefService.getUpdatedXrefList(List.of(xref), gene.getCrossReferences(), true);
 		
 		if (gene.getCrossReferences() != null) {
 			gene.getCrossReferences().clear();

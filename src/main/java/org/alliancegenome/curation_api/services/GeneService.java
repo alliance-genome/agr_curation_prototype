@@ -159,10 +159,75 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		}
 		
 		if (allianceGene == null) {
-			throw new KnownIssueValidationException("crossReferences - referencedCurie: " + ValidationConstants.INVALID_MESSAGE + " (" + "NCBI_Gene:" + entrezId + ")");
+			throw new KnownIssueValidationException("crossReferences - referencedCurie: " + ValidationConstants.INVALID_MESSAGE + " (NCBI_Gene:" + entrezId + ")");
 		}
 		
-		geneXrefHelper.addGeoCrossReference(allianceGene, "NCBI_Gene:" + entrezId);
+		allianceGene = geneXrefHelper.addGeoCrossReference(allianceGene, "NCBI_Gene:" + entrezId);
+		
+		if (allianceGene == null) {
+			throw new ObjectValidationException(entrezId, "resourceDescriptorPage: " + ValidationConstants.INVALID_MESSAGE + " (NCBI_Gene:gene/other_expression)");
+		}
+	}
+
+	@Transactional
+	public void addExpressionAtlasXref(String identifier, BackendBulkDataProvider dataProvider) throws ValidationException {
+		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity();
+		if (taxon == null) {
+			throw new ObjectValidationException(identifier, "dataProvider - canonical taxon: " + ValidationConstants.INVALID_MESSAGE + " (" + dataProvider.canonicalTaxonCurie + " not found)");
+		}
+
+		
+		String searchField;
+		String searchValue;
+		String referencedCurie;
+		String resourceDescriptorPrefix;
+		switch (dataProvider) {
+			case FB -> {
+				searchField = "modEntityId";
+				searchValue = "FB:" + identifier;
+				referencedCurie = searchValue;
+				resourceDescriptorPrefix = "FB";
+			}
+			case SGD -> {
+				searchField = "geneSymbol.displayText";
+				searchValue = identifier;
+				referencedCurie = "SGD:" + identifier;
+				resourceDescriptorPrefix = "SGD";
+			}
+			default -> {
+				searchField = "crossReferences.referencedCurie";
+				searchValue = "ENSEMBL:" + identifier;
+				referencedCurie = searchValue;
+				resourceDescriptorPrefix = "ENSEMBL";
+			}
+		}
+		
+		Gene allianceGene = null;
+		SearchResponse<Gene> searchResponse = findByField(searchField, searchValue);
+		if (searchResponse != null) {
+			// Need to check that returned gene belongs to MOD corresponding to taxon
+			for (Gene searchResult : searchResponse.getResults()) {
+				String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getSourceOrganization().getAbbreviation());
+				if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
+					allianceGene = searchResult;
+					break;
+				}
+				if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getSourceOrganization().getAbbreviation(), "RGD")) {
+					allianceGene = searchResult;
+					break;
+				}
+			}
+		}
+		
+		if (allianceGene == null) {
+			throw new KnownIssueValidationException(searchField + ": " + ValidationConstants.INVALID_MESSAGE + " (" + searchValue + ")");
+		}
+		
+		allianceGene = geneXrefHelper.addExpressionAtlasXref(allianceGene, resourceDescriptorPrefix, referencedCurie);
+		
+		if (allianceGene == null) {
+			throw new ObjectValidationException(identifier, "resourceDescriptorPage: " + ValidationConstants.INVALID_MESSAGE + " (" + resourceDescriptorPrefix + ":expression_atlas)");
+		}
 	}
 
 }
