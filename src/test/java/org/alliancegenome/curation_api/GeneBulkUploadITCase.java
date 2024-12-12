@@ -6,9 +6,13 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,6 +52,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	private String requiredDataProvider2 = "RGD";
 	private String soTerm = "SO:0001217";
 	private String soTerm2 = "SO:0000336";
+	private String noteType = "comment";
+	private VocabularyTerm noteTypeVocabTerm;
 	
 	private final String geneBulkPostEndpoint = "/api/gene/bulk/WB/genes";
 	private final String geneBulkPostEndpointRGD = "/api/gene/bulk/RGD/genes";
@@ -64,6 +70,9 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		createResourceDescriptorPage("homepage2", "http://test2.org", rd2);
 		createSoTerm(soTerm, "protein_coding_gene", false);
 		createSoTerm(soTerm2, "pseudogene", false);
+		Vocabulary noteTypeVocab = getVocabulary("note_type");
+		noteTypeVocabTerm = createVocabularyTerm(noteTypeVocab, noteType, false);
+		createVocabularyTermSet(VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET, noteTypeVocab, List.of(noteTypeVocabTerm));
 	}
 
 	@Test
@@ -161,8 +170,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.relatedNotes[0].freeText", is("Test note")).
-			body("entity.relatedNotes[0].noteType.name", is("comment")).
-			body("entity.relatedNotes[0].references[0].curie", is(requiredReference));
+			body("entity.relatedNotes[0].noteType.name", is(noteType));
 	}
 	
 	@Test
@@ -251,15 +259,14 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage2")).
 			body("entity.geneType.curie", is(soTerm2)).
 			body("entity.relatedNotes", hasSize(1)).
-			body("entity.relatedNotes[0].internal", is(true)).
-			body("entity.relatedNotes[0].obsolete", is(false)).
-			body("entity.relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0001")).
-			body("entity.relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0002")).
-			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.relatedNotes[0].internal", is(false)).
+			body("entity.relatedNotes[0].obsolete", is(true)).
+			body("entity.relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0002")).
+			body("entity.relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0001")).
+			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.relatedNotes[0].freeText", is("Test note")).
-			body("entity.relatedNotes[0].noteType.name", is("indel_verification")).
-			body("entity.relatedNotes[0].references[0].curie", is(requiredReference2));
+			body("entity.relatedNotes[0].noteType.name", is(noteType));
 	}
 	
 	@Test

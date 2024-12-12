@@ -81,13 +81,15 @@
     "note_dtos": [
       {
         "free_text": "Test note",
-        "note_type_name": "indel_verification",
-        "created_by_curie": "DATEST:Person0002",
-        "updated_by_curie": "DATEST:Person0001",
-        "date_created": "2022-03-19T22:10:12+00:00",
-        "date_updated": "2022-03-20T22:10:12+00:00",
+        "note_type_name": "comment",
+        "internal": false,
+        "obsolete": true,
+        "created_by_curie": "DATEST:Person0001",
+        "updated_by_curie": "DATEST:Person0002",
+        "date_created": "2022-03-09T22:10:12+00:00",
+        "date_updated": "2022-03-10T22:10:12+00:00",
         "evidence_curies": [
-          "PMID:25920551"
+          "PMID:25920550"
         ]
       }
     ],
