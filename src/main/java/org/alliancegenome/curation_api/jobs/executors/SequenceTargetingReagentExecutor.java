@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.services.associations.SequenceTargetingRe
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -129,6 +130,10 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 			}
 			updateHistory(history);
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 	}
 
@@ -152,6 +157,10 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 			}
 			updateHistory(history);
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 	}
 }
