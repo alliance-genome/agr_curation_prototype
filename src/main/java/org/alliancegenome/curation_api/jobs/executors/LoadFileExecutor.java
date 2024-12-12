@@ -287,12 +287,13 @@ public class LoadFileExecutor {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 		ph.startProcess("Deletion/deprecation of: " + dataProviderName + " " + loadTypeString, idsToRemove.size());
-		//updateHistory(history);
+		updateHistory(history);
 		for (Long id : idsToRemove) {
 			try {
 				service.deprecateOrDelete(id, false, loadDescription, deprecate);
 				history.incrementCompleted(countType);
 			} catch (Exception e) {
+				e.printStackTrace();
 				history.incrementFailed(countType);
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
 			}
