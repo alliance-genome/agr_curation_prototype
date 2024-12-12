@@ -88,6 +88,10 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 					return;
 				}
 				ph.progressProcess();
+				if (Thread.currentThread().isInterrupted()) {
+					Log.info("Thread Interrupted:");
+					break;
+				}
 			}
 			updateHistory(history);
 			updateExceptions(history);
