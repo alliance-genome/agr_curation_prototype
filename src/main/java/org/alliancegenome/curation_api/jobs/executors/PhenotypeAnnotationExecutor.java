@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -113,6 +114,10 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			}
 			
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		updateHistory(history);
 	}
@@ -141,6 +146,10 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			}
 			
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		updateHistory(history);
 	}

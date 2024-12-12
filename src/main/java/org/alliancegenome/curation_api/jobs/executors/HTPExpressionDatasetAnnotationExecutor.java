@@ -54,7 +54,7 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 			
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setCount((long) htpExpressionDatasetData.getData().size());
+			bulkLoadFileHistory.setCount(htpExpressionDatasetData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 			
 			boolean success = runLoad(bulkLoadFileHistory, dataProvider, htpExpressionDatasetData.getData(), htpAnnotationsIdsLoaded);
@@ -102,6 +102,10 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 				return false;
 			}
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		updateHistory(history);
 		updateExceptions(history);

@@ -106,6 +106,10 @@ public class VepGeneExecutor extends LoadFileExecutor {
 					return false;
 				}
 				ph.progressProcess();
+				if (Thread.currentThread().isInterrupted()) {
+					Log.info("Thread Interrupted:");
+					break;
+				}
 			}
 			updateHistory(history);
 			updateExceptions(history);
@@ -147,6 +151,10 @@ public class VepGeneExecutor extends LoadFileExecutor {
 				break;
 			}
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		updateHistory(history);
 		updateExceptions(history);
