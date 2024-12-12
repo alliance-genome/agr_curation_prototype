@@ -192,6 +192,14 @@ export const DataLoadsComponent = () => {
 			});
 	};
 
+	const stopHistoryLoad = (rowData) => {
+		getService()
+			.stopHistoryLoad(rowData.id)
+			.then((response) => {
+				queryClient.invalidateQueries(['bulkloadtable']);
+			});
+	};
+
 	const editLoad = (rowData) => {
 		bulkLoadDispatch({ type: 'EDIT', editBulkLoad: rowData });
 		setBulkLoadDialog(true);
@@ -232,6 +240,7 @@ export const DataLoadsComponent = () => {
 			<nobr>
 				<Button
 					icon="pi pi-search-plus"
+					tooltip="Show file exceptions"
 					className="p-button-rounded p-button-info mr-2"
 					onClick={() => showHistory(rowData)}
 				/>
@@ -246,7 +255,11 @@ export const DataLoadsComponent = () => {
 
 				{rowData.counts &&
 					Object.values(rowData.counts).some((field) => field.failed !== undefined && field.failed > 0) && (
-						<Button className="p-button-rounded p-button-warning" onClick={() => downloadFileExceptions(rowData.id)}>
+						<Button
+							tooltip="Download file exceptions"
+							className="p-button-rounded p-button-warning"
+							onClick={() => downloadFileExceptions(rowData.id)}
+						>
 							<i className="pi pi-exclamation-triangle"></i>
 							<i className="pi pi-download ml-1"></i>
 						</Button>
@@ -301,12 +314,23 @@ export const DataLoadsComponent = () => {
 				ret.push(
 					<Button
 						key="run"
+						tooltip="Rerun this Load"
 						icon="pi pi-play"
 						className="p-button-rounded p-button-success mr-2"
 						onClick={() => runHistoryLoad(rowData)}
 					/>
 				);
 			}
+		} else {
+			ret.push(
+				<Button
+					key="stop"
+					tooltip="Stop this Load"
+					icon="pi pi-stop"
+					className="p-button-rounded p-button-help mr-2"
+					onClick={() => stopHistoryLoad(rowData)}
+				/>
+			);
 		}
 		if (
 			!rowData.bulkloadStatus ||
@@ -317,6 +341,7 @@ export const DataLoadsComponent = () => {
 			ret.push(
 				<Button
 					key="delete"
+					tooltip="Delete this history"
 					icon="pi pi-trash"
 					className="p-button-rounded p-button-danger mr-2"
 					onClick={() => deleteLoadFileHistory(rowData)}
@@ -333,6 +358,7 @@ export const DataLoadsComponent = () => {
 		ret.push(
 			<Button
 				key="edit"
+				tooltip="Edit this Load"
 				icon="pi pi-pencil"
 				className="p-button-rounded p-button-warning mr-2"
 				onClick={() => editLoad(rowData)}
@@ -349,6 +375,7 @@ export const DataLoadsComponent = () => {
 				ret.push(
 					<Button
 						key="run"
+						tooltip="Run this Load"
 						icon="pi pi-play"
 						className="p-button-rounded p-button-success mr-2"
 						onClick={() => runLoad(rowData)}
@@ -359,6 +386,7 @@ export const DataLoadsComponent = () => {
 			ret.push(
 				<Button
 					key="fileUpload"
+					tooltip="Upload new file and run"
 					icon="pi pi-upload"
 					label="Upload"
 					className="p-button-rounded p-button-info mr-2"
@@ -371,6 +399,7 @@ export const DataLoadsComponent = () => {
 			ret.push(
 				<Button
 					key="delete"
+					tooltip="Delete this load"
 					icon="pi pi-trash"
 					className="p-button-rounded p-button-danger mr-2"
 					onClick={() => deleteLoad(rowData)}
@@ -386,6 +415,7 @@ export const DataLoadsComponent = () => {
 			return (
 				<Button
 					icon="pi pi-trash"
+					tooltip="Delete this group"
 					className="p-button-rounded p-button-danger mr-2"
 					onClick={() => deleteGroup(rowData)}
 				/>

@@ -76,7 +76,7 @@ public class BulkLoadJobExecutor {
 	public void process(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) throws Exception {
 
 		BackendBulkLoadType loadType = bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType();
-
+		
 		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, FULL_INGEST, ALLELE_ASSOCIATION, CONSTRUCT_ASSOCIATION);
 
 		if (ingestTypes.contains(loadType)) {

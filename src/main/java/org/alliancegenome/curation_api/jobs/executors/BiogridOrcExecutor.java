@@ -35,6 +35,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -136,7 +137,10 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 					} else {
 						history.incrementSkipped();
 					}
-
+					if (Thread.currentThread().isInterrupted()) {
+						Log.info("Thread Interrupted:");
+						break;
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -146,6 +150,7 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 			updateHistory(history);
 			updateExceptions(history);
 			ph.finishProcess();
+			
 		}
 
 		return true;
