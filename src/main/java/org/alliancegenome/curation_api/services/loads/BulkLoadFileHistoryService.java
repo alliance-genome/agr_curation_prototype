@@ -130,22 +130,26 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 	}
 
 	public ObjectResponse<BulkLoadFile> restartBulkLoadHistory(Long id) {
-		ObjectResponse<BulkLoadFile> resp = updateBulkLoadHistory(id);
+		ObjectResponse<BulkLoadFileHistory> resp = updateBulkLoadHistory(id);
 		Log.debug("Restart Bulk Load History: " + id);
 		if (resp != null) {
 			Log.debug("Firing Event: " + id);
-			pendingLoadJobEvents.fireAsync(new PendingLoadJobEvent(id));
-			return resp;
+			pendingLoadJobEvents.fireAsync(new PendingLoadJobEvent(resp.getEntity().getId()));
+			return new ObjectResponse<BulkLoadFile>(resp.getEntity().getBulkLoadFile());
 		}
 		return null;
 	}
 
 	@Transactional
-	public ObjectResponse<BulkLoadFile> updateBulkLoadHistory(Long id) {
+	public ObjectResponse<BulkLoadFileHistory> updateBulkLoadHistory(Long id) {
 		BulkLoadFileHistory history = bulkLoadFileHistoryDAO.find(id);
 		if (history != null && history.getBulkloadStatus().isNotRunning()) {
-			history.setBulkloadStatus(JobStatus.FORCED_PENDING);
-			return new ObjectResponse<BulkLoadFile>(history.getBulkLoadFile());
+			BulkLoadFileHistory newHistory = new BulkLoadFileHistory();
+			newHistory.setBulkLoad(history.getBulkLoad());
+			newHistory.setBulkLoadFile(history.getBulkLoadFile());
+			newHistory.setBulkloadStatus(JobStatus.FORCED_PENDING);
+			bulkLoadFileHistoryDAO.persist(newHistory);
+			return new ObjectResponse<BulkLoadFileHistory>(newHistory);
 		}
 		return null;
 	}
