@@ -43,7 +43,7 @@ public class BiogridOrcBulkUploadFmsITCase extends BaseITCase {
 
 	ResourceDescriptorPage resourceDescriptorPage;
 
-	private final String biogridOrcBulkPostEndpoint = "/api/biogrid-orc/bulk/FB/biogridfile";
+	private final String biogridOrcBulkPostEndpoint = "/api/biogrid-orc/bulk/WB/biogridfile";
 	private final String biogridOrcTestFilePath = "src/test/resources/bulk/fms/12_biogrid/";
 	private final String biogridOrcFindEndpoint = "/api/cross-reference/find?limit=100&page=0";
 
@@ -76,7 +76,7 @@ public class BiogridOrcBulkUploadFmsITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void biogridOrcBulkUploadDuplicateEntries() throws Exception {
-		checkSuccessfulBulkLoad(biogridOrcBulkPostEndpoint, biogridOrcTestFilePath + "DE_01_duplicate_entries.json", 2);
+		checkSuccessfulBulkLoad(biogridOrcBulkPostEndpoint, biogridOrcTestFilePath + "DE_01_duplicate_entries.json");
 
 		RestAssured.given()
 				.when()
