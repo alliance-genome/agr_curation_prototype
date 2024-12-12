@@ -58,6 +58,9 @@ public class BulkLoadFileHistory extends AuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	@Column(columnDefinition = "TEXT")
 	private String errorMessage;
+	
+	@JsonView({ View.FieldsOnly.class })
+	private String runningThreadName;
 
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })

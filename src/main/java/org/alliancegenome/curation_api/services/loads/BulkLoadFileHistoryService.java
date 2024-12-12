@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services.loads;
 
+import java.util.Set;
+
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
@@ -99,6 +101,22 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 			return resp;
 		}
 		return null;
+	}
+	
+	public ObjectResponse<BulkLoadFile> stopBulkLoadHistory(Long id) {
+		BulkLoadFileHistory history = bulkLoadFileHistoryDAO.find(id);
+		Log.info("Stop Bulk Load: " + history.getRunningThreadName());
+
+		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		
+		for (Thread t: threadSet) {
+			if (t.getName().equals(history.getRunningThreadName())) {
+				Log.info("Interupting Thread: " + t.getName());
+				t.interrupt();
+			}
+		}
+		
+		return new ObjectResponse<BulkLoadFile>(history.getBulkLoadFile());
 	}
 	
 	@Transactional

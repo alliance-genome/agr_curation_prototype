@@ -57,6 +57,7 @@ import org.alliancegenome.curation_api.services.ontology.ZfsTermService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
@@ -273,6 +274,10 @@ public class OntologyExecutor {
 			service.processUpdate(entry.getValue());
 			bulkLoadFileHistory.incrementCompleted(countType);
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		ph.finishProcess();
 
@@ -284,6 +289,10 @@ public class OntologyExecutor {
 			service.processUpdateRelationships(entry.getValue());
 			bulkLoadFileHistory.incrementCompleted(countType);
 			ph1.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		ph1.finishProcess();
 
@@ -295,6 +304,10 @@ public class OntologyExecutor {
 			service.processCounts(entry.getValue());
 			bulkLoadFileHistory.incrementCompleted(countType);
 			ph2.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		ph2.finishProcess();
 	}

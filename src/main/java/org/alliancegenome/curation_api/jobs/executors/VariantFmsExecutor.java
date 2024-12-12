@@ -21,6 +21,7 @@ import org.alliancegenome.curation_api.services.validation.dto.fms.VariantFmsDTO
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -124,6 +125,10 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
 			}
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		
 		updateHistory(history);
