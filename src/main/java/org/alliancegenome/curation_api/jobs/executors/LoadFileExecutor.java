@@ -200,12 +200,19 @@ public class LoadFileExecutor {
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, String countType) {
 		return runLoad(service, history, dataProvider, objectList, idsAdded, true, countType);
 	}
-
+	
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType) {
+		String dataType = objectList.get(0).getClass().getSimpleName();
+		dataType = dataType.replace("FmsDTO", "");
+		dataType = dataType.replace("DTO", "");
+		return runLoad(service, history, dataProvider, objectList, idsAdded, terminateFailing, countType, dataType);
+	}
+
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType, String dataType) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(objectList)) {
-			String loadMessage = objectList.get(0).getClass().getSimpleName() + " update";
+			String loadMessage = dataType + " update";
 			if (dataProvider != null) {
 				loadMessage = loadMessage + " for " + dataProvider.name();
 			}

@@ -82,7 +82,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 	private void runLoad(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, Set<Long> idsAdded, BackendBulkDataProvider dataProvider) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("Phenotype annotation DTO Update for " + dataProvider.name(), annotations.size());
+		ph.startProcess("PhenotypeAnnotation update for " + dataProvider.name(), annotations.size());
 
 		loadPrimaryAnnotations(history, annotations, idsAdded, dataProvider, ph);
 		loadSecondaryAnnotations(history, annotations, idsAdded, dataProvider, ph);
