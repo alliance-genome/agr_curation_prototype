@@ -295,6 +295,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_21_no_data_provider_cross_reference_page_area.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_22_no_gene_secondary_id_secondary_id.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_23_no_gene_type.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_24_no_note_type_name.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_25_no_free_text.json");
 	}
 	
 	@Test
@@ -321,6 +323,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_19_empty_data_provider_cross_reference_page_area.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_20_empty_gene_secondary_id_secondary_id.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_21_empty_gene_type.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_22_empty_note_type_name.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_23_empty_free_text.json");
 	}
 	
 	@Test
@@ -346,6 +350,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_18_invalid_data_provider_cross_reference_page_area.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_19_invalid_gene_secondary_id_evidence.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_20_invalid_gene_type.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_21_invalid_note_type_name.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_22_invalid_evidence_curies.json");
 	}
 	
 	@Test
