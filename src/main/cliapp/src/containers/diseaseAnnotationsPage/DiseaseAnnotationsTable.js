@@ -172,14 +172,12 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const handleConditionRelationsOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
 		let _conditionRelationsData = {};
 		_conditionRelationsData['originalConditionRelations'] = rowProps.rowData.conditionRelations;
 		_conditionRelationsData['dialog'] = true;
 		_conditionRelationsData['isInEdit'] = isInEdit;
-		_conditionRelationsData['rowIndex'] = index;
+		_conditionRelationsData['rowIndex'] = rowIndex;
 		_conditionRelationsData['mainRowProps'] = rowProps;
 		setConditionRelationsData(() => ({
 			..._conditionRelationsData,
