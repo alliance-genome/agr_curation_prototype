@@ -2,23 +2,20 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
 
+import jakarta.persistence.*;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -54,5 +51,14 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@OneToMany(mappedBy = "constructGenomicEntityAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
+
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "synonyms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelView.class  })
+	@ElementCollection
+	@JoinTable(indexes = @Index(columnList = "affectedgenomicmodel_id"))
+	@Column(columnDefinition = "TEXT")
+	private List<String> synonyms;
 
 }

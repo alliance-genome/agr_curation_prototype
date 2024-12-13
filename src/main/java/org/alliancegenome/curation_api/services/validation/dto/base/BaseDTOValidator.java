@@ -175,7 +175,7 @@ public class BaseDTOValidator {
 
 	public <E extends GenomicEntity, D extends GenomicEntityDTO> ObjectResponse<E> validateGenomicEntityDTO(E entity, D dto, BackendBulkDataProvider dataProvider) {
 
-		ObjectResponse<E> geResponse = new ObjectResponse<E>();
+		ObjectResponse<E> geResponse = new ObjectResponse<>();
 
 		ObjectResponse<E> beResponse = validateBiologicalEntityDTO(entity, dto, dataProvider);
 		geResponse.addErrorMessages(beResponse.getErrorMessages());

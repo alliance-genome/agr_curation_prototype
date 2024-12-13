@@ -13,6 +13,7 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
 import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
+import {StringListTemplate} from "../../components/Templates/StringListTemplate";
 
 export const AffectedGenomicModelTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -52,6 +53,13 @@ export const AffectedGenomicModelTable = () => {
 			body: (rowData) => <StringTemplate string={rowData.name} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
+		},
+		{
+			field: 'synonyms',
+			header: 'Synonyms',
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
+			body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
 		},
 		{
 			field: 'subtype.name',
