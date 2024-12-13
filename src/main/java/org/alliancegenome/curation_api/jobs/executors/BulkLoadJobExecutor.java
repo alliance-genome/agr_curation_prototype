@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_ASSOCIATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_DISEASE_ANNOTATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_ASSOCIATION;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
+import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmStrAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSExecutor;
@@ -49,6 +51,7 @@ public class BulkLoadJobExecutor {
 	@Inject VariantExecutor variantExecutor;
 	@Inject AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
 	@Inject ConstructGenomicEntityAssociationExecutor constructGenomicEntityAssociationExecutor;
+	@Inject AgmStrAssociationExecutor agmStrAssociationExecutor;
 	@Inject PhenotypeAnnotationExecutor phenotypeAnnotationExecutor;
 	@Inject GeneMolecularInteractionExecutor geneMolecularInteractionExecutor;
 	@Inject GeneGeneticInteractionExecutor geneGeneticInteractionExecutor;
@@ -111,6 +114,9 @@ public class BulkLoadJobExecutor {
 			}
 			if (loadType == CONSTRUCT_ASSOCIATION || loadType == FULL_INGEST) {
 				constructGenomicEntityAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
+			if (loadType == AGM_ASSOCIATION || loadType == FULL_INGEST) {
+				agmStrAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {

@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.associations.agmAssociations.AgmSequenceTargetingReagentAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.agmSlotAnnotations.AgmSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
@@ -67,5 +68,19 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@JoinTable(indexes = @Index(columnList = "affectedgenomicmodel_id"))
 	@Column(columnDefinition = "TEXT")
 	private List<String> synonyms;
+
+	//todo: should there be some agm views?
+	//todo: fix these fields to mathc STR fields
+	@IndexedEmbedded(
+		includePaths = {
+			"agmStrAssociationObject.curie", "agmStrAssociationObject.geneSymbol.displayText", "agmStrAssociationObject.geneSymbol.formatText", "agmStrAssociationObject.geneFullName.displayText",
+			"agmStrAssociationObject.geneFullName.formatText", "agmStrAssociationObject.curie_keyword", "agmStrAssociationObject.geneSymbol.displayText_keyword",
+			"agmStrAssociationObject.geneSymbol.formatText_keyword", "agmStrAssociationObject.geneFullName.displayText_keyword", "agmStrAssociationObject.geneFullName.formatText_keyword",
+			"agmStrAssociationObject.modEntityId", "agmStrAssociationObject.modInternalId", "agmStrAssociationObject.modEntityId_keyword", "agmStrAssociationObject.modInternalId_keyword"
+		}
+	)
+	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
+	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 
 }
