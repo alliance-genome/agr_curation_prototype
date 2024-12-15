@@ -24,6 +24,7 @@ public class GeneXrefHelper {
 	@Inject GeneDAO geneDAO;
 	
 	ResourceDescriptorPage ncbiGeneOtherExpressionPage;
+	ResourceDescriptorPage ncbiGeneBiogridPage;
 	Map<String, ResourceDescriptorPage> expressionAtlasPageMap = new HashMap<>();
 	
 	@Transactional
@@ -56,7 +57,35 @@ public class GeneXrefHelper {
 		return geneDAO.persist(gene);
 	}
 
-
+	@Transactional
+	public Gene addBiogridCrossReference(Gene gene, String entrezCurie) {
+	
+		CrossReference xref = new CrossReference();
+		
+		if (ncbiGeneBiogridPage == null) {
+			ncbiGeneBiogridPage = rdpService.getPageForResourceDescriptor("NCBI_Gene", "biogrid/orcs");
+			if (ncbiGeneBiogridPage == null) {
+				return null;
+			}
+		}
+		xref.setDisplayName("BioGRID CRISPR Screen Cell Line Phenotypes");
+		xref.setReferencedCurie(entrezCurie);
+		xref.setResourceDescriptorPage(ncbiGeneBiogridPage);
+		
+		List<CrossReference> updatedXrefs = xrefService.getUpdatedXrefList(List.of(xref), gene.getCrossReferences(), true);
+		
+		if (gene.getCrossReferences() != null) {
+			gene.getCrossReferences().clear();
+		}
+		if (updatedXrefs != null) {
+			if (gene.getCrossReferences() == null) {
+				gene.setCrossReferences(new ArrayList<>());
+			}
+			gene.getCrossReferences().addAll(updatedXrefs);
+		}
+		
+		return geneDAO.persist(gene);
+	}
 	
 	@Transactional
 	public Gene addExpressionAtlasXref(Gene gene, String resourceDescriptorPrefix, String referencedCurie) {

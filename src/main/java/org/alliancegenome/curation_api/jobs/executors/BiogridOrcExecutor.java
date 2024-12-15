@@ -2,29 +2,23 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Organization;
-import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.BiogridOrcFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
-import org.alliancegenome.curation_api.services.CrossReferenceService;
-import org.alliancegenome.curation_api.services.DataProviderService;
-import org.alliancegenome.curation_api.services.OrganizationService;
+import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -42,23 +36,7 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class BiogridOrcExecutor extends LoadFileExecutor {
 
-	@Inject
-	ResourceDescriptorPageDAO resourceDescriptorPageDAO;
-
-	@Inject
-	GeneDAO geneDAO;
-
-	@Inject
-	CrossReferenceDAO crossRefDAO;
-
-	@Inject
-	CrossReferenceService crossReferenceService;
-
-	@Inject
-	OrganizationService organizationService;
-
-	@Inject
-	DataProviderService dataProviderService;
+	@Inject GeneService geneService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try (TarArchiveInputStream tarInputStream = new TarArchiveInputStream(
@@ -68,13 +46,7 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 			List<BiogridOrcFmsDTO> biogridData = new ArrayList<>();
 			String name = bulkLoadFileHistory.getBulkLoad().getName();
 			String dataProviderName = name.substring(0, name.indexOf(" "));
-
-			Organization organization = organizationService.getByAbbr(dataProviderName).getEntity();
-
-			HashMap<String, Object> rdpParams = new HashMap<>();
-			rdpParams.put("name", "biogrid/orcs");
-			ResourceDescriptorPage resourceDescriptorPage = resourceDescriptorPageDAO.findByParams(rdpParams)
-					.getSingleResult();
+			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 
 			while ((tarEntry = tarInputStream.getNextEntry()) != null) {
 
@@ -98,7 +70,11 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 				biogridData.addAll(it.readAll());
 
 			}
-			runLoad(bulkLoadFileHistory, biogridData, resourceDescriptorPage, organization, dataProviderService);
+			runLoad(bulkLoadFileHistory, biogridData, dataProvider);
+			
+			bulkLoadFileHistory.finishLoad();
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 
 		} catch (Exception e) {
 			failLoad(bulkLoadFileHistory, e);
@@ -106,87 +82,77 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 		}
 	}
 
-	private boolean runLoad(BulkLoadFileHistory history, List<BiogridOrcFmsDTO> biogridList,
-			ResourceDescriptorPage resourceDescriptorPage, Organization organization,
-			DataProviderService dataProviderService) {
+	private void runLoad(BulkLoadFileHistory history, List<BiogridOrcFmsDTO> biogridList, BackendBulkDataProvider dataProvider) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(biogridList)) {
-			try {
-				String loadMessage = "BioGrid update";
-				Set<String> referencedCuries = populateEntrezIdsFromFiles(biogridList, history);
-				ph.startProcess(loadMessage, referencedCuries.size());
-				updateHistory(history);
-
-				Map<String, Long> genomicEntityCrossRefMap = crossReferenceService
-						.getGenomicEntityCrossRefMap(referencedCuries);
-
-				for (String referencedCurie : referencedCuries) {
-
-					CrossReference newCrossRef = new CrossReference();
-					newCrossRef.setReferencedCurie(referencedCurie);
-					newCrossRef.setDisplayName("BioGRID CRISPR Screen Cell Line Phenotypes");
-					newCrossRef.setResourceDescriptorPage(resourceDescriptorPage);
-
-					CrossReference entity = crossReferenceService
-							.insertBioGridOrcCrossReference(newCrossRef, genomicEntityCrossRefMap.get(referencedCurie))
-							.getEntity();
-
-					if (entity != null) {
-						history.incrementCompleted();
-					} else {
-						history.incrementSkipped();
-					}
-					if (Thread.currentThread().isInterrupted()) {
-						Log.info("Thread Interrupted:");
-						break;
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				history.incrementFailed();
-				ph.progressProcess();
+			Set<String> entrezIds = populateEntrezIdsFromFiles(biogridList);
+			
+			String loadMessage = "BioGRID-ORCS cross-reference update";
+			if (dataProvider != null) {
+				loadMessage = loadMessage + " for " + dataProvider.name();
 			}
+			ph.startProcess(loadMessage, entrezIds.size());
+			
+			history.setCount(entrezIds.size());
+			updateHistory(history);
+			
+			for (String entrezId : entrezIds) {
+				try {
+					geneService.addBiogridXref(entrezId, dataProvider);
+					history.incrementCompleted();
+				} catch (ObjectUpdateException e) {
+					history.incrementFailed();
+					addException(history, e.getData());
+				} catch (KnownIssueValidationException e) {
+					Log.debug(e.getMessage());
+					history.incrementSkipped();
+				} catch (Exception e) {
+					e.printStackTrace();
+					history.incrementFailed();
+					addException(history, new ObjectUpdateExceptionData(entrezId, e.getMessage(), e.getStackTrace()));
+				}
+				if (history.getErrorRate() > 0.25) {
+					Log.error("Failure Rate > 25% aborting load");
+					updateHistory(history);
+					updateExceptions(history);
+					failLoadAboveErrorRateCutoff(history);
+					return;
+				}
+				ph.progressProcess();
+				if (Thread.currentThread().isInterrupted()) {
+					Log.info("Thread Interrupted:");
+					break;
+				}
+			}
+			
 			updateHistory(history);
 			updateExceptions(history);
 			ph.finishProcess();
 			
 		}
-
-		return true;
 	}
 
 	public APIResponse runLoadApi(String dataProviderName, List<BiogridOrcFmsDTO> biogridDTOs) {
-		Organization organization = organizationService.getByAbbr(dataProviderName).getEntity();
-
-		HashMap<String, Object> rdpParams = new HashMap<>();
-		rdpParams.put("name", "biogrid/orcs");
-		ResourceDescriptorPage resourceDescriptorPage = resourceDescriptorPageDAO.findByParams(rdpParams)
-				.getSingleResult();
-
 		BulkLoadFileHistory history = new BulkLoadFileHistory(biogridDTOs.size());
 		history = bulkLoadFileHistoryDAO.persist(history);
-		runLoad(history, biogridDTOs, resourceDescriptorPage, organization, dataProviderService);
+		BackendBulkDataProvider dataProvider = null;
+		if (dataProviderName != null) {
+			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+		}
+		runLoad(history, biogridDTOs, dataProvider);
 		history.finishLoad();
 
 		return new LoadHistoryResponce(history);
 	}
 
-	private Set<String> populateEntrezIdsFromFiles(List<BiogridOrcFmsDTO> biogridList, BulkLoadFileHistory history) {
+	private Set<String> populateEntrezIdsFromFiles(List<BiogridOrcFmsDTO> biogridList) {
 		Set<String> biogridIds = new HashSet<>();
 
 		for (BiogridOrcFmsDTO biogridOrcFmsDTO : biogridList) {
-			try {
-				if (!biogridOrcFmsDTO.getIdentifierType().equals("ENTREZ_GENE")) {
-					history.incrementSkipped();
-					continue;
-				}
-
-				String identifier = "NCBI_Gene:" + biogridOrcFmsDTO.getIdentifierId();
+			if (biogridOrcFmsDTO.getIdentifierType().equals("ENTREZ_GENE")) {
+				String identifier = biogridOrcFmsDTO.getIdentifierId();
 				biogridIds.add(identifier);
-
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 

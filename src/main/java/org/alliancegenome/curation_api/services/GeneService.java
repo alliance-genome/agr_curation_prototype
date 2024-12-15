@@ -135,6 +135,41 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	}
 
 	@Transactional
+	public void addBiogridXref(String entrezId, BackendBulkDataProvider dataProvider) throws ValidationException {
+		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity();
+		if (taxon == null) {
+			throw new ObjectValidationException(entrezId, "dataProvider - canonical taxon: " + ValidationConstants.INVALID_MESSAGE + " (" + dataProvider.canonicalTaxonCurie + " not found)");
+		}
+
+		Gene allianceGene = null;
+		SearchResponse<Gene> searchResponse = findByField("crossReferences.referencedCurie", "NCBI_Gene:" + entrezId);
+		if (searchResponse != null) {
+			// Need to check that returned gene belongs to MOD corresponding to taxon
+			for (Gene searchResult : searchResponse.getResults()) {
+				String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getSourceOrganization().getAbbreviation());
+				if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
+					allianceGene = searchResult;
+					break;
+				}
+				if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getSourceOrganization().getAbbreviation(), "RGD")) {
+					allianceGene = searchResult;
+					break;
+				}
+			}
+		}
+		
+		if (allianceGene == null) {
+			throw new KnownIssueValidationException("crossReferences - referencedCurie: " + ValidationConstants.INVALID_MESSAGE + " (NCBI_Gene:" + entrezId + ")");
+		}
+		
+		allianceGene = geneXrefHelper.addBiogridCrossReference(allianceGene, "NCBI_Gene:" + entrezId);
+		
+		if (allianceGene == null) {
+			throw new ObjectValidationException(entrezId, "resourceDescriptorPage: " + ValidationConstants.INVALID_MESSAGE + " (NCBI_Gene:biogrid/orcs)");
+		}
+	}
+
+	@Transactional
 	public void addGeoXref(String entrezId, BackendBulkDataProvider dataProvider) throws ValidationException {
 		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity();
 		if (taxon == null) {
