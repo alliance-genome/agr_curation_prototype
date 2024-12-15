@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotation;
@@ -22,6 +24,8 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAn
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
@@ -48,6 +52,8 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	@Inject GeneSecondaryIdSlotAnnotationDTOValidator geneSecondaryIdDtoValidator;
 	@Inject SlotAnnotationIdentityHelper identityHelper;
 	@Inject SoTermService soTermService;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject NoteDTOValidator noteDtoValidator;
 
 	private ObjectResponse<Gene> geneResponse;
 
@@ -72,6 +78,14 @@ public class GeneDTOValidator extends BaseDTOValidator {
 
 		gene.setModEntityId(dto.getModEntityId());
 		gene.setModInternalId(handleStringField(dto.getModInternalId()));
+
+		List<Note> relatedNotes = validateRelatedNotes(gene, dto);
+		if (relatedNotes != null) {
+			if (gene.getRelatedNotes() == null) {
+				gene.setRelatedNotes(new ArrayList<>());
+			}
+			gene.getRelatedNotes().addAll(relatedNotes);
+		}
 
 		ObjectResponse<Gene> geResponse = validateGenomicEntityDTO(gene, dto, dataProvider);
 		geneResponse.addErrorMessages(geResponse.getErrorMessages());
@@ -266,5 +280,43 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		}
 
 		return validatedSecondaryIds;
+	}
+
+	private List<Note> validateRelatedNotes(Gene gene, GeneDTO dto) {
+		String field = "relatedNotes";
+
+		if (gene.getRelatedNotes() != null) {
+			gene.getRelatedNotes().clear();
+		}
+
+		List<Note> validatedNotes = new ArrayList<Note>();
+		List<String> noteIdentities = new ArrayList<String>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
+			for (int ix = 0; ix < dto.getNoteDtos().size(); ix++) {
+				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDtos().get(ix), VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET);
+				if (noteResponse.hasErrors()) {
+					allValid = false;
+					geneResponse.addErrorMessages(field, ix, noteResponse.getErrorMessages());
+				} else {
+					String noteIdentity = NoteIdentityHelper.noteDtoIdentity(dto.getNoteDtos().get(ix));
+					if (!noteIdentities.contains(noteIdentity)) {
+						noteIdentities.add(noteIdentity);
+						validatedNotes.add(noteResponse.getEntity());
+					}
+				}
+			}
+		}
+
+		if (!allValid) {
+			geneResponse.convertMapToErrorMessages(field);
+			return null;
+		}
+
+		if (CollectionUtils.isEmpty(validatedNotes)) {
+			return null;
+		}
+
+		return validatedNotes;
 	}
 }
