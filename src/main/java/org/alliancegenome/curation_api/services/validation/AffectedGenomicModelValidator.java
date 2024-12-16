@@ -69,6 +69,8 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator<Affect
 
 		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {
 			dbEntity.setSynonyms(uiEntity.getSynonyms());
+		} else {
+			dbEntity.setSynonyms(null);
 		}
 
 		if (response.hasErrors()) {
