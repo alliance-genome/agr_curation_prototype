@@ -782,6 +782,7 @@ When loading data, whether it be via direct DQM submissions, FMS loads, or URL l
    * HTP Dataset Sample Annotation
    * Molecule
    * Sequence Targeting Reagent (dependent on: Gene)
+   * Variant
 2. Association loads
    * Allele Association (dependent on: Allele, Gene)
    * Construct Association (dependent on: AGM, Allele, Construct, Gene)
