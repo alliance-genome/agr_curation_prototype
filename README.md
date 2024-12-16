@@ -36,6 +36,7 @@ These instructions will get you a copy of the project and the API up and running
    *  [Database](#database)
 -  [Loading Data](#loading-data)
 -  [Submitting Data](#submitting-data)
+   *  [Load Order Dependencies](#load-order-dependencies)
 -  [Querying Data](#querying-data)
    *  [Elastic Search](#search)
    *  [Database Search](#find)
@@ -592,9 +593,8 @@ the new version of the application can function in a consistent state upon and a
 2. Reindex all data types by calling the `system/reindexeverything` endpoint with default arguments (found in the
    System Endpoints section in the swagger UI) and follow-up through the log server to check for progress and errors.
 3. Once reindexing completed, look at the dashboard page (where you deployed to)
-    and ensure that for each Entity and Ontology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
-    investigate what caused this and fix the issue first before continuing the deployment.
-4. If code to support new ontologies was added, create the respective new data loads through the Data loads page and load the new file.
+    and ensure that for each Entity and Ontology, the number in the `Database * count`  column matches the number in the `Search index * count` for all indexed datatypes. If there is a mismatch for any row, investigate what caused this and fix the issue first before continuing the deployment.
+4. If code to support new ontologies or datatypes was added, create the respective new data loads through the Data loads page (if not already done so via a database migration) and load the new files.  Attention should be paid to any [load order dependencies](#load-order-dependencies)
 5. After completing all above steps successfully, return to the code promoting section to complete the last step(s) ([alpha to beta](#promoting-code-from-alpha-to-beta) or [beta to production](#promoting-code-from-beta-to-production))
 
 
@@ -715,7 +715,7 @@ curl \
    -F "LoadType_SubType=@/full/path/to/file2.json"
 ```
 
-Valid values for LoadType, and SubType can be found in the examples below.
+Valid values for LoadType, and SubType can be found in the examples below.  Attention should be paid to any [load order dependencies](#load-order-dependencies).
 
 ### Curation System
 
@@ -768,6 +768,43 @@ The LinkML version for which the file is being submitted now needs to be added t
   "linkml_version" : "v1.3.2",
   "disease_agm_ingest_set" : [ {
 ```
+
+### Load Order Dependencies
+
+When loading data, whether it be via direct DQM submissions, FMS loads, or URL loads, there are a number of load order dependencies to take notice of.  The current list of loads and their dependencies (as of 16/12/2024) is given below.  As a general rule, entity loads should be run first.  Most loads will not remove the results of previous loads - the exception to this is the Gene load.  Running the Gene load will result of the removal of cross-references attached to the genes via the BioGrid-ORCS, ExpressionAtlas, and GEO CrossReference loads.  As such it is essential that these loads are rerun after a gene load.
+
+1. Entity loads
+   * AGM
+   * Allele
+   * Construct
+   * Gene
+   * HTP Dataset Annotation
+   * HTP Dataset Sample Annotation
+   * Molecule
+   * Sequence Targeting Reagent (dependent on: Gene)
+2. Association loads
+   * Allele Association (dependent on: Allele, Gene)
+   * Construct Association (dependent on: AGM, Allele, Construct, Gene)
+   * Disease Annotation (dependent on: AGM, Allele, Gene)
+   * Expression (dependent on: Gene)
+   * GAF (dependent on: Gene)
+   * Interaction (dependent on: Gene)
+   * Phenotype Annotation (dependent on: AGM, Allele, Gene)
+3. CrossReference loads (all need to be rerun after Gene loads)
+   * BioGrid-ORCS (dependent on: Gene)
+   * ExpressionAtlas (dependent on: Gene)
+   * GEO CrossReference (dependent on: Gene)
+4. GFF loads
+   * GFF Gene (dependent on: Gene)
+   * GFF Transcript (dependent on: Gene)
+   * GFF CDS (dependent on: GFF Transcript)
+   * GFF Exon (dependent on: GFF Transcript)
+5. Orthology loads
+   * Orthology (dependent on: Gene)
+   * Paralogy (dependent on: Gene)
+6. VEP loads
+   * VEP Transcript (dependent on: Variant, GFF Transcript)
+   * VEP Gene (dependent on: VEP Transcript)
 
 ## Querying Data
 
