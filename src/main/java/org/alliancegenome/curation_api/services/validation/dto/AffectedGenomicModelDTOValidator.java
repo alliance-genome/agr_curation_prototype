@@ -63,7 +63,6 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 				.filter(synonym -> !dto.getSynonyms().contains(synonym))
 				.toList();
 			existingSynonyms.removeIf(toBeRemoved::contains);
-			////toBeRemoved.forEach(synonym -> synonymDAO.remove(synonym.getId()));
 			// add missing synonyms
 			final List<String> synonymStrings = existingSynonyms;
 			List<String> toBeAdded = dto.getSynonyms().stream()
