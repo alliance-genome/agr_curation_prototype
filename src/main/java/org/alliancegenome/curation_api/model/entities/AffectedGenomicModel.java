@@ -1,13 +1,20 @@
 package org.alliancegenome.curation_api.model.entities;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+=======
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+>>>>>>> 6f1b7db1e (SCRUM-4647 add secondaryId to AGM model and load)
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.agmSlotAnnotations.AgmSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -22,7 +29,7 @@ import java.util.List;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"agmDiseaseAnnotations", "constructGenomicEntityAssociations"}, callSuper = true)
+@ToString(exclude = { "agmDiseaseAnnotations", "constructGenomicEntityAssociations", "agmSecondaryIds" }, callSuper = true)
 @Schema(name = "AffectedGenomicModel", description = "POJO that represents the AGM")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntity.class}, partial = true)
 public class AffectedGenomicModel extends GenomicEntity {
@@ -39,6 +46,13 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private VocabularyTerm subtype;
+
+	@IndexedEmbedded(includePaths = { "secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})
+	@OneToMany(mappedBy = "singleAgm", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelView.class })
+	private List<AgmSecondaryIdSlotAnnotation> agmSecondaryIds;
+
 
 	@IndexedEmbedded(includePaths = {
 		"constructAssociationSubject.curie", "constructAssociationSubject.constructSymbol.displayText", "constructAssociationSubject.constructSymbol.formatText",

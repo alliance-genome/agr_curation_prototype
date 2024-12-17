@@ -6,7 +6,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.view.View;
+
+import java.util.List;
 
 import java.util.List;
 
@@ -24,5 +27,9 @@ public class AffectedGenomicModelDTO extends GenomicEntityDTO {
 	@JsonView({View.FieldsAndLists.class})
 	@JsonProperty("synonyms")
 	private List<String> synonyms;
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("agm_secondary_id_dtos")
+	private List<SecondaryIdSlotAnnotationDTO> agmSecondaryIdDtos;
+
 
 }
