@@ -71,6 +71,8 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 				.toList();
 			existingSynonyms.addAll(toBeAdded);
 			agm.setSynonyms(existingSynonyms);
+		} else {
+			agm.setSynonyms(null);
 		}
 
 		ObjectResponse<AffectedGenomicModel> geResponse = validateGenomicEntityDTO(agm, dto, dataProvider);
