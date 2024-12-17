@@ -49,14 +49,14 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 	@Transactional
 	public ObjectResponse<AffectedGenomicModel> update(AffectedGenomicModel uiEntity) {
 		AffectedGenomicModel dbEntity = agmDAO.persist(agmValidator.validateAffectedGenomicModelUpdate(uiEntity));
-		return new ObjectResponse<AffectedGenomicModel>(dbEntity);
+		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Override
 	@Transactional
 	public ObjectResponse<AffectedGenomicModel> create(AffectedGenomicModel uiEntity) {
 		AffectedGenomicModel dbEntity = agmDAO.persist(agmValidator.validateAffectedGenomicModelCreate(uiEntity));
-		return new ObjectResponse<AffectedGenomicModel>(dbEntity);
+		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Transactional

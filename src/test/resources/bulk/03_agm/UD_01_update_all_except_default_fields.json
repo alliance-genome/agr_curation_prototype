@@ -18,6 +18,9 @@
         "display_name": "TEST2:0001",
         "prefix": "TEST2"
       }
-    }
+    },
+    "synonyms" : [
+      "Syn 1","Syn 2"
+    ]
   }
 ]

@@ -1,8 +1,11 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -13,18 +16,23 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequestScoped
 public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 
-	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
-	@Inject VocabularyTermService vocabularyTermService;
+	@Inject
+	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject
+	VocabularyTermService vocabularyTermService;
+	@Inject
+	SynonymDAO synonymDAO;
 
-	private ObjectResponse<AffectedGenomicModel> agmResponse = new ObjectResponse<AffectedGenomicModel>();
+	private final ObjectResponse<AffectedGenomicModel> agmResponse = new ObjectResponse<>();
 
 	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 
@@ -45,11 +53,29 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 		agm.setModEntityId(dto.getModEntityId());
 		agm.setModInternalId(handleStringField(dto.getModInternalId()));
 		agm.setName(handleStringField(dto.getName()));
+		if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
+			List<String> existingSynonyms = agm.getSynonyms();
+			if (CollectionUtils.isEmpty(existingSynonyms)) {
+				existingSynonyms = new ArrayList<>();
+			}
+			// remove synonyms that are no longer in the submitted file
+			List<String> toBeRemoved = existingSynonyms.stream()
+				.filter(synonym -> !dto.getSynonyms().contains(synonym))
+				.toList();
+			existingSynonyms.removeIf(toBeRemoved::contains);
+			// add missing synonyms
+			final List<String> synonymStrings = existingSynonyms;
+			List<String> toBeAdded = dto.getSynonyms().stream()
+				.filter(synonym -> !synonymStrings.contains(synonym))
+				.toList();
+			existingSynonyms.addAll(toBeAdded);
+			agm.setSynonyms(existingSynonyms);
+		} else {
+			agm.setSynonyms(null);
+		}
 
 		ObjectResponse<AffectedGenomicModel> geResponse = validateGenomicEntityDTO(agm, dto, dataProvider);
 		agmResponse.addErrorMessages(geResponse.getErrorMessages());
-
-		agm = geResponse.getEntity();
 
 		VocabularyTerm subtype = null;
 		if (StringUtils.isBlank(dto.getSubtypeName())) {

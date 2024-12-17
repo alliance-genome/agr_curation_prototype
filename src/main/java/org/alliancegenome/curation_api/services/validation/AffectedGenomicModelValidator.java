@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services.validation;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
@@ -9,16 +11,17 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
-
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import org.apache.commons.collections4.CollectionUtils;
 
 @RequestScoped
 public class AffectedGenomicModelValidator extends GenomicEntityValidator<AffectedGenomicModel> {
 
-	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
-	@Inject VocabularyTermService vocabularyTermService;
-	@Inject CrossReferenceDAO crossReferenceDAO;
+	@Inject
+	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject
+	VocabularyTermService vocabularyTermService;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
 
 	private String errorMessage;
 
@@ -56,13 +59,19 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator<Affect
 
 	private AffectedGenomicModel validateAffectedGenomicModel(AffectedGenomicModel uiEntity, AffectedGenomicModel dbEntity) {
 
-		dbEntity = (AffectedGenomicModel) validateGenomicEntityFields(uiEntity, dbEntity);
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity);
 
 		String name = handleStringField(uiEntity.getName());
 		dbEntity.setName(name);
 
 		VocabularyTerm subtype = validateSubtype(uiEntity, dbEntity);
 		dbEntity.setSubtype(subtype);
+
+		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {
+			dbEntity.setSynonyms(uiEntity.getSynonyms());
+		} else {
+			dbEntity.setSynonyms(null);
+		}
 
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
