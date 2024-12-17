@@ -158,6 +158,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
+			body("entity", not(hasKey("synonyms"))).
 			body("entity", not(hasKey("dateUpdated")));
 	}
 
@@ -177,6 +178,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
+			body("entity", not(hasKey("synonyms"))).
 			body("entity", not(hasKey("dateUpdated")));
 	}
 
