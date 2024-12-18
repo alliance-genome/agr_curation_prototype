@@ -5,9 +5,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.agmSlotAnnotations.AgmSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +37,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 
 	private String dataProvider = "WB";
 	private String dataProviderRGD = "RGD";
+	private String requiredReference = "AGRKB:000000001";
 
 	@BeforeEach
 	public void init() {
@@ -68,6 +72,9 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
 			body("entity.updatedBy.uniqueId", is("AGMTEST:Person0002")).
 			body("entity.synonyms", is(List.of("Syn 1", "Syn 2"))).
+			body("entity.agmSecondaryIds[0].secondaryId", is("TEST:Secondary")).
+			body("entity.agmSecondaryIds[0].internal", is(true)).
+			body("entity.agmSecondaryIds[0].obsolete", is(true)).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
@@ -159,6 +166,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("synonyms"))).
+			body("entity", not(hasKey("agmSecondaryIds"))).
 			body("entity", not(hasKey("dateUpdated")));
 	}
 
@@ -179,6 +187,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("synonyms"))).
+			body("entity", not(hasKey("agmSecondaryIds"))).
 			body("entity", not(hasKey("dateUpdated")));
 	}
 

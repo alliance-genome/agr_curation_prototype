@@ -37,6 +37,7 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 	VocabularyTermService vocabularyTermService;
 	@Inject
 	SynonymDAO synonymDAO;
+	@Inject
 	SlotAnnotationIdentityHelper identityHelper;
 	@Inject
 	AgmSecondaryIdSlotAnnotationDTOValidator agmSecondaryIdDtoValidator;
