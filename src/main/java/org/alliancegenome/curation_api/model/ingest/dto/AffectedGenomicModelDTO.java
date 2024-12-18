@@ -11,8 +11,6 @@ import org.alliancegenome.curation_api.view.View;
 
 import java.util.List;
 
-import java.util.List;
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntityDTO.class}, submitted = true)
@@ -27,7 +25,7 @@ public class AffectedGenomicModelDTO extends GenomicEntityDTO {
 	@JsonView({View.FieldsAndLists.class})
 	@JsonProperty("synonyms")
 	private List<String> synonyms;
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({View.FieldsAndLists.class})
 	@JsonProperty("agm_secondary_id_dtos")
 	private List<SecondaryIdSlotAnnotationDTO> agmSecondaryIdDtos;
 

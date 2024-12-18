@@ -1,30 +1,18 @@
 package org.alliancegenome.curation_api;
 
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.alliancegenome.curation_api.base.BaseITCase;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.agmSlotAnnotations.AgmSecondaryIdSlotAnnotation;
-import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
-
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.junit.jupiter.api.*;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
 
 
 @QuarkusIntegrationTest
@@ -42,9 +30,9 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	@BeforeEach
 	public void init() {
 		RestAssured.config = RestAssuredConfig.config()
-				.httpClient(HttpClientConfig.httpClientConfig()
-					.setParam("http.socket.timeout", 60000)
-					.setParam("http.connection.timeout", 60000));
+			.httpClient(HttpClientConfig.httpClientConfig()
+				.setParam("http.socket.timeout", 60000)
+				.setParam("http.connection.timeout", 60000));
 	}
 
 	private final String agmBulkPostEndpoint = "/api/agm/bulk/WB/agms";
