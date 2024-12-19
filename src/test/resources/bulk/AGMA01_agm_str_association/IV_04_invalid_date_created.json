@@ -1,0 +1,13 @@
+[
+  {
+    "agm_subject_identifier": "AGMTEST:Agm0001",
+    "relation_name": "contains",
+    "sequence_targeting_reagent_identifier": "ZFIN:ZDB-TALEN-180503-1",
+    "internal": true,
+    "obsolete": true,
+    "created_by_curie": "AGMTEST:Person0001",
+    "updated_by_curie": "AGMTEST:Person0002",
+    "date_created": "Invalid",
+    "date_updated": "2022-03-10T22:10:12+00:00"
+  }
+]

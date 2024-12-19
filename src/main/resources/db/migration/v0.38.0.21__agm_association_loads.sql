@@ -45,7 +45,40 @@ ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT ag
 INSERT INTO bulkloadgroup (id, name) VALUES (nextval('bulkloadgroup_seq'), 'AGM Association Loads');
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'ZFIN AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'FB AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'MGI AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'RGD AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'WB AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'HUMAN AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'SGD AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'XBXL AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'XBXT AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+
 INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive)
 	SELECT id, '0 0 22 ? * SUN-THU', false FROM bulkload WHERE backendbulkloadtype = 'AGM_ASSOCIATION';
 INSERT INTO bulkmanualload (id, dataprovider)
 	SELECT id, 'ZFIN' FROM bulkload WHERE name = 'ZFIN AGM Association Load';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'FB' FROM bulkload WHERE name = 'FB AGM Association Load';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'MGI' FROM bulkload WHERE name = 'MGI AGM Association Load';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'RGD' FROM bulkload WHERE name = 'RGD AGM Association Load';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'WB' FROM bulkload WHERE name = 'WB AGM Association Load';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'HUMAN' FROM bulkload WHERE name = 'HUMAN AGM Association Load';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'SGD' FROM bulkload WHERE name = 'SGD AGM Association Load';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'XBXL' FROM bulkload WHERE name = 'XBXL AGM Association Load';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'XBXT' FROM bulkload WHERE name = 'XBXT AGM Association Load';
