@@ -102,15 +102,6 @@ public class AgmStrAssociationService extends BaseAssociationDTOCrudService<AgmS
 			return association;
 		}
 
-		Long noteId = null;
-		if (association.getRelatedNote() != null) {
-			noteId = association.getRelatedNote().getId();
-		}
-		agmStrAssociationDAO.remove(association.getId());
-		if (noteId != null) {
-			noteDAO.remove(noteId);
-		}
-
 		return null;
 	}
 
@@ -152,7 +143,7 @@ public class AgmStrAssociationService extends BaseAssociationDTOCrudService<AgmS
 	}
 
 	private void addAssociationToStr(AgmSequenceTargetingReagentAssociation association) {
-		SequenceTargetingReagent str = association.getAgmStrAssociationObject();
+		SequenceTargetingReagent str = association.getAgmSequenceTargetingReagentAssociationObject();
 		List<AgmSequenceTargetingReagentAssociation> currentAssociations = str.getAgmSequenceTargetingReagentAssociations();
 		if (currentAssociations == null) {
 			currentAssociations = new ArrayList<>();

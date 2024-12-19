@@ -36,22 +36,22 @@ public class AgmSequenceTargetingReagentAssociationDTOValidator {
 		ObjectResponse<AgmSequenceTargetingReagentAssociation> asaResponse = new ObjectResponse<AgmSequenceTargetingReagentAssociation>();
 
 		List<Long> subjectIds = null;
-		if (StringUtils.isBlank(dto.getAgmIdentifier())) {
+		if (StringUtils.isBlank(dto.getAgmSubjectIdentifier())) {
 			asaResponse.addErrorMessage("agm_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			subjectIds = agmService.findIdsByIdentifierString(dto.getAgmIdentifier());
+			subjectIds = agmService.findIdsByIdentifierString(dto.getAgmSubjectIdentifier());
 			if (subjectIds == null || subjectIds.size() != 1) {
-				asaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmIdentifier() + ")");
+				asaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
 			}
 		}
 
 		List<Long> objectIds = null;
-		if (StringUtils.isBlank(dto.getStrIdentifier())) {
+		if (StringUtils.isBlank(dto.getSequenceTargetingReagentIdentifier())) {
 			asaResponse.addErrorMessage("str_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			objectIds = strService.findIdsByIdentifierString(dto.getStrIdentifier());
+			objectIds = strService.findIdsByIdentifierString(dto.getSequenceTargetingReagentIdentifier());
 			if (objectIds == null || objectIds.size() != 1) {
-				asaResponse.addErrorMessage("str_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getStrIdentifier() + ")");
+				asaResponse.addErrorMessage("str_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSequenceTargetingReagentIdentifier() + ")");
 			}
 		}
 
@@ -61,7 +61,7 @@ public class AgmSequenceTargetingReagentAssociationDTOValidator {
 
 			params.put("agmAssociationSubject.id", subjectIds.get(0));
 			params.put("relation.name", dto.getRelationName());
-			params.put("agmStrAssociationObject.id", objectIds.get(0));
+			params.put("agmSequenceTargetingReagentAssociationObject.id", objectIds.get(0));
 
 			SearchResponse<AgmSequenceTargetingReagentAssociation> searchResponse = agmStrAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
@@ -84,27 +84,27 @@ public class AgmSequenceTargetingReagentAssociationDTOValidator {
 		}
 		association.setRelation(relation);
 
-		if (association.getAgmAssociationSubject() == null && !StringUtils.isBlank(dto.getAgmIdentifier())) {
+		if (association.getAgmAssociationSubject() == null && !StringUtils.isBlank(dto.getAgmSubjectIdentifier())) {
 
-			AffectedGenomicModel subject = agmService.findByIdentifierString(dto.getAgmIdentifier());
+			AffectedGenomicModel subject = agmService.findByIdentifierString(dto.getAgmSubjectIdentifier());
 			if (subject == null) {
-				asaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmIdentifier() + ")");
+				asaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
 			} else if (beDataProvider != null && !subject.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				asaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmIdentifier() + ")");
+				asaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
 			} else {
 				association.setAgmAssociationSubject(subject);
 			}
 		}
 
-		if (association.getAgmStrAssociationObject() == null && !StringUtils.isBlank(dto.getStrIdentifier())) {
+		if (association.getAgmSequenceTargetingReagentAssociationObject() == null && !StringUtils.isBlank(dto.getSequenceTargetingReagentIdentifier())) {
 
-			SequenceTargetingReagent object = strService.findByIdentifierString(dto.getStrIdentifier());
+			SequenceTargetingReagent object = strService.findByIdentifierString(dto.getSequenceTargetingReagentIdentifier());
 			if (object == null) {
-				asaResponse.addErrorMessage("str_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getStrIdentifier() + ")");
+				asaResponse.addErrorMessage("str_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSequenceTargetingReagentIdentifier() + ")");
 			} else if (beDataProvider != null && !object.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				asaResponse.addErrorMessage("str_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getStrIdentifier() + ")");
+				asaResponse.addErrorMessage("str_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getSequenceTargetingReagentIdentifier() + ")");
 			} else {
-				association.setAgmStrAssociationObject(object);
+				association.setAgmSequenceTargetingReagentAssociationObject(object);
 			}
 		}
 

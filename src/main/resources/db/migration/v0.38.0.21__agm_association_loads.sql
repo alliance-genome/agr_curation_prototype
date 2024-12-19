@@ -1,0 +1,51 @@
+CREATE TABLE public.agmsequencetargetingreagentassociation (
+    id bigint NOT NULL,
+    datecreated timestamp(6) with time zone,
+    dateupdated timestamp(6) with time zone,
+    dbdatecreated timestamp(6) with time zone,
+    dbdateupdated timestamp(6) with time zone,
+    internal boolean DEFAULT false NOT NULL,
+    obsolete boolean DEFAULT false NOT NULL,
+    createdby_id bigint,
+    updatedby_id bigint,
+    agmassociationsubject_id bigint,
+    agmsequencetargetingreagentassociationobject_id bigint,
+    relation_id bigint
+);
+
+CREATE SEQUENCE public.agmsequencetargetingreagentassociation_seq
+    START WITH 1
+    INCREMENT BY 50
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_pkey PRIMARY KEY (id);
+
+
+CREATE INDEX agmsequencetargetingreagentassociation_agmassociationsubject_in ON public.agmsequencetargetingreagentassociation USING btree (agmassociationsubject_id);
+CREATE INDEX agmsequencetargetingreagentassociation_agmsequencetargetingreag ON public.agmsequencetargetingreagentassociation USING btree (agmsequencetargetingreagentassociationobject_id);
+CREATE INDEX agmsequencetargetingreagentassociation_createdby_index ON public.agmsequencetargetingreagentassociation USING btree (createdby_id);
+CREATE INDEX agmsequencetargetingreagentassociation_internal_index ON public.agmsequencetargetingreagentassociation USING btree (internal);
+CREATE INDEX agmsequencetargetingreagentassociation_obsolete_index ON public.agmsequencetargetingreagentassociation USING btree (obsolete);
+CREATE INDEX agmsequencetargetingreagentassociation_relation_index ON public.agmsequencetargetingreagentassociation USING btree (relation_id);
+CREATE INDEX agmsequencetargetingreagentassociation_updatedby_index ON public.agmsequencetargetingreagentassociation USING btree (updatedby_id);
+
+ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_agmassociationsubject_id FOREIGN KEY (agmassociationsubject_id) REFERENCES public.affectedgenomicmodel(id);
+ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_relation_id FOREIGN KEY (relation_id) REFERENCES public.vocabularyterm(id);
+ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_updatedby_id FOREIGN KEY (updatedby_id) REFERENCES public.person(id);
+ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_agmsequencetargetingreagentassociationobject_id FOREIGN KEY (agmsequencetargetingreagentassociationobject_id) REFERENCES public.sequencetargetingreagent(id);
+ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_createdby_id FOREIGN KEY (createdby_id) REFERENCES public.person(id);
+
+
+--create loads
+
+INSERT INTO bulkloadgroup (id, name) VALUES (nextval('bulkloadgroup_seq'), 'AGM Association Loads');
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'ZFIN AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive)
+	SELECT id, '0 0 22 ? * SUN-THU', false FROM bulkload WHERE backendbulkloadtype = 'AGM_ASSOCIATION';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'ZFIN' FROM bulkload WHERE name = 'ZFIN AGM Association Load';

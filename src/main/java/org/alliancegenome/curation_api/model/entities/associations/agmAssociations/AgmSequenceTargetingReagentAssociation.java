@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities.associations.agmAssociati
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Association;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
@@ -27,7 +29,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AgmGenomicEntityAssociation.class })
+@AGRCurationSchemaVersion(min = "2.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Association.class })
 @Schema(name = "AgmSequenceTargetingReagentAssociation", description = "POJO representing an association between an AGM and a STR")
 
 @Table(indexes = {
@@ -35,32 +37,32 @@ import lombok.ToString;
 	@Index(name = "AgmSequenceTargetingReagentAssociation_obsolete_index", columnList = "obsolete"),
 	@Index(name = "AgmSequenceTargetingReagentAssociation_createdBy_index", columnList = "createdBy_id"),
 	@Index(name = "AgmSequenceTargetingReagentAssociation_updatedBy_index", columnList = "updatedBy_id"),
-	@Index(name = "AgmSequenceTargetingReagentAssociation_evidenceCode_index", columnList = "evidencecode_id"),
-	@Index(name = "AgmSequenceTargetingReagentAssociation_relatedNote_index", columnList = "relatedNote_id"),
 	@Index(name = "AgmSequenceTargetingReagentAssociation_relation_index", columnList = "relation_id"),
 	@Index(name = "AgmSequenceTargetingReagentAssociation_agmAssociationSubject_index", columnList = "agmAssociationSubject_id"),
-	@Index(name = "AgmSequenceTargetingReagentAssociation_agmStrAssociationObject_index", columnList = "agmStrAssociationObject_id")
+	@Index(name = "AgmSequenceTargetingReagentAssociation_agmSequenceTargetingReagentAssociationObject_index", columnList = "agmSequenceTargetingReagentAssociationObject_id")
 })
 
-public class AgmSequenceTargetingReagentAssociation extends AgmGenomicEntityAssociation {
+public class AgmSequenceTargetingReagentAssociation extends Association {
 
-	//todo: fix these
 	@IndexedEmbedded(includePaths = {
-		"curie", "agmSymbol.displayText", "agmSymbol.formatText", "agmFullName.displayText", "agmFullName.formatText",
-		"curie_keyword", "agmSymbol.displayText_keyword", "agmSymbol.formatText_keyword", "agmFullName.displayText_keyword",
-		"agmFullName.formatText_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword" })
+		"curie", "name", "curie_keyword", "name_keyword",
+		"modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword" })
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@JsonIgnoreProperties({"agmSequenceTargetingReagentAssociations"})
+	@JsonIgnoreProperties({"agmSequenceTargetingReagentAssociations", "constructGenomicEntityAssociations"})
 	@Fetch(FetchMode.JOIN)
 	private AffectedGenomicModel agmAssociationSubject;
 
-	//todo: fix these -- should be like the str-gene association i think
+	@IndexedEmbedded(includePaths = { "name", "name_keyword" })
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({ View.FieldsOnly.class })
+	private VocabularyTerm relation;
+
 	@IndexedEmbedded(includePaths = {"name", "synonyms", "secondaryIdentifiers"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	//todo - fix this -- may also be in str-gene association
 	@JsonIgnoreProperties({ "agmSequenceTargetingReagentAssociations", "sequenceTargetingReagentGeneAssociations"})
-	private SequenceTargetingReagent agmStrAssociationObject;
+	private SequenceTargetingReagent agmSequenceTargetingReagentAssociationObject;
 }

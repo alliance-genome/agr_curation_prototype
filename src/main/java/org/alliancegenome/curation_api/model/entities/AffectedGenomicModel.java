@@ -69,18 +69,16 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@Column(columnDefinition = "TEXT")
 	private List<String> synonyms;
 
-	//todo: should there be some agm views?
-	//todo: fix these fields to mathc STR fields
-	@IndexedEmbedded(
-		includePaths = {
-			"agmStrAssociationObject.curie", "agmStrAssociationObject.geneSymbol.displayText", "agmStrAssociationObject.geneSymbol.formatText", "agmStrAssociationObject.geneFullName.displayText",
-			"agmStrAssociationObject.geneFullName.formatText", "agmStrAssociationObject.curie_keyword", "agmStrAssociationObject.geneSymbol.displayText_keyword",
-			"agmStrAssociationObject.geneSymbol.formatText_keyword", "agmStrAssociationObject.geneFullName.displayText_keyword", "agmStrAssociationObject.geneFullName.formatText_keyword",
-			"agmStrAssociationObject.modEntityId", "agmStrAssociationObject.modInternalId", "agmStrAssociationObject.modEntityId_keyword", "agmStrAssociationObject.modInternalId_keyword"
-		}
-	)
+	@IndexedEmbedded(includePaths = {
+		"agmSequenceTargetingReagentAssociationObject.name",
+		"agmSequenceTargetingReagentAssociationObject.name_keyword",
+		"agmSequenceTargetingReagentAssociationObject.synonyms",
+		"agmSequenceTargetingReagentAssociationObject.synonyms_keyword",
+		"agmSequenceTargetingReagentAssociationObject.secondaryIdentifiers",
+		"agmSequenceTargetingReagentAssociationObject.secondaryIdentifiers_keyword"
+	})
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
+	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class })
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 
 }

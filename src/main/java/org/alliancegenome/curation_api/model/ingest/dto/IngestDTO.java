@@ -69,7 +69,7 @@ public class IngestDTO {
 	private List<ConstructGenomicEntityAssociationDTO> constructGenomicEntityAssociationIngestSet;
 
 	@JsonView({ View.FieldsAndLists.class })
-	@JsonProperty("agm_str_association_ingest_set")
+	@JsonProperty("agm_sequence_targeting_reagent_association_ingest_set")
 	private List<AgmSequenceTargetingReagentAssociationDTO> agmStrAssociationIngestSet;
 }
 
