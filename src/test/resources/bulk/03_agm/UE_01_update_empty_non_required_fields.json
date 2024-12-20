@@ -19,6 +19,7 @@
         "prefix": "TEST"
       }
     },
-    "synonyms": []
+    "synonyms": [],
+    "agm_secondary_id_dtos": []
   }
 ]

@@ -39,6 +39,7 @@ import lombok.ToString;
 	@Index(name = "slotannotation_singleallele_index", columnList = "singleallele_id"),
 	@Index(name = "slotannotation_singleconstruct_index", columnList = "singleConstruct_id"),
 	@Index(name = "slotannotation_singlegene_index", columnList = "singlegene_id"),
+	@Index(name = "slotannotation_singleagm_index", columnList = "singleagm_id"),
 	@Index(name = "slotannotation_inheritancemode_index", columnList = "inheritancemode_id"),
 	@Index(name = "slotannotation_phenotypeterm_index", columnList = "phenotypeterm_id"),
 	@Index(name = "slotannotation_status_index", columnList = "germlinetransmissionstatus_id"),
