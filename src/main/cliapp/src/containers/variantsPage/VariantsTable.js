@@ -171,11 +171,11 @@ export const VariantsTable = () => {
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
-			field: 'modEntityId',
+			field: 'primaryExternalId',
 			header: 'MOD Entity ID',
 			sortable: true,
-			body: (rowData) => <IdTemplate id={rowData.modEntityId} />,
-			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
 		},
 		{
 			field: 'modInternalId',

@@ -168,9 +168,9 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		return xref;
 	}
 	
-	protected <D extends BaseSQLDAO<E>, E extends PhenotypeAnnotation> List<E> findPrimaryAnnotations(D dao, PhenotypeFmsDTO dto, String primaryAnnotationSubjectModEntityId, String refString) {
+	protected <D extends BaseSQLDAO<E>, E extends PhenotypeAnnotation> List<E> findPrimaryAnnotations(D dao, PhenotypeFmsDTO dto, String primaryAnnotationSubjectprimaryExternalId, String refString) {
 		HashMap<String, Object> params = new HashMap<>();
-		params.put("phenotypeAnnotationSubject.modEntityId", primaryAnnotationSubjectModEntityId);
+		params.put("phenotypeAnnotationSubject.primaryExternalId", primaryAnnotationSubjectprimaryExternalId);
 		if (StringUtils.isNotBlank(dto.getPhenotypeStatement())) {
 			params.put("phenotypeAnnotationObject", dto.getPhenotypeStatement());
 		} else {

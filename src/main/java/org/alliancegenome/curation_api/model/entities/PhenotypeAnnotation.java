@@ -50,7 +50,7 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "PhenotypeAnnotation_internal_index", columnList = "internal"),
 	@Index(name = "PhenotypeAnnotation_obsolete_index", columnList = "obsolete"),
 	@Index(name = "PhenotypeAnnotation_curie_index", columnList = "curie"),
-	@Index(name = "PhenotypeAnnotation_modEntityId_index", columnList = "modEntityId"),
+	@Index(name = "PhenotypeAnnotation_primaryExternalId_index", columnList = "primaryExternalId"),
 	@Index(name = "PhenotypeAnnotation_modInternalId_index", columnList = "modInternalId"),
 	@Index(name = "PhenotypeAnnotation_uniqueId_index", columnList = "uniqueId"),
 	@Index(name = "PhenotypeAnnotation_createdBy_index", columnList = "createdBy_id"),

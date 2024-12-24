@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "ALLELETEST:Allele0001",
+    "primary_external_id": "ALLELETEST:Allele0001",
     "taxon_curie": "NCBITaxon:6239",
     "allele_symbol_dto": {
       "display_text": "Ta1",

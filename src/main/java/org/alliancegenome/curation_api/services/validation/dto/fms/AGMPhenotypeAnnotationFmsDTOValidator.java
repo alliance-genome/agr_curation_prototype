@@ -84,7 +84,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		Reference reference = refResponse.getEntity();
 		String refString = reference == null ? null : reference.getCurie();
 		
-		List<AGMPhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(agmPhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getModEntityId(), refString);
+		List<AGMPhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(agmPhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getPrimaryExternalId(), refString);
 		
 		if (CollectionUtils.isEmpty(primaryAnnotations)) {
 			PhenotypeFmsDTO inferredPrimaryDTO = createPrimaryAnnotationDTO(dto, primaryAnnotationSubject.getIdentifier());

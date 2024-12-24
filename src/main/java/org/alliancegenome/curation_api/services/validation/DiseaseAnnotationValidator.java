@@ -135,7 +135,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 			if (wg.getId() != null) {
 				withGene = geneDAO.find(wg.getId());
 			}
-			if (withGene == null || withGene.getModEntityId() == null || !withGene.getModEntityId().startsWith("HGNC:")) {
+			if (withGene == null || withGene.getPrimaryExternalId() == null || !withGene.getPrimaryExternalId().startsWith("HGNC:")) {
 				addMessageResponse("with", ValidationConstants.INVALID_MESSAGE);
 				return null;
 			} else if (withGene.getObsolete() && !previousIds.contains(withGene.getId())) {

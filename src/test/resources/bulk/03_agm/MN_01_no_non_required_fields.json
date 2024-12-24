@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "AGMTEST:MN01",
+    "primary_external_id": "AGMTEST:MN01",
     "taxon_curie": "NCBITaxon:6239",
     "subtype_name": "fish",
     "data_provider_dto": {

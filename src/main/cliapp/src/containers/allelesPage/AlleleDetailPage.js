@@ -166,11 +166,11 @@ export default function AlleleDetailPage() {
 
 	const headerText = () => {
 		let prefix = 'Allele: ';
-		if (alleleState.allele?.alleleSymbol?.displayText && alleleState.allele?.modEntityId) {
-			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleState.allele.modEntityId})`;
+		if (alleleState.allele?.alleleSymbol?.displayText && alleleState.allele?.primaryExternalId) {
+			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleState.allele.primaryExternalId})`;
 		}
-		if (alleleState.allele?.modEntityId) {
-			return `${prefix} ${alleleState.allele.modEntityId}`;
+		if (alleleState.allele?.primaryExternalId) {
+			return `${prefix} ${alleleState.allele.primaryExternalId}`;
 		}
 		return 'Allele Detail Page';
 	};
@@ -203,7 +203,7 @@ export default function AlleleDetailPage() {
 					<Divider />
 
 					<IdentifierFormTemplate
-						identifier={alleleState.allele?.modEntityId}
+						identifier={alleleState.allele?.primaryExternalId}
 						label="MOD Entity ID"
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}

@@ -76,8 +76,8 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociationObject.modEntityId", is(geneModEntityId)).
-			body("entity.constructAssociationSubject.modEntityId", is(constructModEntityId)).
+			body("entity.constructGenomicEntityAssociationObject.primaryExternalId", is(geneModEntityId)).
+			body("entity.constructAssociationSubject.primaryExternalId", is(constructModEntityId)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference)).
 			body("entity.internal", is(true)).
@@ -101,10 +101,10 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			get(constructGetEndpoint + constructModEntityId).
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is(constructModEntityId)).
+			body("entity.primaryExternalId", is(constructModEntityId)).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).
 			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.modEntityId", is(geneModEntityId)).
+			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.primaryExternalId", is(geneModEntityId)).
 			body("entity.constructGenomicEntityAssociations[0].constructAssociationSubject", not(hasKey("constructGenomicEntityAssociations")));
 		
 		RestAssured.given().
@@ -114,7 +114,7 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			statusCode(200).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).
 			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.modEntityId", is(geneModEntityId)).
+			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.primaryExternalId", is(geneModEntityId)).
 			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject", not(hasKey("constructGenomicEntityAssociations")));
 	}
 	
@@ -129,7 +129,7 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociationObject.modEntityId", is(geneModEntityId)).
+			body("entity.constructGenomicEntityAssociationObject.primaryExternalId", is(geneModEntityId)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2)).
 			body("entity.internal", is(false)).

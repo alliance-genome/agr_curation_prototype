@@ -1,0 +1,23 @@
+ALTER TABLE biologicalentity RENAME COLUMN modentityid TO primaryexternalid;
+ALTER TABLE diseaseannotation RENAME COLUMN modentityid TO primaryexternalid;
+ALTER TABLE geneexpressionannotation RENAME COLUMN modentityid TO primaryexternalid;
+ALTER TABLE geneexpressionexperiment RENAME COLUMN modentityid TO primaryexternalid;
+ALTER TABLE phenotypeannotation RENAME COLUMN modentityid TO primaryexternalid;
+ALTER TABLE person RENAME COLUMN modentityid TO primaryexternalid;
+ALTER TABLE reagent RENAME COLUMN modentityid TO primaryexternalid;
+
+ALTER INDEX biologicalentity_modentityid_index RENAME TO biologicalentity_primaryexternalid_index;
+ALTER INDEX diseaseannotation_modentityid_index RENAME TO diseaseannotation_primaryexternalid_index;
+ALTER INDEX geneexpressionannotation_modentityid_index RENAME TO geneexpressionannotation_primaryexternalid_index;
+ALTER INDEX geneexpressionexperiment_modentityid_index RENAME TO geneexpressionexperiment_primaryexternalid_index;
+ALTER INDEX phenotypeannotation_modentityid_index RENAME TO phenotypeannotation_primaryexternalid_index;
+ALTER INDEX reagent_modentityid_index RENAME TO reagent_primaryexternalid_index;
+
+ALTER TABLE biologicalentity RENAME CONSTRAINT biologicalentity_modentityid_uk TO biologicalentity_primaryexternalid_uk;
+ALTER TABLE person RENAME CONSTRAINT uk_9omqedixfrwkqq9bdts63g65u TO person_primaryexternalid_uk;
+ALTER TABLE reagent RENAME CONSTRAINT reagent_modentityid_uk TO reagent_primaryexternalid_uk;
+
+ALTER TABLE diseaseannotation ADD CONSTRAINT diseaseannotation_primaryexternalid_uk UNIQUE (primaryexternalid);
+ALTER TABLE geneexpressionannotation ADD CONSTRAINT geneexpressionannotation_primaryexternalid_uk UNIQUE (primaryexternalid);
+ALTER TABLE geneexpressionexperiment ADD CONSTRAINT geneexpressionexperiment_primaryexternalid_uk UNIQUE (primaryexternalid);
+ALTER TABLE phenotypeannotation ADD CONSTRAINT phenotypeannotation_primaryexternalid_uk UNIQUE (primaryexternalid);

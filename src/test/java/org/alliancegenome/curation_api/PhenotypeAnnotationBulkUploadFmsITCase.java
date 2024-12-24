@@ -103,7 +103,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		SearchResponse<AGMPhenotypeAnnotation> response = RestAssured.given().when()
 				.header("Content-Type", "application/json").body("{}").post(agmPhenotypeAnnotationFindEndpoint).then()
 				.statusCode(200).body("totalResults", is(1)).body("results", hasSize(1))
-				.body("results[0].phenotypeAnnotationSubject.modEntityId", is(agm))
+				.body("results[0].phenotypeAnnotationSubject.primaryExternalId", is(agm))
 				.body("results[0].phenotypeAnnotationObject", is(phenotypeStatement))
 				.body("results[0].relation.name", is("has_phenotype"))
 				.body("results[0].dateCreated", is("2024-01-17T15:26:56Z"))
@@ -141,7 +141,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		SearchResponse<AllelePhenotypeAnnotation> response = RestAssured.given().when()
 				.header("Content-Type", "application/json").body("{}").post(allelePhenotypeAnnotationFindEndpoint)
 				.then().statusCode(200).body("totalResults", is(1)).body("results", hasSize(1))
-				.body("results[0].phenotypeAnnotationSubject.modEntityId", is(allele))
+				.body("results[0].phenotypeAnnotationSubject.primaryExternalId", is(allele))
 				.body("results[0].phenotypeAnnotationObject", is(phenotypeStatement))
 				.body("results[0].relation.name", is("has_phenotype"))
 				.body("results[0].dateCreated", is("2024-01-17T15:26:56Z"))
@@ -177,7 +177,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}")
 				.post(genePhenotypeAnnotationFindEndpoint).then().statusCode(200).body("totalResults", is(1))
-				.body("results", hasSize(1)).body("results[0].phenotypeAnnotationSubject.modEntityId", is(gene))
+				.body("results", hasSize(1)).body("results[0].phenotypeAnnotationSubject.primaryExternalId", is(gene))
 				.body("results[0].phenotypeAnnotationObject", is(phenotypeStatement))
 				.body("results[0].relation.name", is("has_phenotype"))
 				.body("results[0].dateCreated", is("2024-01-17T15:26:56Z"))
@@ -204,7 +204,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		RestAssured.given().when().get("/api/gene/" + gene).
 				then().
 				statusCode(200).
-				body("entity.modEntityId", is(gene)).
+				body("entity.primaryExternalId", is(gene)).
 				body("entity.crossReferences", hasSize(1)).
 				body("entity.crossReferences[0].displayName", is("PATEST")).
 				body("entity.crossReferences[0].referencedCurie", is(gene)).
@@ -222,9 +222,9 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				+ "AS_01_add_secondary_allele_annotation_to_primary_agm_annotation.json", 3);
 
 		RestAssured.given().when().get(phenotypeAnnotationGetEndpoint + agmPaId).then().statusCode(200)
-				.body("entity.phenotypeAnnotationSubject.modEntityId", is(agm))
-				.body("entity.inferredGene.modEntityId", is(gene))
-				.body("entity.assertedAllele.modEntityId", is(allele));
+				.body("entity.phenotypeAnnotationSubject.primaryExternalId", is(agm))
+				.body("entity.inferredGene.primaryExternalId", is(gene))
+				.body("entity.assertedAllele.primaryExternalId", is(allele));
 	}
 
 	@Test
@@ -234,8 +234,8 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				+ "AS_02_add_secondary_gene_annotation_to_primary_allele_annotation.json", 2);
 
 		RestAssured.given().when().get(phenotypeAnnotationGetEndpoint + allelePaId).then().statusCode(200)
-				.body("entity.phenotypeAnnotationSubject.modEntityId", is(allele))
-				.body("entity.inferredGene.modEntityId", is(gene));
+				.body("entity.phenotypeAnnotationSubject.primaryExternalId", is(allele))
+				.body("entity.inferredGene.primaryExternalId", is(gene));
 	}
 
 	@Test
@@ -247,7 +247,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				phenotypeAnnotationTestFilePath + "AF_01_all_fields_primary_agm_annotation.json");
 
 		RestAssured.given().when().get(phenotypeAnnotationGetEndpoint + agmPaId).then().statusCode(200)
-				.body("entity.phenotypeAnnotationSubject.modEntityId", is(agm))
+				.body("entity.phenotypeAnnotationSubject.primaryExternalId", is(agm))
 				.body("entity", not(hasKey("inferredGene")));
 	}
 
@@ -258,7 +258,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				phenotypeAnnotationTestFilePath + "AF_02_all_fields_primary_allele_annotation.json");
 
 		RestAssured.given().when().get(phenotypeAnnotationGetEndpoint + allelePaId).then().statusCode(200)
-				.body("entity.phenotypeAnnotationSubject.modEntityId", is(allele))
+				.body("entity.phenotypeAnnotationSubject.primaryExternalId", is(allele))
 				.body("entity", not(hasKey("inferredGene")));
 	}
 
@@ -271,9 +271,9 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				+ "IF_01_infer_primary_agm_annotation_from_secondary_allele_annotation.json");
 
 		RestAssured.given().when().header("Content-Type", "application/json")
-				.body("{\"phenotypeAnnotationSubject.modEntityId\" : \"" + agm2 + "\"}")
+				.body("{\"phenotypeAnnotationSubject.primaryExternalId\" : \"" + agm2 + "\"}")
 				.post(agmPhenotypeAnnotationFindEndpoint).then().statusCode(200).body("totalResults", is(1))
-				.body("results", hasSize(1)).body("results[0].phenotypeAnnotationSubject.modEntityId", is(agm2))
+				.body("results", hasSize(1)).body("results[0].phenotypeAnnotationSubject.primaryExternalId", is(agm2))
 				.body("results[0].phenotypeAnnotationObject", is(phenotypeStatement))
 				.body("results[0].relation.name", is("has_phenotype"))
 				.body("results[0].dateCreated", is("2024-01-17T15:26:56Z"))
@@ -292,7 +292,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				.body("results[0].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239"))
 				.body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm))
 				.body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("condition summary test"))
-				.body("results[0].inferredGene.modEntityId", is(gene));
+				.body("results[0].inferredGene.primaryExternalId", is(gene));
 	}
 
 	@Test
@@ -302,9 +302,9 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				+ "IF_02_infer_primary_allele_annotation_from_secondary_gene_annotation.json");
 
 		RestAssured.given().when().header("Content-Type", "application/json")
-				.body("{\"phenotypeAnnotationSubject.modEntityId\" : \"" + allele2 + "\"}")
+				.body("{\"phenotypeAnnotationSubject.primaryExternalId\" : \"" + allele2 + "\"}")
 				.post(allelePhenotypeAnnotationFindEndpoint).then().statusCode(200).body("totalResults", is(1))
-				.body("results", hasSize(1)).body("results[0].phenotypeAnnotationSubject.modEntityId", is(allele2))
+				.body("results", hasSize(1)).body("results[0].phenotypeAnnotationSubject.primaryExternalId", is(allele2))
 				.body("results[0].phenotypeAnnotationObject", is(phenotypeStatement))
 				.body("results[0].relation.name", is("has_phenotype"))
 				.body("results[0].dateCreated", is("2024-01-17T15:26:56Z"))
@@ -323,7 +323,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				.body("results[0].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239"))
 				.body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm))
 				.body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("condition summary test"))
-				.body("results[0].inferredGene.modEntityId", is(gene));
+				.body("results[0].inferredGene.primaryExternalId", is(gene));
 	}
 
 	@Test

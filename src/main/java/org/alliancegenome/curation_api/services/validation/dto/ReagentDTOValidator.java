@@ -20,7 +20,7 @@ public class ReagentDTOValidator extends AnnotationDTOValidator {
 		ObjectResponse<E> reagentResponse = validateAuditedObjectDTO(reagent, dto);
 		reagent = reagentResponse.getEntity();
 
-		reagent.setModEntityId(handleStringField(dto.getModEntityId()));
+		reagent.setPrimaryExternalId(handleStringField(dto.getPrimaryExternalId()));
 		reagent.setModInternalId(handleStringField(dto.getModInternalId()));
 
 		reagent.setSecondaryIdentifiers(handleStringListField(dto.getSecondaryIdentifiers()));

@@ -110,8 +110,8 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.interactionId", is(geneMolecularInteractionId)).
 			body("entity.uniqueId", is("WB:WBInteraction0001|WB:GITestGene0001|physically_interacts_with|WB:GITestGene0002|AGRKB:000000002|MI:Test0002|MI:Test0003|MI:Test0004|MI:Test0005|MI:Test0006|MI:Test0007")).
-			body("entity.geneAssociationSubject.modEntityId", is(gene1)).
-			body("entity.geneGeneAssociationObject.modEntityId", is(gene2)).
+			body("entity.geneAssociationSubject.primaryExternalId", is(gene1)).
+			body("entity.geneGeneAssociationObject.primaryExternalId", is(gene2)).
 			body("entity.relation.name", is(VocabularyConstants.GENE_MOLECULAR_INTERACTION_RELATION_TERM)).
 			body("entity.dateCreated", is("2024-01-17T00:00:00Z")).
 			body("entity.dateUpdated", is("2024-01-18T00:00:00Z")).
@@ -140,8 +140,8 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.interactionId", is(geneGeneticInteractionId)).
 			body("entity.uniqueId", is("WB:WBInteraction0002|WB:GITestGene0001|genetically_interacts_with|WB:GITestGene0002|AGRKB:000000002|MI:Test0002|MI:Test0003|MI:Test0004|MI:Test0005|MI:Test0006|MI:Test0001|WB:WBVar11111111|WB:WBVar22222222|Test WBPhenotype term")).
-			body("entity.geneAssociationSubject.modEntityId", is(gene1)).
-			body("entity.geneGeneAssociationObject.modEntityId", is(gene2)).
+			body("entity.geneAssociationSubject.primaryExternalId", is(gene1)).
+			body("entity.geneGeneAssociationObject.primaryExternalId", is(gene2)).
 			body("entity.relation.name", is(VocabularyConstants.GENE_GENETIC_INTERACTION_RELATION_TERM)).
 			body("entity.dateCreated", is("2024-01-17T00:00:00Z")).
 			body("entity.dateUpdated", is("2024-01-18T00:00:00Z")).
@@ -152,8 +152,8 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			body("entity.interactorBRole.curie", is(miTerm4)).
 			body("entity.interactorAType.curie", is(miTerm5)).
 			body("entity.interactorBType.curie", is(miTerm6)).
-			body("entity.interactorAGeneticPerturbation.modEntityId", is(allele1)).
-			body("entity.interactorBGeneticPerturbation.modEntityId", is(allele2)).
+			body("entity.interactorAGeneticPerturbation.primaryExternalId", is(allele1)).
+			body("entity.interactorBGeneticPerturbation.primaryExternalId", is(allele2)).
 			body("entity.phenotypesOrTraits[0]", is("Test WBPhenotype term")).
 			body("entity.crossReferences[0].referencedCurie", is(geneGeneticInteractionId));
 	}
@@ -171,8 +171,8 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.interactionId", is(geneMolecularInteractionId)).
 			body("entity.uniqueId", is("WB:WBInteraction0001|WB:GITestGene0002|physically_interacts_with|WB:GITestGene0001|AGRKB:000000021|MI:Test0003|MI:Test0004|MI:Test0005|MI:Test0006|MI:Test0007|MI:Test0001")).
-			body("entity.geneAssociationSubject.modEntityId", is(gene2)).
-			body("entity.geneGeneAssociationObject.modEntityId", is(gene1)).
+			body("entity.geneAssociationSubject.primaryExternalId", is(gene2)).
+			body("entity.geneGeneAssociationObject.primaryExternalId", is(gene1)).
 			body("entity.relation.name", is(VocabularyConstants.GENE_MOLECULAR_INTERACTION_RELATION_TERM)).
 			body("entity.dateCreated", is("2024-01-18T00:00:00Z")).
 			body("entity.dateUpdated", is("2024-01-19T00:00:00Z")).
@@ -201,8 +201,8 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.interactionId", is(geneGeneticInteractionId)).
 			body("entity.uniqueId", is("WB:WBInteraction0002|WB:GITestGene0002|genetically_interacts_with|WB:GITestGene0001|AGRKB:000000021|MI:Test0003|MI:Test0004|MI:Test0005|MI:Test0006|MI:Test0007|MI:Test0002|WB:WBVar22222222|WB:WBVar11111111|vegetative growth, complete rescue")).
-			body("entity.geneAssociationSubject.modEntityId", is(gene2)).
-			body("entity.geneGeneAssociationObject.modEntityId", is(gene1)).
+			body("entity.geneAssociationSubject.primaryExternalId", is(gene2)).
+			body("entity.geneGeneAssociationObject.primaryExternalId", is(gene1)).
 			body("entity.relation.name", is(VocabularyConstants.GENE_GENETIC_INTERACTION_RELATION_TERM)).
 			body("entity.dateCreated", is("2024-01-18T00:00:00Z")).
 			body("entity.dateUpdated", is("2024-01-19T00:00:00Z")).
@@ -213,8 +213,8 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			body("entity.interactorBRole.curie", is(miTerm5)).
 			body("entity.interactorAType.curie", is(miTerm6)).
 			body("entity.interactorBType.curie", is(miTerm7)).
-			body("entity.interactorAGeneticPerturbation.modEntityId", is(allele2)).
-			body("entity.interactorBGeneticPerturbation.modEntityId", is(allele1)).
+			body("entity.interactorAGeneticPerturbation.primaryExternalId", is(allele2)).
+			body("entity.interactorBGeneticPerturbation.primaryExternalId", is(allele1)).
 			body("entity.phenotypesOrTraits[0]", is("vegetative growth, complete rescue")).
 			body("entity.crossReferences[0].referencedCurie", is(geneGeneticInteractionId));
 	}
@@ -315,7 +315,7 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			get(geneMolecularInteractionGetEndpoint + geneInteractionXrefLookupId).
 			then().
 			statusCode(200).
-			body("entity.geneAssociationSubject.modEntityId", is(gene3));
+			body("entity.geneAssociationSubject.primaryExternalId", is(gene3));
 			
 	}
 	
@@ -329,7 +329,7 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			get(geneMolecularInteractionGetEndpoint + geneInteractionXrefLookupId2).
 			then().
 			statusCode(200).
-			body("entity.geneAssociationSubject.modEntityId", is(gene4));
+			body("entity.geneAssociationSubject.primaryExternalId", is(gene4));
 			
 	}
 	

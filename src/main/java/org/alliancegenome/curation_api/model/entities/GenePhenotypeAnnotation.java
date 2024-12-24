@@ -37,7 +37,7 @@ import lombok.EqualsAndHashCode;
 public class GenePhenotypeAnnotation extends PhenotypeAnnotation {
 
 	@IndexedEmbedded(includePaths = {
-			"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+			"curie", "primaryExternalId", "modInternalId", "curie_keyword", "primaryExternalId_keyword", "modInternalId_keyword",
 			"geneSymbol.formatText", "geneSymbol.displayText", "geneSymbol.formatText_keyword", "geneSymbol.displayText_keyword",
 			"geneFullName.formatText", "geneFullName.displayText", "geneFullName.formatText_keyword", "geneFullName.displayText_keyword",
 			"geneSystematicName.formatText", "geneSystematicName.displayText", "geneSystematicName.formatText_keyword", "geneSystematicName.displayText_keyword",
@@ -50,7 +50,7 @@ public class GenePhenotypeAnnotation extends PhenotypeAnnotation {
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Gene phenotypeAnnotationSubject;
 
-	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
+	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })

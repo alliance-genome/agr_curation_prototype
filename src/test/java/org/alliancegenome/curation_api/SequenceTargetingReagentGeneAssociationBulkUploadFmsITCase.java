@@ -64,8 +64,8 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.sequenceTargetingReagentGeneAssociationObject.modEntityId", is(geneCurie)).
-			body("entity.sequenceTargetingReagentAssociationSubject.modEntityId", is(sqtrModEntityId));
+			body("entity.sequenceTargetingReagentGeneAssociationObject.primaryExternalId", is(geneCurie)).
+			body("entity.sequenceTargetingReagentAssociationSubject.primaryExternalId", is(sqtrModEntityId));
 		
 		RestAssured.given().
 			when().
@@ -74,7 +74,7 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 			statusCode(200).
 			body("entity.sequenceTargetingReagentGeneAssociations", hasSize(1)).
 			body("entity.sequenceTargetingReagentGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.sequenceTargetingReagentGeneAssociations[0].sequenceTargetingReagentGeneAssociationObject.modEntityId", is(geneCurie)).
+			body("entity.sequenceTargetingReagentGeneAssociations[0].sequenceTargetingReagentGeneAssociationObject.primaryExternalId", is(geneCurie)).
 			body("entity.sequenceTargetingReagentGeneAssociations[0].sequenceTargetingReagentAssociationSubject", not(hasKey("sequenceTargetingReagentGeneAssociations")));
 		
 		RestAssured.given().
@@ -84,7 +84,7 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 			statusCode(200).
 			body("entity.sequenceTargetingReagentGeneAssociations", hasSize(1)).
 			body("entity.sequenceTargetingReagentGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.sequenceTargetingReagentGeneAssociations[0].sequenceTargetingReagentGeneAssociationObject.modEntityId", is(geneCurie)).
+			body("entity.sequenceTargetingReagentGeneAssociations[0].sequenceTargetingReagentGeneAssociationObject.primaryExternalId", is(geneCurie)).
 			body("entity.sequenceTargetingReagentGeneAssociations[0].sequenceTargetingReagentGeneAssociationObject", not(hasKey("sequenceTargetingReagentGeneAssociations")));
 	}
 

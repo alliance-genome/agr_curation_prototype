@@ -83,7 +83,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			get(variantGetEndpoint + "VARIANTTEST:Variant0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("VARIANTTEST:Variant0001")).
+			body("entity.primaryExternalId", is("VARIANTTEST:Variant0001")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
@@ -120,7 +120,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			get(variantGetEndpoint + "VARIANTTEST:Variant0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("VARIANTTEST:Variant0001")).
+			body("entity.primaryExternalId", is("VARIANTTEST:Variant0001")).
 			body("entity.taxon.curie", is("NCBITaxon:10116")).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
@@ -205,7 +205,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			get(variantGetEndpoint + "VARIANTTEST:Variant0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("VARIANTTEST:Variant0001")).
+			body("entity.primaryExternalId", is("VARIANTTEST:Variant0001")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
@@ -226,7 +226,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			get(variantGetEndpoint + "VARIANTTEST:Variant0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("VARIANTTEST:Variant0001")).
+			body("entity.primaryExternalId", is("VARIANTTEST:Variant0001")).
 			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
 			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
 			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
@@ -245,7 +245,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			get(variantGetEndpoint + "VARIANTTEST:Variant0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("VARIANTTEST:Variant0001")).
+			body("entity.primaryExternalId", is("VARIANTTEST:Variant0001")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
@@ -282,7 +282,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			get(variantGetEndpoint + "VARIANTTEST:DN01").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("VARIANTTEST:DN01")).
+			body("entity.primaryExternalId", is("VARIANTTEST:DN01")).
 			body("entity.relatedNotes", hasSize(1));
 	}
 	

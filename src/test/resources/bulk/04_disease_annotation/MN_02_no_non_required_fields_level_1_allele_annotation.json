@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "DATEST:MN02",
+    "primary_external_id": "DATEST:MN02",
     "allele_identifier": "DATEST:Allele0001",
     "do_term_curie": "DATEST:Disease0001",
     "disease_relation_name": "is_implicated_in",

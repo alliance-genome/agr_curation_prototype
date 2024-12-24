@@ -17,7 +17,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 @Table(indexes = {
 	@Index(name = "geneexpressionexperiment_uniqueid_index", columnList = "uniqueid"),
 	@Index(name = "geneexpressionexperiment_curie_index", columnList = "curie"),
-	@Index(name = "geneexpressionexperiment_modentityid_index", columnList = "modinternalid"),
+	@Index(name = "geneexpressionexperiment_primaryExternalId_index", columnList = "modinternalid"),
 	@Index(name = "geneexpressionexperiment_modinternalid_index", columnList = "modinternalid"),
 	@Index(name = "geneexpressionexperiment_singlereference_index", columnList = "singlereference_id"),
 	@Index(name = "geneexpressionexperiment_entityassayedused_index", columnList = "entityassayed_id"),

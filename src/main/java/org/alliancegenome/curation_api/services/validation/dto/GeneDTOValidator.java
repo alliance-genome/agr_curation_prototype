@@ -63,20 +63,20 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		geneResponse = new ObjectResponse<Gene>();
 
 		Gene gene = null;
-		if (StringUtils.isNotBlank(dto.getModEntityId())) {
-			SearchResponse<Gene> response = geneDAO.findByField("modEntityId", dto.getModEntityId());
+		if (StringUtils.isNotBlank(dto.getPrimaryExternalId())) {
+			SearchResponse<Gene> response = geneDAO.findByField("primaryExternalId", dto.getPrimaryExternalId());
 			if (response != null && response.getSingleResult() != null) {
 				gene = response.getSingleResult();
 			}
 		} else {
-			geneResponse.addErrorMessage("modEntityId", ValidationConstants.REQUIRED_MESSAGE);
+			geneResponse.addErrorMessage("primaryExternalId", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
 		if (gene == null) {
 			gene = new Gene();
 		}
 
-		gene.setModEntityId(dto.getModEntityId());
+		gene.setPrimaryExternalId(dto.getPrimaryExternalId());
 		gene.setModInternalId(handleStringField(dto.getModInternalId()));
 
 		List<Note> relatedNotes = validateRelatedNotes(gene, dto);

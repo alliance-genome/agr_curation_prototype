@@ -218,7 +218,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		String resourceDescriptorPrefix;
 		switch (dataProvider) {
 			case FB -> {
-				searchField = "modEntityId";
+				searchField = "primaryExternalId";
 				searchValue = "FB:" + identifier;
 				referencedCurie = searchValue;
 				resourceDescriptorPrefix = "FB";

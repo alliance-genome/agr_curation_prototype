@@ -223,7 +223,7 @@ public class VariantFmsDTOValidator {
 			if (cae != null) {
 				Map<String, Object> params = new HashMap<>();
 				params.put("name", cae.chromosomeName);
-				params.put("genomeAssembly.modEntityId", cae.assemblyIdentifier);
+				params.put("genomeAssembly.primaryExternalId", cae.assemblyIdentifier);
 				SearchResponse<AssemblyComponent> acResponse = assemblyComponentDAO.findByParams(params);
 				if (acResponse != null) {
 					chromosome = acResponse.getSingleResult();
@@ -307,7 +307,7 @@ public class VariantFmsDTOValidator {
 				} else {
 					if (CollectionUtils.isNotEmpty(allele.getAlleleVariantAssociations())) {
 						for (AlleleVariantAssociation existingAssociation : allele.getAlleleVariantAssociations()) {
-							if (Objects.equals(dto.getAlleleId(), existingAssociation.getAlleleAssociationSubject().getModEntityId())) {
+							if (Objects.equals(dto.getAlleleId(), existingAssociation.getAlleleAssociationSubject().getPrimaryExternalId())) {
 								association = alleleVariantAssociationDAO.find(existingAssociation.getId());
 								break;
 							}

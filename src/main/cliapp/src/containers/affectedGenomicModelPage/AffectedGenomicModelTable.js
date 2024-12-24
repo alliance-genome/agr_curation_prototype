@@ -34,11 +34,11 @@ export const AffectedGenomicModelTable = () => {
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
-			field: 'modEntityId',
+			field: 'primaryExternalId',
 			header: 'MOD Entity ID',
-			body: (rowData) => <IdTemplate id={rowData.modEntityId} />,
+			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
 		},
 		{
 			field: 'modInternalId',

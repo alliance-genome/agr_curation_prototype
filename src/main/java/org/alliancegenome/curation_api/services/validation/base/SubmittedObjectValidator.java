@@ -19,8 +19,8 @@ public class SubmittedObjectValidator<E extends SubmittedObject> extends Audited
 		String curie = handleStringField(uiEntity.getCurie());
 		dbEntity.setCurie(curie);
 
-		String modEntityId = handleStringField(uiEntity.getModEntityId());
-		dbEntity.setModEntityId(modEntityId);
+		String primaryExternalId = handleStringField(uiEntity.getPrimaryExternalId());
+		dbEntity.setPrimaryExternalId(primaryExternalId);
 
 		String modInternalId = validateModInternalId(uiEntity);
 		dbEntity.setModInternalId(modInternalId);
@@ -43,8 +43,8 @@ public class SubmittedObjectValidator<E extends SubmittedObject> extends Audited
 	public String validateModInternalId(E uiEntity) {
 		String modInternalId = uiEntity.getModInternalId();
 		if (StringUtils.isBlank(modInternalId)) {
-			if (StringUtils.isBlank(uiEntity.getModEntityId())) {
-				addMessageResponse("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId");
+			if (StringUtils.isBlank(uiEntity.getPrimaryExternalId())) {
+				addMessageResponse("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId");
 			}
 			return null;
 		}

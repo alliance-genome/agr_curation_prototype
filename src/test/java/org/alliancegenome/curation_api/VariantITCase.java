@@ -110,7 +110,7 @@ public class VariantITCase extends BaseITCase {
 		loadRequiredEntities();
 		
 		Variant variant = new Variant();
-		variant.setModEntityId(VARIANT);
+		variant.setPrimaryExternalId(VARIANT);
 		variant.setTaxon(taxon);
 		variant.setVariantType(variantTypeTerm);
 		variant.setVariantStatus(variantStatus);
@@ -132,7 +132,7 @@ public class VariantITCase extends BaseITCase {
 			get("/api/variant/" + VARIANT).
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is(VARIANT)).
+			body("entity.primaryExternalId", is(VARIANT)).
 			body("entity.taxon.curie", is(taxon.getCurie())).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
@@ -155,7 +155,7 @@ public class VariantITCase extends BaseITCase {
 	public void editVariant() {
 		Variant variant = getVariant(VARIANT);
 		variant.setCreatedBy(person);
-		variant.setModEntityId(VARIANT);
+		variant.setPrimaryExternalId(VARIANT);
 		variant.setTaxon(taxon2);
 		variant.setVariantType(variantTypeTerm2);
 		variant.setVariantStatus(variantStatus2);
@@ -185,7 +185,7 @@ public class VariantITCase extends BaseITCase {
 			get("/api/variant/" + VARIANT).
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is(VARIANT)).
+			body("entity.primaryExternalId", is(VARIANT)).
 			body("entity.variantType.curie", is(variantTypeTerm2.getCurie())).
 			body("entity.variantStatus.name", is(variantStatus2.getName())).
 			body("entity.sourceGeneralConsequence.curie", is(sgcTerm2.getCurie())).
@@ -217,16 +217,16 @@ public class VariantITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId")).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.variantType", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
 	@Order(4)
-	public void editVariantWithMissingModEntityId() {
+	public void editVariantWithMissingPrimaryExternalId() {
 		Variant variant = getVariant(VARIANT);
-		variant.setModEntityId(null);
+		variant.setPrimaryExternalId(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -236,7 +236,7 @@ public class VariantITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId"));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId"));
 	}
 	
 	@Test
@@ -264,7 +264,7 @@ public class VariantITCase extends BaseITCase {
 	@Order(6)
 	public void createVariantWithEmptyRequiredFields() {
 		Variant variant = new Variant();
-		variant.setModEntityId("");
+		variant.setPrimaryExternalId("");
 		variant.setTaxon(taxon);
 		variant.setVariantType(variantTypeTerm);
 		RestAssured.given().
@@ -275,14 +275,14 @@ public class VariantITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId"));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId"));
 	}
 	
 	@Test
 	@Order(7)
-	public void editVariantWithEmptyModEntityId() {
+	public void editVariantWithEmptyPrimaryExternalId() {
 		Variant variant = getVariant(VARIANT);
-		variant.setModEntityId("");
+		variant.setPrimaryExternalId("");
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -292,14 +292,14 @@ public class VariantITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId"));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId"));
 	}
 	
 	@Test
 	@Order(8)
 	public void createVariantWithMissingRequiredFieldsLevel2() {
 		Variant variant = new Variant();
-		variant.setModEntityId("Variant:0008");
+		variant.setPrimaryExternalId("Variant:0008");
 		variant.setTaxon(taxon);
 		variant.setVariantType(variantTypeTerm);
 		
@@ -347,7 +347,7 @@ public class VariantITCase extends BaseITCase {
 	@Order(10)
 	public void createVariantWithEmptyRequiredFieldsLevel2() {
 		Variant variant = new Variant();
-		variant.setModEntityId("Variant:0010");
+		variant.setPrimaryExternalId("Variant:0010");
 		variant.setTaxon(taxon);
 		variant.setVariantType(variantTypeTerm);
 		
@@ -404,7 +404,7 @@ public class VariantITCase extends BaseITCase {
 		invalidNote.setReferences(List.of(nonPersistedReference));
 		
 		Variant variant = new Variant();
-		variant.setModEntityId("Variant:0012");
+		variant.setPrimaryExternalId("Variant:0012");
 		variant.setTaxon(nonPersistedTaxon);
 		variant.setVariantType(nonPersistedSoTerm);
 		variant.setVariantStatus(noteType);
@@ -478,7 +478,7 @@ public class VariantITCase extends BaseITCase {
 	@Order(14)
 	public void createVariantWithObsoleteFields() {
 		Variant variant = new Variant();
-		variant.setModEntityId("Variant:0012");
+		variant.setPrimaryExternalId("Variant:0012");
 		variant.setTaxon(obsoleteTaxon);
 		variant.setVariantType(obsoleteSoTerm);
 		variant.setVariantStatus(obsoleteVariantStatus);
@@ -602,7 +602,7 @@ public class VariantITCase extends BaseITCase {
 	@Order(19)
 	public void createVariantWithOnlyRequiredFieldsLevel1() {
 		Variant variant = new Variant();
-		variant.setModEntityId("VARIANT:0019");
+		variant.setPrimaryExternalId("VARIANT:0019");
 		variant.setTaxon(taxon);
 		variant.setVariantType(variantTypeTerm);
 		
@@ -619,7 +619,7 @@ public class VariantITCase extends BaseITCase {
 	@Order(20)
 	public void createVariantWithOnlyRequiredFieldsLevel2() {
 		Variant variant = new Variant();
-		variant.setModEntityId("VARIANT:0020");
+		variant.setPrimaryExternalId("VARIANT:0020");
 		variant.setTaxon(taxon);
 		variant.setVariantType(variantTypeTerm);
 
@@ -639,7 +639,7 @@ public class VariantITCase extends BaseITCase {
 	@Order(21)
 	public void createVariantWithDuplicateNote() {
 		Variant variant = new Variant();
-		variant.setModEntityId("VARIANT:0021");
+		variant.setPrimaryExternalId("VARIANT:0021");
 		variant.setTaxon(taxon);
 		variant.setVariantType(variantTypeTerm);
 		

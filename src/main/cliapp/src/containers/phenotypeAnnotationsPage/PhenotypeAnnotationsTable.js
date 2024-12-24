@@ -41,8 +41,8 @@ export const PhenotypeAnnotationsTable = () => {
 
 	const sortMapping = {
 		'phenotypeAnnotationObject.name': ['phenotypeAnnotationObject.curie', 'phenotypeAnnotationObject.namespace'],
-		'phenotypeAnnotationSubject.symbol': ['phenotypeAnnotationSubject.name', 'phenotypeAnnotationSubject.modEntityId'],
-		'sgdStrainBackground.name': ['sgdStrainBackground.modEntityId'],
+		'phenotypeAnnotationSubject.symbol': ['phenotypeAnnotationSubject.name', 'phenotypeAnnotationSubject.primaryExternalId'],
+		'sgdStrainBackground.name': ['sgdStrainBackground.primaryExternalId'],
 	};
 
 	const handleConditionRelationsOpen = (event, rowData, isInEdit) => {

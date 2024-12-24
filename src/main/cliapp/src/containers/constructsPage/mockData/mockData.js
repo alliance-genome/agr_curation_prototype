@@ -25,7 +25,7 @@ export const data = {
 			dbDateUpdated: '2023-09-21T22:32:31.311836+01:00',
 			id: 133503943,
 			uniqueId: 'WBCnstr00000001',
-			modEntityId: 'WB:WBCnstr00000001',
+			primaryExternalId: 'WB:WBCnstr00000001',
 			dataProvider: {
 				internal: false,
 				obsolete: false,
@@ -322,7 +322,7 @@ export const data = {
 						dbDateUpdated: '2023-09-21T22:32:31.311836+01:00',
 						id: 133503943,
 						uniqueId: 'WBCnstr00000001',
-						modEntityId: 'WB:WBCnstr00000001',
+						primaryExternalId: 'WB:WBCnstr00000001',
 						dataProvider: {
 							internal: false,
 							obsolete: false,

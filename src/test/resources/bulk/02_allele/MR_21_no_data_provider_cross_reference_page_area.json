@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "ALLELETEST:MR21",
+    "primary_external_id": "ALLELETEST:MR21",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

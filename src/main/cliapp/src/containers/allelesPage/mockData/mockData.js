@@ -23,7 +23,7 @@ export const data = {
 			internal: false,
 			obsolete: false,
 			dbDateUpdated: '2023-04-05T02:49:57.970413Z',
-			modEntityId: 'FB:FBal0196303',
+			primaryExternalId: 'FB:FBal0196303',
 			taxon: {
 				internal: false,
 				obsolete: false,
@@ -530,7 +530,7 @@ export const alleleDetailData = {
 		internal: false,
 		obsolete: false,
 		dbDateUpdated: '2023-04-14T22:58:06.51117Z',
-		modEntityId: 'MGI:5146840',
+		primaryExternalId: 'MGI:5146840',
 		taxon: {
 			internal: false,
 			obsolete: false,

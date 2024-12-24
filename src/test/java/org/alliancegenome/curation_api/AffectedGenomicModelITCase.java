@@ -78,7 +78,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		loadRequiredEntities();
 		
 		AffectedGenomicModel agm = new AffectedGenomicModel();
-		agm.setModEntityId(AGM);
+		agm.setPrimaryExternalId(AGM);
 		agm.setTaxon(taxon);
 		agm.setName("Test AGM");
 		agm.setDateCreated(datetime);
@@ -100,7 +100,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			get("/api/agm/" + AGM).
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is(AGM)).
+			body("entity.primaryExternalId", is(AGM)).
 			body("entity.name", is("Test AGM")).
 			body("entity.subtype.name", is(subtype.getName())).
 			body("entity.taxon.curie", is(taxon.getCurie())).
@@ -139,7 +139,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			get("/api/agm/" + AGM).
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is(AGM)).
+			body("entity.primaryExternalId", is(AGM)).
 			body("entity.name", is("AGM edited")).
 			body("entity.subtype.name", is(subtype2.getName())).
 			body("entity.taxon.curie", is(taxon2.getCurie())).
@@ -164,7 +164,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId")).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.subtype", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
@@ -173,7 +173,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	@Order(4)
 	public void editAGMWithMissingModEntityId() {
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
-		agm.setModEntityId(null);
+		agm.setPrimaryExternalId(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -183,7 +183,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId"));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId"));
 	}
 	
 	@Test
@@ -211,7 +211,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	@Order(6)
 	public void createAGMWithEmptyRequiredFields() {
 		AffectedGenomicModel agm = new AffectedGenomicModel();
-		agm.setModEntityId("");
+		agm.setPrimaryExternalId("");
 		agm.setTaxon(taxon);
 		agm.setSubtype(subtype);
 		
@@ -223,14 +223,14 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId"));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId"));
 	}
 
 	@Test
 	@Order(7)
 	public void editAGMWithEmptyModEntityId() {
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
-		agm.setModEntityId("");
+		agm.setPrimaryExternalId("");
 
 		RestAssured.given().
 			contentType("application/json").
@@ -240,7 +240,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId"));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId"));
 	}
 	
 	@Test
@@ -254,7 +254,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		
 		AffectedGenomicModel agm = new AffectedGenomicModel();
-		agm.setModEntityId("AGM:0008");
+		agm.setPrimaryExternalId("AGM:0008");
 		agm.setTaxon(nonPersistedTaxon);
 		agm.setSubtype(nonPersistedTerm);
 		agm.setDataProvider(invalidDataProvider);
@@ -304,7 +304,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	@Order(10)
 	public void createAGMWithObsoleteFields() {
 		AffectedGenomicModel agm = new AffectedGenomicModel();
-		agm.setModEntityId("AGM:0010");
+		agm.setPrimaryExternalId("AGM:0010");
 		agm.setTaxon(obsoleteTaxon);
 		agm.setSubtype(obsoleteSubtype);
 		agm.setDataProvider(obsoleteDataProvider);
@@ -370,7 +370,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	@Order(13)
 	public void createAGMWithOnlyRequiredFields() {
 		AffectedGenomicModel agm = new AffectedGenomicModel();
-		agm.setModEntityId("AGM:0015");
+		agm.setPrimaryExternalId("AGM:0015");
 		agm.setTaxon(taxon);
 		agm.setSubtype(subtype);
 		

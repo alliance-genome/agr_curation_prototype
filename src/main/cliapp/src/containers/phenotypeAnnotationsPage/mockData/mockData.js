@@ -157,7 +157,7 @@ export const data = {
 				obsolete: false,
 				dbDateCreated: '2023-06-09T13:47:14.458121Z',
 				dbDateUpdated: '2024-01-17T17:52:00.624187Z',
-				modEntityId: 'ZFIN:ZDB-FISH-150901-427',
+				primaryExternalId: 'ZFIN:ZDB-FISH-150901-427',
 				dataProvider: {
 					id: 86992863,
 					internal: false,
@@ -220,7 +220,7 @@ export const data = {
 				internal: false,
 				obsolete: false,
 				dbDateUpdated: '2024-02-06T11:36:48.627505Z',
-				modEntityId: 'MGI:87873',
+				primaryExternalId: 'MGI:87873',
 				dataProvider: {
 					id: 75609905,
 					internal: false,
@@ -338,7 +338,7 @@ export const data = {
 				obsolete: false,
 				dbDateCreated: '2023-08-08T03:48:07.853926Z',
 				dbDateUpdated: '2024-02-07T09:13:21.51779Z',
-				modEntityId: 'MGI:1856658',
+				primaryExternalId: 'MGI:1856658',
 				dataProvider: {
 					id: 115684900,
 					internal: false,
@@ -459,7 +459,7 @@ export const data = {
 					internal: false,
 					obsolete: false,
 					dbDateUpdated: '2024-02-06T11:34:46.000823Z',
-					modEntityId: 'MGI:1330812',
+					primaryExternalId: 'MGI:1330812',
 					dataProvider: {
 						id: 75135599,
 						internal: false,
@@ -577,7 +577,7 @@ export const data = {
 				internal: false,
 				obsolete: false,
 				dbDateUpdated: '2024-02-06T23:17:33.99865Z',
-				modEntityId: 'MGI:1857811',
+				primaryExternalId: 'MGI:1857811',
 				dataProvider: {
 					id: 75138053,
 					internal: false,

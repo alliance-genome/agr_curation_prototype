@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "GENETEST:MN01",
+    "primary_external_id": "GENETEST:MN01",
     "taxon_curie": "NCBITaxon:6239",
     "gene_symbol_dto": {
       "display_text": "Tg1",

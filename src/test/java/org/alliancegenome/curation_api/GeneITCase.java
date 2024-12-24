@@ -127,7 +127,7 @@ public class GeneITCase extends BaseITCase {
 		loadRequiredEntities();
 		
 		Gene gene = new Gene();
-		gene.setModEntityId(GENE);
+		gene.setPrimaryExternalId(GENE);
 		gene.setDateCreated(datetime);
 		gene.setTaxon(taxon);
 		gene.setGeneType(soTerm);
@@ -151,7 +151,7 @@ public class GeneITCase extends BaseITCase {
 			get("/api/gene/" + GENE).
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is(GENE)).
+			body("entity.primaryExternalId", is(GENE)).
 			body("entity.taxon.curie", is(taxon.getCurie())).
 			body("entity.geneType.curie", is(soTerm.getCurie())).
 			body("entity.internal", is(false)).
@@ -251,7 +251,7 @@ public class GeneITCase extends BaseITCase {
 			get("/api/gene/" + GENE).
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is(GENE)).
+			body("entity.primaryExternalId", is(GENE)).
 			body("entity.taxon.curie", is(taxon2.getCurie())).
 			body("entity.geneType.curie", is(soTerm2.getCurie())).
 			body("entity.internal", is(true)).
@@ -302,7 +302,7 @@ public class GeneITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(4))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId")).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.geneSymbol", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.geneType", is(ValidationConstants.REQUIRED_MESSAGE));
@@ -310,9 +310,9 @@ public class GeneITCase extends BaseITCase {
 	
 	@Test
 	@Order(4)
-	public void editGeneWithMissingModEntityId() {
+	public void editGeneWithMissingPrimaryExternalId() {
 		Gene gene = getGene(GENE);
-		gene.setModEntityId(null);
+		gene.setPrimaryExternalId(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -322,7 +322,7 @@ public class GeneITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId"));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId"));
 	}
 
 	@Test
@@ -353,7 +353,7 @@ public class GeneITCase extends BaseITCase {
 	public void createGeneWithEmptyRequiredFieldsLevel1() {
 
 		Gene gene = new Gene();
-		gene.setModEntityId("");
+		gene.setPrimaryExternalId("");
 		gene.setTaxon(taxon);
 		gene.setGeneSymbol(geneSymbol);
 		gene.setGeneType(soTerm);
@@ -366,14 +366,14 @@ public class GeneITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId"));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId"));
 	}
 	
 	@Test
 	@Order(7)
-	public void editGeneWithEmptyModEntityId() {
+	public void editGeneWithEmptyPrimaryExternalId() {
 		Gene gene = getGene(GENE);
-		gene.setModEntityId("");
+		gene.setPrimaryExternalId("");
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -383,7 +383,7 @@ public class GeneITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId"));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId"));
 	}
 	
 	@Test
@@ -391,7 +391,7 @@ public class GeneITCase extends BaseITCase {
 	public void createGeneWithMissingRequiredFieldsLevel2() {
 
 		Gene gene = new Gene();
-		gene.setModEntityId("GENE:0008");
+		gene.setPrimaryExternalId("GENE:0008");
 		gene.setTaxon(taxon);
 		gene.setGeneType(soTerm);
 		
@@ -497,7 +497,7 @@ public class GeneITCase extends BaseITCase {
 	public void createGeneWithEmptyRequiredFieldsLevel2() {
 
 		Gene gene = new Gene();
-		gene.setModEntityId("GENE:0010");
+		gene.setPrimaryExternalId("GENE:0010");
 		gene.setTaxon(taxon);
 		gene.setGeneType(soTerm);
 		
@@ -599,7 +599,7 @@ public class GeneITCase extends BaseITCase {
 		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		
 		Gene gene = new Gene();
-		gene.setModEntityId("GENE:0012");
+		gene.setPrimaryExternalId("GENE:0012");
 		gene.setTaxon(nonPersistedTaxon);
 		gene.setGeneType(nonPersistedSoTerm);
 		gene.setDataProvider(invalidDataProvider);
@@ -722,7 +722,7 @@ public class GeneITCase extends BaseITCase {
 	@Order(14)
 	public void createGeneWithObsoleteFields() {
 		Gene gene = new Gene();
-		gene.setModEntityId("GENE:0014");
+		gene.setPrimaryExternalId("GENE:0014");
 		gene.setTaxon(obsoleteTaxon);
 		gene.setGeneType(obsoleteSoTerm);
 		gene.setDataProvider(obsoleteDataProvider);
@@ -932,7 +932,7 @@ public class GeneITCase extends BaseITCase {
 	@Order(18)
 	public void createGeneWithOnlyRequiredFields() {
 		Gene gene = new Gene();
-		gene.setModEntityId("GENE:0020");
+		gene.setPrimaryExternalId("GENE:0020");
 		gene.setTaxon(taxon);
 		gene.setGeneSymbol(geneSymbol);
 		gene.setGeneType(soTerm);
@@ -950,7 +950,7 @@ public class GeneITCase extends BaseITCase {
 	@Order(19)
 	public void createGeneWithOnlyRequiredFieldsLevel2() {
 		Gene gene = new Gene();
-		gene.setModEntityId("GENE:0021");
+		gene.setPrimaryExternalId("GENE:0021");
 		gene.setTaxon(taxon);
 		gene.setGeneType(soTerm);
 

@@ -45,10 +45,10 @@ public class SequenceTargetingReagentFmsDTOValidator {
 			sqtrResponse.addErrorMessage("primaryId", ValidationConstants.REQUIRED_MESSAGE);
 			sqtr = new SequenceTargetingReagent();
 		} else {
-			SearchResponse<SequenceTargetingReagent> searchResponse = sqtrDAO.findByField("modEntityId", dto.getPrimaryId());
+			SearchResponse<SequenceTargetingReagent> searchResponse = sqtrDAO.findByField("primaryExternalId", dto.getPrimaryId());
 			if (searchResponse == null || searchResponse.getSingleResult() == null) {
 				sqtr = new SequenceTargetingReagent();
-				sqtr.setModEntityId(dto.getPrimaryId());
+				sqtr.setPrimaryExternalId(dto.getPrimaryId());
 			} else {
 				sqtr = searchResponse.getSingleResult();
 			}

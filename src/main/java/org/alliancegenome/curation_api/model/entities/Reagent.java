@@ -39,7 +39,13 @@ import lombok.ToString;
 @Schema(name = "reagent", description = "POJO that represents a reagent")
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SubmittedObject.class })
 @Table(indexes = {
-		@Index(name = "reagent_uniqueId_index", columnList = "uniqueId")
+		@Index(name = "reagent_uniqueid_index", columnList = "uniqueid"),
+		@Index(name = "reagent_dataprovider_index", columnList = "dataprovider_id"),
+		@Index(name = "reagent_curie_index", columnList = "curie"),
+		@Index(name = "reagent_primaryexternalid_index", columnList = "primaryexternalid"),
+		@Index(name = "reagent_modinternalid_index", columnList = "modinternalid"),
+		@Index(name = "reagent_createdby_index", columnList = "createdby_id"),
+		@Index(name = "reagent_updatedby_index", columnList = "updatedby_id")
 })
 
 public class Reagent extends SubmittedObject {

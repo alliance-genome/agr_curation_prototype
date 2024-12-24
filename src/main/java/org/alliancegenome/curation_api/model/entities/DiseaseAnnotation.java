@@ -46,7 +46,7 @@ import java.util.Objects;
 	@Index(name = "DiseaseAnnotation_internal_index", columnList = "internal"),
 	@Index(name = "DiseaseAnnotation_obsolete_index", columnList = "obsolete"),
 	@Index(name = "DiseaseAnnotation_curie_index", columnList = "curie"),
-	@Index(name = "DiseaseAnnotation_modEntityId_index", columnList = "modEntityId"),
+	@Index(name = "DiseaseAnnotation_primaryExternalId_index", columnList = "primaryExternalId"),
 	@Index(name = "DiseaseAnnotation_modInternalId_index", columnList = "modInternalId"),
 	@Index(name = "DiseaseAnnotation_uniqueId_index", columnList = "uniqueId"),
 	@Index(name = "DiseaseAnnotation_diseaseAnnotationObject_index", columnList = "diseaseAnnotationObject_id"),
@@ -98,7 +98,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	private List<ECOTerm> evidenceCodes;
 
 	@IndexedEmbedded(includePaths = {
-		"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+		"curie", "primaryExternalId", "modInternalId", "curie_keyword", "primaryExternalId_keyword", "modInternalId_keyword",
 		"geneSymbol.formatText", "geneSymbol.displayText", "geneSymbol.formatText_keyword", "geneSymbol.displayText_keyword",
 		"geneFullName.formatText", "geneFullName.displayText", "geneFullName.formatText_keyword", "geneFullName.displayText_keyword",
 		"geneSystematicName.formatText", "geneSystematicName.displayText", "geneSystematicName.formatText_keyword", "geneSystematicName.displayText_keyword",
@@ -152,7 +152,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	private DataProvider secondaryDataProvider;
 
 	@IndexedEmbedded(includePaths = {
-		"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+		"curie", "primaryExternalId", "modInternalId", "curie_keyword", "primaryExternalId_keyword", "modInternalId_keyword",
 		"geneSymbol.formatText", "geneSymbol.displayText", "geneSymbol.formatText_keyword", "geneSymbol.displayText_keyword",
 		"geneFullName.formatText", "geneFullName.displayText", "geneFullName.formatText_keyword", "geneFullName.displayText_keyword",
 		"geneSystematicName.formatText", "geneSystematicName.displayText", "geneSystematicName.formatText_keyword", "geneSystematicName.displayText_keyword",
@@ -174,7 +174,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	private List<Gene> diseaseGeneticModifierGenes;
 
 	@IndexedEmbedded(includePaths = {
-		"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+		"curie", "primaryExternalId", "modInternalId", "curie_keyword", "primaryExternalId_keyword", "modInternalId_keyword",
 		"alleleSymbol.formatText", "alleleSymbol.displayText", "alleleSymbol.formatText_keyword", "alleleSymbol.displayText_keyword",
 		"alleleFullName.formatText", "alleleFullName.displayText", "alleleFullName.formatText_keyword", "alleleFullName.displayText_keyword",
 		"alleleSynonyms.formatText", "alleleSynonyms.displayText", "alleleSynonyms.formatText_keyword", "alleleSynonyms.displayText_keyword",
@@ -194,7 +194,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	)
 	private List<Allele> diseaseGeneticModifierAlleles;
 
-	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
+	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})

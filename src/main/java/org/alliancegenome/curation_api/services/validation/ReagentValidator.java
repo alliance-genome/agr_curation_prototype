@@ -28,8 +28,8 @@ public class ReagentValidator extends SubmittedObjectValidator<Reagent> {
 		}
 		dbEntity = (Reagent) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 
-		String modEntityId = StringUtils.isNotBlank(uiEntity.getModEntityId()) ? uiEntity.getModEntityId() : null;
-		dbEntity.setModEntityId(modEntityId);
+		String primaryExternalId = StringUtils.isNotBlank(uiEntity.getPrimaryExternalId()) ? uiEntity.getPrimaryExternalId() : null;
+		dbEntity.setPrimaryExternalId(primaryExternalId);
 
 		String modInternalId = validateModInternalId(uiEntity);
 		dbEntity.setModInternalId(modInternalId);

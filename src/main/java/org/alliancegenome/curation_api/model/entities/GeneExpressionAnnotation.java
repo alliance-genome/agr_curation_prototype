@@ -32,7 +32,7 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "GeneExpressionAnnotation_internal_index", columnList = "internal"),
 	@Index(name = "GeneExpressionAnnotation_obsolete_index", columnList = "obsolete"),
 	@Index(name = "GeneExpressionAnnotation_curie_index", columnList = "curie"),
-	@Index(name = "GeneExpressionAnnotation_modEntityId_index", columnList = "modEntityId"),
+	@Index(name = "GeneExpressionAnnotation_primaryExternalId_index", columnList = "primaryExternalId"),
 	@Index(name = "GeneExpressionAnnotation_modInternalId_index", columnList = "modInternalId"),
 	@Index(name = "GeneExpressionAnnotation_uniqueId_index", columnList = "uniqueId"),
 	@Index(name = "GeneExpressionAnnotation_createdBy_index", columnList = "createdBy_id"),

@@ -78,9 +78,9 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	private BioSampleAge htpExpressionSampleAge;
 
-	@IndexedEmbedded(includePaths = {"bioSampleAllele.curie", "bioSampleAllele.modInternalId", "bioSampleAllele.modEntityId", "bioSampleAllele.modEntityId_keyword",
-	"bioSampleAllele.modInternalId_keyword", "bioSampleAgm.curie", "bioSampleAgm.modInternalId", "bioSampleAgm.modEntityId", "bioSampleAgm.modInternalId_keyword",
-	"bioSampleAgm.modEntityId_keyword", "bioSampleAllele.curie_keyword", "bioSampleAgm.curie_keyword", "bioSampleText", "bioSampleText_keyword"
+	@IndexedEmbedded(includePaths = {"bioSampleAllele.curie", "bioSampleAllele.modInternalId", "bioSampleAllele.primaryExternalId", "bioSampleAllele.primaryExternalId_keyword",
+	"bioSampleAllele.modInternalId_keyword", "bioSampleAgm.curie", "bioSampleAgm.modInternalId", "bioSampleAgm.primaryExternalId", "bioSampleAgm.modInternalId_keyword",
+	"bioSampleAgm.primaryExternalId_keyword", "bioSampleAllele.curie_keyword", "bioSampleAgm.curie_keyword", "bioSampleText", "bioSampleText_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

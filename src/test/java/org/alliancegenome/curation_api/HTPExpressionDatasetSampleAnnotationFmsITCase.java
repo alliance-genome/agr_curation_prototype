@@ -65,7 +65,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsITCase extends BaseITCase {
 				.body("results[0].expressionAssayUsed.curie", is("HTPMMO:assay001"))
 				.body("results[0].htpExpressionSampleType.curie", is("HTPOBI:sample001"))
 				.body("results[0].htpExpressionSampleAge.stage.developmentalStageStart.curie", is("ZFS:001"))
-				.body("results[0].genomicInformation.bioSampleAllele.modEntityId", is("AGA:Allele0001"))
+				.body("results[0].genomicInformation.bioSampleAllele.primaryExternalId", is("AGA:Allele0001"))
 				.body("results[0].microarraySampleDetails.channelId", is("WB:[cgc4349]:fem-3:A"))
 				.body("results[0].microarraySampleDetails.channelNumber", is(1))
 				.body("results[0].geneticSex.name", is("hermaphrodite"))

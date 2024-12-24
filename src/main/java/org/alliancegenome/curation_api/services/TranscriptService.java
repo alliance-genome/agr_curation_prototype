@@ -43,7 +43,7 @@ public class TranscriptService extends BaseEntityCrudService<Transcript, Transcr
 	}
 
 	public ObjectResponse<Transcript> deleteByIdentifier(String identifierString) {
-		Transcript transcript = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId"), identifierString);
+		Transcript transcript = findByAlternativeFields(List.of("curie", "primaryExternalId", "modInternalId"), identifierString);
 		if (transcript != null) {
 			transcriptDAO.remove(transcript.getId());
 		}
