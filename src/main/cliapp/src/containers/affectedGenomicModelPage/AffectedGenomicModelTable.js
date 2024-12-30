@@ -11,7 +11,7 @@ import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 import { SearchService } from '../../service/SearchService';
-import {crossReferencesSort, secondarySort} from '../../components/Templates/utils/sortMethods';
+import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import {ListDialogTemplate} from '../../components/Templates/dialog/ListDialogTemplate';
