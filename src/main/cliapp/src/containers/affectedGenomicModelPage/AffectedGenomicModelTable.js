@@ -14,8 +14,8 @@ import { SearchService } from '../../service/SearchService';
 import {crossReferencesSort, secondarySort} from '../../components/Templates/utils/sortMethods';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
-import {ListDialogTemplate} from "../../components/Templates/dialog/ListDialogTemplate";
-import {SecondaryIdsDialog} from "../allelesPage/secondaryIds/SecondaryIdsDialog";
+import {ListDialogTemplate} from '../../components/Templates/dialog/ListDialogTemplate';
+import {SecondaryIdsDialog} from '../allelesPage/secondaryIds/SecondaryIdsDialog';
 
 export const AffectedGenomicModelTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
