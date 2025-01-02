@@ -13,6 +13,9 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
 import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
+import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
+import { SecondaryIdsDialog } from '../allelesPage/secondaryIds/SecondaryIdsDialog';
 
 export const AffectedGenomicModelTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -24,6 +27,22 @@ export const AffectedGenomicModelTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
+	const [secondaryIdsData, setSecondaryIdsData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const handleSecondaryIdsOpen = (alleleSecondaryIds) => {
+		let _secondaryIdsData = {};
+		_secondaryIdsData['originalSecondaryIds'] = alleleSecondaryIds;
+		_secondaryIdsData['dialog'] = true;
+		_secondaryIdsData['isInEdit'] = false;
+		setSecondaryIdsData(() => ({
+			..._secondaryIdsData,
+		}));
+	};
 
 	const columns = [
 		{
@@ -52,6 +71,26 @@ export const AffectedGenomicModelTable = () => {
 			body: (rowData) => <StringTemplate string={rowData.name} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
+		},
+		{
+			field: 'synonyms',
+			header: 'Synonyms',
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
+			body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
+		},
+		{
+			field: 'agmSecondaryIds.secondaryId',
+			header: 'Secondary IDs',
+			body: (rowData) => (
+				<ListDialogTemplate
+					entities={rowData.agmSecondaryIds}
+					handleOpen={handleSecondaryIdsOpen}
+					getTextField={(entity) => entity?.secondaryId}
+				/>
+			),
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.agmSecondaryIdsFilterConfig,
 		},
 		{
 			field: 'subtype.name',
@@ -156,27 +195,35 @@ export const AffectedGenomicModelTable = () => {
 	});
 
 	return (
-		<div className="card">
-			<Toast ref={toast_topleft} position="top-left" />
-			<Toast ref={toast_topright} position="top-right" />
-			<GenericDataTable
-				endpoint={SEARCH_ENDPOINT}
-				tableName="Affected Genomic Models"
-				entities={agms}
-				setEntities={setAgms}
-				totalRecords={totalRecords}
-				setTotalRecords={setTotalRecords}
-				tableState={tableState}
-				setTableState={setTableState}
-				columns={columns}
-				isEditable={false}
-				isInEditMode={isInEditMode}
-				setIsInEditMode={setIsInEditMode}
-				toasts={{ toast_topleft, toast_topright }}
-				errorObject={{ errorMessages, setErrorMessages }}
-				defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
-				fetching={isFetching || isLoading}
+		<>
+			<div className="card">
+				<Toast ref={toast_topleft} position="top-left" />
+				<Toast ref={toast_topright} position="top-right" />
+				<GenericDataTable
+					endpoint={SEARCH_ENDPOINT}
+					tableName="Affected Genomic Models"
+					entities={agms}
+					setEntities={setAgms}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
+					columns={columns}
+					isEditable={false}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
+					toasts={{ toast_topleft, toast_topright }}
+					errorObject={{ errorMessages, setErrorMessages }}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
+				/>
+			</div>
+			<SecondaryIdsDialog
+				originalSecondaryIdsData={secondaryIdsData}
+				setOriginalSecondaryIdsData={setSecondaryIdsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
 			/>
-		</div>
+		</>
 	);
 };

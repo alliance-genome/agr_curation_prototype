@@ -6,12 +6,14 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.UberonSlimTermDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.WhenExpressedFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.WhereExpressedFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
@@ -25,8 +27,7 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RequestScoped
 public class GeneExpressionAnnotationFmsDTOValidator {
@@ -44,28 +45,29 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 	@Inject StageTermService stageTermService;
 	@Inject OntologyTermService ontologyTermService;
 
-	public GeneExpressionAnnotation validateAnnotation(GeneExpressionFmsDTO geneExpressionFmsDTO, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public GeneExpressionAnnotation validateAnnotation(GeneExpressionFmsDTO geneExpressionFmsDTO, BackendBulkDataProvider dataProvider, Map<String, Set<String>> experiments) throws ValidationException {
 		ObjectResponse<GeneExpressionAnnotation> response = new ObjectResponse<>();
-		GeneExpressionAnnotation geneExpressionAnnotation;
+		GeneExpressionAnnotation geneExpressionAnnotation = new GeneExpressionAnnotation();
+		String uniqueId = "empty";
+		String referenceCurie = "empty";
 
 		ObjectResponse<Reference> singleReferenceResponse = validateEvidence(geneExpressionFmsDTO);
 		if (singleReferenceResponse.hasErrors()) {
 			response.addErrorMessage("singleReference", singleReferenceResponse.errorMessagesString());
-			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
 		} else {
-			String referenceCurie = singleReferenceResponse.getEntity().getCurie();
-			String uniqueId = geneExpressionAnnotationUniqueIdHelper.generateUniqueId(geneExpressionFmsDTO, referenceCurie);
+			referenceCurie = singleReferenceResponse.getEntity().getCurie();
+			uniqueId = geneExpressionAnnotationUniqueIdHelper.generateUniqueId(geneExpressionFmsDTO, referenceCurie);
 			SearchResponse<GeneExpressionAnnotation> annotationDB = geneExpressionAnnotationDAO.findByField("uniqueId", uniqueId);
 			if (annotationDB != null && annotationDB.getSingleResult() != null) {
 				geneExpressionAnnotation = annotationDB.getSingleResult();
 			} else {
-				geneExpressionAnnotation = new GeneExpressionAnnotation();
 				geneExpressionAnnotation.setUniqueId(uniqueId);
 			}
-			if (geneExpressionAnnotation.getExpressionPattern() == null) {
-				geneExpressionAnnotation.setExpressionPattern(new ExpressionPattern());
-			}
 			geneExpressionAnnotation.setSingleReference(singleReferenceResponse.getEntity());
+		}
+
+		if (geneExpressionAnnotation.getExpressionPattern() == null) {
+			geneExpressionAnnotation.setExpressionPattern(new ExpressionPattern());
 		}
 
 		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getGeneId())) {
@@ -102,21 +104,21 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			}
 		}
 
-		ObjectResponse<AnatomicalSite> anatomicalSiteObjectResponse = validateAnatomicalSite(geneExpressionFmsDTO);
+		ObjectResponse<AnatomicalSite> anatomicalSiteObjectResponse = validateAnatomicalSite(geneExpressionFmsDTO.getWhereExpressed());
 		if (anatomicalSiteObjectResponse.hasErrors()) {
 			response.addErrorMessage("expressionPattern", anatomicalSiteObjectResponse.errorMessagesString());
 		} else {
 			geneExpressionAnnotation.setWhereExpressedStatement(geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement());
-			AnatomicalSite anatomicalSite = updateAnatomicalSite(anatomicalSiteObjectResponse, geneExpressionAnnotation);
+			AnatomicalSite anatomicalSite = updateAnatomicalSite(anatomicalSiteObjectResponse, geneExpressionAnnotation.getExpressionPattern().getWhereExpressed());
 			geneExpressionAnnotation.getExpressionPattern().setWhereExpressed(anatomicalSite);
 		}
 
-		ObjectResponse<TemporalContext> temporalContextObjectResponse = validateTemporalContext(geneExpressionFmsDTO);
+		ObjectResponse<TemporalContext> temporalContextObjectResponse = validateTemporalContext(geneExpressionFmsDTO.getWhenExpressed());
 		if (temporalContextObjectResponse.hasErrors()) {
 			response.addErrorMessage("expressionPattern", temporalContextObjectResponse.errorMessagesString());
 		} else {
 			geneExpressionAnnotation.setWhenExpressedStageName(geneExpressionFmsDTO.getWhenExpressed().getStageName());
-			TemporalContext temporalContext = updateTemporalContext(temporalContextObjectResponse, geneExpressionAnnotation);
+			TemporalContext temporalContext = updateTemporalContext(temporalContextObjectResponse, geneExpressionAnnotation.getExpressionPattern().getWhenExpressed());
 			geneExpressionAnnotation.getExpressionPattern().setWhenExpressed(temporalContext);
 		}
 
@@ -128,21 +130,29 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
 		}
+		String experimentId = geneExpressionAnnotationUniqueIdHelper.generateExperimentId(geneExpressionFmsDTO, referenceCurie);
+		if (experiments.containsKey(experimentId)) {
+			experiments.get(experimentId).add(uniqueId);
+		} else {
+			Set<String> expressionIds = new HashSet<>();
+			expressionIds.add(uniqueId);
+			experiments.put(experimentId, expressionIds);
+		}
 		return geneExpressionAnnotation;
 	}
 
-	private ObjectResponse<TemporalContext> validateTemporalContext(GeneExpressionFmsDTO geneExpressionFmsDTO) {
+	protected ObjectResponse<TemporalContext> validateTemporalContext(WhenExpressedFmsDTO whenExpressedDTO) {
 		ObjectResponse<TemporalContext> response = new ObjectResponse<>();
 		TemporalContext temporalContext = new TemporalContext();
-		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhenExpressed())) {
-			response.addErrorMessage("whenExpressed - ", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhenExpressed() + ")");
+		if (ObjectUtils.isEmpty(whenExpressedDTO)) {
+			response.addErrorMessage("whenExpressed - ", ValidationConstants.REQUIRED_MESSAGE + " (" + whenExpressedDTO + ")");
 			return response;
 		} else {
-			String stageName = geneExpressionFmsDTO.getWhenExpressed().getStageName();
+			String stageName = whenExpressedDTO.getStageName();
 			if (ObjectUtils.isEmpty(stageName)) {
 				response.addErrorMessage("whenExpressed - whenExpressedStageName", ValidationConstants.REQUIRED_MESSAGE + " (" + stageName + ")");
 			}
-			String stageTermId = geneExpressionFmsDTO.getWhenExpressed().getStageTermId();
+			String stageTermId = whenExpressedDTO.getStageTermId();
 			if (!ObjectUtils.isEmpty(stageTermId)) {
 				StageTerm stageTerm = stageTermService.findByCurie(stageTermId);
 				if (stageTerm == null) {
@@ -151,9 +161,9 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 					temporalContext.setDevelopmentalStageStart(stageTerm);
 				}
 			}
-			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhenExpressed().getStageUberonSlimTerm())) {
-				if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhenExpressed().getStageUberonSlimTerm().getUberonTerm())) {
-					String stageUberonSlimTermId = geneExpressionFmsDTO.getWhenExpressed().getStageUberonSlimTerm().getUberonTerm();
+			if (!ObjectUtils.isEmpty(whenExpressedDTO.getStageUberonSlimTerm())) {
+				if (!ObjectUtils.isEmpty(whenExpressedDTO.getStageUberonSlimTerm().getUberonTerm())) {
+					String stageUberonSlimTermId = whenExpressedDTO.getStageUberonSlimTerm().getUberonTerm();
 					if (!ObjectUtils.isEmpty(stageUberonSlimTermId)) {
 						VocabularyTerm stageUberonSlimTerm = vocabularyTermService.getTermInVocabulary(VocabularyConstants.STAGE_UBERON_SLIM_TERMS, stageUberonSlimTermId).getEntity();
 						if (stageUberonSlimTerm == null) {
@@ -169,47 +179,47 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		return response;
 	}
 
-	private ObjectResponse<AnatomicalSite> validateAnatomicalSite(GeneExpressionFmsDTO geneExpressionFmsDTO) {
+	protected ObjectResponse<AnatomicalSite> validateAnatomicalSite(WhereExpressedFmsDTO whereExpressedDTO) {
 		ObjectResponse<AnatomicalSite> response = new ObjectResponse<>();
 		AnatomicalSite anatomicalSite = new AnatomicalSite();
-		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed())) {
-			response.addErrorMessage("whereExpressed - ", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhereExpressed() + ")");
+		if (ObjectUtils.isEmpty(whereExpressedDTO)) {
+			response.addErrorMessage("whereExpressed - ", ValidationConstants.REQUIRED_MESSAGE + " (" + whereExpressedDTO + ")");
 		} else {
-			if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement())) {
-				response.addErrorMessage("whereExpressed - whereExpressedStatement", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement() + ")");
+			if (ObjectUtils.isEmpty(whereExpressedDTO.getWhereExpressedStatement())) {
+				response.addErrorMessage("whereExpressed - whereExpressedStatement", ValidationConstants.REQUIRED_MESSAGE + " (" + whereExpressedDTO.getWhereExpressedStatement() + ")");
 				return response;
 			}
 
-			boolean lackAnatomicalStructureTermId = ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureTermId());
-			boolean lackStructureUberonSlimTermIds = ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureUberonSlimTermIds());
-			boolean lackCellularComponentId = ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getCellularComponentTermId());
+			boolean lackAnatomicalStructureTermId = ObjectUtils.isEmpty(whereExpressedDTO.getAnatomicalStructureTermId());
+			boolean lackStructureUberonSlimTermIds = ObjectUtils.isEmpty(whereExpressedDTO.getAnatomicalStructureUberonSlimTermIds());
+			boolean lackCellularComponentId = ObjectUtils.isEmpty(whereExpressedDTO.getCellularComponentTermId());
 
 			if ((lackAnatomicalStructureTermId || lackStructureUberonSlimTermIds) && lackCellularComponentId) {
-				response.addErrorMessage("whereExpressed - MUST HAVe (anatomicalStructureTermId and anatomicalStructureUberonSlimTermIds) or cellularComponentTermId", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhereExpressed() + ")");
+				response.addErrorMessage("whereExpressed - MUST HAVe (anatomicalStructureTermId and anatomicalStructureUberonSlimTermIds) or cellularComponentTermId", ValidationConstants.REQUIRED_MESSAGE + " (" + whereExpressedDTO + ")");
 			}
 
 			if (!lackAnatomicalStructureTermId) {
-				AnatomicalTerm anatomicalStructureTerm = anatomicalTermService.findByCurie(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureTermId());
+				AnatomicalTerm anatomicalStructureTerm = anatomicalTermService.findByCurie(whereExpressedDTO.getAnatomicalStructureTermId());
 				if (anatomicalStructureTerm == null) {
-					response.addErrorMessage("whereExpressed - anatomicalStructureTermId", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureTermId() + ")");
+					response.addErrorMessage("whereExpressed - anatomicalStructureTermId", ValidationConstants.INVALID_MESSAGE + " (" + whereExpressedDTO.getAnatomicalStructureTermId() + ")");
 				} else {
 					anatomicalSite.setAnatomicalStructure(anatomicalStructureTerm);
 				}
 			}
 
-			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalSubStructureTermId())) {
-				AnatomicalTerm anatomicalSubStructureTerm = anatomicalTermService.findByCurie(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalSubStructureTermId());
+			if (!ObjectUtils.isEmpty(whereExpressedDTO.getAnatomicalSubStructureTermId())) {
+				AnatomicalTerm anatomicalSubStructureTerm = anatomicalTermService.findByCurie(whereExpressedDTO.getAnatomicalSubStructureTermId());
 				if (anatomicalSubStructureTerm == null) {
-					response.addErrorMessage("whereExpressed - anatomicalSubStructureTermId", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getWhereExpressed().getAnatomicalSubStructureTermId() + ")");
+					response.addErrorMessage("whereExpressed - anatomicalSubStructureTermId", ValidationConstants.INVALID_MESSAGE + " (" + whereExpressedDTO.getAnatomicalSubStructureTermId() + ")");
 				} else {
 					anatomicalSite.setAnatomicalSubstructure(anatomicalSubStructureTerm);
 				}
 			}
 
 			if (!lackCellularComponentId) {
-				GOTerm cellularComponent = goTermService.findByCurie(geneExpressionFmsDTO.getWhereExpressed().getCellularComponentTermId());
+				GOTerm cellularComponent = goTermService.findByCurie(whereExpressedDTO.getCellularComponentTermId());
 				if (cellularComponent == null) {
-					response.addErrorMessage("whereExpressed - cellularComponentTermId", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getWhereExpressed().getCellularComponentTermId() + ")");
+					response.addErrorMessage("whereExpressed - cellularComponentTermId", ValidationConstants.INVALID_MESSAGE + " (" + whereExpressedDTO.getCellularComponentTermId() + ")");
 				} else {
 					GOTerm cellularComponentRibbon = goTermService.findSubsetTerm(cellularComponent, "goslim_agr");
 					if (cellularComponentRibbon == null) {
@@ -222,8 +232,8 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 				}
 			}
 
-			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureQualifierTermId())) {
-				String anatomicalstructurequalifiertermId = geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureQualifierTermId();
+			if (!ObjectUtils.isEmpty(whereExpressedDTO.getAnatomicalStructureQualifierTermId())) {
+				String anatomicalstructurequalifiertermId = whereExpressedDTO.getAnatomicalStructureQualifierTermId();
 				if (vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ANATOMICAL_STRUCTURE_QUALIFIER, anatomicalstructurequalifiertermId) != null) {
 					OntologyTerm anatomicalStructureQualifierTerm = ontologyTermService.findByCurieOrSecondaryId(anatomicalstructurequalifiertermId);
 					if (anatomicalStructureQualifierTerm == null) {
@@ -234,8 +244,8 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 				}
 			}
 
-			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalSubStructureQualifierTermId())) {
-				String anatomicalsubstructurequalifierId = geneExpressionFmsDTO.getWhereExpressed().getAnatomicalSubStructureQualifierTermId();
+			if (!ObjectUtils.isEmpty(whereExpressedDTO.getAnatomicalSubStructureQualifierTermId())) {
+				String anatomicalsubstructurequalifierId = whereExpressedDTO.getAnatomicalSubStructureQualifierTermId();
 				if (vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ANATOMICAL_SUBSTRUCTURE_QUALIFIER, anatomicalsubstructurequalifierId) != null) {
 					OntologyTerm anatomicalSubStructureQualifierTerm = ontologyTermService.findByCurieOrSecondaryId(anatomicalsubstructurequalifierId);
 					if (anatomicalSubStructureQualifierTerm == null) {
@@ -246,8 +256,8 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 				}
 			}
 
-			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getCellularComponentQualifierTermId())) {
-				String cellularComponentQualifierTermId = geneExpressionFmsDTO.getWhereExpressed().getCellularComponentQualifierTermId();
+			if (!ObjectUtils.isEmpty(whereExpressedDTO.getCellularComponentQualifierTermId())) {
+				String cellularComponentQualifierTermId = whereExpressedDTO.getCellularComponentQualifierTermId();
 				if (vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.CELLULAR_COMPONENT_QUALIFIER, cellularComponentQualifierTermId) != null) {
 					OntologyTerm cellularComponentQualifierTerm = ontologyTermService.findByCurieOrSecondaryId(cellularComponentQualifierTermId);
 					if (cellularComponentQualifierTerm == null) {
@@ -258,8 +268,8 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 				}
 			}
 
-			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureUberonSlimTermIds())) {
-				List<UberonSlimTermDTO> anatomicalStructureUberonSlimTermIds = geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureUberonSlimTermIds();
+			if (!ObjectUtils.isEmpty(whereExpressedDTO.getAnatomicalStructureUberonSlimTermIds())) {
+				List<UberonSlimTermDTO> anatomicalStructureUberonSlimTermIds = whereExpressedDTO.getAnatomicalStructureUberonSlimTermIds();
 				List<UBERONTerm> uberonTerms = new ArrayList<>();
 				for (UberonSlimTermDTO uberonSlimTermDTO: anatomicalStructureUberonSlimTermIds) {
 					if (!uberonSlimTermDTO.getUberonTerm().equals("Other")) {
@@ -274,8 +284,8 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 				anatomicalSite.setAnatomicalStructureUberonTerms(uberonTerms);
 			}
 
-			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalSubStructureUberonSlimTermIds())) {
-				List<UberonSlimTermDTO> anatomicalSubStructureUberonSlimTermIds = geneExpressionFmsDTO.getWhereExpressed().getAnatomicalSubStructureUberonSlimTermIds();
+			if (!ObjectUtils.isEmpty(whereExpressedDTO.getAnatomicalSubStructureUberonSlimTermIds())) {
+				List<UberonSlimTermDTO> anatomicalSubStructureUberonSlimTermIds = whereExpressedDTO.getAnatomicalSubStructureUberonSlimTermIds();
 				List<UBERONTerm> uberonTerms = new ArrayList<>();
 				for (UberonSlimTermDTO uberonSlimTermDTO : anatomicalSubStructureUberonSlimTermIds) {
 					if (!uberonSlimTermDTO.getUberonTerm().equals("Other")) {
@@ -314,9 +324,9 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		return response;
 	}
 
-	private TemporalContext updateTemporalContext(ObjectResponse<TemporalContext> temporalContextObjectResponse, GeneExpressionAnnotation geneExpressionAnnotation) {
+	protected TemporalContext updateTemporalContext(ObjectResponse<TemporalContext> temporalContextObjectResponse, TemporalContext whenExpressed) {
 		TemporalContext temporalContext = temporalContextObjectResponse.getEntity();
-		TemporalContext temporalContextDB = geneExpressionAnnotation.getExpressionPattern().getWhenExpressed();
+		TemporalContext temporalContextDB = whenExpressed;
 		if (temporalContextDB == null) {
 			temporalContextDB = new TemporalContext();
 		}
@@ -325,9 +335,9 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		return temporalContextDB;
 	}
 
-	private AnatomicalSite updateAnatomicalSite(ObjectResponse<AnatomicalSite> anatomicalSiteObjectResponse, GeneExpressionAnnotation geneExpressionAnnotation) {
+	private AnatomicalSite updateAnatomicalSite(ObjectResponse<AnatomicalSite> anatomicalSiteObjectResponse, AnatomicalSite whereExpressed) {
 		AnatomicalSite anatomicalSite = anatomicalSiteObjectResponse.getEntity();
-		AnatomicalSite anatomicalSiteDB = geneExpressionAnnotation.getExpressionPattern().getWhereExpressed();
+		AnatomicalSite anatomicalSiteDB = whereExpressed;
 		if (anatomicalSiteDB == null) {
 			anatomicalSiteDB = new AnatomicalSite();
 		}

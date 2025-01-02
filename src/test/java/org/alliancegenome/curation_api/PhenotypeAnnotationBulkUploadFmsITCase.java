@@ -88,6 +88,8 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		createMpTerm(mpTerm, "Test PhenotypeTerm");
 		ResourceDescriptor rd = createResourceDescriptor("PMID");
 		createResourceDescriptorPage("default", "https://www.ncbi.nlm.nih.gov/pubmed/[%s]", rd);
+		ResourceDescriptor rd2 = createResourceDescriptor("PATEST");
+		createResourceDescriptorPage("gene/phenotypes", "https://xref_url_test/[%s]", rd2);
 	}
 
 	@Test
@@ -198,6 +200,16 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				.body("results[0].crossReference.displayName", is("PMID:25920554"))
 				.body("results[0].phenotypeTerms", hasSize(1))
 				.body("results[0].phenotypeTerms[0].curie", is(mpTerm));
+		
+		RestAssured.given().when().get("/api/gene/" + gene).
+				then().
+				statusCode(200).
+				body("entity.modEntityId", is(gene)).
+				body("entity.crossReferences", hasSize(1)).
+				body("entity.crossReferences[0].displayName", is("PATEST")).
+				body("entity.crossReferences[0].referencedCurie", is(gene)).
+				body("entity.crossReferences[0].resourceDescriptorPage.name", is("gene/phenotypes")).
+				body("entity.crossReferences[0].resourceDescriptorPage.urlTemplate", is("https://xref_url_test/[%s]"));
 	}
 
 	@Test

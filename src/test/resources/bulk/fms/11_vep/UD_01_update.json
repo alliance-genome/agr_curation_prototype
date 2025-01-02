@@ -1,0 +1,22 @@
+[
+	{
+		"uploadedVariation": "NC_003279.8:g.1A>T",
+		"location": "I:2-1000",
+		"feature": "WB:Y74C9A.2a.1",
+		"featureType": "Transcript",
+		"consequence": "splice_donor_5th_base_variant",
+		"cdnaPosition": "2-900",
+		"cdsPosition": "3-500",
+		"proteinPosition": "247-250",
+		"aminoAcids": "M/N",
+		"codons": "aCt/aTt",
+		"extra": [
+			"IMPACT=MODIFIER",
+			"HGVSc=WB:Y74C9A.2a.1:c.29M>N",
+			"HGVSp=WB:CE49439:p.Met10Neo",
+			"PolyPhen=possibly_damaging(0.8)",
+			"SIFT=deleterious_low_confidence(0.767)"
+		]
+	}
+]
+

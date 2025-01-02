@@ -35,9 +35,15 @@ public class BulkLoadFileHistoryCrudController extends BaseEntityCrudController<
 	public ObjectResponse<BulkLoad> restartBulkLoad(Long id) {
 		return bulkLoadFileHistoryService.restartBulkLoad(id);
 	}
+
+	@Override
+	public ObjectResponse<BulkLoadFile> stopBulkLoadHistory(Long id) {
+		return bulkLoadFileHistoryService.stopBulkLoadHistory(id);
+	}
 	
 	@Override
 	public ObjectResponse<BulkLoadFile> restartBulkLoadHistory(Long id) {
 		return bulkLoadFileHistoryService.restartBulkLoadHistory(id);
 	}
+
 }

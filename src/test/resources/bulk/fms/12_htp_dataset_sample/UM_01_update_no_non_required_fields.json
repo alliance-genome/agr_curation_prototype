@@ -1,0 +1,31 @@
+{
+    "data": [
+        {
+            "datasetIds" : [
+                 "GEO:TEST1"
+            ],
+            "sampleId" : {
+              "primaryId" : "GEO:TEST1"
+            },
+            "assayType" : "HTPMMO:assay001",
+            "sampleType" : "HTPOBI:sample001",
+            "genomicInformation" : {
+                "biosampleId" : "AGA:Allele0001",
+                "idType" : "fish"
+              }
+        }
+    ],
+    "metaData": {
+        "dataProvider": {
+        "crossReference": {
+            "id": "FB",
+            "pages": [
+            "homepage"
+            ]
+        },
+        "type": "curated"
+        },
+        "dateProduced": "2024-07-12T12:36:21-04:00",
+        "release": "2024_03"
+    }
+}

@@ -28,6 +28,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -155,6 +156,10 @@ public class Gff3ExonExecutor extends Gff3Executor {
 			}
 
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		updateHistory(history);
 		ph.finishProcess();

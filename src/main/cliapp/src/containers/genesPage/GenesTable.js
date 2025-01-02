@@ -14,24 +14,40 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
+import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
+import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 
 import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 
 import { SearchService } from '../../service/SearchService';
+
+import { Button } from 'primereact/button';
+import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 
 export const GenesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [genes, setGenes] = useState([]);
+	const errorMessagesRef = useRef();
+	errorMessagesRef.current = errorMessages;
 
 	const searchService = new SearchService();
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
+
+	const [relatedNotesData, setRelatedNotesData] = useState({
+		relatedNotes: [],
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
 
 	const [synonymsData, setSynonymsData] = useState({
 		dialog: false,
@@ -96,6 +112,86 @@ export const GenesTable = () => {
 		setSystematicNameData(() => ({
 			..._systematicNameData,
 		}));
+	};
+
+	const handleRelatedNotesOpen = (relatedNotes) => {
+		console.log('relatedNotes', relatedNotes);
+		let _relatedNotesData = {};
+		_relatedNotesData['originalRelatedNotes'] = relatedNotes;
+		_relatedNotesData['dialog'] = true;
+		_relatedNotesData['isInEdit'] = false;
+		setRelatedNotesData(() => ({
+			..._relatedNotesData,
+		}));
+	};
+
+	const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _relatedNotesData = {};
+		_relatedNotesData['originalRelatedNotes'] = rowProps.rowData.relatedNotes;
+		_relatedNotesData['dialog'] = true;
+		_relatedNotesData['isInEdit'] = isInEdit;
+		_relatedNotesData['rowIndex'] = index;
+		_relatedNotesData['mainRowProps'] = rowProps;
+		setRelatedNotesData(() => ({
+			..._relatedNotesData,
+		}));
+	};
+
+	const relatedNotesEditor = (props) => {
+		if (props?.rowData?.relatedNotes) {
+			return (
+				<>
+					<div>
+						<Button
+							className="p-button-text"
+							onClick={(event) => {
+								handleRelatedNotesOpenInEdit(event, props, true);
+							}}
+						>
+							<span style={{ textDecoration: 'underline' }}>
+								{`Notes(${props.rowData.relatedNotes.length}) `}
+								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
+							</span>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<EditMessageTooltip object="allele" />
+						</Button>
+					</div>
+					<ErrorMessageComponent
+						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorField={'relatedNotes'}
+						style={{ fontSize: '1em' }}
+					/>
+				</>
+			);
+		} else {
+			return (
+				<>
+					<div>
+						<Button
+							className="p-button-text"
+							onClick={(event) => {
+								handleRelatedNotesOpenInEdit(event, props, true);
+							}}
+						>
+							<span style={{ textDecoration: 'underline' }}>
+								Add Note
+								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
+							</span>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<EditMessageTooltip />
+						</Button>
+					</div>
+					<ErrorMessageComponent
+						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorField={'relatedNotes'}
+						style={{ fontSize: '1em' }}
+					/>
+				</>
+			);
+		}
 	};
 
 	const columns = [
@@ -208,6 +304,16 @@ export const GenesTable = () => {
 			body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
+		},
+		{
+			field: 'relatedNotes.freeText',
+			header: 'Related Notes',
+			body: (rowData) => (
+				<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
+			),
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
+			editor: relatedNotesEditor,
 		},
 		{
 			field: 'dataProvider.sourceOrganization.abbreviation',
@@ -349,6 +455,13 @@ export const GenesTable = () => {
 			<SystematicNameDialog
 				originalSystematicNameData={systematicNameData}
 				setOriginalSystematicNameData={setSystematicNameData}
+			/>
+			<RelatedNotesDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+				noteTypeVocabularyTermSet="variant_note_type"
 			/>
 		</>
 	);
