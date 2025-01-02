@@ -8,7 +8,11 @@ export const EntityDetailsAction = ({ endpoint, identifier, disabled }) => {
 
 	return (
 		<>
-			<Link to={`${endpoint}/${identifier}`} target="_blank" className={`${identifier.replace(':', '')} ${disabledClasses}`}>
+			<Link
+				to={`${endpoint}/${identifier}`}
+				target="_blank"
+				className={`${identifier.replace(':', '')} ${disabledClasses}`}
+			>
 				<i className="pi pi-info-circle"></i>
 			</Link>
 			<Tooltip target={`.${identifier.replace(':', '')}`} content={'Open Details'} />
