@@ -78,8 +78,7 @@ public class AffectedGenomicModel extends GenomicEntity {
 		"agmSequenceTargetingReagentAssociationObject.secondaryIdentifiers_keyword"
 	})
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	// @JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class }) TODO: fix this once a descision is made
-	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelView.class })
+	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class })
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 
 }
