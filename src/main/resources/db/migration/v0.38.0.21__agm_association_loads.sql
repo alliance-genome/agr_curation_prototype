@@ -30,11 +30,11 @@ CREATE INDEX agmsequencetargetingreagentassociation_obsolete_index ON public.agm
 CREATE INDEX agmsequencetargetingreagentassociation_relation_index ON public.agmsequencetargetingreagentassociation USING btree (relation_id);
 CREATE INDEX agmsequencetargetingreagentassociation_updatedby_index ON public.agmsequencetargetingreagentassociation USING btree (updatedby_id);
 
-ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_agmassociationsubject_id FOREIGN KEY (agmassociationsubject_id) REFERENCES public.affectedgenomicmodel(id);
-ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_relation_id FOREIGN KEY (relation_id) REFERENCES public.vocabularyterm(id);
-ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_updatedby_id FOREIGN KEY (updatedby_id) REFERENCES public.person(id);
-ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_agmsequencetargetingreagentassociationobject_id FOREIGN KEY (agmsequencetargetingreagentassociationobject_id) REFERENCES public.sequencetargetingreagent(id);
-ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_createdby_id FOREIGN KEY (createdby_id) REFERENCES public.person(id);
+ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmstrassociation_agmassociationsubject_id FOREIGN KEY (agmassociationsubject_id) REFERENCES public.affectedgenomicmodel(id);
+ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmstrassociation_relation_id FOREIGN KEY (relation_id) REFERENCES public.vocabularyterm(id);
+ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmstrassociation_updatedby_id FOREIGN KEY (updatedby_id) REFERENCES public.person(id);
+ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmstrassociation_agmstrassociationobject_id FOREIGN KEY (agmsequencetargetingreagentassociationobject_id) REFERENCES public.sequencetargetingreagent(id);
+ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmstrassociation_createdby_id FOREIGN KEY (createdby_id) REFERENCES public.person(id);
 
 --create vocabulary
 

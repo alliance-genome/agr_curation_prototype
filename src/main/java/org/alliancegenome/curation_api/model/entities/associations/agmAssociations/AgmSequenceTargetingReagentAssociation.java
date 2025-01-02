@@ -33,13 +33,13 @@ import lombok.ToString;
 @Schema(name = "AgmSequenceTargetingReagentAssociation", description = "POJO representing an association between an AGM and a STR")
 
 @Table(indexes = {
-	@Index(name = "AgmSequenceTargetingReagentAssociation_internal_index", columnList = "internal"),
-	@Index(name = "AgmSequenceTargetingReagentAssociation_obsolete_index", columnList = "obsolete"),
-	@Index(name = "AgmSequenceTargetingReagentAssociation_createdBy_index", columnList = "createdBy_id"),
-	@Index(name = "AgmSequenceTargetingReagentAssociation_updatedBy_index", columnList = "updatedBy_id"),
-	@Index(name = "AgmSequenceTargetingReagentAssociation_relation_index", columnList = "relation_id"),
-	@Index(name = "AgmSequenceTargetingReagentAssociation_agmAssociationSubject_index", columnList = "agmAssociationSubject_id"),
-	@Index(name = "AgmSequenceTargetingReagentAssociation_agmSequenceTargetingReagentAssociationObject_index", columnList = "agmSequenceTargetingReagentAssociationObject_id")
+	@Index(name = "AgmStrAssociation_internal_index", columnList = "internal"),
+	@Index(name = "AgmStrAssociation_obsolete_index", columnList = "obsolete"),
+	@Index(name = "AgmStrAssociation_createdBy_index", columnList = "createdBy_id"),
+	@Index(name = "AgmStrAssociation_updatedBy_index", columnList = "updatedBy_id"),
+	@Index(name = "AgmStrAssociation_relation_index", columnList = "relation_id"),
+	@Index(name = "AgmStrAssociation_agmAssociationSubject_index", columnList = "agmAssociationSubject_id"),
+	@Index(name = "AgmStrAssociation_AgmStrAssociationObject_index", columnList = "agmSequenceTargetingReagentAssociationObject_id")
 })
 
 public class AgmSequenceTargetingReagentAssociation extends Association {
