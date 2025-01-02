@@ -56,25 +56,25 @@ DROP TABLE tmp_vocab_link;
 
 --create loads
 
-INSERT INTO bulkloadgroup (id, name) VALUES (nextval('bulkloadgroup_seq'), 'AGM Association Loads');
+INSERT INTO bulkloadgroup (id, name) VALUES (nextval('bulkloadgroup_seq'), ' Direct (LinkML) AGM Association Loads');
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'ZFIN AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'ZFIN AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = ' Direct (LinkML) AGM Association Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'FB AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'FB AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = ' Direct (LinkML) AGM Association Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'MGI AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'MGI AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = ' Direct (LinkML) AGM Association Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'RGD AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'RGD AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = ' Direct (LinkML) AGM Association Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'WB AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'WB AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = ' Direct (LinkML) AGM Association Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'HUMAN AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'HUMAN AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = ' Direct (LinkML) AGM Association Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'SGD AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'SGD AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = ' Direct (LinkML) AGM Association Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'XBXL AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'XBXL AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = ' Direct (LinkML) AGM Association Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'XBXT AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'AGM Association Loads';
+	SELECT nextval('bulkload_seq'), 'AGM_ASSOCIATION', 'XBXT AGM Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = ' Direct (LinkML) AGM Association Loads';
 
 INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive)
 	SELECT id, '0 0 22 ? * SUN-THU', false FROM bulkload WHERE backendbulkloadtype = 'AGM_ASSOCIATION';
