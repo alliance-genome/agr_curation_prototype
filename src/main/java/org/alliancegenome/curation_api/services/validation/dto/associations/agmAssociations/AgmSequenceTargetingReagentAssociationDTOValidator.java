@@ -19,13 +19,14 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.SequenceTargetingReagentService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class AgmSequenceTargetingReagentAssociationDTOValidator {
+public class AgmSequenceTargetingReagentAssociationDTOValidator extends BaseDTOValidator {
 
 	@Inject AgmSequenceTargetingReagentAssociationDAO agmStrAssociationDAO;
 	@Inject AffectedGenomicModelService agmService;
@@ -75,7 +76,7 @@ public class AgmSequenceTargetingReagentAssociationDTOValidator {
 
 		VocabularyTerm relation = null;
 		if (StringUtils.isNotEmpty(dto.getRelationName())) {
-			relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ALLELE_GENE_RELATION_VOCABULARY_TERM_SET, dto.getRelationName()).getEntity();
+			relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.AGM_STR_RELATION_VOCABULARY_TERM_SET, dto.getRelationName()).getEntity();
 			if (relation == null) {
 				asaResponse.addErrorMessage("relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getRelationName() + ")");
 			}
@@ -107,7 +108,9 @@ public class AgmSequenceTargetingReagentAssociationDTOValidator {
 				association.setAgmSequenceTargetingReagentAssociationObject(object);
 			}
 		}
-
+		ObjectResponse<AgmSequenceTargetingReagentAssociation> assocResponse = validateAuditedObjectDTO(association, dto);
+		asaResponse.addErrorMessages(assocResponse.getErrorMessages());
+		association = (AgmSequenceTargetingReagentAssociation) assocResponse.getEntity();
 		if (asaResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, asaResponse.errorMessagesString());
 		}

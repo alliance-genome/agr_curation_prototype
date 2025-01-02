@@ -1,10 +1,10 @@
 [
   {
-    "agm_subject_identifier": "AGMTEST:Agm0001",
+    "agm_subject_identifier": "AMGTEST:AffectedGenomicModel0001",
     "relation_name": "contains",
     "sequence_targeting_reagent_identifier": "ZFIN:ZDB-TALEN-180503-1",
-    "internal": true,
-    "obsolete": true,
+    "internal": false,
+    "obsolete": false,
     "created_by_curie": "AGMTEST:Person0001",
     "updated_by_curie": "AGMTEST:Person0002",
     "date_created": "2022-03-09T22:10:12+00:00",

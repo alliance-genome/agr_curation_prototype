@@ -41,6 +41,13 @@ public interface AffectedGenomicModelCrudInterface extends BaseSubmittedObjectCr
 	@JsonView(View.FieldsAndLists.class)
 	APIResponse updateAGMs(@PathParam("dataProvider") String dataProvider, List<AffectedGenomicModelDTO> agmData);
 
+	//TODO: remove this or the other once a descition is made
+	// @Override
+	// @GET
+	// @Path("/{identifierString}")
+	// @JsonView(View.AffectedGenomicModelDetailView.class)
+	// ObjectResponse<AffectedGenomicModel> getByIdentifier(@PathParam("identifierString") String identifierString);
+
 	@Override
 	@GET
 	@Path("/{identifierString}")

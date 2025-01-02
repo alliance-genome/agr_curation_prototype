@@ -9,8 +9,8 @@ import java.time.OffsetDateTime;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
-import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +40,6 @@ public class AgmStrAssociationBulkUploadITCase extends BaseITCase {
 	private String agmCurie = "AMGTEST:AffectedGenomicModel0001";
 	private String relationName = "contains";
 	private String strCurie = "ZFIN:ZDB-TALEN-180503-1";
-	private String vocabTerm = "contains";
 	
 	@BeforeEach
 	public void init() {
@@ -50,17 +49,15 @@ public class AgmStrAssociationBulkUploadITCase extends BaseITCase {
 					.setParam("http.connection.timeout", 60000));
 	}
 
-	private final String agmSequenceTargetingReagentAssociationBulkPostEndpoint = "/api/agmstrassociation/bulk/WB/associationFile";
+	private final String agmSequenceTargetingReagentAssociationBulkPostEndpoint = "/api/agmstrassociation/bulk/ZFIN/associationFile";
 	private final String agmSequenceTargetingReagentAssociationGetEndpoint = "/api/agmstrassociation/findBy";
-	private final String agmSequenceTargetingReagentAssociationTestFilePath = "src/test/resources/bulk/AGMA01_agm_str_association";
+	private final String agmSequenceTargetingReagentAssociationTestFilePath = "src/test/resources/bulk/AGMA01_agm_str_association/";
 	private final String agmGetEndpoint = "/api/agm/";
-	private final String strGetEndpoint = "/api/str/";
+	private final String strGetEndpoint = "/api/sqtr/";
 
 	private void loadRequiredEntities() throws Exception {
-		Vocabulary agmRelationVocab = createVocabulary("agm_relation", false);
-		createVocabularyTerm(agmRelationVocab, vocabTerm, false);
-		addVocabularyTermToSet("agm_str_relation", vocabTerm, agmRelationVocab, false);
-		agm = getAffectedGenomicModel(agmCurie);
+		DataProvider dataProvider = createDataProvider("ZFIN", false);
+		agm = createAffectedGenomicModel(agmCurie, "test name", "NCBITaxon:7955", "fish", false, dataProvider);
 		str = getSequenceTargetingReagent(strCurie);
 	}
 	
@@ -78,11 +75,11 @@ public class AgmStrAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
 			body("entity.agmSequenceTargetingReagentAssociationObject.modEntityId", is(strCurie)).
-			body("entity.agmSubjectIdentifier.modEntityId", is(agmCurie)).
-			body("entity.internal", is(true)).
-			body("entity.obsolete", is(true)).
-			body("entity.createdBy.uniqueId", is("AMGTEST:Person0001")).
-			body("entity.updatedBy.uniqueId", is("AMGTEST:Person0002")).
+			body("entity.agmAssociationSubject.modEntityId", is(agmCurie)).
+			body("entity.internal", is(false)).
+			body("entity.obsolete", is(false)).
+			body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
+			body("entity.updatedBy.uniqueId", is("AGMTEST:Person0002")).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12+00:00").toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12+00:00").toString()));
 		
@@ -110,7 +107,6 @@ public class AgmStrAssociationBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void agmStrAssociationBulkUploadUpdateCheckFields() throws Exception {
-		loadRequiredEntities();
 
 		checkSuccessfulBulkLoad(agmSequenceTargetingReagentAssociationBulkPostEndpoint, agmSequenceTargetingReagentAssociationTestFilePath + "UD_01_update_all_except_default_fields.json");
 
@@ -121,13 +117,13 @@ public class AgmStrAssociationBulkUploadITCase extends BaseITCase {
 				statusCode(200).
 				body("entity.relation.name", is(relationName)).
 				body("entity.agmSequenceTargetingReagentAssociationObject.modEntityId", is(strCurie)).
-				body("entity.agmSubjectIdentifier.modEntityId", is(agmCurie)).
-				body("entity.internal", is(false)).
-				body("entity.obsolete", is(false)).
-				body("entity.createdBy.uniqueId", is("AMGTEST:Person0002")).
-				body("entity.updatedBy.uniqueId", is("AMGTEST:Person0001")).
-				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-				body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString()));
+				body("entity.agmAssociationSubject.modEntityId", is(agmCurie)).
+				body("entity.internal", is(true)).
+				body("entity.obsolete", is(true)).
+				body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
+				body("entity.updatedBy.uniqueId", is("AGMTEST:Person0002")).
+				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12+00:00").toString())).
+				body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12+00:00").toString()));
 
 
 		RestAssured.given().

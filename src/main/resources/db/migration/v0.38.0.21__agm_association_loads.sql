@@ -20,10 +20,7 @@ CREATE SEQUENCE public.agmsequencetargetingreagentassociation_seq
     NO MAXVALUE
     CACHE 1;
 
-
-
 ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_pkey PRIMARY KEY (id);
-
 
 CREATE INDEX agmsequencetargetingreagentassociation_agmassociationsubject_in ON public.agmsequencetargetingreagentassociation USING btree (agmassociationsubject_id);
 CREATE INDEX agmsequencetargetingreagentassociation_agmsequencetargetingreag ON public.agmsequencetargetingreagentassociation USING btree (agmsequencetargetingreagentassociationobject_id);
@@ -39,6 +36,23 @@ ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT ag
 ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_agmsequencetargetingreagentassociationobject_id FOREIGN KEY (agmsequencetargetingreagentassociationobject_id) REFERENCES public.sequencetargetingreagent(id);
 ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT agmsequencetargetingreagentassociation_createdby_id FOREIGN KEY (createdby_id) REFERENCES public.person(id);
 
+--create vocabulary
+
+INSERT INTO vocabulary (id, name, vocabularylabel) VALUES (nextval('vocabulary_seq'), 'AGM Relation', 'agm_relation');
+
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'contains', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_relation';
+
+INSERT INTO vocabularytermset(id, name, vocabularylabel, vocabularytermsetvocabulary_id) SELECT nextval('vocabularytermset_seq'), 'AGM STR Association Relation', 'agm_str_relation', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_relation';
+
+CREATE TABLE tmp_vocab_link ( vocabularytermsets_id bigint, memberterms_id bigint );
+	
+INSERT INTO tmp_vocab_link (memberterms_id) SELECT id FROM vocabularyterm WHERE name = 'contains' AND vocabulary_id = (SELECT id FROM vocabulary WHERE vocabularylabel = 'agm_relation');
+
+UPDATE tmp_vocab_link SET vocabularytermsets_id = subquery.id FROM (SELECT id FROM vocabularytermset WHERE vocabularylabel = 'agm_str_relation') AS subquery WHERE vocabularytermsets_id IS NULL;
+
+INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) SELECT vocabularytermsets_id, memberterms_id FROM tmp_vocab_link;
+	
+DROP TABLE tmp_vocab_link;
 
 --create loads
 

@@ -65,7 +65,7 @@ public class AgmStrAssociationService extends BaseAssociationDTOCrudService<AgmS
 
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
 		List<Long> associationIds = agmStrAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 
@@ -111,7 +111,7 @@ public class AgmStrAssociationService extends BaseAssociationDTOCrudService<AgmS
 		Map<String, Object> params = new HashMap<>();
 		params.put("agmAssociationSubject.id", agmId);
 		params.put("relation.name", relationName);
-		params.put("agmStrAssociationObject.id", strId);
+		params.put("agmSequenceTargetingReagentAssociationObject.id", strId);
 
 		SearchResponse<AgmSequenceTargetingReagentAssociation> resp = agmStrAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null) {

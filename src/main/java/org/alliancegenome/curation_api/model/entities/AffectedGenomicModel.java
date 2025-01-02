@@ -25,7 +25,7 @@ import java.util.List;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"agmDiseaseAnnotations", "constructGenomicEntityAssociations", "agmSecondaryIds"}, callSuper = true)
+@ToString(exclude = {"agmDiseaseAnnotations", "constructGenomicEntityAssociations", "agmSecondaryIds", "agmSequenceTargetingReagentAssociations"}, callSuper = true)
 @Schema(name = "AffectedGenomicModel", description = "POJO that represents the AGM")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntity.class}, partial = true)
 public class AffectedGenomicModel extends GenomicEntity {
@@ -78,7 +78,8 @@ public class AffectedGenomicModel extends GenomicEntity {
 		"agmSequenceTargetingReagentAssociationObject.secondaryIdentifiers_keyword"
 	})
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class })
+	// @JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class }) TODO: fix this once a descision is made
+	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelView.class })
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 
 }

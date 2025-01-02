@@ -37,7 +37,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "sequenceTargetingReagentGeneAssociations" }, callSuper = true)
+@ToString(exclude = { "sequenceTargetingReagentGeneAssociations", "agmSequenceTargetingReagentAssociations" }, callSuper = true)
 @Schema(name = "SequenceTargetingReagent", description = "POJO that represents the SequenceTargetingReagent")
 @AGRCurationSchemaVersion(min = "2.3.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 public class SequenceTargetingReagent extends GenomicEntity {
@@ -76,6 +76,6 @@ public class SequenceTargetingReagent extends GenomicEntity {
 	private List<SequenceTargetingReagentGeneAssociation> sequenceTargetingReagentGeneAssociations;
 
 	@OneToMany(mappedBy = "agmSequenceTargetingReagentAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class })
+	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentDetailView.class })
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 }
