@@ -23,4 +23,5 @@ public class VariantFmsDTO extends BaseDTO {
 	private List<VariantNoteFmsDTO> notes;
 	private List<PublicationRefFmsDTO> references;
 	private List<CrossReferenceFmsDTO> crossReferences;
+	private List<String> synonyms;
 }

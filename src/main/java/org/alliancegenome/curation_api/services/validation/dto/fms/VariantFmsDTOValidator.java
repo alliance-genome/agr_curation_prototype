@@ -132,6 +132,27 @@ public class VariantFmsDTOValidator {
 			}
 		}
 		variant.setSourceGeneralConsequence(consequence);
+
+		if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
+			List<String> existingSynonyms = variant.getSynonyms();
+			if (CollectionUtils.isEmpty(existingSynonyms)) {
+				existingSynonyms = new ArrayList<>();
+			}
+			// remove synonyms that are no longer in the submitted file
+			List<String> toBeRemoved = existingSynonyms.stream()
+				.filter(synonym -> !dto.getSynonyms().contains(synonym))
+				.toList();
+			existingSynonyms.removeIf(toBeRemoved::contains);
+			// add missing synonyms
+			final List<String> synonymStrings = existingSynonyms;
+			List<String> toBeAdded = dto.getSynonyms().stream()
+				.filter(synonym -> !synonymStrings.contains(synonym))
+				.toList();
+			existingSynonyms.addAll(toBeAdded);
+			variant.setSynonyms(existingSynonyms);
+		} else {
+			variant.setSynonyms(null);
+		}
 		
 		List<CrossReference> validatedXrefs = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getCrossReferences())) {
