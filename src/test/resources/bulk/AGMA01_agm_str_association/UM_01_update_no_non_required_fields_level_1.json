@@ -1,0 +1,7 @@
+[
+  {
+    "agm_subject_identifier": "AMGTEST:AffectedGenomicModel0001",
+    "relation_name": "contains",
+    "sequence_targeting_reagent_identifier": "ZFIN:ZDB-TALEN-180503-1"
+  }
+]
