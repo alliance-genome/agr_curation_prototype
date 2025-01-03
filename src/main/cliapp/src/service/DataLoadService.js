@@ -127,6 +127,7 @@ export class DataLoadService extends BaseAuthService {
 				'CONSTRUCT',
 				'ALLELE_ASSOCIATION',
 				'CONSTRUCT_ASSOCIATION',
+				'AGM_ASSOCIATION',
 			],
 		};
 		return bulkLoadTypes[loadType];

@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.associations.agmAssociations.AgmSequenceTargetingReagentAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.agmSlotAnnotations.AgmSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
@@ -24,7 +25,7 @@ import java.util.List;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"agmDiseaseAnnotations", "constructGenomicEntityAssociations", "agmSecondaryIds"}, callSuper = true)
+@ToString(exclude = {"agmDiseaseAnnotations", "constructGenomicEntityAssociations", "agmSecondaryIds", "agmSequenceTargetingReagentAssociations"}, callSuper = true)
 @Schema(name = "AffectedGenomicModel", description = "POJO that represents the AGM")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntity.class}, partial = true)
 public class AffectedGenomicModel extends GenomicEntity {
@@ -67,5 +68,17 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@JoinTable(indexes = @Index(columnList = "affectedgenomicmodel_id"))
 	@Column(columnDefinition = "TEXT")
 	private List<String> synonyms;
+
+	@IndexedEmbedded(includePaths = {
+		"agmSequenceTargetingReagentAssociationObject.name",
+		"agmSequenceTargetingReagentAssociationObject.name_keyword",
+		"agmSequenceTargetingReagentAssociationObject.synonyms",
+		"agmSequenceTargetingReagentAssociationObject.synonyms_keyword",
+		"agmSequenceTargetingReagentAssociationObject.secondaryIdentifiers",
+		"agmSequenceTargetingReagentAssociationObject.secondaryIdentifiers_keyword"
+	})
+	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class })
+	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 
 }
