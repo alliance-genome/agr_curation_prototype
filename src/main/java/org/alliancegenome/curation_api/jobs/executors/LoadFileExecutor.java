@@ -218,6 +218,9 @@ public class LoadFileExecutor {
 	}
 
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType, String dataType) {
+		if (Thread.currentThread().isInterrupted()) {
+			return false;
+		}
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(objectList)) {
@@ -256,6 +259,7 @@ public class LoadFileExecutor {
 				}
 				ph.progressProcess();
 				if (Thread.currentThread().isInterrupted()) {
+					history.setBulkloadStatus(JobStatus.FORCED_STOPPED);
 					Log.info("Thread Interrupted:");
 					break;
 				}
@@ -273,6 +277,9 @@ public class LoadFileExecutor {
 
 	// The following methods are for bulk validation
 	protected <S extends BaseEntityCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString, Boolean deprecate) {
+		if (Thread.currentThread().isInterrupted()) {
+			return;
+		}
 		Log.debug("runLoad: After: " + dataProviderName + " " + annotationIdsAfter.size());
 
 		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
@@ -307,6 +314,7 @@ public class LoadFileExecutor {
 			}
 			ph.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
+				history.setBulkloadStatus(JobStatus.FORCED_STOPPED);
 				Log.info("Thread Interrupted:");
 				break;
 			}
