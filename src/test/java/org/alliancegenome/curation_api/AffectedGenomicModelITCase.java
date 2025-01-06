@@ -171,7 +171,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	
 	@Test
 	@Order(4)
-	public void editAGMWithMissingModEntityId() {
+	public void editAGMWithMissingPrimaryExternalId() {
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
 		agm.setPrimaryExternalId(null);
 		
@@ -228,7 +228,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 
 	@Test
 	@Order(7)
-	public void editAGMWithEmptyModEntityId() {
+	public void editAGMWithEmptyPrimaryExternalId() {
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
 		agm.setPrimaryExternalId("");
 

@@ -35,7 +35,7 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 	private VocabularyTerm relation;
 	private String relationName = "targets";
 	private String geneCurie = "GENETEST:Gene0001";
-	private String sqtrModEntityId = "ZFIN:ZDB-TALEN-180503-1";
+	private String sqtrPrimaryExternalId = "ZFIN:ZDB-TALEN-180503-1";
 	
 	private final String sqtrGeneAssociationGetEndpoint = "/api/sqtrgeneassociation/findBy";
 	private final String sqtrGeneAssociationTestFilePath = "src/test/resources/bulk/fms/SA01_sequencetargetingreagent_gene_association/";
@@ -48,7 +48,7 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 		Vocabulary noteTypeVocab = getVocabulary("construct_relation");
 		relation = getVocabularyTerm(noteTypeVocab, relationName);
 		gene = getGene(geneCurie);
-		sqtr = getSequenceTargetingReagent(sqtrModEntityId);
+		sqtr = getSequenceTargetingReagent(sqtrPrimaryExternalId);
 	}
 
 	@Test
@@ -65,11 +65,11 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
 			body("entity.sequenceTargetingReagentGeneAssociationObject.primaryExternalId", is(geneCurie)).
-			body("entity.sequenceTargetingReagentAssociationSubject.primaryExternalId", is(sqtrModEntityId));
+			body("entity.sequenceTargetingReagentAssociationSubject.primaryExternalId", is(sqtrPrimaryExternalId));
 		
 		RestAssured.given().
 			when().
-			get(sqtrGetEndpoint + sqtrModEntityId).
+			get(sqtrGetEndpoint + sqtrPrimaryExternalId).
 			then().
 			statusCode(200).
 			body("entity.sequenceTargetingReagentGeneAssociations", hasSize(1)).

@@ -74,8 +74,8 @@ public class AgmStrAssociationBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.agmSequenceTargetingReagentAssociationObject.modEntityId", is(strCurie)).
-			body("entity.agmAssociationSubject.modEntityId", is(agmCurie)).
+			body("entity.agmSequenceTargetingReagentAssociationObject.primaryExternalId", is(strCurie)).
+			body("entity.agmAssociationSubject.primaryExternalId", is(agmCurie)).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
 			body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
@@ -90,7 +90,7 @@ public class AgmStrAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.agmSequenceTargetingReagentAssociations", hasSize(1)).
 			body("entity.agmSequenceTargetingReagentAssociations[0].relation.name", is(relationName)).
-			body("entity.agmSequenceTargetingReagentAssociations[0].agmSequenceTargetingReagentAssociationObject.modEntityId", is(strCurie)).
+			body("entity.agmSequenceTargetingReagentAssociations[0].agmSequenceTargetingReagentAssociationObject.primaryExternalId", is(strCurie)).
 			body("entity.agmSequenceTargetingReagentAssociations[0].agmAssociationSubject", not(hasKey("agmSequenceTargetingReagentAssociations")));
 		
 		RestAssured.given().
@@ -100,7 +100,7 @@ public class AgmStrAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.agmSequenceTargetingReagentAssociations", hasSize(1)).
 			body("entity.agmSequenceTargetingReagentAssociations[0].relation.name", is(relationName)).
-			body("entity.agmSequenceTargetingReagentAssociations[0].agmSequenceTargetingReagentAssociationObject.modEntityId", is(strCurie)).
+			body("entity.agmSequenceTargetingReagentAssociations[0].agmSequenceTargetingReagentAssociationObject.primaryExternalId", is(strCurie)).
 			body("entity.agmSequenceTargetingReagentAssociations[0].agmSequenceTargetingReagentAssociationObject", not(hasKey("agmSequenceTargetingReagentAssociations")));
 	}
 
@@ -116,8 +116,8 @@ public class AgmStrAssociationBulkUploadITCase extends BaseITCase {
 				then().
 				statusCode(200).
 				body("entity.relation.name", is(relationName)).
-				body("entity.agmSequenceTargetingReagentAssociationObject.modEntityId", is(strCurie)).
-				body("entity.agmAssociationSubject.modEntityId", is(agmCurie)).
+				body("entity.agmSequenceTargetingReagentAssociationObject.primaryExternalId", is(strCurie)).
+				body("entity.agmAssociationSubject.primaryExternalId", is(agmCurie)).
 				body("entity.internal", is(true)).
 				body("entity.obsolete", is(true)).
 				body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
