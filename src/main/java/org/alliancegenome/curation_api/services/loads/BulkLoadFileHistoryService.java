@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services.loads;
 
+import java.util.Set;
+
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
@@ -101,6 +103,22 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 		return null;
 	}
 	
+	public ObjectResponse<BulkLoadFile> stopBulkLoadHistory(Long id) {
+		BulkLoadFileHistory history = bulkLoadFileHistoryDAO.find(id);
+		Log.info("Stop Bulk Load: " + history.getRunningThreadName());
+
+		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		
+		for (Thread t: threadSet) {
+			if (t.getName().equals(history.getRunningThreadName())) {
+				Log.info("Interupting Thread: " + t.getName());
+				t.interrupt();
+			}
+		}
+		
+		return new ObjectResponse<BulkLoadFile>(history.getBulkLoadFile());
+	}
+	
 	@Transactional
 	public ObjectResponse<BulkLoad> updateBulkLoad(Long id) {
 		BulkLoad load = bulkLoadDAO.find(id);
@@ -112,22 +130,26 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 	}
 
 	public ObjectResponse<BulkLoadFile> restartBulkLoadHistory(Long id) {
-		ObjectResponse<BulkLoadFile> resp = updateBulkLoadHistory(id);
+		ObjectResponse<BulkLoadFileHistory> resp = updateBulkLoadHistory(id);
 		Log.debug("Restart Bulk Load History: " + id);
 		if (resp != null) {
 			Log.debug("Firing Event: " + id);
-			pendingLoadJobEvents.fireAsync(new PendingLoadJobEvent(id));
-			return resp;
+			pendingLoadJobEvents.fireAsync(new PendingLoadJobEvent(resp.getEntity().getId()));
+			return new ObjectResponse<BulkLoadFile>(resp.getEntity().getBulkLoadFile());
 		}
 		return null;
 	}
 
 	@Transactional
-	public ObjectResponse<BulkLoadFile> updateBulkLoadHistory(Long id) {
+	public ObjectResponse<BulkLoadFileHistory> updateBulkLoadHistory(Long id) {
 		BulkLoadFileHistory history = bulkLoadFileHistoryDAO.find(id);
 		if (history != null && history.getBulkloadStatus().isNotRunning()) {
-			history.setBulkloadStatus(JobStatus.FORCED_PENDING);
-			return new ObjectResponse<BulkLoadFile>(history.getBulkLoadFile());
+			BulkLoadFileHistory newHistory = new BulkLoadFileHistory();
+			newHistory.setBulkLoad(history.getBulkLoad());
+			newHistory.setBulkLoadFile(history.getBulkLoadFile());
+			newHistory.setBulkloadStatus(JobStatus.FORCED_PENDING);
+			bulkLoadFileHistoryDAO.persist(newHistory);
+			return new ObjectResponse<BulkLoadFileHistory>(newHistory);
 		}
 		return null;
 	}

@@ -64,6 +64,17 @@
         "date_updated": ""
       }
     ],
+    "note_dtos": [
+      {
+        "free_text": "Test note",
+        "note_type_name": "comment",
+        "created_by_curie": "",
+        "updated_by_curie": "",
+        "date_created": "",
+        "date_updated": "",
+        "evidence_curies": []
+      }
+    ],
     "gene_secondary_id_dtos": [
       {
         "secondary_id": "TEST:Secondary",

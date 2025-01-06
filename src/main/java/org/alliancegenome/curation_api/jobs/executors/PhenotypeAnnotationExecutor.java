@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -82,7 +83,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 	private void runLoad(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, Set<Long> idsAdded, BackendBulkDataProvider dataProvider) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("Phenotype annotation DTO Update for " + dataProvider.name(), annotations.size());
+		ph.startProcess("PhenotypeAnnotation update for " + dataProvider.name(), annotations.size());
 
 		loadPrimaryAnnotations(history, annotations, idsAdded, dataProvider, ph);
 		loadSecondaryAnnotations(history, annotations, idsAdded, dataProvider, ph);
@@ -113,6 +114,10 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			}
 			
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		updateHistory(history);
 	}
@@ -141,6 +146,10 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			}
 			
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		updateHistory(history);
 	}

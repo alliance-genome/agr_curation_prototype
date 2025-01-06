@@ -35,6 +35,12 @@
         "secondary_id": "TEST:Secondary"
       }
     ],
+    "note_dtos": [
+      {
+        "free_text": "Test note",
+        "note_type_name": "comment"
+      }
+    ],
     "data_provider_dto": {
       "internal": false,
       "obsolete": false,

@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.model.entities.bulkloads;
 
 import java.util.List;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
@@ -23,6 +24,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
@@ -77,4 +80,14 @@ public abstract class BulkLoad extends AuditedObject {
 	@OrderBy("loadFinished DESC")
 	private List<BulkLoadFileHistory> history;
 
+	@ManyToMany
+	@JoinTable(name = "bulkload_dependencies", indexes = {
+		@Index(name = "bulkload_dependencies_dependencies_index", columnList = "dependencies_id"),
+		@Index(name = "bulkload_dependencies_depends_index", columnList = "depends_id")
+	})
+	private Set<BulkLoad> dependencies;
+
+	@ManyToMany(mappedBy = "dependencies")
+	private Set<BulkLoad> depends;
+	
 }

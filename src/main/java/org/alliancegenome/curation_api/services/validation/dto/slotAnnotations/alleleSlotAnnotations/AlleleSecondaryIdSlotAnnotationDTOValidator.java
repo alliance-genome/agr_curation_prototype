@@ -11,7 +11,7 @@ import jakarta.enterprise.context.RequestScoped;
 public class AlleleSecondaryIdSlotAnnotationDTOValidator extends SecondaryIdSlotAnnotationDTOValidator {
 
 	public ObjectResponse<AlleleSecondaryIdSlotAnnotation> validateAlleleSecondaryIdSlotAnnotationDTO(AlleleSecondaryIdSlotAnnotation annotation, SecondaryIdSlotAnnotationDTO dto) {
-		ObjectResponse<AlleleSecondaryIdSlotAnnotation> asidResponse = new ObjectResponse<AlleleSecondaryIdSlotAnnotation>();
+		ObjectResponse<AlleleSecondaryIdSlotAnnotation> asidResponse = new ObjectResponse<>();
 
 		if (annotation == null) {
 			annotation = new AlleleSecondaryIdSlotAnnotation();

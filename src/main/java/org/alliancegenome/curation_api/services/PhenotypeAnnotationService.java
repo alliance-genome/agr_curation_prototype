@@ -91,6 +91,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		return annotationIds;
 	}
 
+	@Transactional
 	public Long upsertPrimaryAnnotation(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		if (StringUtils.isBlank(dto.getObjectId())) {
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.REQUIRED_MESSAGE);

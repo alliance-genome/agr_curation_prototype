@@ -35,6 +35,9 @@
 				]
 			}
 		],
+		"synonyms" : [
+		  "Syn 3","Syn 4"
+		],
 		"crossReferences": [
 			{
 				"id": "TEST:WBVar00252637",

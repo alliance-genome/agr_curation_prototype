@@ -11,13 +11,16 @@ import org.alliancegenome.curation_api.dao.ExonDAO;
 import org.alliancegenome.curation_api.dao.GenomeAssemblyDAO;
 import org.alliancegenome.curation_api.dao.TranscriptDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.Exon;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.exonAssociations.ExonGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.geneAssociations.GeneGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptCodingSequenceAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptExonAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGeneAssociation;
@@ -26,6 +29,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociationService;
 import org.alliancegenome.curation_api.services.associations.exonAssociations.ExonGenomicLocationAssociationService;
+import org.alliancegenome.curation_api.services.associations.geneAssociations.GeneGenomicLocationAssociationService;
 import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptCodingSequenceAssociationService;
 import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptExonAssociationService;
 import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptGeneAssociationService;
@@ -51,12 +55,14 @@ public class Gff3Service {
 	@Inject ExonGenomicLocationAssociationService exonLocationService;
 	@Inject CodingSequenceGenomicLocationAssociationService cdsLocationService;
 	@Inject TranscriptGenomicLocationAssociationService transcriptLocationService;
+	@Inject GeneGenomicLocationAssociationService geneLocationService;
 	@Inject TranscriptGeneAssociationService transcriptGeneService;
 	@Inject TranscriptCodingSequenceAssociationService transcriptCdsService;
 	@Inject TranscriptExonAssociationService transcriptExonService;
 	@Inject DataProviderService dataProviderService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject Gff3DtoValidator gff3DtoValidator;
+	@Inject GeneService geneService;
 
 	@Transactional
 	public void loadExonLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) throws ValidationException {
@@ -141,6 +147,42 @@ public class Gff3Service {
 	}
 
 	@Transactional
+	public void loadGeneLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) throws ValidationException {
+		Gff3DTO gffEntry = gffEntryPair.getKey();
+		Map<String, String> attributes = gffEntryPair.getValue();
+		if (StringUtils.isBlank(assemblyId)) {
+			throw new ObjectValidationException(gffEntry, "Cannot load associations without assembly");
+		}
+
+		if (!Gff3Constants.GENE_TYPES.contains(gffEntry.getType())) {
+			throw new ObjectValidationException(gffEntry, "Invalid Type: " + gffEntry.getType() + " for Gene Location");
+		}
+
+		String geneCurie;
+		String identifyingAttribute;
+		if (attributes.containsKey("gene_id")) {
+			geneCurie = attributes.get("gene_id");
+			identifyingAttribute = "gene_id";
+		} else if (attributes.containsKey("ID")) {
+			geneCurie = attributes.get("ID");
+			identifyingAttribute = "ID";
+		} else {
+			throw new ObjectValidationException(gffEntry, "attributes - ID - " + ValidationConstants.REQUIRED_MESSAGE);
+		}
+		
+		Gene gene = geneService.findByIdentifierString(geneCurie);
+		if (gene == null) {
+			throw new KnownIssueValidationException(ValidationConstants.UNRECOGNIZED_MESSAGE + " (" + attributes.get(identifyingAttribute) + ")");
+		}
+
+		GeneGenomicLocationAssociation geneLocation = gff3DtoValidator.validateGeneLocation(gffEntry, gene, assemblyId, dataProvider);
+		if (geneLocation != null) {
+			idsAdded.add(geneLocation.getId());
+			geneLocationService.addAssociationToSubject(geneLocation);
+		}
+	}
+
+	@Transactional
 	public void loadExonParentChildAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 
@@ -216,7 +258,7 @@ public class Gff3Service {
 		Map<String, String> geneIdCurieMap = new HashMap<>();
 
 		for (Gff3DTO gffEntry : gffData) {
-			if (gffEntry.getType().contains("gene")) {
+			if (Gff3Constants.GENE_TYPES.contains(gffEntry.getType())) {
 				Map<String, String> attributes = Gff3AttributesHelper.getAttributes(gffEntry, dataProvider);
 				if (attributes.containsKey("gene_id") && attributes.containsKey("ID")) {
 					geneIdCurieMap.put(attributes.get("ID"), attributes.get("gene_id"));

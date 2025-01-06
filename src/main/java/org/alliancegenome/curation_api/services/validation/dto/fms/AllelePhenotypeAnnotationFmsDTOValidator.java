@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
+import org.alliancegenome.curation_api.services.helpers.crossReferences.GenePhenotypeAnnotationXrefHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,6 +33,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
 	@Inject GenomicEntityService genomicEntityService;
 	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject GenePhenotypeAnnotationXrefHelper xrefHelper;
 
 	public AllelePhenotypeAnnotation validatePrimaryAnnotation(Allele subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
@@ -102,15 +104,16 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 			if (inferredOrAssertedEntity == null) {
 				apaResponse.addErrorMessage("objectId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
 			} else if (inferredOrAssertedEntity instanceof Gene) {
+				Gene inferredOrAssertedGene = xrefHelper.addGenePhenotypeCrossReference(dataProvider, (Gene) inferredOrAssertedEntity);
 				for (AllelePhenotypeAnnotation primaryAnnotation : primaryAnnotations) {
 					if (dataProvider.hasInferredGenePhenotypeAnnotations) {
-						primaryAnnotation.setInferredGene((Gene) inferredOrAssertedEntity);
+						primaryAnnotation.setInferredGene(inferredOrAssertedGene);
 					} else if (dataProvider.hasAssertedGenePhenotypeAnnotations) {
 						List<Gene> assertedGenes = primaryAnnotation.getAssertedGenes();
 						if (assertedGenes == null) {
 							assertedGenes = new ArrayList<>();
 						}
-						assertedGenes.add((Gene) inferredOrAssertedEntity);
+						assertedGenes.add(inferredOrAssertedGene);
 						primaryAnnotation.setAssertedGenes(assertedGenes);
 					} else {
 						apaResponse.addErrorMessage("objectId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");

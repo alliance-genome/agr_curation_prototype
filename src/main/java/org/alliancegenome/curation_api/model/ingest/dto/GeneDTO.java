@@ -42,4 +42,8 @@ public class GeneDTO extends GenomicEntityDTO {
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("gene_type_curie")
 	private String geneTypeCurie;
+
+	@JsonView({ View.FieldsOnly.class })
+	@JsonProperty("note_dtos")
+	private List<NoteDTO> noteDtos;
 }

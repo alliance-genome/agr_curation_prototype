@@ -57,6 +57,7 @@ import org.alliancegenome.curation_api.services.ontology.ZfsTermService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
@@ -258,33 +259,55 @@ public class OntologyExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(bulkLoadFileHistory.getBulkLoadFile().getRecordCount() + termMap.size());
 
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
+
+		bulkLoadFileHistory.setCount("Terms", termMap.size());
+		bulkLoadFileHistory.setCount("Closure", termMap.size());
+		bulkLoadFileHistory.setCount("Counts", termMap.size());
 		
+		String countType = null;
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Terms", termMap.size());
+		countType = "Terms";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdate(entry.getValue());
+			bulkLoadFileHistory.incrementCompleted(countType);
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		ph.finishProcess();
 
 		ProcessDisplayHelper ph1 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph1.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
+		countType = "Closure";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdateRelationships(entry.getValue());
-			// Thread.sleep(5000);
+			bulkLoadFileHistory.incrementCompleted(countType);
 			ph1.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		ph1.finishProcess();
 
 		ProcessDisplayHelper ph2 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph2.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Counts", termMap.size());
+		countType = "Counts";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processCounts(entry.getValue());
-			// Thread.sleep(5000);
+			bulkLoadFileHistory.incrementCompleted(countType);
 			ph2.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				Log.info("Thread Interrupted:");
+				break;
+			}
 		}
 		ph2.finishProcess();
 	}
