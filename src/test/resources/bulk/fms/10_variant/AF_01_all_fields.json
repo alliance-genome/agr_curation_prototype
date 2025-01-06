@@ -42,6 +42,9 @@
 					"homepage"
 				]
 			}
+		],
+		"synonyms" : [
+		  "Syn 1","Syn 2"
 		]
 	}
 ]
