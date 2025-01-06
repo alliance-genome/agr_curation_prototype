@@ -8,7 +8,7 @@ public final class EntityFieldConstants {
 
 	public static final String ASSEMBLY = "genomeAssembly.primaryExternalId";
 	public static final String TAXON = "taxon.curie";
-	public static final String SOURCE_ORGANIZATION = "sourceOrganization.abbreviation";
+	public static final String SOURCE_ORGANIZATION = "abbreviation";
 	public static final String DATA_PROVIDER = "dataProvider." + SOURCE_ORGANIZATION;
 	public static final String SECONDARY_DATA_PROVIDER = "secondaryDataProvider." + SOURCE_ORGANIZATION;
 
