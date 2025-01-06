@@ -1,27 +1,18 @@
 package org.alliancegenome.curation_api;
 
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-
-import org.alliancegenome.curation_api.base.BaseITCase;
-import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
-
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.junit.jupiter.api.*;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
 
 
 @QuarkusIntegrationTest
@@ -34,13 +25,14 @@ public class AgmBulkUploadITCase extends BaseITCase {
 
 	private String dataProvider = "WB";
 	private String dataProviderRGD = "RGD";
+	private String requiredReference = "AGRKB:000000001";
 
 	@BeforeEach
 	public void init() {
 		RestAssured.config = RestAssuredConfig.config()
-				.httpClient(HttpClientConfig.httpClientConfig()
-					.setParam("http.socket.timeout", 60000)
-					.setParam("http.connection.timeout", 60000));
+			.httpClient(HttpClientConfig.httpClientConfig()
+				.setParam("http.socket.timeout", 60000)
+				.setParam("http.connection.timeout", 60000));
 	}
 
 	private final String agmBulkPostEndpoint = "/api/agm/bulk/WB/agms";
@@ -68,6 +60,9 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
 			body("entity.updatedBy.uniqueId", is("AGMTEST:Person0002")).
 			body("entity.synonyms", is(List.of("Syn 1", "Syn 2"))).
+			body("entity.agmSecondaryIds[0].secondaryId", is("TEST:Secondary")).
+			body("entity.agmSecondaryIds[0].internal", is(true)).
+			body("entity.agmSecondaryIds[0].obsolete", is(true)).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
@@ -159,6 +154,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("synonyms"))).
+			body("entity", not(hasKey("agmSecondaryIds"))).
 			body("entity", not(hasKey("dateUpdated")));
 	}
 
@@ -179,6 +175,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("synonyms"))).
+			body("entity", not(hasKey("agmSecondaryIds"))).
 			body("entity", not(hasKey("dateUpdated")));
 	}
 

@@ -15,6 +15,10 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'alleleAggregationFilter',
 		fields: ['dataProvider.sourceOrganization.abbreviation'],
 	},
+	agmSecondaryIdsFieldSet: {
+		filterName: 'agmSecondaryIdsFilter',
+		fields: ['agmSecondaryIds.secondaryId', 'agmSecondaryIds.evidence.curie'],
+	},
 	alleleAggregationFieldSet: {
 		filterName: 'alleleAggregationFilter',
 		fields: ['dataProvider.sourceOrganization.abbreviation'],
@@ -735,6 +739,7 @@ export const FILTER_CONFIGS = Object.freeze({
 		fieldSets: [FIELD_SETS.alleleNomenclatureEventsFieldSet],
 	},
 	alleleSecondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSecondaryIdsFieldSet] },
+	agmSecondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.agmSecondaryIdsFieldSet] },
 	alleleSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSymbolFieldSet] },
 	alleleSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSynonymsFieldSet] },
 	assertedAlleleFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.assertedAlleleFieldSet] },

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.associations.agmAssociations.AgmSequenceTargetingReagentAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -36,7 +37,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "sequenceTargetingReagentGeneAssociations" }, callSuper = true)
+@ToString(exclude = { "sequenceTargetingReagentGeneAssociations", "agmSequenceTargetingReagentAssociations" }, callSuper = true)
 @Schema(name = "SequenceTargetingReagent", description = "POJO that represents the SequenceTargetingReagent")
 @AGRCurationSchemaVersion(min = "2.3.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 public class SequenceTargetingReagent extends GenomicEntity {
@@ -73,4 +74,8 @@ public class SequenceTargetingReagent extends GenomicEntity {
 	@OneToMany(mappedBy = "sequenceTargetingReagentAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentDetailView.class })
 	private List<SequenceTargetingReagentGeneAssociation> sequenceTargetingReagentGeneAssociations;
+
+	@OneToMany(mappedBy = "agmSequenceTargetingReagentAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentDetailView.class })
+	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 }

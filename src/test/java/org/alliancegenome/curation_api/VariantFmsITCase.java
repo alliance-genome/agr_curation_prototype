@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -91,6 +92,7 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
 			body("entity.variantType.curie", is("SO:1000002")).
+			body("entity.synonyms", is(List.of("Syn 1", "Syn 2"))).
 			body("entity.sourceGeneralConsequence.curie", is("SO:0001587")).
 			body("entity.curatedVariantGenomicLocations", hasSize(1)).
 			body("entity.curatedVariantGenomicLocations[0].hgvs", is("NC_003279.8:g.1A>T")).
@@ -132,6 +134,7 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
 			body("entity.variantType.curie", is("SO:1000008")).
+			body("entity.synonyms", is(List.of("Syn 3", "Syn 4"))).
 			body("entity.sourceGeneralConsequence.curie", is("SO:0001578")).
 			body("entity.curatedVariantGenomicLocations", hasSize(1)).
 			body("entity.curatedVariantGenomicLocations[0].hgvs", is("NC_003279.8:g.1A>T")).
@@ -195,7 +198,7 @@ public class VariantFmsITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(3)
+	@Order(5)
 	public void variantFmsBulkUploadInvalidFields() throws Exception {
 		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
 		params.put("Entities", createCountParams(1, 1, 0, 0));
