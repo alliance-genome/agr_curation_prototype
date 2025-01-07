@@ -26,7 +26,6 @@ import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
@@ -110,8 +109,8 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 			}
 			ph.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
-				Log.info("Thread Interrupted:");
-				break;
+				bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
+				throw new RuntimeException("Thread isInterrupted");
 			}
 		}
 		bulkLoadFileHistory.setTotalCount(dtos.size());

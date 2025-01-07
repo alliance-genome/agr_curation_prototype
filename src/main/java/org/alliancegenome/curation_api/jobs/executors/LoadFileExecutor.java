@@ -219,6 +219,7 @@ public class LoadFileExecutor {
 
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType, String dataType) {
 		if (Thread.currentThread().isInterrupted()) {
+			history.setErrorMessage("Thread isInterrupted");
 			throw new RuntimeException("Thread isInterrupted");
 		}
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
@@ -259,6 +260,7 @@ public class LoadFileExecutor {
 				}
 				ph.progressProcess();
 				if (Thread.currentThread().isInterrupted()) {
+					history.setErrorMessage("Thread isInterrupted");
 					throw new RuntimeException("Thread isInterrupted");
 				}
 			}
@@ -276,6 +278,7 @@ public class LoadFileExecutor {
 	// The following methods are for bulk validation
 	protected <S extends BaseEntityCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString, Boolean deprecate) {
 		if (Thread.currentThread().isInterrupted()) {
+			history.setErrorMessage("Thread isInterrupted");
 			throw new RuntimeException("Thread isInterrupted");
 		}
 		Log.debug("runLoad: After: " + dataProviderName + " " + annotationIdsAfter.size());
@@ -312,6 +315,7 @@ public class LoadFileExecutor {
 			}
 			ph.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
+				history.setErrorMessage("Thread isInterrupted");
 				throw new RuntimeException("Thread isInterrupted");
 			}
 		}

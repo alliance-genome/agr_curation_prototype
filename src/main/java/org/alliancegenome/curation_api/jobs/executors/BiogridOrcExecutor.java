@@ -121,8 +121,8 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 				}
 				ph.progressProcess();
 				if (Thread.currentThread().isInterrupted()) {
-					Log.info("Thread Interrupted:");
-					break;
+					history.setErrorMessage("Thread isInterrupted");
+					throw new RuntimeException("Thread isInterrupted");
 				}
 			}
 			

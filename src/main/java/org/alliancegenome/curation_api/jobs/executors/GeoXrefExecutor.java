@@ -56,6 +56,10 @@ public class GeoXrefExecutor extends LoadFileExecutor {
 	}
 
 	private void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<String> entrezIds) {
+		if (Thread.currentThread().isInterrupted()) {
+			history.setErrorMessage("Thread isInterrupted");
+			throw new RuntimeException("Thread isInterrupted");
+		}
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(entrezIds)) {
@@ -92,8 +96,8 @@ public class GeoXrefExecutor extends LoadFileExecutor {
 				}
 				ph.progressProcess();
 				if (Thread.currentThread().isInterrupted()) {
-					Log.info("Thread Interrupted:");
-					break;
+					history.setErrorMessage("Thread isInterrupted");
+					throw new RuntimeException("Thread isInterrupted");
 				}
 			}
 			updateHistory(history);
