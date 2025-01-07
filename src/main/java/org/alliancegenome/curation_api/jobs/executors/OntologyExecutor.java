@@ -57,7 +57,6 @@ import org.alliancegenome.curation_api.services.ontology.ZfsTermService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
@@ -275,8 +274,8 @@ public class OntologyExecutor {
 			bulkLoadFileHistory.incrementCompleted(countType);
 			ph.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
-				Log.info("Thread Interrupted:");
-				break;
+				bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
+				throw new RuntimeException("Thread isInterrupted");
 			}
 		}
 		ph.finishProcess();
@@ -290,8 +289,8 @@ public class OntologyExecutor {
 			bulkLoadFileHistory.incrementCompleted(countType);
 			ph1.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
-				Log.info("Thread Interrupted:");
-				break;
+				bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
+				throw new RuntimeException("Thread isInterrupted");
 			}
 		}
 		ph1.finishProcess();
@@ -305,8 +304,8 @@ public class OntologyExecutor {
 			bulkLoadFileHistory.incrementCompleted(countType);
 			ph2.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
-				Log.info("Thread Interrupted:");
-				break;
+				bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
+				throw new RuntimeException("Thread isInterrupted");
 			}
 		}
 		ph2.finishProcess();
