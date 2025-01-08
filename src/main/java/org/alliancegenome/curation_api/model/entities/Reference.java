@@ -48,7 +48,7 @@ public class Reference extends InformationContentEntity {
 	@EqualsAndHashCode.Include
 	private List<CrossReference> crossReferences;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "shortCitation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(columnDefinition = "TEXT")
@@ -82,7 +82,7 @@ public class Reference extends InformationContentEntity {
 		if (!pubmedIdFirst) {
 			String pmid = "PMID";
 			primaryXrefOrder = ReferenceConstants.primaryXrefOrder.stream()
-				.filter(s -> s.equals(pmid)).toList();
+				.filter(s -> !s.equals(pmid)).toList();
 			boolean success = primaryXrefOrder.size() < ReferenceConstants.primaryXrefOrder.size();
 			if (!success) {
 				throw new RuntimeException("Could not find " + pmid + " in ReferenceConstants.primaryXrefOrder");
