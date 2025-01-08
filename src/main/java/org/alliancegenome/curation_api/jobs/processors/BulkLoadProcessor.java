@@ -131,6 +131,12 @@ public class BulkLoadProcessor {
 				bulkLoadFile.setBulkloadCleanUp(BulkLoadCleanUp.YES);
 			}
 			bulkLoadFileDAO.persist(bulkLoadFile);
+			history.setBulkLoad(bulkLoad);
+			history.setBulkLoadFile(bulkLoadFile);
+			bulkLoadFileHistoryDAO.persist(history);
+
+			Log.info("Firing Pending Bulk File History Event: " + history.getId());
+			pendingFileJobEvents.fireAsync(new PendingLoadJobEvent(history.getId()));
 		} else if (load.getBulkloadStatus().isForced()) {
 			bulkLoadFile = bulkLoadFiles.getResults().get(0);
 			if (history.getBulkloadStatus().isNotRunning()) {
@@ -142,25 +148,26 @@ public class BulkLoadProcessor {
 				Log.info("Cleaning up downloaded file: " + localFilePath);
 				new File(localFilePath).delete();
 			}
+			if (cleanUp) {
+				bulkLoadFile.setBulkloadCleanUp(BulkLoadCleanUp.YES);
+			}
+			bulkLoadFileDAO.merge(bulkLoadFile);
+			history.setBulkLoad(bulkLoad);
+			history.setBulkLoadFile(bulkLoadFile);
+			bulkLoadFileHistoryDAO.persist(history);
+
+			Log.info("Firing Pending Bulk File History Event: " + history.getId());
+			pendingFileJobEvents.fireAsync(new PendingLoadJobEvent(history.getId()));
 		} else {
 			Log.info("Bulk File already exists not creating it");
 			bulkLoadFile = bulkLoadFiles.getResults().get(0);
 			Log.info("Cleaning up downloaded file: " + localFilePath);
 			new File(localFilePath).delete();
 			bulkLoadFile.setLocalFilePath(null);
+			bulkLoadFileDAO.merge(bulkLoadFile);
+			Log.info("File already exists not running load");
 		}
-		
-		history.setBulkLoad(bulkLoad);
-		history.setBulkLoadFile(bulkLoadFile);
-		bulkLoadFileHistoryDAO.persist(history);
 
-		if (cleanUp) {
-			bulkLoadFile.setBulkloadCleanUp(BulkLoadCleanUp.YES);
-		}
-		bulkLoadFileDAO.merge(bulkLoadFile);
-		bulkLoadDAO.merge(load);
-		Log.info("Firing Pending Bulk File History Event: " + history.getId());
-		pendingFileJobEvents.fireAsync(new PendingLoadJobEvent(history.getId()));
 	}
 
 	protected void startLoad(BulkLoad load) {
@@ -192,6 +199,8 @@ public class BulkLoadProcessor {
 		bulkLoadFileHistory.setLoadStarted(LocalDateTime.now());
 		bulkLoadFileHistory.setErrorMessage(null);
 		bulkLoadFileHistory.setLoadFinished(null);
+		Thread.currentThread().setName("BulkLoad Thread " + bulkLoadFileHistory.getId());
+		bulkLoadFileHistory.setRunningThreadName(Thread.currentThread().getName()); // Sets the thread name so that it can be stopped later
 		bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 		bulkLoadFileHistory.getBulkLoad().setBulkloadStatus(bulkLoadFileHistory.getBulkloadStatus());
 		bulkLoadDAO.merge(bulkLoadFileHistory.getBulkLoad());
@@ -211,6 +220,8 @@ public class BulkLoadProcessor {
 		if (status != JobStatus.FINISHED) {
 			slackNotifier.slackalert(bulkLoadFileHistory);
 		}
+		
+		bulkLoadFileHistory.setRunningThreadName(null); // Clears the name once finished
 		bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 		bulkLoadFileHistory.getBulkLoad().setBulkloadStatus(status);
 		bulkLoadDAO.merge(bulkLoadFileHistory.getBulkLoad());

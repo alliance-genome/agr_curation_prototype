@@ -1,26 +1,18 @@
 package org.alliancegenome.curation_api;
 
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-
-import java.time.OffsetDateTime;
-
-import org.alliancegenome.curation_api.base.BaseITCase;
-import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
-
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.junit.jupiter.api.*;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
 
 
 @QuarkusIntegrationTest
@@ -30,18 +22,19 @@ import io.restassured.config.RestAssuredConfig;
 @DisplayName("103 - AGM bulk upload")
 @Order(103)
 public class AgmBulkUploadITCase extends BaseITCase {
-	
+
 	private String dataProvider = "WB";
 	private String dataProviderRGD = "RGD";
-	
+	private String requiredReference = "AGRKB:000000001";
+
 	@BeforeEach
 	public void init() {
 		RestAssured.config = RestAssuredConfig.config()
-				.httpClient(HttpClientConfig.httpClientConfig()
-					.setParam("http.socket.timeout", 60000)
-					.setParam("http.connection.timeout", 60000));
+			.httpClient(HttpClientConfig.httpClientConfig()
+				.setParam("http.socket.timeout", 60000)
+				.setParam("http.connection.timeout", 60000));
 	}
-	
+
 	private final String agmBulkPostEndpoint = "/api/agm/bulk/WB/agms";
 	private final String agmBulkPostEndpointRGD = "/api/agm/bulk/RGD/agms";
 	private final String agmBulkPostEndpointHUMAN = "/api/agm/bulk/HUMAN/agms";
@@ -52,7 +45,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	@Order(1)
 	public void agmBulkUploadCheckFields() throws Exception {
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "AF_01_all_fields.json");
-		
+
 		RestAssured.given().
 			when().
 			get(agmGetEndpoint + "AGMTEST:Agm0001").
@@ -66,6 +59,10 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.obsolete", is(true)).
 			body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
 			body("entity.updatedBy.uniqueId", is("AGMTEST:Person0002")).
+			body("entity.synonyms", is(List.of("Syn 1", "Syn 2"))).
+			body("entity.agmSecondaryIds[0].secondaryId", is("TEST:Secondary")).
+			body("entity.agmSecondaryIds[0].internal", is(true)).
+			body("entity.agmSecondaryIds[0].obsolete", is(true)).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
@@ -73,12 +70,12 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
 			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
 	}
-	
+
 	@Test
 	@Order(2)
 	public void agmBulkUploadUpdateCheckFields() throws Exception {
 		checkSuccessfulBulkLoad(agmBulkPostEndpointRGD, agmTestFilePath + "UD_01_update_all_except_default_fields.json");
-		
+
 		RestAssured.given().
 			when().
 			get(agmGetEndpoint + "AGMTEST:Agm0001").
@@ -94,12 +91,13 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.updatedBy.uniqueId", is("AGMTEST:Person0001")).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("entity.synonyms", is(List.of("Syn 1", "Syn 2"))).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProviderRGD)).
 			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
 			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
 			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
 	}
-	
+
 	@Test
 	@Order(3)
 	public void agmBulkUploadMissingRequiredFields() throws Exception {
@@ -113,7 +111,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_08_no_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_09_no_data_provider_cross_reference_page_area.json");
 	}
-	
+
 	@Test
 	@Order(4)
 	public void agmBulkUploadEmptyRequiredFields() throws Exception {
@@ -126,7 +124,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_07_empty_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_08_empty_data_provider_cross_reference_page_area.json");
 	}
-		
+
 	@Test
 	@Order(5)
 	public void agmBulkUploadInvalidFields() throws Exception {
@@ -144,7 +142,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	public void agmBulkUploadUpdateMissingNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "UM_01_update_no_non_required_fields.json");
-		
+
 		RestAssured.given().
 			when().
 			get(agmGetEndpoint + "AGMTEST:Agm0001").
@@ -155,6 +153,8 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
+			body("entity", not(hasKey("synonyms"))).
+			body("entity", not(hasKey("agmSecondaryIds"))).
 			body("entity", not(hasKey("dateUpdated")));
 	}
 
@@ -163,7 +163,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	public void agmBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "UE_01_update_empty_non_required_fields.json");
-		
+
 		RestAssured.given().
 			when().
 			get(agmGetEndpoint + "AGMTEST:Agm0001").
@@ -174,9 +174,11 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
+			body("entity", not(hasKey("synonyms"))).
+			body("entity", not(hasKey("agmSecondaryIds"))).
 			body("entity", not(hasKey("dateUpdated")));
 	}
-	
+
 	@Test
 	@Order(8)
 	public void agmBulkUploadMissingNonRequiredFields() throws Exception {
@@ -188,7 +190,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	public void agmBulkUploadEmptyNonRequiredFieldsLevel() throws Exception {
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "EN_01_empty_non_required_fields.json");
 	}
-	
+
 	@Test
 	@Order(10)
 	public void geneBulkUploadDataProviderChecks() throws Exception {

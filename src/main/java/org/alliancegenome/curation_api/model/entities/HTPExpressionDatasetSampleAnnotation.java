@@ -115,7 +115,7 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 	private VocabularyTerm sequencingFormat;
 
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(indexes = {
 		@Index(name = "htpdatasample_anatomicalsite_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"),
 		@Index(name = "htpdatasample_anatomicalsite_samplelocations_index", columnList = "htpexpressionsamplelocations_id")

@@ -212,19 +212,19 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			currentSynonyms = new HashSet<>();
 			dbTerm.setSynonyms(new ArrayList<>());
 		} else {
-			currentSynonyms = dbTerm.getSynonyms().stream().collect(Collectors.toSet());
+			currentSynonyms = new HashSet<>(dbTerm.getSynonyms());
 		}
-		List<String> currentSynonymNames = currentSynonyms.stream().map(Synonym::getName).collect(Collectors.toList());
+		List<String> currentSynonymNames = currentSynonyms.stream().map(Synonym::getName).toList();
 
 		Set<Synonym> newSynonyms;
 		if (incomingTerm.getSynonyms() == null) {
 			newSynonyms = new HashSet<>();
 		} else {
-			newSynonyms = incomingTerm.getSynonyms().stream().collect(Collectors.toSet());
+			newSynonyms = new HashSet<>(incomingTerm.getSynonyms());
 		}
-		List<String> newSynonymNames = currentSynonyms.stream().map(Synonym::getName).collect(Collectors.toList());
+		List<String> newSynonymNames = newSynonyms.stream().map(Synonym::getName).toList();
 
-		newSynonyms.forEach(syn -> {
+		for (Synonym syn: newSynonyms) {
 			if (!currentSynonymNames.contains(syn.getName())) {
 				SearchResponse<Synonym> response = synonymDAO.findByField("name", syn.getName());
 				Synonym synonym;
@@ -235,13 +235,12 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				}
 				dbTerm.getSynonyms().add(synonym);
 			}
-		});
-
-		currentSynonyms.forEach(syn -> {
+		}
+		for (Synonym syn: currentSynonyms) {
 			if (!newSynonymNames.contains(syn.getName())) {
 				dbTerm.getSynonyms().remove(syn);
 			}
-		});
+		}
 
 	}
 

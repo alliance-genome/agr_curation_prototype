@@ -149,14 +149,12 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
 		let _relatedNotesData = {};
-		_relatedNotesData['originalRelatedNotes'] = rowProps.rowData.relatedNotes;
+		_relatedNotesData['originalRelatedNotes'] = rowProps?.rowData?.relatedNotes;
 		_relatedNotesData['dialog'] = true;
 		_relatedNotesData['isInEdit'] = isInEdit;
-		_relatedNotesData['rowIndex'] = index;
+		_relatedNotesData['rowIndex'] = rowIndex;
 		_relatedNotesData['mainRowProps'] = rowProps;
 		setRelatedNotesData(() => ({
 			..._relatedNotesData,
@@ -174,14 +172,12 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const handleConditionRelationsOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
 		let _conditionRelationsData = {};
 		_conditionRelationsData['originalConditionRelations'] = rowProps.rowData.conditionRelations;
 		_conditionRelationsData['dialog'] = true;
 		_conditionRelationsData['isInEdit'] = isInEdit;
-		_conditionRelationsData['rowIndex'] = index;
+		_conditionRelationsData['rowIndex'] = rowIndex;
 		_conditionRelationsData['mainRowProps'] = rowProps;
 		setConditionRelationsData(() => ({
 			..._conditionRelationsData,

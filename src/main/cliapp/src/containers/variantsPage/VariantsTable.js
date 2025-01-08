@@ -23,6 +23,7 @@ import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTem
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
@@ -225,6 +226,13 @@ export const VariantsTable = () => {
 			body: (rowData) => <OntologyTermTemplate term={rowData.sourceGeneralConsequence} />,
 			filterConfig: FILTER_CONFIGS.sourceGeneralConsequenceFilterConfig,
 			editor: (props) => <SourceGeneralConsequenceTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+		},
+		{
+			field: 'synonyms',
+			header: 'Synonyms',
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
+			body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
 		},
 		{
 			field: 'dataProvider.sourceOrganization.abbreviation',

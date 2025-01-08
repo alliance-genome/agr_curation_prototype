@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -83,7 +84,9 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		agm.setDateCreated(datetime);
 		agm.setSubtype(subtype);
 		agm.setDataProvider(dataProvider);
-		
+		List<String> synonyms = List.of("Syn 1", "Syn 2");
+		agm.setSynonyms(synonyms);
+
 		RestAssured.given().
 			contentType("application/json").
 			body(agm).
@@ -103,6 +106,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			body("entity.taxon.curie", is(taxon.getCurie())).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
+			body("entity.synonyms", is(synonyms)).
 			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).

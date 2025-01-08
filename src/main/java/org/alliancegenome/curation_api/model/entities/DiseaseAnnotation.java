@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.view.View;
+import org.apache.commons.collections4.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -25,7 +26,9 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
@@ -205,6 +208,20 @@ public abstract class DiseaseAnnotation extends Annotation {
 		}
 	)
 	private List<AffectedGenomicModel> diseaseGeneticModifierAgms;
+
+	public List<BiologicalEntity> getDiseaseGeneticModifiers() {
+		List<BiologicalEntity> geneticModifiers = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(getDiseaseGeneticModifierAlleles())) {
+			geneticModifiers.addAll(getDiseaseGeneticModifierAlleles().stream().filter(Objects::nonNull).toList());
+		}
+		if (CollectionUtils.isNotEmpty(getDiseaseGeneticModifierGenes())) {
+			geneticModifiers.addAll(getDiseaseGeneticModifierGenes().stream().filter(Objects::nonNull).toList());
+		}
+		if (CollectionUtils.isNotEmpty(getDiseaseGeneticModifierAgms())) {
+			geneticModifiers.addAll(getDiseaseGeneticModifierAgms().stream().filter(Objects::nonNull).toList());
+		}
+		return geneticModifiers;
+	}
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
