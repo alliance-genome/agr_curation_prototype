@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
 
+import jakarta.persistence.*;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleVariantAssociation;
@@ -22,14 +23,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -78,7 +71,7 @@ public class Variant extends GenomicEntity {
 			@Index(name = "variant_note_relatednotes_index", columnList = "relatedNotes_id")
 		})
 	private List<Note> relatedNotes;
-	
+
 	@IndexedEmbedded(
 		includePaths = {
 			"variantGenomicLocationAssociationObject.curie", "variantGenomicLocationAssociationObject.curie_keyword",
@@ -90,7 +83,7 @@ public class Variant extends GenomicEntity {
 	@OneToMany(mappedBy = "variantAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.VariantView.class })
 	private List<CuratedVariantGenomicLocationAssociation> curatedVariantGenomicLocations;
-	
+
 	@OneToMany(mappedBy = "alleleVariantAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.VariantDetailView.class })
 	private List<AlleleVariantAssociation> alleleVariantAssociations;
@@ -102,4 +95,20 @@ public class Variant extends GenomicEntity {
 	@JoinTable(indexes = @Index(name = "variant_synonyms_variant_index", columnList = "variant_id"))
 	@JsonView({ View.FieldsAndLists.class, View.VariantView.class })
 	private List<String> synonyms;
+
+	@IndexedEmbedded(
+		includePaths = {
+			"primaryCrossReferenceCurie", "crossReferences.referencedCurie", "crossReferences.displayName", "curie", "primaryCrossReferenceCurie_keyword",
+			"crossReferences.referencedCurie_keyword", "crossReferences.displayName_keyword", "curie_keyword"
+		}
+	)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@Fetch(FetchMode.JOIN)
+	@JoinTable(indexes = {
+		@Index(name = "variant_reference_variant_index", columnList = "variant_id"),
+		@Index(name = "variant_reference_references_index", columnList = "references_id")
+	})
+	@JsonView({ View.FieldsAndLists.class, View.VariantView.class })
+	private List<Reference> references;
 }
