@@ -8,9 +8,14 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.dao.DataProviderDAO;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.Annotation;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.ingest.dto.AnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -19,6 +24,7 @@ import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -32,8 +38,7 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject ConditionRelationDTOValidator conditionRelationDtoValidator;
 	@Inject NoteDTOValidator noteDtoValidator;
-	@Inject DataProviderDTOValidator dataProviderDtoValidator;
-	@Inject DataProviderDAO dataProviderDAO;
+	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	public <E extends Annotation, D extends AnnotationDTO> ObjectResponse<E> validateAnnotationDTO(E annotation, D dto, String noteTypeSet) {
 		ObjectResponse<E> annotResponse = validateAuditedObjectDTO(annotation, dto);
@@ -45,11 +50,16 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 		if (dto.getDataProviderDto() == null) {
 			annotResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ObjectResponse<DataProvider> dpResponse = dataProviderDtoValidator.validateDataProviderDTO(dto.getDataProviderDto(), annotation.getDataProvider());
+			ObjectResponse<ImmutablePair<Organization, CrossReference>> dpResponse = validateDataProviderDTO(dto.getDataProviderDto(), annotation.getDataProviderCrossReference());
 			if (dpResponse.hasErrors()) {
 				annotResponse.addErrorMessage("data_provider_dto", dpResponse.errorMessagesString());
 			} else {
-				annotation.setDataProvider(dataProviderDAO.persist(dpResponse.getEntity()));
+				annotation.setDataProvider(dpResponse.getEntity().getLeft());
+				if (dpResponse.getEntity().getRight() != null) {
+					annotation.setDataProviderCrossReference(crossReferenceDAO.persist(dpResponse.getEntity().getRight()));
+				} else {
+					annotation.setDataProviderCrossReference(null);
+				}
 			}
 		}
 

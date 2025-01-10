@@ -316,7 +316,7 @@ export const GenesTable = () => {
 			editor: relatedNotesEditor,
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig,

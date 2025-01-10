@@ -41,9 +41,9 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AssemblyComponentService;
-import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.Gff3Service;
+import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.gff3.Gff3UniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
@@ -68,11 +68,11 @@ public class Gff3DtoValidator {
 	@Inject TranscriptCodingSequenceAssociationDAO transcriptCdsDAO;
 	@Inject CodingSequenceGenomicLocationAssociationDAO cdsLocationDAO;
 	@Inject AssemblyComponentService assemblyComponentService;
-	@Inject DataProviderService dataProviderService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject SoTermDAO soTermDAO;
 	@Inject Gff3Service gff3Service;
 	@Inject VocabularyTermService vocabularyTermService;
+	@Inject OrganizationService organizationService;
 	
 	@Transactional
 	public void validateExonEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
@@ -195,7 +195,7 @@ public class Gff3DtoValidator {
 	private <E extends GenomicEntity> ObjectResponse<E> validateGenomicEntity(E entity, Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) {
 		ObjectResponse<E> geResponse = new ObjectResponse<E>();
 		
-		entity.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));
+		entity.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
 		entity.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
 		
 		geResponse.setEntity(entity);

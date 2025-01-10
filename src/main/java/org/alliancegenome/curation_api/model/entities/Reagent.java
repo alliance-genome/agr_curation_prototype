@@ -41,6 +41,7 @@ import lombok.ToString;
 @Table(indexes = {
 		@Index(name = "reagent_uniqueid_index", columnList = "uniqueid"),
 		@Index(name = "reagent_dataprovider_index", columnList = "dataprovider_id"),
+		@Index(name = "reagent_dataprovidercrossreference_index", columnList = "dataprovidercrossreference_id"),
 		@Index(name = "reagent_curie_index", columnList = "curie"),
 		@Index(name = "reagent_primaryexternalid_index", columnList = "primaryexternalid"),
 		@Index(name = "reagent_modinternalid_index", columnList = "modinternalid"),

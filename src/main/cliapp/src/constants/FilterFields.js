@@ -13,7 +13,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	agmAggregationFieldSet: {
 		filterName: 'alleleAggregationFilter',
-		fields: ['dataProvider.sourceOrganization.abbreviation'],
+		fields: ['dataProvider.abbreviation'],
 	},
 	agmSecondaryIdsFieldSet: {
 		filterName: 'agmSecondaryIdsFilter',
@@ -21,7 +21,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	alleleAggregationFieldSet: {
 		filterName: 'alleleAggregationFilter',
-		fields: ['dataProvider.sourceOrganization.abbreviation'],
+		fields: ['dataProvider.abbreviation'],
 	},
 	alleleFunctionalImpactsFieldSet: {
 		filterName: 'alleleFunctionalImpactsFilter',
@@ -176,7 +176,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	constructAggregationFieldSet: {
 		filterName: 'constructAggregationFilter',
-		fields: ['dataProvider.sourceOrganization.abbreviation'],
+		fields: ['dataProvider.abbreviation'],
 	},
 	constructComponentsFieldSet: {
 		filterName: 'constructComponentsFilter',
@@ -224,9 +224,9 @@ export const FIELD_SETS = Object.freeze({
 	dataProviderFieldSet: {
 		filterName: 'dataProviderFilter',
 		fields: [
-			'dataProvider.sourceOrganization.abbreviation',
-			'dataProvider.sourceOrganization.fullName',
-			'dataProvider.sourceOrganization.shortName',
+			'dataProvider.abbreviation',
+			'dataProvider.fullName',
+			'dataProvider.shortName',
 		],
 	},
 	dataCreatedFieldSet: {
@@ -245,8 +245,8 @@ export const FIELD_SETS = Object.freeze({
 			'annotationType.name',
 			'diseaseGeneticModifierRelation.name',
 			'diseaseQualifiers.name',
-			'dataProvider.sourceOrganization.abbreviation',
-			'secondaryDataProvider.sourceOrganization.abbreviation',
+			'dataProvider.abbreviation',
+			'secondaryDataProvider.abbreviation',
 			'evidenceCodes.abbreviation',
 		],
 	},
@@ -288,7 +288,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	geneAggregationFieldSet: {
 		filterName: 'geneAggregationFilter',
-		fields: ['dataProvider.sourceOrganization.abbreviation'],
+		fields: ['dataProvider.abbreviation'],
 	},
 	geneAssociationSubjectFieldSet: {
 		filterName: 'geneAssociationSubjectFilter',
@@ -532,7 +532,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	paAggregationFieldSet: {
 		filterName: 'paAggregationFilter',
-		fields: ['relation.name', 'dataProvider.sourceOrganization.abbreviation'],
+		fields: ['relation.name', 'dataProvider.abbreviation'],
 	},
 	paConditionRelationsSummaryFieldSet: {
 		filterName: 'paConditionRelationsFilter',
@@ -579,9 +579,9 @@ export const FIELD_SETS = Object.freeze({
 	secondaryDataProviderFieldSet: {
 		filterName: 'secondaryDataProviderFilter',
 		fields: [
-			'secondaryDataProvider.sourceOrganization.abbreviation',
-			'secondaryDataProvider.sourceOrganization.fullName',
-			'secondaryDataProvider.sourceOrganization.shortName',
+			'secondaryDataProvider.abbreviation',
+			'secondaryDataProvider.fullName',
+			'secondaryDataProvider.shortName',
 		],
 	},
 	secondaryIdsFieldSet: {
@@ -631,7 +631,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	speciesAggregationFieldSet: {
 		filterName: 'speciesAggregationFilter',
-		fields: ['dataProvider.sourceOrganization.abbreviation'],
+		fields: ['dataProvider.abbreviation'],
 	},
 	speciesAssemblyFieldSet: {
 		filterName: 'speciesAssemblyFilter',
@@ -667,7 +667,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	variantAggregationFieldSet: {
 		filterName: 'variantAggregationFilter',
-		fields: ['variantStatus.name', 'dataProvider.sourceOrganization.abbreviation'],
+		fields: ['variantStatus.name', 'dataProvider.abbreviation'],
 	},
 	variantStatusFieldSet: {
 		filterName: 'variantStatusFilter',

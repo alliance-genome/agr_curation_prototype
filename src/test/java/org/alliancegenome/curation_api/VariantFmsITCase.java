@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -65,7 +65,7 @@ public class VariantFmsITCase extends BaseITCase {
 		createSoTerm("SO:0001578", "stop_lost", false);
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		DataProvider dataProvider = createDataProvider("WB", false);
+		Organization dataProvider = getOrganization("WB");
 		createAllele(allele, "TestAlleleWithVariant", "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createAllele(allele2, "TestAlleleWithVariant2", "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		
@@ -90,7 +90,7 @@ public class VariantFmsITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.modInternalId", is(variantId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.variantType.curie", is("SO:1000002")).
 			body("entity.synonyms", is(List.of("Syn 1", "Syn 2"))).
 			body("entity.sourceGeneralConsequence.curie", is("SO:0001587")).
@@ -132,7 +132,7 @@ public class VariantFmsITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.modInternalId", is(variantId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.variantType.curie", is("SO:1000008")).
 			body("entity.synonyms", is(List.of("Syn 3", "Syn 4"))).
 			body("entity.sourceGeneralConsequence.curie", is("SO:0001578")).

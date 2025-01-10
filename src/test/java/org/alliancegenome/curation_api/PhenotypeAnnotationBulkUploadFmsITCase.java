@@ -10,7 +10,7 @@ import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -79,7 +79,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		createAnatomicalTerm(anatomyTerm, "Test AnatomicalTerm");
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		DataProvider dataProvider = createDataProvider("WB", false);
+		Organization dataProvider = getOrganization("WB");
 		createGene(gene, "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm, false, dataProvider);

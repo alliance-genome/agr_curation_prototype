@@ -83,7 +83,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.name", is("Y74C9A.2a.1")).
 			body("entity.transcriptId", is("WB:Y74C9A.2a.1")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.transcriptType.curie", is("SO:0000234")).
 			body("entity.transcriptGenomicLocationAssociations", hasSize(1)).
 			body("entity.transcriptGenomicLocationAssociations[0].relation.name", is("located_on")).
@@ -118,7 +118,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.uniqueId", is(exonUniqueId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.exonGenomicLocationAssociations", hasSize(1)).
 			body("entity.exonGenomicLocationAssociations[0].relation.name", is("located_on")).
 			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.name", is("I")).
@@ -156,7 +156,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.uniqueId", is(cdsUniqueId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.codingSequenceGenomicLocationAssociations", hasSize(1)).
 			body("entity.codingSequenceGenomicLocationAssociations[0].relation.name", is("located_on")).
 			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.name", is("I")).
@@ -198,7 +198,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.name", is("Y74C9A.2a.1")).
 			body("entity.transcriptId", is("RefSeq:Y74C9A.2a.1")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.transcriptType.curie", is("SO:0001035")).
 			body("entity.transcriptGenomicLocationAssociations", hasSize(1)).
 			body("entity.transcriptGenomicLocationAssociations[0].relation.name", is("located_on")).

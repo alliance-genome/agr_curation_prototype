@@ -23,6 +23,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 	@Index(name = "geneexpressionexperiment_entityassayedused_index", columnList = "entityassayed_id"),
 	@Index(name = "geneexpressionexperiment_expressionassayused_index", columnList = "expressionassayused_id"),
 	@Index(name = "geneexpressionexperiment_dataprovider_index", columnList = "dataprovider_id"),
+	@Index(name = "geneexpressionexperiment_dataprovidercrossreference_index", columnList = "dataprovidercrossreference_id"),
 	@Index(name = "geneexpressionexperiment_internal_index", columnList = "internal"),
 	@Index(name = "geneexpressionexperiment_obsolete_index", columnList = "obsolete"),
 	@Index(name = "geneexpressionexperiment_createdby_index", columnList = "createdby_id"),

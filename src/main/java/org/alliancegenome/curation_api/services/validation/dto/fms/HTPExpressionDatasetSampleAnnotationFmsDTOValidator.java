@@ -34,14 +34,15 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.AlleleService;
-import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
+import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.ontology.ObiTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -54,7 +55,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 	@Inject HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject ExternalDataBaseEntityService externalDataBaseEntityService;
-	@Inject DataProviderService dataProviderService;
+	@Inject OrganizationService organizationService;
 	@Inject ObiTermService obiTermService;
 	@Inject MmoTermService mmoTermService;
 	@Inject AlleleService alleleService;
@@ -269,7 +270,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 			htpSampleAnnotation.setRelatedNotes(relatedNotes);
 		}
 		
-		htpSampleAnnotation.setDataProvider(dataProviderService.getDefaultDataProvider(backendBulkDataProvider.sourceOrganization));
+		htpSampleAnnotation.setDataProvider(organizationService.getByAbbr(backendBulkDataProvider.sourceOrganization).getEntity());
 
 		if (htpSampleAnnotationResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, htpSampleAnnotationResponse.errorMessagesString());

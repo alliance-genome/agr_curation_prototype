@@ -57,6 +57,7 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "PhenotypeAnnotation_updatedBy_index", columnList = "updatedBy_id"),
 	@Index(name = "PhenotypeAnnotation_singleReference_index", columnList = "singleReference_id"),
 	@Index(name = "PhenotypeAnnotation_dataProvider_index", columnList = "dataProvider_id"),
+	@Index(name = "PhenotypeAnnotation_dataProviderCrossReference_index", columnList = "dataProviderCrossReference_id"),
 	@Index(name = "PhenotypeAnnotation_crossReference_index", columnList = "crossReference_id"),
 	@Index(name = "PhenotypeAnnotation_relation_index", columnList = "relation_id")
 })
@@ -105,6 +106,6 @@ public abstract class PhenotypeAnnotation extends Annotation {
 	@Transient
 	@JsonIgnore
 	public String getDataProviderString() {
-		return dataProvider.getSourceOrganization().getAbbreviation();
+		return dataProvider.getAbbreviation();
 	}
 }

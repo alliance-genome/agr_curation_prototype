@@ -235,10 +235,10 @@ export const VariantsTable = () => {
 			body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.dataProvider?.sourceOrganization?.abbreviation} />,
+			body: (rowData) => <StringTemplate string={rowData.dataProvider?.abbreviation} />,
 			filterConfig: FILTER_CONFIGS.variantDataProviderFilterConfig,
 		},
 		{

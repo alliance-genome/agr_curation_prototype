@@ -39,6 +39,7 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "GeneExpressionAnnotation_updatedBy_index", columnList = "updatedBy_id"),
 	@Index(name = "GeneExpressionAnnotation_singleReference_index", columnList = "singleReference_id"),
 	@Index(name = "GeneExpressionAnnotation_dataProvider_index", columnList = "dataProvider_id"),
+	@Index(name = "GeneExpressionAnnotation_dataProviderCrossReference_index", columnList = "dataProviderCrossReference_id"),
 	@Index(name = "GeneExpressionAnnotation_expressionPattern_index", columnList = "expressionPattern_id"),
 	@Index(name = "GeneExpressionAnnotation_relation_index", columnList = "relation_id"),
 	@Index(name = "GeneExpressionAnnotation_expressionAnnotationSubject_index", columnList = "expressionAnnotationSubject_id"),

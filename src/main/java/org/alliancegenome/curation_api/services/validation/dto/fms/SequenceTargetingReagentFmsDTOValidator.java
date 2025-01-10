@@ -10,8 +10,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.GeneService;
+import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.SequenceTargetingReagentService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
@@ -23,7 +23,7 @@ import jakarta.inject.Inject;
 
 @RequestScoped
 public class SequenceTargetingReagentFmsDTOValidator {
-	@Inject DataProviderService dataProviderService;
+	@Inject OrganizationService organizationService;
 
 	@Inject GeneService geneService;
 
@@ -87,7 +87,7 @@ public class SequenceTargetingReagentFmsDTOValidator {
 		}
 		
 		if (beDataProvider != null) {
-			sqtr.setDataProvider(dataProviderService.getDefaultDataProvider(beDataProvider.sourceOrganization));
+			sqtr.setDataProvider(organizationService.getByAbbr(beDataProvider.sourceOrganization).getEntity());
 		}
 		
 		if (sqtrResponse.hasErrors()) {

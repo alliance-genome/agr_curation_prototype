@@ -107,7 +107,7 @@ export const AffectedGenomicModelTable = () => {
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.agmDataProviderFilterConfig,

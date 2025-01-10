@@ -31,7 +31,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
-import org.alliancegenome.curation_api.services.DataProviderService;
+import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.VocabularyTermSetService;
 import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleVariantAssociationService;
@@ -60,7 +60,7 @@ public class VariantFmsDTOValidator {
 	@Inject AlleleVariantAssociationDAO alleleVariantAssociationDAO;
 	@Inject AlleleVariantAssociationService alleleVariantAssociationService;
 	@Inject SoTermService soTermService;
-	@Inject DataProviderService dataProviderService;
+	@Inject OrganizationService organizationService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject VocabularyTermSetService vocabularyTermSetService;
@@ -121,7 +121,7 @@ public class VariantFmsDTOValidator {
 		
 		variant.setModInternalId(modInternalId);
 		variant.setVariantType(variantType);
-		variant.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.name()));
+		variant.setDataProvider(organizationService.getByAbbr(dataProvider.name()).getEntity());
 		variant.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
 		
 		SOTerm consequence = null;

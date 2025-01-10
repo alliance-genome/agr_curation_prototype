@@ -149,10 +149,10 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructComponents[0].relatedNotes[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
 			body("entity.constructComponents[0].relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.constructComponents[0].relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
+			body("entity.dataProvider.abbreviation", is(dataProvider)).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -234,10 +234,10 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructComponents[0].relatedNotes[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
 			body("entity.constructComponents[0].relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.constructComponents[0].relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
+			body("entity.dataProvider.abbreviation", is(dataProvider2)).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST2:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST2:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage2"));
 	}
 	
 	@Test
@@ -373,7 +373,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructComponents[0]", not(hasKey("dateCreated"))).
 			body("entity.constructComponents[0]", not(hasKey("dateUpdated"))).
 			body("entity.constructComponents[0]", not(hasKey("relatedNotes"))).
-			body("entity.dataProvider", not(hasKey("crossReferences")));
+			body("entity", not(hasKey("dataProviderCrossReference")));
 	}
 	
 	@Test

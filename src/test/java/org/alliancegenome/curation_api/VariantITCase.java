@@ -12,7 +12,6 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -67,9 +66,9 @@ public class VariantITCase extends BaseITCase {
 	private SOTerm sgcTerm2;
 	private SOTerm obsoleteSoTerm;
 	private Note relatedNote;
-	private DataProvider dataProvider;
-	private DataProvider dataProvider2;
-	private DataProvider obsoleteDataProvider;
+	private Organization dataProvider;
+	private Organization dataProvider2;
+	private Organization obsoleteDataProvider;
 	private Organization nonPersistedOrganization;
 	
 	
@@ -97,9 +96,9 @@ public class VariantITCase extends BaseITCase {
 		sgcTerm2 = getSoTerm("SO:SGC002");
 		obsoleteSoTerm = getSoTerm("SO:00000");
 		relatedNote = createNote(noteType, "Test text", false, reference);
-		dataProvider = createDataProvider("VARTEST", false);
-		dataProvider2 = createDataProvider("VARTEST2", false);
-		obsoleteDataProvider = createDataProvider("VARODP", true);
+		dataProvider = createOrganization("VARTEST", false);
+		dataProvider2 = createOrganization("VARTEST2", false);
+		obsoleteDataProvider = createOrganization("VARODP", true);
 		nonPersistedOrganization = new Organization();
 		nonPersistedOrganization.setAbbreviation("INV");
 	}
@@ -147,7 +146,7 @@ public class VariantITCase extends BaseITCase {
 			body("entity.relatedNotes[0].freeText", is(relatedNote.getFreeText())).
 			body("entity.relatedNotes[0].internal", is(false)).
 			body("entity.relatedNotes[0].references[0].curie", is(reference.getCurie())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation()));
+			body("entity.dataProvider.abbreviation", is(dataProvider.getAbbreviation()));
 	}
 
 	@Test
@@ -201,7 +200,7 @@ public class VariantITCase extends BaseITCase {
 			body("entity.relatedNotes[0].freeText", is(editedNote.getFreeText())).
 			body("entity.relatedNotes[0].internal", is(true)).
 			body("entity.relatedNotes[0].references[0].curie", is(reference2.getCurie())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2.getSourceOrganization().getAbbreviation()));
+			body("entity.dataProvider.abbreviation", is(dataProvider2.getAbbreviation()));
 	}
 	
 	@Test
@@ -393,8 +392,6 @@ public class VariantITCase extends BaseITCase {
 		nonPersistedTaxon.setCurie("NCBITaxon:Invalid");
 		SOTerm nonPersistedSoTerm = new SOTerm();
 		nonPersistedSoTerm.setCurie("SO:Invalid");
-		DataProvider invalidDataProvider = new DataProvider();
-		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		Reference nonPersistedReference = new Reference();
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		
@@ -410,7 +407,7 @@ public class VariantITCase extends BaseITCase {
 		variant.setVariantStatus(noteType);
 		variant.setSourceGeneralConsequence(nonPersistedSoTerm);
 		variant.setDateCreated(datetime);
-		variant.setDataProvider(invalidDataProvider);
+		variant.setDataProvider(nonPersistedOrganization);
 		variant.setRelatedNotes(List.of(invalidNote));
 		
 		RestAssured.given().
@@ -425,7 +422,7 @@ public class VariantITCase extends BaseITCase {
 			body("errorMessages.variantType", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.variantStatus", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.sourceGeneralConsequence", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.dataProvider", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"noteType - " + ValidationConstants.INVALID_MESSAGE,
 					"references - " + ValidationConstants.INVALID_MESSAGE))));
@@ -438,8 +435,6 @@ public class VariantITCase extends BaseITCase {
 		nonPersistedTaxon.setCurie("NCBITaxon:Invalid");
 		SOTerm nonPersistedSoTerm = new SOTerm();
 		nonPersistedSoTerm.setCurie("SO:Invalid");
-		DataProvider invalidDataProvider = new DataProvider();
-		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		Reference nonPersistedReference = new Reference();
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		
@@ -449,7 +444,7 @@ public class VariantITCase extends BaseITCase {
 		variant.setVariantStatus(noteType);
 		variant.setSourceGeneralConsequence(nonPersistedSoTerm);
 		variant.setDateCreated(datetime);
-		variant.setDataProvider(invalidDataProvider);
+		variant.setDataProvider(nonPersistedOrganization);
 		
 		Note invalidNote = variant.getRelatedNotes().get(0);
 		invalidNote.setReferences(List.of(nonPersistedReference));
@@ -468,7 +463,7 @@ public class VariantITCase extends BaseITCase {
 			body("errorMessages.variantType", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.variantStatus", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.sourceGeneralConsequence", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.dataProvider", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"noteType - " + ValidationConstants.INVALID_MESSAGE,
 					"references - " + ValidationConstants.INVALID_MESSAGE))));
@@ -578,6 +573,7 @@ public class VariantITCase extends BaseITCase {
 		variant.setSourceGeneralConsequence(null);
 		variant.setDateCreated(null);
 		variant.setRelatedNotes(null);
+		variant.setDataProviderCrossReference(null);
 
 		RestAssured.given().
 			contentType("application/json").
@@ -595,7 +591,8 @@ public class VariantITCase extends BaseITCase {
 			body("entity", not(hasKey("variantStatus"))).
 			body("entity", not(hasKey("sourceGeneralConsequence"))).
 			body("entity", not(hasKey("dateCreated"))).
-			body("entity", not(hasKey("relatedNotes")));
+			body("entity", not(hasKey("relatedNotes"))).
+			body("entity", not(hasKey("dataProviderCrossReference")));
 	}
 	
 	@Test

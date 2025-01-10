@@ -46,7 +46,7 @@ public class AgmSequenceTargetingReagentAssociation extends Association {
 
 	@IndexedEmbedded(includePaths = {
 		"curie", "name", "curie_keyword", "name_keyword",
-		"modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword" })
+		"primaryExternalId", "perimaryExternalId_keyword", "modInternalId", "modInternalId_keyword" })
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({"agmSequenceTargetingReagentAssociations", "constructGenomicEntityAssociations"})

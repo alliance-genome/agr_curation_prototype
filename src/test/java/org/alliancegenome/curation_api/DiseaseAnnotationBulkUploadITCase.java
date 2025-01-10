@@ -11,7 +11,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -134,8 +134,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		createAnatomicalTerm(anatomyTerm2, "Test AnatomicalTerm 2");
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		DataProvider dataProvider = createDataProvider("WB", false);
-		DataProvider ratDataProvider = createDataProvider("RGD", false);
+		Organization dataProvider = getOrganization("WB");
+		Organization ratDataProvider = getOrganization("RGD");
 		createGenes(List.of(gene, gene2), "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createGenes(List.of(withGene, withGene2), "NCBITaxon:9606", symbolTerm, false, dataProvider);
 		createGenes(List.of(ratGene), "NCBITaxon:10116", symbolTerm, false, ratDataProvider);
@@ -256,14 +256,14 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.sgdStrainBackground.primaryExternalId", is(sgdBackgroundStrain)).
 			body("entity.evidenceCodes", hasSize(1)).
 			body("entity.evidenceCodes[0].curie", is(ecoTerm)).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
-			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
-			body("entity.secondaryDataProvider.crossReference.referencedCurie", is("TEST:0002")).
-			body("entity.secondaryDataProvider.crossReference.displayName", is("TEST:0002")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
+			body("entity.dataProvider.abbreviation", is(dataProvider)).
+			body("entity.secondaryDataProvider.abbreviation", is(dataProvider2)).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.secondaryDataProviderCrossReference.referencedCurie", is("TEST:0002")).
+			body("entity.secondaryDataProviderCrossReference.displayName", is("TEST:0002")).
+			body("entity.secondaryDataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -338,16 +338,16 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier)).
 			body("entity.evidenceCodes", hasSize(1)).
 			body("entity.evidenceCodes[0].curie", is(ecoTerm)).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
-			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
+			body("entity.dataProvider.abbreviation", is(dataProvider)).
+			body("entity.secondaryDataProvider.abbreviation", is(dataProvider2)).
 			body("entity.inferredGene.primaryExternalId", is(gene)).
 			body("entity.assertedGenes[0].primaryExternalId", is(gene2)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
-			body("entity.secondaryDataProvider.crossReference.referencedCurie", is("TEST:0002")).
-			body("entity.secondaryDataProvider.crossReference.displayName", is("TEST:0002")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.secondaryDataProviderCrossReference.referencedCurie", is("TEST:0002")).
+			body("entity.secondaryDataProviderCrossReference.displayName", is("TEST:0002")).
+			body("entity.secondaryDataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));;
 	}
 	
 	@Test
@@ -421,18 +421,18 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier)).
 			body("entity.evidenceCodes", hasSize(1)).
 			body("entity.evidenceCodes[0].curie", is(ecoTerm)).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
-			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
+			body("entity.dataProvider.abbreviation", is(dataProvider)).
+			body("entity.secondaryDataProvider.abbreviation", is(dataProvider2)).
 			body("entity.inferredGene.primaryExternalId", is(gene)).
 			body("entity.assertedGenes[0].primaryExternalId", is(gene2)).
 			body("entity.inferredAllele.primaryExternalId", is(allele)).
 			body("entity.assertedAllele.primaryExternalId", is(allele2)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
-			body("entity.secondaryDataProvider.crossReference.referencedCurie", is("TEST:0002")).
-			body("entity.secondaryDataProvider.crossReference.displayName", is("TEST:0002")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.secondaryDataProviderCrossReference.referencedCurie", is("TEST:0002")).
+			body("entity.secondaryDataProviderCrossReference.displayName", is("TEST:0002")).
+			body("entity.secondaryDataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));;
 	}
 
 	@Test
@@ -508,14 +508,14 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.sgdStrainBackground.primaryExternalId", is(sgdBackgroundStrain2)).
 			body("entity.evidenceCodes", hasSize(1)).
 			body("entity.evidenceCodes[0].curie", is(ecoTerm2)).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
-			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0002")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST:0002")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
-			body("entity.secondaryDataProvider.crossReference.referencedCurie", is("TEST:0001")).
-			body("entity.secondaryDataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
+			body("entity.dataProvider.abbreviation", is(dataProvider2)).
+			body("entity.secondaryDataProvider.abbreviation", is(dataProvider)).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0002")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST:0002")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.secondaryDataProviderCrossReference.referencedCurie", is("TEST:0001")).
+			body("entity.secondaryDataProviderCrossReference.displayName", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -589,16 +589,16 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier2)).
 			body("entity.evidenceCodes", hasSize(1)).
 			body("entity.evidenceCodes[0].curie", is(ecoTerm2)).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
-			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider)).
+			body("entity.dataProvider.abbreviation", is(dataProvider2)).
+			body("entity.secondaryDataProvider.abbreviation", is(dataProvider)).
 			body("entity.inferredGene.primaryExternalId", is(gene2)).
 			body("entity.assertedGenes[0].primaryExternalId", is(gene)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0002")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST:0002")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
-			body("entity.secondaryDataProvider.crossReference.referencedCurie", is("TEST:0001")).
-			body("entity.secondaryDataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0002")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST:0002")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.secondaryDataProviderCrossReference.referencedCurie", is("TEST:0001")).
+			body("entity.secondaryDataProviderCrossReference.displayName", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -673,18 +673,18 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier2)).
 			body("entity.evidenceCodes", hasSize(1)).
 			body("entity.evidenceCodes[0].curie", is(ecoTerm2)).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
-			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider)).
+			body("entity.dataProvider.abbreviation", is(dataProvider2)).
+			body("entity.secondaryDataProvider.abbreviation", is(dataProvider)).
 			body("entity.inferredGene.primaryExternalId", is(gene2)).
 			body("entity.assertedGenes[0].primaryExternalId", is(gene)).
 			body("entity.inferredAllele.primaryExternalId", is(allele2)).
 			body("entity.assertedAllele.primaryExternalId", is(allele)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0002")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST:0002")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
-			body("entity.secondaryDataProvider.crossReference.referencedCurie", is("TEST:0001")).
-			body("entity.secondaryDataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0002")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST:0002")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.secondaryDataProviderCrossReference.referencedCurie", is("TEST:0001")).
+			body("entity.secondaryDataProviderCrossReference.displayName", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -942,8 +942,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
 			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
 			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
-			body("entity.dataProvider", not(hasKey("crossReference"))).
-			body("entity.secondaryDataProvider", not(hasKey("crossReference")));
+			body("entity", not(hasKey("dataProviderCrossReference"))).
+			body("entity", not(hasKey("secondaryDataProviderCrossReference")));
 	}
 	
 	@Test

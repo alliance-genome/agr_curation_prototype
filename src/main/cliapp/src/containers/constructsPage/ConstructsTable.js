@@ -249,7 +249,7 @@ export const ConstructsTable = () => {
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.constructDataProviderFilterConfig,

@@ -153,10 +153,10 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSecondaryIds[0].updatedBy.uniqueId", is("GENETEST:Person0002")).
 			body("entity.geneSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.geneSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.dataProvider.abbreviation", is(requiredDataProvider)).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage")).
 			body("entity.crossReferences", hasSize(1)).
 			body("entity.crossReferences[0].referencedCurie", is("TEST:Xref01")).
 			body("entity.crossReferences[0].displayName", is("TEST:Xref01Display")).
@@ -249,10 +249,10 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSecondaryIds[0].updatedBy.uniqueId", is("GENETEST:Person0001")).
 			body("entity.geneSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.geneSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider2)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2")).
+			body("entity.dataProvider.abbreviation", is(requiredDataProvider2)).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST2:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST2:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage2")).
 			body("entity.crossReferences", hasSize(1)).
 			body("entity.crossReferences[0].referencedCurie", is("TEST2:Xref02")).
 			body("entity.crossReferences[0].displayName", is("TEST2:Xref02Display")).
@@ -426,7 +426,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSecondaryIds[0]", not(hasKey("createdBy"))).
 			body("entity.geneSecondaryIds[0]", not(hasKey("updatedBy"))).
 			body("entity.geneSecondaryIds[0]", not(hasKey("dateCreated"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("dateUpdated")));
+			body("entity.geneSecondaryIds[0]", not(hasKey("dateUpdated"))).
+			body("entity", not(hasKey("dataProviderCrossReference")));
 	}
 
 	@Test
@@ -483,7 +484,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSecondaryIds[0]", not(hasKey("createdBy"))).
 			body("entity.geneSecondaryIds[0]", not(hasKey("updatedBy"))).
 			body("entity.geneSecondaryIds[0]", not(hasKey("dateCreated"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("dateUpdated")));
+			body("entity.geneSecondaryIds[0]", not(hasKey("dateUpdated"))).
+			body("entity", not(hasKey("dataProviderCrossReference")));
 	}
 	
 	@Test

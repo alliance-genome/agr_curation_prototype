@@ -11,7 +11,6 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Organization;
@@ -77,9 +76,9 @@ public class GeneITCase extends BaseITCase {
 	private GeneSynonymSlotAnnotation geneSynonym;
 	private GeneSystematicNameSlotAnnotation geneSystematicName;
 	private GeneSecondaryIdSlotAnnotation geneSecondaryId;
-	private DataProvider dataProvider;
-	private DataProvider dataProvider2;
-	private DataProvider obsoleteDataProvider;
+	private Organization dataProvider;
+	private Organization dataProvider2;
+	private Organization obsoleteDataProvider;
 	private Organization nonPersistedOrganization;
 	
 	private void loadRequiredEntities() {
@@ -113,9 +112,9 @@ public class GeneITCase extends BaseITCase {
 		geneSynonym = createGeneSynonymSlotAnnotation(List.of(reference), "Gene test synonym 1", symbolNameType, exactSynonymScope, "https://test.org");
 		geneSystematicName = createGeneSystematicNameSlotAnnotation(List.of(reference), "GT.1", systematicNameType, exactSynonymScope, "https://test.org");
 		geneSecondaryId = createGeneSecondaryIdSlotAnnotation(List.of(reference), "SecondaryTest");
-		dataProvider = createDataProvider("TEST", false);
-		dataProvider2 = createDataProvider("TEST2", false);
-		obsoleteDataProvider = createDataProvider("ODP", true);
+		dataProvider = createOrganization("TEST", false);
+		dataProvider2 = createOrganization("TEST2", false);
+		obsoleteDataProvider = createOrganization("ODP", true);
 		nonPersistedOrganization = new Organization();
 		nonPersistedOrganization.setAbbreviation("INV");
 		
@@ -185,7 +184,7 @@ public class GeneITCase extends BaseITCase {
 			body("entity.geneSystematicName.evidence[0].curie", is(geneSystematicName.getEvidence().get(0).getCurie())).
 			body("entity.geneSecondaryIds[0].secondaryId", is(geneSecondaryId.getSecondaryId())).
 			body("entity.geneSecondaryIds[0].evidence[0].curie", is(geneSecondaryId.getEvidence().get(0).getCurie())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation()));
+			body("entity.dataProvider.abbreviation", is(dataProvider.getAbbreviation()));
 	}
 
 	@Test
@@ -285,7 +284,7 @@ public class GeneITCase extends BaseITCase {
 			body("entity.geneSystematicName.evidence[0].curie", is(editedSystematicName.getEvidence().get(0).getCurie())).
 			body("entity.geneSecondaryIds[0].secondaryId", is(editedSecondaryId.getSecondaryId())).
 			body("entity.geneSecondaryIds[0].evidence[0].curie", is(editedSecondaryId.getEvidence().get(0).getCurie())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2.getSourceOrganization().getAbbreviation()));
+			body("entity.dataProvider.abbreviation", is(dataProvider2.getAbbreviation()));
 	}
 	
 	@Test
@@ -595,14 +594,12 @@ public class GeneITCase extends BaseITCase {
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		SOTerm nonPersistedSoTerm = new SOTerm();
 		nonPersistedSoTerm.setCurie("SO:Invalid");
-		DataProvider invalidDataProvider = new DataProvider();
-		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		
 		Gene gene = new Gene();
 		gene.setPrimaryExternalId("GENE:0012");
 		gene.setTaxon(nonPersistedTaxon);
 		gene.setGeneType(nonPersistedSoTerm);
-		gene.setDataProvider(invalidDataProvider);
+		gene.setDataProvider(nonPersistedOrganization);
 		
 		GeneSymbolSlotAnnotation invalidSymbol = createGeneSymbolSlotAnnotation(List.of(nonPersistedReference), "Test symbol", fullNameType, fullNameType, "https://test.org");
 		GeneFullNameSlotAnnotation invalidFullName = createGeneFullNameSlotAnnotation(List.of(nonPersistedReference), "Test name", symbolNameType, fullNameType, "https://test.org");
@@ -643,7 +640,7 @@ public class GeneITCase extends BaseITCase {
 					"nameType - " + ValidationConstants.INVALID_MESSAGE,
 					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
 			body("errorMessages.geneSecondaryIds", is("evidence - " + ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE));
+			body("errorMessages.dataProvider", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -655,13 +652,11 @@ public class GeneITCase extends BaseITCase {
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		SOTerm nonPersistedSoTerm = new SOTerm();
 		nonPersistedSoTerm.setCurie("SO:Invalid");
-		DataProvider invalidDataProvider = new DataProvider();
-		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		
 		Gene gene = getGene(GENE);
 		gene.setTaxon(nonPersistedTaxon);
 		gene.setGeneType(nonPersistedSoTerm);
-		gene.setDataProvider(invalidDataProvider);
+		gene.setDataProvider(nonPersistedOrganization);
 		
 		GeneSymbolSlotAnnotation invalidSymbol = gene.getGeneSymbol();
 		invalidSymbol.setEvidence(List.of(nonPersistedReference));
@@ -715,7 +710,7 @@ public class GeneITCase extends BaseITCase {
 					"nameType - " + ValidationConstants.INVALID_MESSAGE,
 					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
 			body("errorMessages.geneSecondaryIds", is("evidence - " + ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE));
+			body("errorMessages.dataProvider", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -908,6 +903,7 @@ public class GeneITCase extends BaseITCase {
 		gene.setGeneSynonyms(null);
 		gene.setGeneSystematicName(null);
 		gene.setGeneSecondaryIds(null);
+		gene.setDataProviderCrossReference(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -925,7 +921,8 @@ public class GeneITCase extends BaseITCase {
 			body("entity", not(hasKey("geneFullName"))).
 			body("entity", not(hasKey("geneSynonyms"))).
 			body("entity", not(hasKey("geneSystematicName"))).
-			body("entity", not(hasKey("geneSecondaryIds")));
+			body("entity", not(hasKey("geneSecondaryIds"))).
+			body("entity", not(hasKey("dataProviderCrossReference")));
 	}
 	
 	@Test

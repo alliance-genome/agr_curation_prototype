@@ -59,7 +59,9 @@ export const data = {
 				name: 'SGD Strain Background test',
 			},
 			diseaseGeneticModifierAgms: [{ name: 'DGM AGM test', primaryExternalId: 'WB:DGM1' }],
-			diseaseGeneticModifierAlleles: [{ primaryExternalId: 'WB:DGM2', alleleSymbol: { displayText: 'DGM Allele test' } }],
+			diseaseGeneticModifierAlleles: [
+				{ primaryExternalId: 'WB:DGM2', alleleSymbol: { displayText: 'DGM Allele test' } },
+			],
 			diseaseGeneticModifierGenes: [{ primaryExternalId: 'WB:DGM3', geneSymbol: { displayText: 'DGM Gene test' } }],
 			diseaseQualifiers: [{ name: 'disease qualifiers test' }],
 			dateCreated: '2017-06-08T14:15:35Z',

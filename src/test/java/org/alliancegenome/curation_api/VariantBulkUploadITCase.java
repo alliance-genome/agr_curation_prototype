@@ -104,10 +104,10 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNotes[0].freeText", is("Test note")).
 			body("entity.relatedNotes[0].noteType.name", is(noteType)).
 			body("entity.relatedNotes[0].references[0].curie", is(reference)).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
+			body("entity.dataProvider.abbreviation", is("WB")).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -141,10 +141,10 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNotes[0].freeText", is("Test note 2")).
 			body("entity.relatedNotes[0].noteType.name", is(noteType2)).
 			body("entity.relatedNotes[0].references[0].curie", is(reference2)).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("RGD")).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
+			body("entity.dataProvider.abbreviation", is("RGD")).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST2:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST2:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage2"));
 	}
 	
 	@Test
@@ -231,7 +231,8 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
 			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
 			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
-			body("entity.relatedNotes[0]", not(hasKey("dateUpdated")));
+			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
+			body("entity", not(hasKey("dataProviderCrossReference")));
 	}
 	
 	@Test

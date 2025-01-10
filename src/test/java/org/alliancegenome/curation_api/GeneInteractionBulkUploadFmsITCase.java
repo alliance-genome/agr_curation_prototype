@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -76,8 +76,8 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 	private void loadRequiredEntities() throws Exception {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		DataProvider dataProvider = createDataProvider("WB", false);
-		DataProvider dataProvider2 = createDataProvider("RGD", false);
+		Organization dataProvider = getOrganization("WB");
+		Organization dataProvider2 = getOrganization("RGD");
 		createGenes(List.of(gene1, gene2), "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createGeneWithXref(gene3, "NCBITaxon:6239", symbolTerm, false, dataProvider, gene3xref);
 		createGeneWithXref(gene4, "NCBITaxon:9606", symbolTerm, false, dataProvider2, gene4xref);

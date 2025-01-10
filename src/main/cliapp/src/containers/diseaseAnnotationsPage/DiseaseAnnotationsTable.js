@@ -576,7 +576,13 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ['name', 'curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie'];
+		const autocompleteFields = [
+			'name',
+			'curie',
+			'primaryExternalId',
+			'modInternalId',
+			'crossReferences.referencedCurie',
+		];
 		const endpoint = 'agm';
 		const filterName = 'sgdStrainBackgroundFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -628,7 +634,13 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const geneticModifierAgmsSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ['name', 'curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie'];
+		const autocompleteFields = [
+			'name',
+			'curie',
+			'primaryExternalId',
+			'modInternalId',
+			'crossReferences.referencedCurie',
+		];
 		const endpoint = 'agm';
 		const filterName = 'geneticModifierAgmsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -1332,13 +1344,13 @@ export const DiseaseAnnotationsTable = () => {
 			editor: (props) => assertedAlleleEditorTemplate(props),
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.diseaseDataProviderFilterConfig,
 		},
 		{
-			field: 'secondaryDataProvider.sourceOrganization.abbreviation',
+			field: 'secondaryDataProvider.abbreviation',
 			header: 'Secondary Data Provider',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.secondaryDataProviderFilterConfig,

@@ -1226,7 +1226,7 @@ export const AllelesTable = () => {
 			editor: relatedNotesEditor,
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleDataProviderFilterConfig,

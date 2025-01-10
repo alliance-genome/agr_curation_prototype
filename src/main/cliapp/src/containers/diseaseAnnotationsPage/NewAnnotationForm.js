@@ -221,7 +221,13 @@ export const NewAnnotationForm = ({
 	};
 
 	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ['name', 'curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie'];
+		const autocompleteFields = [
+			'name',
+			'curie',
+			'primaryExternalId',
+			'modInternalId',
+			'crossReferences.referencedCurie',
+		];
 		const endpoint = 'agm';
 		const filterName = 'sgdStrainBackgroundFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -237,7 +243,13 @@ export const NewAnnotationForm = ({
 	};
 
 	const geneticModifierAgmsSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ['primaryExternalId', 'modInternalId', 'name', 'curie', 'crossReferences.referencedCurie'];
+		const autocompleteFields = [
+			'primaryExternalId',
+			'modInternalId',
+			'name',
+			'curie',
+			'crossReferences.referencedCurie',
+		];
 		const endpoint = 'agm';
 		const filterName = 'geneticModifierAgmsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);

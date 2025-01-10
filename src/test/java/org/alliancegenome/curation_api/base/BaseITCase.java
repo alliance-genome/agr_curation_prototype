@@ -23,7 +23,6 @@ import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
@@ -172,7 +171,7 @@ public class BaseITCase {
 		return createAffectedGenomicModel(primaryExternalId, name, taxonCurie, subtypeName, obsolete, null);
 	}
 
-	public AffectedGenomicModel createAffectedGenomicModel(String primaryExternalId, String name, String taxonCurie, String subtypeName, Boolean obsolete, DataProvider dataProvider) {
+	public AffectedGenomicModel createAffectedGenomicModel(String primaryExternalId, String name, String taxonCurie, String subtypeName, Boolean obsolete, Organization dataProvider) {
 		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
 		VocabularyTerm subtype = getVocabularyTerm(subtypeVocabulary, subtypeName);
 
@@ -199,7 +198,7 @@ public class BaseITCase {
 		return createAllele(primaryExternalId, primaryExternalId, taxonCurie, symbolNameTerm, obsolete, null);
 	}
 
-	public Allele createAllele(String primaryExternalId, String symbol, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider) {
+	public Allele createAllele(String primaryExternalId, String symbol, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, Organization dataProvider) {
 		Allele allele = new Allele();
 		allele.setPrimaryExternalId(primaryExternalId);
 		allele.setTaxon(getNCBITaxonTerm(taxonCurie));
@@ -244,7 +243,7 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 	
-	public AssemblyComponent createAssemblyComponent(String primaryExternalId, String name, GenomeAssembly assembly, DataProvider dataProvider) throws Exception {
+	public AssemblyComponent createAssemblyComponent(String primaryExternalId, String name, GenomeAssembly assembly, Organization dataProvider) throws Exception {
 		AssemblyComponent assemblyComponent = new AssemblyComponent();
 		assemblyComponent.setPrimaryExternalId(primaryExternalId);
 		assemblyComponent.setName(name);
@@ -362,27 +361,6 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public DataProvider createDataProvider(String organizationAbbreviation, Boolean obsolete) {
-		DataProvider dataProvider = new DataProvider();
-		Organization sourceOrganization = getOrganization(organizationAbbreviation);
-		if (sourceOrganization == null) {
-			sourceOrganization = createOrganization(organizationAbbreviation, false);
-		}
-		dataProvider.setSourceOrganization(sourceOrganization);
-		dataProvider.setObsolete(obsolete);
-
-		ObjectResponse<DataProvider> response = RestAssured.given().
-			contentType("application/json").
-			body(dataProvider).
-			when().
-			post("/api/dataprovider").
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefDataProvider());
-
-		return response.getEntity();
-	}
-
 	public DOTerm createDoTerm(String curie, String name) {
 		return createDoTerm(curie, name, false);
 	}
@@ -471,11 +449,11 @@ public class BaseITCase {
 		return createGene(primaryExternalId, taxonCurie, symbolNameTerm, obsolete, null);
 	}
 
-	public Gene createGene(String primaryExternalId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider) {
+	public Gene createGene(String primaryExternalId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, Organization dataProvider) {
 		return createGeneWithXref(primaryExternalId, taxonCurie, symbolNameTerm, obsolete, dataProvider, null);
 	}
 
-	public List<Gene> createGenes(List<String> primaryExternalIds, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider) {
+	public List<Gene> createGenes(List<String> primaryExternalIds, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, Organization dataProvider) {
 		List<Gene> geneList = new ArrayList<>();
 		for (String primaryExternalId : primaryExternalIds) {
 			geneList.add(createGene(primaryExternalId, taxonCurie, symbolNameTerm, obsolete, dataProvider));
@@ -484,7 +462,7 @@ public class BaseITCase {
 		return geneList;
 	}
 
-	public Gene createGeneWithXref(String primaryExternalId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider, String xrefCurie) {
+	public Gene createGeneWithXref(String primaryExternalId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, Organization dataProvider, String xrefCurie) {
 		Gene gene = new Gene();
 		gene.setPrimaryExternalId(primaryExternalId);
 		gene.setTaxon(getNCBITaxonTerm(taxonCurie));
@@ -1260,11 +1238,6 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {
 		return new TypeRef<ObjectResponse<CrossReference>>() {
-		};
-	}
-
-	private TypeRef<ObjectResponse<DataProvider>> getObjectResponseTypeRefDataProvider() {
-		return new TypeRef<ObjectResponse<DataProvider>>() {
 		};
 	}
 

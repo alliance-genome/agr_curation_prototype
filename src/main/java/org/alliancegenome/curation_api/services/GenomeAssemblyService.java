@@ -22,7 +22,7 @@ import jakarta.inject.Inject;
 public class GenomeAssemblyService extends BaseEntityCrudService<GenomeAssembly, GenomeAssemblyDAO> {
 
 	@Inject GenomeAssemblyDAO genomeAssemblyDAO;
-	@Inject DataProviderService dataProviderService;
+	@Inject OrganizationService organizationService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
 	@Override
@@ -43,7 +43,7 @@ public class GenomeAssemblyService extends BaseEntityCrudService<GenomeAssembly,
 			if (resp == null || resp.getSingleResult() == null) {
 				GenomeAssembly assembly = new GenomeAssembly();
 				assembly.setPrimaryExternalId(assemblyName);
-				assembly.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));
+				assembly.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
 				assembly.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
 	
 				return genomeAssemblyDAO.persist(assembly);

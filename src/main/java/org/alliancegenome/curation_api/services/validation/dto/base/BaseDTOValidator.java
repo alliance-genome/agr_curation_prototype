@@ -7,33 +7,35 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.dao.DataProviderDAO;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.CrossReferenceDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.DataProviderDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.GenomicEntityDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
-import org.alliancegenome.curation_api.services.DataProviderService;
+import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
 import org.alliancegenome.curation_api.services.ontology.MiTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.CrossReferenceDTOValidator;
-import org.alliancegenome.curation_api.services.validation.dto.DataProviderDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -42,10 +44,9 @@ public class BaseDTOValidator {
 
 	@Inject PersonService personService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject DataProviderService dataProviderService;
-	@Inject DataProviderDTOValidator dataProviderDtoValidator;
-	@Inject DataProviderDAO dataProviderDAO;
+	@Inject OrganizationService organizationService;
 	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
+	@Inject CrossReferenceDAO crossReferenceDAO;
 	@Inject CrossReferenceService crossReferenceService;
 	@Inject MiTermService miTermService;
 
@@ -157,14 +158,16 @@ public class BaseDTOValidator {
 		if (dto.getDataProviderDto() == null) {
 			beResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ObjectResponse<DataProvider> dpResponse = dataProviderDtoValidator.validateDataProviderDTO(dto.getDataProviderDto(), entity.getDataProvider());
+			ObjectResponse<ImmutablePair<Organization, CrossReference>> dpResponse = validateDataProviderDTO(dto.getDataProviderDto(), entity.getDataProviderCrossReference());
 			if (dpResponse.hasErrors()) {
 				beResponse.addErrorMessage("data_provider_dto", dpResponse.errorMessagesString());
 			} else {
-				if (beDataProvider != null && !dpResponse.getEntity().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-					beResponse.addErrorMessage("data_provider_dto - source_organization_dto - abbreviation", ValidationConstants.INVALID_MESSAGE + " (" + dpResponse.getEntity().getSourceOrganization().getAbbreviation() + ") for " + beDataProvider.name() + " load");
+				entity.setDataProvider(dpResponse.getEntity().getLeft());
+				if (dpResponse.getEntity().getRight() != null) {
+					entity.setDataProviderCrossReference(crossReferenceDAO.persist(dpResponse.getEntity().getRight()));
+				} else {
+					entity.setDataProviderCrossReference(null);
 				}
-				entity.setDataProvider(dataProviderDAO.persist(dpResponse.getEntity()));
 			}
 		}
 
@@ -226,4 +229,34 @@ public class BaseDTOValidator {
 
 		return list;
 	}
+	
+	public ObjectResponse<ImmutablePair<Organization, CrossReference>> validateDataProviderDTO(DataProviderDTO dto, CrossReference dbDataProviderXref) {
+		ObjectResponse<ImmutablePair<Organization, CrossReference>> dpResponse = new ObjectResponse<ImmutablePair<Organization, CrossReference>>();
+
+		Organization dataProvider = null;
+		CrossReference dataProviderXref = null;
+		if (StringUtils.isBlank(dto.getSourceOrganizationAbbreviation())) {
+			dpResponse.addErrorMessage("source_organization_abbreviation", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			ObjectResponse<Organization> soResponse = organizationService.getByAbbr(dto.getSourceOrganizationAbbreviation());
+			if (soResponse == null || soResponse.getEntity() == null) {
+				dpResponse.addErrorMessage("source_organization_abbreviation", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSourceOrganizationAbbreviation() + ")");
+			} else {
+				dataProvider = soResponse.getEntity();
+			}
+		}
+
+		if (dto.getCrossReferenceDto() != null) {
+			ObjectResponse<CrossReference> crResponse = crossReferenceDtoValidator.validateCrossReferenceDTO(dto.getCrossReferenceDto(), dbDataProviderXref);
+			if (crResponse.hasErrors()) {
+				dpResponse.addErrorMessage("cross_reference_dto", crResponse.errorMessagesString());
+			} else {
+				dataProviderXref = crResponse.getEntity();
+			}
+		}
+		dpResponse.setEntity(new ImmutablePair<Organization, CrossReference>(dataProvider, dataProviderXref));
+
+		return dpResponse;
+	}
+
 }

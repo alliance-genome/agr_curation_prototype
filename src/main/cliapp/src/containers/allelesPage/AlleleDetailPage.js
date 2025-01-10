@@ -311,7 +311,7 @@ export default function AlleleDetailPage() {
 					<Divider />
 
 					<DataProviderFormTemplate
-						dataProvider={alleleState.allele?.dataProvider?.sourceOrganization?.abbreviation}
+						dataProvider={alleleState.allele?.dataProvider?.abbreviation}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}

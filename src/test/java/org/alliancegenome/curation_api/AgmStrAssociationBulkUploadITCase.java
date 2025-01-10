@@ -9,7 +9,7 @@ import java.time.OffsetDateTime;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +56,7 @@ public class AgmStrAssociationBulkUploadITCase extends BaseITCase {
 	private final String strGetEndpoint = "/api/sqtr/";
 
 	private void loadRequiredEntities() throws Exception {
-		DataProvider dataProvider = createDataProvider("ZFIN", false);
+		Organization dataProvider = getOrganization("ZFIN");
 		agm = createAffectedGenomicModel(agmCurie, "test name", "NCBITaxon:7955", "fish", false, dataProvider);
 		str = getSequenceTargetingReagent(strCurie);
 	}
