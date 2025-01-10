@@ -1,8 +1,5 @@
 package org.alliancegenome.curation_api;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,6 +23,8 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+
+import static org.hamcrest.Matchers.*;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -218,6 +217,48 @@ public class VariantFmsITCase extends BaseITCase {
 		params.put("Locations", createCountParams(1, 0, 1, 0));
 		params.put("Associations", createCountParams(1, 1, 0, 0));
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_05_invalid_allele_id.json", params);
+	}
+
+	@Test
+	@Order(6)
+	public void variantFmsBulkUploadUpdateWithNoReferences() throws Exception {
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 0, 1, 0));
+		params.put("Locations", createCountParams(1, 0, 1, 0));
+		params.put("Associations", createCountParams(1, 0, 1, 0));
+
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "UD_02_update_with_no_references.json", params);
+
+		RestAssured.given().
+			when().
+			get(variantGetEndpoint + variantId).
+			then().
+			statusCode(200).
+			body("entity.modInternalId", is(variantId)).
+			body("entity.taxon.curie", is("NCBITaxon:6239")).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.variantType.curie", is("SO:1000008")).
+			body("entity.synonyms", is(List.of("Syn 3", "Syn 4"))).
+			body("entity.sourceGeneralConsequence.curie", is("SO:0001578")).
+			body("entity.curatedVariantGenomicLocations", hasSize(1)).
+			body("entity.curatedVariantGenomicLocations[0].hgvs", is("NC_003279.8:g.1A>T")).
+			body("entity.curatedVariantGenomicLocations[0].relation.name", is("located_on")).
+			body("entity.curatedVariantGenomicLocations[0].variantGenomicLocationAssociationObject.name", is("I")).
+			body("entity.curatedVariantGenomicLocations[0].start", is(1)).
+			body("entity.curatedVariantGenomicLocations[0].end", is(1000)).
+			body("entity.alleleVariantAssociations", hasSize(1)).
+			body("entity.alleleVariantAssociations[0].relation.name", is("has_variant")).
+			body("entity.alleleVariantAssociations[0].alleleAssociationSubject.modEntityId", is("WB:AlleleWithVar2")).
+			body("entity.relatedNotes", hasSize(1)).
+			body("entity.relatedNotes[0].internal", is(false)).
+			body("entity.relatedNotes[0].freeText", is("This is an updated test note.")).
+			body("entity.relatedNotes[0].noteType.name", is("comment")).
+			body("entity.relatedNotes[0].references[0].curie", is(reference2)).
+			body("entity.crossReferences", hasSize(1)).
+			body("entity.crossReferences[0].referencedCurie", is("TEST:WBVar00252637")).
+			body("entity.crossReferences[0].displayName", is("TEST:WBVar00252637")).
+			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage")).
+			body("entity.references", is(nullValue()));
 	}
 
 }
