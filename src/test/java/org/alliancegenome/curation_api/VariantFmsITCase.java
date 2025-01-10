@@ -54,6 +54,7 @@ public class VariantFmsITCase extends BaseITCase {
 	private final String reference = "AGRKB:000000001";
 	private final String reference2 = "AGRKB:000000021";
 	private final String pubmedId = "PMID:25920554";
+	private final String updatedPubmedId = "PMID:009";
 
 	private void loadRequiredEntities() throws Exception {
 		createSoTerm("SO:1000002", "substitution", false);
@@ -155,8 +156,8 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.crossReferences", hasSize(1)).
 			body("entity.crossReferences[0].referencedCurie", is("TEST:WBVar00252637")).
 			body("entity.crossReferences[0].displayName", is("TEST:WBVar00252637")).
-			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage"));
-
+			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage")).
+			body("entity.references[0].crossReferences[0].referencedCurie", is(updatedPubmedId));
 	}
 
 	@Test
@@ -207,6 +208,7 @@ public class VariantFmsITCase extends BaseITCase {
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_01_invalid_type.json", params);
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_02_invalid_type_for_fms_submissions.json", params);
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_03_invalid_consequence.json", params);
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_06_invalid_reference.json", params);
 
 		params.put("Entities", createCountParams(1, 0, 1, 0));
 		params.put("Associations", createCountParams(1, 0, 1, 0));

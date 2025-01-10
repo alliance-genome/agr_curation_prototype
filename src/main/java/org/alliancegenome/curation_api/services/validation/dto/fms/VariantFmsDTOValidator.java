@@ -188,6 +188,8 @@ public class VariantFmsDTOValidator {
 				}
 				variant.getReferences().addAll(validatedReferences);
 			}
+		} else {
+			variant.setReferences(null);
 		}
 
 		if (variant.getRelatedNotes() != null) {
