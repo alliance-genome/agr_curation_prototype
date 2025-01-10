@@ -28,6 +28,7 @@ import { StringListTemplate } from '../../components/Templates/StringListTemplat
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
+import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 
 import { SearchService } from '../../service/SearchService';
 
@@ -218,6 +219,15 @@ export const VariantsTable = () => {
 			),
 			filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
 			editor: relatedNotesEditor,
+		},
+		{
+			field: 'references.primaryCrossReferenceCurie',
+			header: 'References',
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
+			body: (rowData) => (
+				<TruncatedReferencesTemplate references={rowData.references} identifier={rowData.modEntityId} />
+			),
 		},
 		{
 			field: 'sourceGeneralConsequence.name',

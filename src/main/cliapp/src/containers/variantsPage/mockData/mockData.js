@@ -220,6 +220,27 @@ export const data = {
 					],
 				},
 			],
+			references: [
+				{
+					id: 3,
+					internal: false,
+					obsolete: false,
+					dbDateCreated: '2025-01-09T16:19:58.85196Z',
+					dbDateUpdated: '2025-01-09T16:19:58.851965Z',
+					curie: 'AGRKB:000000002',
+					crossReferences: [
+						{
+							id: 200000160,
+							internal: false,
+							obsolete: false,
+							dbDateCreated: '2025-01-09T16:19:58.841396Z',
+							dbDateUpdated: '2025-01-09T16:19:58.841404Z',
+							referencedCurie: 'PMID:25920554',
+							displayName: 'PMID:25920554',
+						},
+					],
+				},
+			],
 		},
 	],
 	totalResults: 1,
