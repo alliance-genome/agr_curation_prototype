@@ -1,0 +1,7 @@
+[
+  {
+    "agm_subject_identifier": "AGMTEST:AffectedGenomicModel0001",
+    "relation_name": "contains",
+    "allele_identifier": "AAA:Allele0001"
+  }
+]

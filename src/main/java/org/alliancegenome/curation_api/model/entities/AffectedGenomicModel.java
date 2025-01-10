@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.associations.agmAssociations.AgmAlleleAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.agmAssociations.AgmSequenceTargetingReagentAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.agmSlotAnnotations.AgmSecondaryIdSlotAnnotation;
@@ -25,7 +26,7 @@ import java.util.List;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"agmDiseaseAnnotations", "constructGenomicEntityAssociations", "agmSecondaryIds", "agmSequenceTargetingReagentAssociations"}, callSuper = true)
+@ToString(exclude = {"agmDiseaseAnnotations", "constructGenomicEntityAssociations", "agmSecondaryIds", "agmSequenceTargetingReagentAssociations", "components"}, callSuper = true)
 @Schema(name = "AffectedGenomicModel", description = "POJO that represents the AGM")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntity.class}, partial = true)
 public class AffectedGenomicModel extends GenomicEntity {
@@ -81,4 +82,15 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class })
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 
+	@IndexedEmbedded(includePaths = {
+		"agmAlleleAssociationObject.name",
+		"agmAlleleAssociationObject.name_keyword",
+		"agmAlleleAssociationObject.synonyms",
+		"agmAlleleAssociationObject.synonyms_keyword",
+		"agmAlleleAssociationObject.secondaryIdentifiers",
+		"agmAlleleAssociationObject.secondaryIdentifiers_keyword"
+	})
+	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class })
+	private List<AgmAlleleAssociation> components;
 }

@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
+import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmAlleleAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmStrAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
@@ -52,6 +53,7 @@ public class BulkLoadJobExecutor {
 	@Inject AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
 	@Inject ConstructGenomicEntityAssociationExecutor constructGenomicEntityAssociationExecutor;
 	@Inject AgmStrAssociationExecutor agmStrAssociationExecutor;
+	@Inject AgmAlleleAssociationExecutor agmAlleleAssociationExecutor;
 	@Inject PhenotypeAnnotationExecutor phenotypeAnnotationExecutor;
 	@Inject GeneMolecularInteractionExecutor geneMolecularInteractionExecutor;
 	@Inject GeneGeneticInteractionExecutor geneGeneticInteractionExecutor;
@@ -117,6 +119,7 @@ public class BulkLoadJobExecutor {
 			}
 			if (loadType == AGM_ASSOCIATION || loadType == FULL_INGEST) {
 				agmStrAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+				agmAlleleAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
