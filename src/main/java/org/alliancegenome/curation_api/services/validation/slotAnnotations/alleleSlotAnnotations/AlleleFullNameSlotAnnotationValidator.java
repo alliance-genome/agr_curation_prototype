@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -45,7 +46,7 @@ public class AlleleFullNameSlotAnnotationValidator extends NameSlotAnnotationVal
 		}
 		dbEntity = (AlleleFullNameSlotAnnotation) validateNameSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
-		VocabularyTerm nameType = validateFullNameType(uiEntity.getNameType(), dbEntity.getNameType());
+		VocabularyTerm nameType = validateRequiredTermInVocabularyTermSet("nameType", VocabularyConstants.FULL_NAME_TYPE_TERM_SET, dbEntity.getNameType(), uiEntity.getNameType());
 		dbEntity.setNameType(nameType);
 
 		if (validateAllele) {

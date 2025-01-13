@@ -176,15 +176,15 @@ public class BaseValidator<E extends Object> {
 		return validateVocabularyTerms(field, vocabularyName, dbTerms, uiTerms, false, false);
 	}
 	
-	protected List<VocabularyTerm> validateRequiredTermInVocabulary(String field, String vocabularyName, List<VocabularyTerm> dbTerms, List<VocabularyTerm> uiTerms) {
+	protected List<VocabularyTerm> validateRequiredTermsInVocabulary(String field, String vocabularyName, List<VocabularyTerm> dbTerms, List<VocabularyTerm> uiTerms) {
 		return validateVocabularyTerms(field, vocabularyName, dbTerms, uiTerms, true, false);
 	}
 	
-	protected List<VocabularyTerm> validateTermInVocabularyTermSet(String field, String vocabularyName, List<VocabularyTerm> dbTerms, List<VocabularyTerm> uiTerms) {
+	protected List<VocabularyTerm> validateTermsInVocabularyTermSet(String field, String vocabularyName, List<VocabularyTerm> dbTerms, List<VocabularyTerm> uiTerms) {
 		return validateVocabularyTerms(field, vocabularyName, dbTerms, uiTerms, false, true);
 	}
 	
-	protected List<VocabularyTerm> validateRequiredTermInVocabularyTermSet(String field, String vocabularyName, List<VocabularyTerm> dbTerms, List<VocabularyTerm> uiTerms) {
+	protected List<VocabularyTerm> validateRequiredTermsInVocabularyTermSet(String field, String vocabularyName, List<VocabularyTerm> dbTerms, List<VocabularyTerm> uiTerms) {
 		return validateVocabularyTerms(field, vocabularyName, dbTerms, uiTerms, true, true);
 	}
 	

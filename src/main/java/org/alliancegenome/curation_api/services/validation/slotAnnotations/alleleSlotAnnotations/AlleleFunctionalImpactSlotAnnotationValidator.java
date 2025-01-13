@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -12,10 +11,8 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,7 +24,6 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 
 	@Inject AlleleFunctionalImpactSlotAnnotationDAO alleleFunctionalImpactDAO;
 	@Inject PhenotypeTermService phenotypeTermService;
-	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleFunctionalImpactSlotAnnotation> validateAlleleFunctionalImpactSlotAnnotation(AlleleFunctionalImpactSlotAnnotation uiEntity) {
 		AlleleFunctionalImpactSlotAnnotation mutationType = validateAlleleFunctionalImpactSlotAnnotation(uiEntity, false, false);
@@ -62,7 +58,7 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 			dbEntity.setSingleAllele(singleAllele);
 		}
 
-		List<VocabularyTerm> functionalImpacts = validateFunctionalImpacts(uiEntity, dbEntity);
+		List<VocabularyTerm> functionalImpacts = validateRequiredTermsInVocabulary("functionalImpacts", VocabularyConstants.ALLELE_FUNCTIONAL_IMPACT_VOCABULARY, dbEntity.getFunctionalImpacts(), uiEntity.getFunctionalImpacts());
 		dbEntity.setFunctionalImpacts(functionalImpacts);
 
 		PhenotypeTerm phenotypeTerm = validatePhenotypeTerm(uiEntity, dbEntity);
@@ -81,30 +77,6 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 		}
 
 		return dbEntity;
-	}
-
-	private List<VocabularyTerm> validateFunctionalImpacts(AlleleFunctionalImpactSlotAnnotation uiEntity, AlleleFunctionalImpactSlotAnnotation dbEntity) {
-		String field = "functionalImpacts";
-		if (CollectionUtils.isEmpty(uiEntity.getFunctionalImpacts())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-		List<VocabularyTerm> validFunctionalImpacts = new ArrayList<>();
-		for (VocabularyTerm fi : uiEntity.getFunctionalImpacts()) {
-			VocabularyTerm functionalImpact = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_FUNCTIONAL_IMPACT_VOCABULARY, fi.getName()).getEntity();
-			if (functionalImpact == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
-			}
-			if (functionalImpact.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getFunctionalImpacts()) || !dbEntity.getFunctionalImpacts().contains(functionalImpact))) {
-				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-				return null;
-			}
-
-			validFunctionalImpacts.add(functionalImpact);
-
-		}
-		return validFunctionalImpacts;
 	}
 
 	public PhenotypeTerm validatePhenotypeTerm(AlleleFunctionalImpactSlotAnnotation uiEntity, AlleleFunctionalImpactSlotAnnotation dbEntity) {

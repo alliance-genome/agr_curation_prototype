@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -45,7 +46,7 @@ public class GeneSynonymSlotAnnotationValidator extends NameSlotAnnotationValida
 		}
 		dbEntity = (GeneSynonymSlotAnnotation) validateNameSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
-		VocabularyTerm nameType = validateSynonymNameType(uiEntity.getNameType(), dbEntity.getNameType());
+		VocabularyTerm nameType = validateRequiredTermInVocabulary("nameType", VocabularyConstants.NAME_TYPE_VOCABULARY, dbEntity.getNameType(), uiEntity.getNameType());
 		dbEntity.setNameType(nameType);
 
 		if (validateGene) {

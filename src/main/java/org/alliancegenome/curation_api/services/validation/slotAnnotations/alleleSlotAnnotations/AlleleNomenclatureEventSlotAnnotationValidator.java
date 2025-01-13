@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations;
 
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -8,7 +7,6 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -18,7 +16,6 @@ import jakarta.inject.Inject;
 public class AlleleNomenclatureEventSlotAnnotationValidator extends SlotAnnotationValidator<AlleleNomenclatureEventSlotAnnotation> {
 
 	@Inject AlleleNomenclatureEventSlotAnnotationDAO alleleNomenclatureEventDAO;
-	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleNomenclatureEventSlotAnnotation> validateAlleleNomenclatureEventSlotAnnotation(AlleleNomenclatureEventSlotAnnotation uiEntity) {
 		AlleleNomenclatureEventSlotAnnotation nomenclatureEvent = validateAlleleNomenclatureEventSlotAnnotation(uiEntity, false, false);
@@ -53,7 +50,7 @@ public class AlleleNomenclatureEventSlotAnnotationValidator extends SlotAnnotati
 			dbEntity.setSingleAllele(singleAllele);
 		}
 
-		VocabularyTerm nomenclatureEvent = validateNomenclatureEvent(uiEntity, dbEntity);
+		VocabularyTerm nomenclatureEvent = validateRequiredTermInVocabulary("nomenclatureEvent", VocabularyConstants.ALLELE_NOMENCLATURE_EVENT_VOCABULARY, dbEntity.getNomenclatureEvent(), uiEntity.getNomenclatureEvent());
 		dbEntity.setNomenclatureEvent(nomenclatureEvent);
 
 		if (response.hasErrors()) {
@@ -66,27 +63,6 @@ public class AlleleNomenclatureEventSlotAnnotationValidator extends SlotAnnotati
 		}
 
 		return dbEntity;
-	}
-
-	private VocabularyTerm validateNomenclatureEvent(AlleleNomenclatureEventSlotAnnotation uiEntity, AlleleNomenclatureEventSlotAnnotation dbEntity) {
-		String field = "nomenclatureEvent";
-
-		if (uiEntity.getNomenclatureEvent() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		VocabularyTerm nomenclatureEvent = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_NOMENCLATURE_EVENT_VOCABULARY, uiEntity.getNomenclatureEvent().getName()).getEntity();
-		if (nomenclatureEvent == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (nomenclatureEvent.getObsolete() && (dbEntity.getNomenclatureEvent() == null || !nomenclatureEvent.getName().equals(dbEntity.getNomenclatureEvent().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-		return nomenclatureEvent;
 	}
 
 }

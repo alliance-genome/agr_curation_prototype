@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.constructSlotAnnotations;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -45,7 +46,7 @@ public class ConstructSynonymSlotAnnotationValidator extends NameSlotAnnotationV
 		}
 		dbEntity = (ConstructSynonymSlotAnnotation) validateNameSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
-		VocabularyTerm nameType = validateSynonymNameType(uiEntity.getNameType(), dbEntity.getNameType());
+		VocabularyTerm nameType = validateRequiredTermInVocabulary("nameType", VocabularyConstants.NAME_TYPE_VOCABULARY, dbEntity.getNameType(), uiEntity.getNameType());
 		dbEntity.setNameType(nameType);
 
 		if (validateConstruct) {

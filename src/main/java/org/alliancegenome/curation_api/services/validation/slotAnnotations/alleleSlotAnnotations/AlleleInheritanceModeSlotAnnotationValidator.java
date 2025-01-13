@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
 import org.apache.commons.lang3.ObjectUtils;
@@ -23,7 +22,6 @@ public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotation
 
 	@Inject AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
 	@Inject PhenotypeTermService phenotypeTermService;
-	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleInheritanceModeSlotAnnotation> validateAlleleInheritanceModeSlotAnnotation(AlleleInheritanceModeSlotAnnotation uiEntity) {
 		AlleleInheritanceModeSlotAnnotation mutationType = validateAlleleInheritanceModeSlotAnnotation(uiEntity, false, false);
@@ -58,7 +56,7 @@ public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotation
 			dbEntity.setSingleAllele(singleAllele);
 		}
 
-		VocabularyTerm inheritanceMode = validateInheritanceMode(uiEntity, dbEntity);
+		VocabularyTerm inheritanceMode = validateRequiredTermInVocabulary("inheritanceMode", VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, dbEntity.getInheritanceMode(), uiEntity.getInheritanceMode());
 		dbEntity.setInheritanceMode(inheritanceMode);
 
 		PhenotypeTerm phenotypeTerm = validatePhenotypeTerm(uiEntity, dbEntity);
@@ -77,27 +75,6 @@ public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotation
 		}
 
 		return dbEntity;
-	}
-
-	private VocabularyTerm validateInheritanceMode(AlleleInheritanceModeSlotAnnotation uiEntity, AlleleInheritanceModeSlotAnnotation dbEntity) {
-		String field = "inheritanceMode";
-
-		if (uiEntity.getInheritanceMode() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		VocabularyTerm inheritanceMode = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, uiEntity.getInheritanceMode().getName()).getEntity();
-		if (inheritanceMode == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (inheritanceMode.getObsolete() && (dbEntity.getInheritanceMode() == null || !inheritanceMode.getName().equals(dbEntity.getInheritanceMode().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-		return inheritanceMode;
 	}
 
 	public PhenotypeTerm validatePhenotypeTerm(AlleleInheritanceModeSlotAnnotation uiEntity, AlleleInheritanceModeSlotAnnotation dbEntity) {
