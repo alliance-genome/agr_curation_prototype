@@ -43,9 +43,9 @@ const modTableSettings = {
 			],
 			filters: {
 				dataProviderFilter: {
-					'dataProvider.sourceOrganization.abbreviation': { queryString: 'RGD', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.fullName': { queryString: 'RGD', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.shortName': { queryString: 'RGD', tokenOperator: 'AND' },
+					'dataProvider.abbreviation': { queryString: 'RGD', tokenOperator: 'AND' },
+					'dataProvider.fullName': { queryString: 'RGD', tokenOperator: 'AND' },
+					'dataProvider.shortName': { queryString: 'RGD', tokenOperator: 'AND' },
 				},
 				obsoleteFilter: {
 					obsolete: { queryString: 'false' },
@@ -92,9 +92,9 @@ const modTableSettings = {
 			],
 			filters: {
 				dataProviderFilter: {
-					'dataProvider.sourceOrganization.abbreviation': { queryString: 'SGD', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.fullName': { queryString: 'SGD', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.shortName': { queryString: 'SGD', tokenOperator: 'AND' },
+					'dataProvider.abbreviation': { queryString: 'SGD', tokenOperator: 'AND' },
+					'dataProvider.fullName': { queryString: 'SGD', tokenOperator: 'AND' },
+					'dataProvider.shortName': { queryString: 'SGD', tokenOperator: 'AND' },
 				},
 				obsoleteFilter: {
 					obsolete: { queryString: 'false' },
@@ -152,9 +152,9 @@ const modTableSettings = {
 			],
 			filters: {
 				dataProviderFilter: {
-					'dataProvider.sourceOrganization.abbreviation': { queryString: 'WB', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.fullName': { queryString: 'WB', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.shortName': { queryString: 'WB', tokenOperator: 'AND' },
+					'dataProvider.abbreviation': { queryString: 'WB', tokenOperator: 'AND' },
+					'dataProvider.fullName': { queryString: 'WB', tokenOperator: 'AND' },
+					'dataProvider.shortName': { queryString: 'WB', tokenOperator: 'AND' },
 				},
 				obsoleteFilter: {
 					obsolete: { queryString: 'false' },
@@ -205,9 +205,9 @@ const modTableSettings = {
 			],
 			filters: {
 				dataProviderFilter: {
-					'dataProvider.sourceOrganization.abbreviation': { queryString: 'FB', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.fullName': { queryString: 'FB', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.shortName': { queryString: 'FB', tokenOperator: 'AND' },
+					'dataProvider.abbreviation': { queryString: 'FB', tokenOperator: 'AND' },
+					'dataProvider.fullName': { queryString: 'FB', tokenOperator: 'AND' },
+					'dataProvider.shortName': { queryString: 'FB', tokenOperator: 'AND' },
 				},
 				obsoleteFilter: {
 					obsolete: { queryString: 'false' },
@@ -242,9 +242,9 @@ const modTableSettings = {
 			selectedFormFields: ['Subject', 'Disease Relation', 'Disease', 'Reference', 'Evidence Code', 'Experiments'],
 			filters: {
 				dataProviderFilter: {
-					'dataProvider.sourceOrganization.abbreviation': { queryString: 'ZFIN', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.fullName': { queryString: 'ZFIN', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.shortName': { queryString: 'ZFIN', tokenOperator: 'AND' },
+					'dataProvider.abbreviation': { queryString: 'ZFIN', tokenOperator: 'AND' },
+					'dataProvider.fullName': { queryString: 'ZFIN', tokenOperator: 'AND' },
+					'dataProvider.shortName': { queryString: 'ZFIN', tokenOperator: 'AND' },
 				},
 				obsoleteFilter: {
 					obsolete: { queryString: 'false' },
@@ -285,9 +285,9 @@ const modTableSettings = {
 			],
 			filters: {
 				dataProviderFilter: {
-					'dataProvider.sourceOrganization.abbreviation': { queryString: 'ZFIN', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.fullName': { queryString: 'ZFIN', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.shortName': { queryString: 'ZFIN', tokenOperator: 'AND' },
+					'dataProvider.abbreviation': { queryString: 'ZFIN', tokenOperator: 'AND' },
+					'dataProvider.fullName': { queryString: 'ZFIN', tokenOperator: 'AND' },
+					'dataProvider.shortName': { queryString: 'ZFIN', tokenOperator: 'AND' },
 				},
 				obsoleteFilter: {
 					obsolete: { queryString: 'false' },
@@ -332,9 +332,9 @@ const modTableSettings = {
 			],
 			filters: {
 				dataProviderFilter: {
-					'dataProvider.sourceOrganization.abbreviation': { queryString: 'MGI', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.fullName': { queryString: 'MGI', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.shortName': { queryString: 'MGI', tokenOperator: 'AND' },
+					'dataProvider.abbreviation': { queryString: 'MGI', tokenOperator: 'AND' },
+					'dataProvider.fullName': { queryString: 'MGI', tokenOperator: 'AND' },
+					'dataProvider.shortName': { queryString: 'MGI', tokenOperator: 'AND' },
 				},
 				obsoleteFilter: {
 					obsolete: { queryString: 'false' },

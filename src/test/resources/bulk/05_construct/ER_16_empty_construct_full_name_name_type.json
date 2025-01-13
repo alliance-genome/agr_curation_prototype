@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "WB:ER16",
+    "primary_external_id": "WB:ER16",
     "internal": true,
     "obsolete": true,
     "created_by_curie": "CONSTRUCTTEST:Person0001",

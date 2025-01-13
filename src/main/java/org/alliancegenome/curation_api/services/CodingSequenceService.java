@@ -44,13 +44,13 @@ public class CodingSequenceService extends BaseEntityCrudService<CodingSequence,
 
 	@Override
 	public ObjectResponse<CodingSequence> getByIdentifier(String identifier) {
-		CodingSequence object = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifier);
+		CodingSequence object = findByAlternativeFields(List.of("curie", "primaryExternalId", "modInternalId", "uniqueId"), identifier);
 		ObjectResponse<CodingSequence> ret = new ObjectResponse<CodingSequence>(object);
 		return ret;
 	}
 
 	public ObjectResponse<CodingSequence> deleteByIdentifier(String identifierString) {
-		CodingSequence codingSequence = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifierString);
+		CodingSequence codingSequence = findByAlternativeFields(List.of("curie", "primaryExternalId", "modInternalId", "uniqueId"), identifierString);
 		if (codingSequence != null) {
 			codingSequenceDAO.remove(codingSequence.getId());
 		}

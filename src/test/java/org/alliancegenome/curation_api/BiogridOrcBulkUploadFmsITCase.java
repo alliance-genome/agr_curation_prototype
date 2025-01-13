@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.is;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
@@ -50,7 +50,7 @@ public class BiogridOrcBulkUploadFmsITCase extends BaseITCase {
 	private void loadRequiredEntities() throws Exception {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		DataProvider dataProvider = createDataProvider("WB", false);
+		Organization dataProvider = getOrganization("WB");
 		createGeneWithXref("WB:XrefTest01", "NCBITaxon:6239", symbolTerm, false, dataProvider, "NCBI_Gene:108101");
 		createGeneWithXref("WB:XrefTest02", "NCBITaxon:6239", symbolTerm, false, dataProvider, "NCBI_Gene:100001");
 		ResourceDescriptor rd = createResourceDescriptor("NCBI_Gene");

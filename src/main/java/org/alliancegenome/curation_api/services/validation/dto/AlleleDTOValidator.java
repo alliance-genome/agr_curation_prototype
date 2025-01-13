@@ -85,20 +85,20 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		alleleResponse = new ObjectResponse<>();
 
 		Allele allele = null;
-		if (StringUtils.isNotBlank(dto.getModEntityId())) {
-			SearchResponse<Allele> response = alleleDAO.findByField("modEntityId", dto.getModEntityId());
+		if (StringUtils.isNotBlank(dto.getPrimaryExternalId())) {
+			SearchResponse<Allele> response = alleleDAO.findByField("primaryExternalId", dto.getPrimaryExternalId());
 			if (response != null && response.getSingleResult() != null) {
 				allele = response.getSingleResult();
 			}
 		} else {
-			alleleResponse.addErrorMessage("modEntityId", ValidationConstants.REQUIRED_MESSAGE);
+			alleleResponse.addErrorMessage("primaryExternalId", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
 		if (allele == null) {
 			allele = new Allele();
 		}
 
-		allele.setModEntityId(dto.getModEntityId());
+		allele.setPrimaryExternalId(dto.getPrimaryExternalId());
 		allele.setModInternalId(handleStringField(dto.getModInternalId()));
 
 		ObjectResponse<Allele> geResponse = validateGenomicEntityDTO(allele, dto, dataProvider);

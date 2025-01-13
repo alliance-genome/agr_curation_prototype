@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "ALLELETEST:ER02",
+    "primary_external_id": "ALLELETEST:ER02",
     "taxon_curie": "",
     "internal": true,
     "obsolete": false,

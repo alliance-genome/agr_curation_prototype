@@ -47,20 +47,20 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		AffectedGenomicModel agm = null;
-		if (StringUtils.isNotBlank(dto.getModEntityId())) {
-			SearchResponse<AffectedGenomicModel> response = affectedGenomicModelDAO.findByField("modEntityId", dto.getModEntityId());
+		if (StringUtils.isNotBlank(dto.getPrimaryExternalId())) {
+			SearchResponse<AffectedGenomicModel> response = affectedGenomicModelDAO.findByField("primaryExternalId", dto.getPrimaryExternalId());
 			if (response != null && response.getSingleResult() != null) {
 				agm = response.getSingleResult();
 			}
 		} else {
-			agmResponse.addErrorMessage("modEntityId", ValidationConstants.REQUIRED_MESSAGE);
+			agmResponse.addErrorMessage("primaryExternalId", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
 		if (agm == null) {
 			agm = new AffectedGenomicModel();
 		}
 
-		agm.setModEntityId(dto.getModEntityId());
+		agm.setPrimaryExternalId(dto.getPrimaryExternalId());
 		agm.setModInternalId(handleStringField(dto.getModInternalId()));
 		agm.setName(handleStringField(dto.getName()));
 		if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {

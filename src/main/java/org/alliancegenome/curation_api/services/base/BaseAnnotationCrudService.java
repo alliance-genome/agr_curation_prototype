@@ -37,7 +37,7 @@ public abstract class BaseAnnotationCrudService<E extends Annotation, D extends 
 	}
 	
 	public ObjectResponse<E> getByIdentifier(String identifier) {
-		E object = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifier);
+		E object = findByAlternativeFields(List.of("curie", "primaryExternalId", "modInternalId", "uniqueId"), identifier);
 		ObjectResponse<E> ret = new ObjectResponse<E>(object);
 		return ret;
 	}

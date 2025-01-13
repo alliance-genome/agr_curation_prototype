@@ -75,7 +75,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 
 				if (dataProvider != null
 					&& (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN"))
-					&& (!agm.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) || !dataProvider.sourceOrganization.equals(agm.getDataProvider().getSourceOrganization().getAbbreviation()))) {
+					&& (!agm.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) || !dataProvider.sourceOrganization.equals(agm.getDataProvider().getAbbreviation()))) {
 					adaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmIdentifier() + ") for " + dataProvider.name() + " load");
 				}
 			}

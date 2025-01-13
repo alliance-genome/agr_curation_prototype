@@ -49,10 +49,10 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 	
 	@IndexedEmbedded(
 		includePaths = {
-			"variantTranscript.name", "variantTranscript.modEntityId",
+			"variantTranscript.name", "variantTranscript.primaryExternalId",
 			"variantTranscript.modInternalId", "variantTranscript.curie",
 			"vepConsequence.name", "variantTranscript.name_keyword",
-			"variantTranscript.modEntityId_keyword", "variantTranscript.modInternalId_keyword",
+			"variantTranscript.primaryExternalId_keyword", "variantTranscript.modInternalId_keyword",
 			"variantTranscript.curie_keyword", "vepConsequence.name_keyword",
 			"variantTranscript.transcriptId", "variantTranscript.transcriptId_keyword"
 		}

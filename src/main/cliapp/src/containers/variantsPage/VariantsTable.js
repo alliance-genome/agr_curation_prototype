@@ -173,11 +173,11 @@ export const VariantsTable = () => {
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
-			field: 'modEntityId',
-			header: 'MOD Entity ID',
+			field: 'primaryExternalId',
+			header: 'Primary External ID',
 			sortable: true,
-			body: (rowData) => <IdTemplate id={rowData.modEntityId} />,
-			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
 		},
 		{
 			field: 'modInternalId',
@@ -226,7 +226,7 @@ export const VariantsTable = () => {
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 			body: (rowData) => (
-				<TruncatedReferencesTemplate references={rowData.references} identifier={rowData.modEntityId} />
+				<TruncatedReferencesTemplate references={rowData.references} identifier={rowData.primaryExternalId} />
 			),
 		},
 		{
@@ -245,10 +245,10 @@ export const VariantsTable = () => {
 			body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.dataProvider?.sourceOrganization?.abbreviation} />,
+			body: (rowData) => <StringTemplate string={rowData.dataProvider?.abbreviation} />,
 			filterConfig: FILTER_CONFIGS.variantDataProviderFilterConfig,
 		},
 		{

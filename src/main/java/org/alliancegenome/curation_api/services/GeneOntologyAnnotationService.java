@@ -14,7 +14,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.alliancegenome.curation_api.services.validation.DataProviderValidator;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
@@ -28,10 +27,8 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 	private List<Species> species;
 	public static final String RESOURCE_DESCRIPTOR_PREFIX = "ENSEMBL";
 	public static final String RESOURCE_DESCRIPTOR_PAGE_NAME = "default";
-	// <crossReference.referencedCurie, DataProvider>
 	Map<String, Long> accessionGeneMap = new HashMap<>();
 	Map<String, Long> goTermMap = new HashMap<>();
-	HashMap<String, DataProvider> dataProviderMap = new HashMap<>();
 	private Map<Long, GeneOntologyAnnotationDTO> gafMap = new HashMap<>();
 
 
@@ -46,8 +43,6 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 	SpeciesDAO speciesDAO;
 	@Inject
 	GoTermDAO goTermDAO;
-	@Inject
-	DataProviderValidator dataProviderValidator;
 
 	@Override
 	@PostConstruct
@@ -125,10 +120,6 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 
 	private Species getSingleSpecies(String orgAbbreviation) {
 		return speciesDAO.findByField("displayName", orgAbbreviation).getSingleResult();
-	}
-
-	public ObjectResponse<DataProvider> validate(DataProvider uiEntity) {
-		return dataProviderValidator.validateDataProvider(uiEntity, null, true);
 	}
 
 

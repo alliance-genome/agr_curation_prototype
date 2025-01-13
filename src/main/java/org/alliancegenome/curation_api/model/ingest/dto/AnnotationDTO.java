@@ -19,8 +19,8 @@ import lombok.EqualsAndHashCode;
 public class AnnotationDTO extends AuditedObjectDTO {
 
 	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("mod_entity_id")
-	private String modEntityId;
+	@JsonProperty("primary_external_id")
+	private String primaryExternalId;
 	
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("mod_internal_id")

@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "DATEST:Annot0001",
+    "primary_external_id": "DATEST:Annot0001",
     "created_by_curie": "DATEST:Person0002",
     "updated_by_curie": "DATEST:Person0001",
     "date_created": "2022-03-19T22:10:12+00:00",

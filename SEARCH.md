@@ -61,7 +61,7 @@ This will be the size of the page that comes back.
             "order": 1
         },
         {
-            "field": "diseaseAnnotationSubject.modEntityId",
+            "field": "diseaseAnnotationSubject.primaryExternalId",
             "order": 1
         }
     ],
@@ -204,7 +204,7 @@ Search Payload:
             "order": 1
         },
         {
-            "field": "diseaseAnnotationSubject.modEntityId",
+            "field": "diseaseAnnotationSubject.primaryExternalId",
             "order": 1
         }
     ],
@@ -224,7 +224,7 @@ Return Payload
     "totalResults": 1163,
     "returnedRecords": 1,
     "debug": "true",
-    "esQuery": "{\"query\":{\"bool\":{\"must\":[{\"simple_query_string\":{\"boost\":31000.0,\"query\":\"false\",\"default_operator\":\"or\",\"fields\":[\"internal\"]}},{\"simple_query_string\":{\"boost\":21000.0,\"query\":\"false\",\"default_operator\":\"or\",\"fields\":[\"obsolete\"]}},{\"simple_query_string\":{\"boost\":11000.0,\"query\":\"wb\",\"default_operator\":\"and\",\"fields\":[\"uniqueId\"]}},{\"match_all\":{}}],\"minimum_should_match\":\"0\"}},\"sort\":[{\"diseaseAnnotationSubject.symbol_keyword\":{\"order\":\"asc\",\"unmapped_type\":\"keyword\"}},{\"diseaseAnnotationSubject.name_keyword\":{\"order\":\"asc\",\"unmapped_type\":\"keyword\"}},{\"diseaseAnnotationSubject.modEntityId_keyword\":{\"order\":\"asc\",\"unmapped_type\":\"keyword\"}}],\"docvalue_fields\":[\"_entity_type\"],\"_source\":false}"
+    "esQuery": "{\"query\":{\"bool\":{\"must\":[{\"simple_query_string\":{\"boost\":31000.0,\"query\":\"false\",\"default_operator\":\"or\",\"fields\":[\"internal\"]}},{\"simple_query_string\":{\"boost\":21000.0,\"query\":\"false\",\"default_operator\":\"or\",\"fields\":[\"obsolete\"]}},{\"simple_query_string\":{\"boost\":11000.0,\"query\":\"wb\",\"default_operator\":\"and\",\"fields\":[\"uniqueId\"]}},{\"match_all\":{}}],\"minimum_should_match\":\"0\"}},\"sort\":[{\"diseaseAnnotationSubject.symbol_keyword\":{\"order\":\"asc\",\"unmapped_type\":\"keyword\"}},{\"diseaseAnnotationSubject.name_keyword\":{\"order\":\"asc\",\"unmapped_type\":\"keyword\"}},{\"diseaseAnnotationSubject.primaryExternalId_keyword\":{\"order\":\"asc\",\"unmapped_type\":\"keyword\"}}],\"docvalue_fields\":[\"_entity_type\"],\"_source\":false}"
 }
 ```
 
@@ -286,7 +286,7 @@ Destringify the esQuery:
             }
         },
         {
-            "diseaseAnnotationSubject.modEntityId_keyword": {
+            "diseaseAnnotationSubject.primaryExternalId_keyword": {
                 "order": "asc",
                 "unmapped_type": "keyword"
             }

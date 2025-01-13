@@ -52,7 +52,7 @@ public class GeneGenomicLocationAssociation extends LocationAssociation {
 
 	@IndexedEmbedded(includePaths = {"curie", "geneSymbol.displayText", "geneSymbol.formatText", "geneFullName.displayText", "geneFullName.formatText",
 			"curie_keyword", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "geneFullName.displayText_keyword", "geneFullName.formatText_keyword",
-			"modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
+			"primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonIgnoreProperties({
@@ -65,7 +65,7 @@ public class GeneGenomicLocationAssociation extends LocationAssociation {
 	private Gene geneAssociationSubject;
 
 	@IndexedEmbedded(includePaths = {
-		"curie", "curie_keyword", "modEntityId", "modEntityId_keyword",
+		"curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword",
 		"modInternalId", "modInternalId_keyword", "name", "name_keyword"
 	})
 	@ManyToOne

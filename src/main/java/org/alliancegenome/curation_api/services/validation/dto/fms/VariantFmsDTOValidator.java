@@ -1,6 +1,12 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -13,7 +19,12 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.ChromosomeAccessionEnum;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleVariantAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.variantAssociations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
@@ -22,7 +33,12 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PublicationRefFmsDTO
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.*;
+import org.alliancegenome.curation_api.services.AlleleService;
+import org.alliancegenome.curation_api.services.CrossReferenceService;
+import org.alliancegenome.curation_api.services.OrganizationService;
+import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.VocabularyTermSetService;
 import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleVariantAssociationService;
 import org.alliancegenome.curation_api.services.associations.variantAssociations.CuratedVariantGenomicLocationAssociationService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
@@ -50,7 +66,7 @@ public class VariantFmsDTOValidator {
 	@Inject AlleleVariantAssociationDAO alleleVariantAssociationDAO;
 	@Inject AlleleVariantAssociationService alleleVariantAssociationService;
 	@Inject SoTermService soTermService;
-	@Inject DataProviderService dataProviderService;
+	@Inject OrganizationService organizationService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject VocabularyTermSetService vocabularyTermSetService;
@@ -112,7 +128,7 @@ public class VariantFmsDTOValidator {
 
 		variant.setModInternalId(modInternalId);
 		variant.setVariantType(variantType);
-		variant.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.name()));
+		variant.setDataProvider(organizationService.getByAbbr(dataProvider.name()).getEntity());
 		variant.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
 
 		SOTerm consequence = null;
@@ -259,7 +275,7 @@ public class VariantFmsDTOValidator {
 			if (cae != null) {
 				Map<String, Object> params = new HashMap<>();
 				params.put("name", cae.chromosomeName);
-				params.put("genomeAssembly.modEntityId", cae.assemblyIdentifier);
+				params.put("genomeAssembly.primaryExternalId", cae.assemblyIdentifier);
 				SearchResponse<AssemblyComponent> acResponse = assemblyComponentDAO.findByParams(params);
 				if (acResponse != null) {
 					chromosome = acResponse.getSingleResult();
@@ -343,7 +359,7 @@ public class VariantFmsDTOValidator {
 				} else {
 					if (CollectionUtils.isNotEmpty(allele.getAlleleVariantAssociations())) {
 						for (AlleleVariantAssociation existingAssociation : allele.getAlleleVariantAssociations()) {
-							if (Objects.equals(dto.getAlleleId(), existingAssociation.getAlleleAssociationSubject().getModEntityId())) {
+							if (Objects.equals(dto.getAlleleId(), existingAssociation.getAlleleAssociationSubject().getPrimaryExternalId())) {
 								association = alleleVariantAssociationDAO.find(existingAssociation.getId());
 								break;
 							}

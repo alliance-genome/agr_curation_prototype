@@ -59,7 +59,6 @@ public class Gff3Service {
 	@Inject TranscriptGeneAssociationService transcriptGeneService;
 	@Inject TranscriptCodingSequenceAssociationService transcriptCdsService;
 	@Inject TranscriptExonAssociationService transcriptExonService;
-	@Inject DataProviderService dataProviderService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject Gff3DtoValidator gff3DtoValidator;
 	@Inject GeneService geneService;

@@ -136,8 +136,8 @@ export function getIdentifier(data) {
 	if (!data) {
 		return null;
 	}
-	if (data.modEntityId) {
-		return data.modEntityId;
+	if (data.primaryExternalId) {
+		return data.primaryExternalId;
 	}
 	if (data.modInternalId) {
 		return data.modInternalId;
@@ -453,7 +453,7 @@ export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages, 
 		if (
 			newAnnotationForm[field] &&
 			!Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes('curie') &&
-			!Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes('modEntityId') &&
+			!Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes('primaryExternalId') &&
 			!Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes('modInternalId')
 		) {
 			const _uiErrorMessages = {};

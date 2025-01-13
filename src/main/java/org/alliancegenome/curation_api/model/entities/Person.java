@@ -81,10 +81,10 @@ public class Person extends Agent {
 	private String orcid;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "primaryExternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
 	@Column(unique = true)
-	private String modEntityId;
+	private String primaryExternalId;
 
 	@OneToMany(mappedBy = "person")
 	@JsonView({ View.PersonSettingView.class })

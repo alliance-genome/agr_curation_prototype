@@ -204,11 +204,11 @@ export const GenesTable = () => {
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
-			field: 'modEntityId',
-			header: 'MOD Entity ID',
+			field: 'primaryExternalId',
+			header: 'Primary External ID',
 			sortable: true,
-			body: (rowData) => <IdTemplate id={rowData.modEntityId} />,
-			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
 		},
 		{
 			field: 'modInternalId',
@@ -316,7 +316,7 @@ export const GenesTable = () => {
 			editor: relatedNotesEditor,
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig,

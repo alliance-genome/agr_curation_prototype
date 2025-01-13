@@ -98,10 +98,10 @@ export const DiseaseAnnotationsTable = () => {
 
 	const sortMapping = {
 		'diseaseAnnotationObject.name': ['diseaseAnnotationObject.curie', 'diseaseAnnotationObject.namespace'],
-		'diseaseAnnotationSubject.symbol': ['diseaseAnnotationSubject.name', 'diseaseAnnotationSubject.modEntityId'],
-		'with.geneSymbol.displayText': ['with.geneFullName.displayText', 'with.modEntityId'],
-		'sgdStrainBackground.name': ['sgdStrainBackground.modEntityId'],
-		'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.modEntityId'],
+		'diseaseAnnotationSubject.symbol': ['diseaseAnnotationSubject.name', 'diseaseAnnotationSubject.primaryExternalId'],
+		'with.geneSymbol.displayText': ['with.geneFullName.displayText', 'with.primaryExternalId'],
+		'sgdStrainBackground.name': ['sgdStrainBackground.primaryExternalId'],
+		'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.primaryExternalId'],
 	};
 
 	const mutation = useMutation((updatedAnnotation) => {
@@ -491,7 +491,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const onSubjectValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'diseaseAnnotationSubject', setFieldValue, 'modEntityId');
+		defaultAutocompleteOnChange(props, event, 'diseaseAnnotationSubject', setFieldValue, 'primaryExternalId');
 	};
 
 	const subjectSearch = (event, setFiltered, setQuery, props) => {
@@ -511,7 +511,7 @@ export const DiseaseAnnotationsTable = () => {
 					search={subjectSearch}
 					rowProps={props}
 					searchService={searchService}
-					subField="modEntityId"
+					subField="primaryExternalId"
 					fieldName="diseaseAnnotationSubject"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 						<SubjectAutocompleteTemplate
@@ -543,7 +543,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const getSubjectAutocompleteFields = (props) => {
-		let subjectFields = ['curie', 'modEntityId', 'modInternalId', 'crossReferences.referencedCurie'];
+		let subjectFields = ['curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie'];
 		if (props.rowData.type === 'AGMDiseaseAnnotation') {
 			subjectFields.push('name');
 		} else if (props.rowData.type === 'AlleleDiseaseAnnotation') {
@@ -572,11 +572,17 @@ export const DiseaseAnnotationsTable = () => {
 		return subjectFields;
 	};
 	const onSgdStrainBackgroundValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'sgdStrainBackground', setFieldValue, 'modEntityId');
+		defaultAutocompleteOnChange(props, event, 'sgdStrainBackground', setFieldValue, 'primaryExternalId');
 	};
 
 	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ['name', 'curie', 'modEntityId', 'modInternalId', 'crossReferences.referencedCurie'];
+		const autocompleteFields = [
+			'name',
+			'curie',
+			'primaryExternalId',
+			'modInternalId',
+			'crossReferences.referencedCurie',
+		];
 		const endpoint = 'agm';
 		const filterName = 'sgdStrainBackgroundFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -600,7 +606,7 @@ export const DiseaseAnnotationsTable = () => {
 					search={sgdStrainBackgroundSearch}
 					searchService={searchService}
 					fieldName="sgdStrainBackground"
-					subField="modEntityId"
+					subField="primaryExternalId"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 						<SubjectAutocompleteTemplate
 							item={item}
@@ -628,7 +634,13 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const geneticModifierAgmsSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ['name', 'curie', 'modEntityId', 'modInternalId', 'crossReferences.referencedCurie'];
+		const autocompleteFields = [
+			'name',
+			'curie',
+			'primaryExternalId',
+			'modInternalId',
+			'crossReferences.referencedCurie',
+		];
 		const endpoint = 'agm';
 		const filterName = 'geneticModifierAgmsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -644,7 +656,7 @@ export const DiseaseAnnotationsTable = () => {
 					initialValue={props.rowData.diseaseGeneticModifierAgms}
 					rowProps={props}
 					fieldName="diseaseGeneticModifierAgms"
-					subField="modEntityId"
+					subField="primaryExternalId"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 						<SubjectAutocompleteTemplate
 							item={item}
@@ -679,7 +691,7 @@ export const DiseaseAnnotationsTable = () => {
 			'alleleSynonyms.formatText',
 			'alleleSynonyms.displayText',
 			'curie',
-			'modEntityId',
+			'primaryExternalId',
 			'modInternalId',
 			'crossReferences.referencedCurie',
 			'alleleSecondaryIds.secondaryId',
@@ -699,7 +711,7 @@ export const DiseaseAnnotationsTable = () => {
 					initialValue={props.rowData.diseaseGeneticModifierAlleles}
 					rowProps={props}
 					fieldName="diseaseGeneticModifierAlleles"
-					subField="modEntityId"
+					subField="primaryExternalId"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 						<SubjectAutocompleteTemplate
 							item={item}
@@ -738,7 +750,7 @@ export const DiseaseAnnotationsTable = () => {
 			'geneSystematicName.displayText',
 			'geneSecondaryIds.secondaryId',
 			'curie',
-			'modEntityId',
+			'primaryExternalId',
 			'modInternalId',
 			'crossReferences.referencedCurie',
 		];
@@ -757,7 +769,7 @@ export const DiseaseAnnotationsTable = () => {
 					initialValue={props.rowData.diseaseGeneticModifierGenes}
 					rowProps={props}
 					fieldName="diseaseGeneticModifierGenes"
-					subField="modEntityId"
+					subField="primaryExternalId"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 						<SubjectAutocompleteTemplate
 							item={item}
@@ -781,7 +793,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const onAssertedAlleleValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'assertedAllele', setFieldValue, 'modEntityId');
+		defaultAutocompleteOnChange(props, event, 'assertedAllele', setFieldValue, 'primaryExternalId');
 	};
 
 	const assertedAlleleSearch = (event, setFiltered, setQuery) => {
@@ -791,7 +803,7 @@ export const DiseaseAnnotationsTable = () => {
 			'alleleFullName.formatText',
 			'alleleFullName.displayText',
 			'curie',
-			'modEntityId',
+			'primaryExternalId',
 			'modInternalId',
 			'crossReferences.referencedCurie',
 			'alleleSecondaryIds.secondaryId',
@@ -814,7 +826,7 @@ export const DiseaseAnnotationsTable = () => {
 						initialValue={getIdentifier(props.rowData.assertedAllele)}
 						rowProps={props}
 						fieldName="assertedAllele"
-						subField="modEntityId"
+						subField="primaryExternalId"
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 							<SubjectAutocompleteTemplate
 								item={item}
@@ -895,7 +907,7 @@ export const DiseaseAnnotationsTable = () => {
 			'geneFullName.formatText',
 			'geneFullName.displayText',
 			'curie',
-			'modEntityId',
+			'primaryExternalId',
 			'modInternalId',
 			'crossReferences.referencedCurie',
 			'geneSynonyms.formatText',
@@ -922,7 +934,7 @@ export const DiseaseAnnotationsTable = () => {
 						initialValue={props.rowData.assertedGenes}
 						rowProps={props}
 						fieldName="assertedGenes"
-						subField="modEntityId"
+						subField="primaryExternalId"
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 							<SubjectAutocompleteTemplate
 								item={item}
@@ -952,7 +964,7 @@ export const DiseaseAnnotationsTable = () => {
 			'geneSymbol.displayText',
 			'geneFullName.formatText',
 			'geneFullName.displayText',
-			'modEntityId',
+			'primaryExternalId',
 			'modInternalId',
 			'curie',
 			'crossReferences.referencedCurie',
@@ -984,7 +996,7 @@ export const DiseaseAnnotationsTable = () => {
 					initialValue={props.rowData.with}
 					rowProps={props}
 					fieldName="with"
-					subField="modEntityId"
+					subField="primaryExternalId"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 						<SubjectAutocompleteTemplate
 							item={item}
@@ -1115,11 +1127,11 @@ export const DiseaseAnnotationsTable = () => {
 			editor: (props) => uniqueIdEditorTemplate(props),
 		},
 		{
-			field: 'modEntityId',
+			field: 'primaryExternalId',
 			header: 'MOD Annotation ID',
-			body: (rowData) => <IdTemplate id={rowData.modEntityId} />,
+			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
 		},
 		{
 			field: 'modInternalId',
@@ -1332,13 +1344,13 @@ export const DiseaseAnnotationsTable = () => {
 			editor: (props) => assertedAlleleEditorTemplate(props),
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.diseaseDataProviderFilterConfig,
 		},
 		{
-			field: 'secondaryDataProvider.sourceOrganization.abbreviation',
+			field: 'secondaryDataProvider.abbreviation',
 			header: 'Secondary Data Provider',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.secondaryDataProviderFilterConfig,

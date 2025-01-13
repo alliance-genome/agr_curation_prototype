@@ -90,7 +90,7 @@ public class AgmSequenceTargetingReagentAssociationDTOValidator extends BaseDTOV
 			AffectedGenomicModel subject = agmService.findByIdentifierString(dto.getAgmSubjectIdentifier());
 			if (subject == null) {
 				asaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
-			} else if (beDataProvider != null && !subject.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
+			} else if (beDataProvider != null && !subject.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 				asaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
 			} else {
 				association.setAgmAssociationSubject(subject);
@@ -102,7 +102,7 @@ public class AgmSequenceTargetingReagentAssociationDTOValidator extends BaseDTOV
 			SequenceTargetingReagent object = strService.findByIdentifierString(dto.getSequenceTargetingReagentIdentifier());
 			if (object == null) {
 				asaResponse.addErrorMessage("str_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSequenceTargetingReagentIdentifier() + ")");
-			} else if (beDataProvider != null && !object.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
+			} else if (beDataProvider != null && !object.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 				asaResponse.addErrorMessage("str_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getSequenceTargetingReagentIdentifier() + ")");
 			} else {
 				association.setAgmSequenceTargetingReagentAssociationObject(object);

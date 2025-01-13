@@ -1,18 +1,27 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+
+import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
-import org.alliancegenome.curation_api.base.BaseITCase;
-import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.junit.jupiter.api.*;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-
-import static org.hamcrest.Matchers.*;
 
 
 @QuarkusIntegrationTest
@@ -51,7 +60,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			get(agmGetEndpoint + "AGMTEST:Agm0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("AGMTEST:Agm0001")).
+			body("entity.primaryExternalId", is("AGMTEST:Agm0001")).
 			body("entity.name", is("TestAgm1")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.subtype.name", is("fish")).
@@ -65,10 +74,10 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.agmSecondaryIds[0].obsolete", is(true)).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
+			body("entity.dataProvider.abbreviation", is(dataProvider)).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 
 	@Test
@@ -81,7 +90,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			get(agmGetEndpoint + "AGMTEST:Agm0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("AGMTEST:Agm0001")).
+			body("entity.primaryExternalId", is("AGMTEST:Agm0001")).
 			body("entity.name", is("TestAgm1a")).
 			body("entity.taxon.curie", is("NCBITaxon:10116")).
 			body("entity.subtype.name", is("genotype")).
@@ -92,10 +101,10 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.synonyms", is(List.of("Syn 1", "Syn 2"))).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProviderRGD)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
+			body("entity.dataProvider.abbreviation", is(dataProviderRGD)).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST2:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST2:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage2"));
 	}
 
 	@Test
@@ -148,14 +157,15 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			get(agmGetEndpoint + "AGMTEST:Agm0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("AGMTEST:Agm0001")).
+			body("entity.primaryExternalId", is("AGMTEST:Agm0001")).
 			body("entity", not(hasKey("name"))).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("synonyms"))).
 			body("entity", not(hasKey("agmSecondaryIds"))).
-			body("entity", not(hasKey("dateUpdated")));
+			body("entity", not(hasKey("dateUpdated"))).
+			body("entity", not(hasKey("dataProviderCrossReference")));
 	}
 
 	@Test
@@ -169,7 +179,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			get(agmGetEndpoint + "AGMTEST:Agm0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("AGMTEST:Agm0001")).
+			body("entity.primaryExternalId", is("AGMTEST:Agm0001")).
 			body("entity", not(hasKey("name"))).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).

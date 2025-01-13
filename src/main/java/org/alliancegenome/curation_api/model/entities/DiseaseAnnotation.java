@@ -1,13 +1,9 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonView;
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
@@ -16,6 +12,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.collections4.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -26,9 +24,26 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
@@ -40,13 +55,13 @@ import java.util.Objects;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@AGRCurationSchemaVersion(min = "2.8.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {Annotation.class})
+@AGRCurationSchemaVersion(min = "2.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {Annotation.class})
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 @Table(indexes = {
 	@Index(name = "DiseaseAnnotation_internal_index", columnList = "internal"),
 	@Index(name = "DiseaseAnnotation_obsolete_index", columnList = "obsolete"),
 	@Index(name = "DiseaseAnnotation_curie_index", columnList = "curie"),
-	@Index(name = "DiseaseAnnotation_modEntityId_index", columnList = "modEntityId"),
+	@Index(name = "DiseaseAnnotation_primaryExternalId_index", columnList = "primaryExternalId"),
 	@Index(name = "DiseaseAnnotation_modInternalId_index", columnList = "modInternalId"),
 	@Index(name = "DiseaseAnnotation_uniqueId_index", columnList = "uniqueId"),
 	@Index(name = "DiseaseAnnotation_diseaseAnnotationObject_index", columnList = "diseaseAnnotationObject_id"),
@@ -55,11 +70,13 @@ import java.util.Objects;
 	@Index(name = "DiseaseAnnotation_updatedBy_index", columnList = "updatedBy_id"),
 	@Index(name = "DiseaseAnnotation_singleReference_index", columnList = "singleReference_id"),
 	@Index(name = "DiseaseAnnotation_dataProvider_index", columnList = "dataProvider_id"),
+	@Index(name = "DiseaseAnnotation_dataProviderCrossReference_index", columnList = "dataProviderCrossReference_id"),
 	@Index(name = "DiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
 	@Index(name = "DiseaseAnnotation_diseaseGeneticModifierRelation_index", columnList = "diseaseGeneticModifierRelation_id"),
 	@Index(name = "DiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
 	@Index(name = "DiseaseAnnotation_relation_index", columnList = "relation_id"),
-	@Index(name = "DiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id")
+	@Index(name = "DiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id"),
+	@Index(name = "DiseaseAnnotation_secondaryDataProviderCrossReference_index", columnList = "secondaryDataProviderCrossReference_id")
 })
 public abstract class DiseaseAnnotation extends Annotation {
 
@@ -98,7 +115,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	private List<ECOTerm> evidenceCodes;
 
 	@IndexedEmbedded(includePaths = {
-		"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+		"curie", "primaryExternalId", "modInternalId", "curie_keyword", "primaryExternalId_keyword", "modInternalId_keyword",
 		"geneSymbol.formatText", "geneSymbol.displayText", "geneSymbol.formatText_keyword", "geneSymbol.displayText_keyword",
 		"geneFullName.formatText", "geneFullName.displayText", "geneFullName.formatText_keyword", "geneFullName.displayText_keyword",
 		"geneSystematicName.formatText", "geneSystematicName.displayText", "geneSystematicName.formatText_keyword", "geneSystematicName.displayText_keyword",
@@ -144,15 +161,25 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private VocabularyTerm geneticSex;
 
-	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
-		"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"})
+	@IndexedEmbedded(includePaths = {
+		"abbreviation", "fullName", "shortName",
+		"abbreviation_keyword", "fullName_keyword", "shortName_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
-	private DataProvider secondaryDataProvider;
+	@Fetch(FetchMode.SELECT)
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	private Organization secondaryDataProvider;
+	
+	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(orphanRemoval = true)
+	@Fetch(FetchMode.SELECT)
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	private CrossReference secondaryDataProviderCrossReference;
 
 	@IndexedEmbedded(includePaths = {
-		"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+		"curie", "primaryExternalId", "modInternalId", "curie_keyword", "primaryExternalId_keyword", "modInternalId_keyword",
 		"geneSymbol.formatText", "geneSymbol.displayText", "geneSymbol.formatText_keyword", "geneSymbol.displayText_keyword",
 		"geneFullName.formatText", "geneFullName.displayText", "geneFullName.formatText_keyword", "geneFullName.displayText_keyword",
 		"geneSystematicName.formatText", "geneSystematicName.displayText", "geneSystematicName.formatText_keyword", "geneSystematicName.displayText_keyword",
@@ -174,7 +201,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	private List<Gene> diseaseGeneticModifierGenes;
 
 	@IndexedEmbedded(includePaths = {
-		"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+		"curie", "primaryExternalId", "modInternalId", "curie_keyword", "primaryExternalId_keyword", "modInternalId_keyword",
 		"alleleSymbol.formatText", "alleleSymbol.displayText", "alleleSymbol.formatText_keyword", "alleleSymbol.displayText_keyword",
 		"alleleFullName.formatText", "alleleFullName.displayText", "alleleFullName.formatText_keyword", "alleleFullName.displayText_keyword",
 		"alleleSynonyms.formatText", "alleleSynonyms.displayText", "alleleSynonyms.formatText_keyword", "alleleSynonyms.displayText_keyword",
@@ -194,7 +221,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	)
 	private List<Allele> diseaseGeneticModifierAlleles;
 
-	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
+	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
@@ -244,10 +271,10 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@Transient
 	@JsonIgnore
 	public String getDataProviderString() {
-		StringBuilder builder = new StringBuilder(dataProvider.getSourceOrganization().getAbbreviation());
+		StringBuilder builder = new StringBuilder(dataProvider.getAbbreviation());
 		if (secondaryDataProvider != null) {
 			builder.append(" via ");
-			builder.append(secondaryDataProvider.getSourceOrganization().getAbbreviation());
+			builder.append(secondaryDataProvider.getAbbreviation());
 		}
 		return builder.toString();
 	}

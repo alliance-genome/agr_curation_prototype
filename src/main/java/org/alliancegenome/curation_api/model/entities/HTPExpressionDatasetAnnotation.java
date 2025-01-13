@@ -24,7 +24,14 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -34,11 +41,12 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "HTPExpressionDatasetAnnotation", description = "POJO that represents the HighThroughputExpressionDatasetAnnotation")
-@AGRCurationSchemaVersion(min = "2.6.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "2.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
 	@Index(name = "htpdatasetannotation_htpExpressionDataset_index", columnList = "htpExpressionDataset_id"),
 	@Index(name = "htpdatasetannotation_relatednote_index", columnList = "relatednote_id"),
 	@Index(name = "htpdatasetannotation_dataprovider_index", columnList = "dataprovider_id"),
+	@Index(name = "htpdatasetannotation_dataprovidercrossreference_index", columnList = "dataprovidercrossreference_id"),
 	@Index(name = "htpdatasetannotation_createdby_index", columnList = "createdby_id"),
 	@Index(name = "htpdatasetannotation_updatedby_index", columnList = "updatedby_id")
 })
@@ -96,12 +104,20 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject {
 	List<VocabularyTerm> categoryTags;
 
 	@IndexedEmbedded(includePaths = {
-		"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
-		"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"
+		"abbreviation", "fullName", "shortName",
+		"abbreviation_keyword", "fullName_keyword", "shortName_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
+	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class })
-	DataProvider dataProvider;
+	protected Organization dataProvider;
+	
+	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(orphanRemoval = true)
+	@Fetch(FetchMode.SELECT)
+	@JsonView({ View.FieldsOnly.class })
+	private CrossReference dataProviderCrossReference;
 
 }

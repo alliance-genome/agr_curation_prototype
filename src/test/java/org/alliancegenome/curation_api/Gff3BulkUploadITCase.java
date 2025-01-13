@@ -83,12 +83,12 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.name", is("Y74C9A.2a.1")).
 			body("entity.transcriptId", is("WB:Y74C9A.2a.1")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.transcriptType.curie", is("SO:0000234")).
 			body("entity.transcriptGenomicLocationAssociations", hasSize(1)).
 			body("entity.transcriptGenomicLocationAssociations[0].relation.name", is("located_on")).
 			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.name", is("I")).
-			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.modEntityId", is("RefSeq:NC_003279.8")).
+			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.primaryExternalId", is("RefSeq:NC_003279.8")).
 			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.transcriptGenomicLocationAssociations[0].start", is(1)).
 			body("entity.transcriptGenomicLocationAssociations[0].end", is(1000)).
@@ -96,7 +96,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.transcriptGenomicLocationAssociations[0].strand", is("+")).
 			body("entity.transcriptGeneAssociations", hasSize(1)).
 			body("entity.transcriptGeneAssociations[0].relation.name", is("is_child_of")).
-			body("entity.transcriptGeneAssociations[0].transcriptGeneAssociationObject.modEntityId", is(geneCurie));
+			body("entity.transcriptGeneAssociations[0].transcriptGeneAssociationObject.primaryExternalId", is(geneCurie));
 
 	}
 
@@ -118,11 +118,11 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.uniqueId", is(exonUniqueId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.exonGenomicLocationAssociations", hasSize(1)).
 			body("entity.exonGenomicLocationAssociations[0].relation.name", is("located_on")).
 			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.name", is("I")).
-			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.modEntityId", is("RefSeq:NC_003279.8")).
+			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.primaryExternalId", is("RefSeq:NC_003279.8")).
 			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.exonGenomicLocationAssociations[0].start", is(1)).
 			body("entity.exonGenomicLocationAssociations[0].end", is(100)).
@@ -156,11 +156,11 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.uniqueId", is(cdsUniqueId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.codingSequenceGenomicLocationAssociations", hasSize(1)).
 			body("entity.codingSequenceGenomicLocationAssociations[0].relation.name", is("located_on")).
 			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.name", is("I")).
-			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.modEntityId", is("RefSeq:NC_003279.8")).
+			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.primaryExternalId", is("RefSeq:NC_003279.8")).
 			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.codingSequenceGenomicLocationAssociations[0].start", is(10)).
 			body("entity.codingSequenceGenomicLocationAssociations[0].end", is(100)).
@@ -198,12 +198,12 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.name", is("Y74C9A.2a.1")).
 			body("entity.transcriptId", is("RefSeq:Y74C9A.2a.1")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.transcriptType.curie", is("SO:0001035")).
 			body("entity.transcriptGenomicLocationAssociations", hasSize(1)).
 			body("entity.transcriptGenomicLocationAssociations[0].relation.name", is("located_on")).
 			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.name", is("II")).
-			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.modEntityId", is("RefSeq:NC_003280.10")).
+			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.primaryExternalId", is("RefSeq:NC_003280.10")).
 			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.transcriptGenomicLocationAssociations[0].start", is(2)).
 			body("entity.transcriptGenomicLocationAssociations[0].end", is(2000)).
@@ -284,11 +284,11 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			get(geneGetEndpoint + geneCurie).
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is(geneCurie)).
+			body("entity.primaryExternalId", is(geneCurie)).
 			body("entity.geneGenomicLocationAssociations", hasSize(1)).
 			body("entity.geneGenomicLocationAssociations[0].relation.name", is("located_on")).
 			body("entity.geneGenomicLocationAssociations[0].geneGenomicLocationAssociationObject.name", is("I")).
-			body("entity.geneGenomicLocationAssociations[0].geneGenomicLocationAssociationObject.modEntityId", is("RefSeq:NC_003279.8")).
+			body("entity.geneGenomicLocationAssociations[0].geneGenomicLocationAssociationObject.primaryExternalId", is("RefSeq:NC_003279.8")).
 			body("entity.geneGenomicLocationAssociations[0].geneGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.geneGenomicLocationAssociations[0].start", is(1)).
 			body("entity.geneGenomicLocationAssociations[0].end", is(1005)).

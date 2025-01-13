@@ -54,7 +54,7 @@ import lombok.ToString;
 public class TranscriptGenomicLocationAssociation extends LocationAssociation {
 
 	@IndexedEmbedded(includePaths = {
-		"curie", "curie_keyword", "modEntityId", "modEntityId_keyword",
+		"curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword",
 		"modInternalId", "modInternalId_keyword", "name", "name_keyword"
 	})
 	@ManyToOne
@@ -69,7 +69,7 @@ public class TranscriptGenomicLocationAssociation extends LocationAssociation {
 	private Transcript transcriptAssociationSubject;
 
 	@IndexedEmbedded(includePaths = {
-		"curie", "curie_keyword", "modEntityId", "modEntityId_keyword",
+		"curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword",
 		"modInternalId", "modInternalId_keyword", "name", "name_keyword"
 	})
 	@ManyToOne

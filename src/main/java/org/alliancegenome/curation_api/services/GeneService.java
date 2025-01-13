@@ -146,12 +146,12 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		if (searchResponse != null) {
 			// Need to check that returned gene belongs to MOD corresponding to taxon
 			for (Gene searchResult : searchResponse.getResults()) {
-				String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getSourceOrganization().getAbbreviation());
+				String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
 				if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
 					allianceGene = searchResult;
 					break;
 				}
-				if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getSourceOrganization().getAbbreviation(), "RGD")) {
+				if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
 					allianceGene = searchResult;
 					break;
 				}
@@ -181,12 +181,12 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		if (searchResponse != null) {
 			// Need to check that returned gene belongs to MOD corresponding to taxon
 			for (Gene searchResult : searchResponse.getResults()) {
-				String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getSourceOrganization().getAbbreviation());
+				String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
 				if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
 					allianceGene = searchResult;
 					break;
 				}
-				if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getSourceOrganization().getAbbreviation(), "RGD")) {
+				if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
 					allianceGene = searchResult;
 					break;
 				}
@@ -218,7 +218,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		String resourceDescriptorPrefix;
 		switch (dataProvider) {
 			case FB -> {
-				searchField = "modEntityId";
+				searchField = "primaryExternalId";
 				searchValue = "FB:" + identifier;
 				referencedCurie = searchValue;
 				resourceDescriptorPrefix = "FB";
@@ -242,12 +242,12 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		if (searchResponse != null) {
 			// Need to check that returned gene belongs to MOD corresponding to taxon
 			for (Gene searchResult : searchResponse.getResults()) {
-				String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getSourceOrganization().getAbbreviation());
+				String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
 				if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
 					allianceGene = searchResult;
 					break;
 				}
-				if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getSourceOrganization().getAbbreviation(), "RGD")) {
+				if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
 					allianceGene = searchResult;
 					break;
 				}

@@ -1,33 +1,54 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
+import org.alliancegenome.curation_api.model.entities.ExpressionPattern;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.TemporalContext;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.UberonSlimTermDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.WhenExpressedFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.WhereExpressedFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.GeneService;
+import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.annotations.GeneExpressionAnnotationUniqueIdHelper;
-import org.alliancegenome.curation_api.services.ontology.*;
+import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
+import org.alliancegenome.curation_api.services.ontology.GoTermService;
+import org.alliancegenome.curation_api.services.ontology.MmoTermService;
+import org.alliancegenome.curation_api.services.ontology.OntologyTermService;
+import org.alliancegenome.curation_api.services.ontology.StageTermService;
+import org.alliancegenome.curation_api.services.ontology.UberonTermService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.*;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class GeneExpressionAnnotationFmsDTOValidator {
@@ -37,7 +58,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 	@Inject ReferenceService referenceService;
 	@Inject GeneExpressionAnnotationUniqueIdHelper geneExpressionAnnotationUniqueIdHelper;
 	@Inject GeneExpressionAnnotationDAO geneExpressionAnnotationDAO;
-	@Inject DataProviderService dataProviderService;
+	@Inject OrganizationService organizationService;
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject AnatomicalTermService anatomicalTermService;
 	@Inject GoTermService goTermService;
@@ -122,7 +143,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			geneExpressionAnnotation.getExpressionPattern().setWhenExpressed(temporalContext);
 		}
 
-		geneExpressionAnnotation.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));
+		geneExpressionAnnotation.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
 		geneExpressionAnnotation.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM).getEntity());
 		geneExpressionAnnotation.setObsolete(false);
 		geneExpressionAnnotation.setInternal(false);

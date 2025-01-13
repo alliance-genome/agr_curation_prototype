@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "DATEST:MR01",
+    "primary_external_id": "DATEST:MR01",
     "internal": false,
     "obsolete": false,
     "do_term_curie": "DATEST:Disease0001",

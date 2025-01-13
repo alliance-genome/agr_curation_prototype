@@ -75,7 +75,7 @@ public class Variant extends GenomicEntity {
 	@IndexedEmbedded(
 		includePaths = {
 			"variantGenomicLocationAssociationObject.curie", "variantGenomicLocationAssociationObject.curie_keyword",
-			"variantGenomicLocationAssociationObject.modEntityId", "variantGenomicLocationAssociationObject.modEntityId_keyword",
+			"variantGenomicLocationAssociationObject.primaryExternalId", "variantGenomicLocationAssociationObject.primaryExternalId_keyword",
 			"variantGenomicLocationAssociationObject.modInternalId", "variantGenomicLocationAssociationObject.modInternalId_keyword",
 			"start", "end"
 		}
