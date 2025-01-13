@@ -214,7 +214,7 @@ public class BaseValidator<E extends Object> {
 				return null;
 			}
 			
-			if (term.getObsolete() && (CollectionUtils.isEmpty(dbTerms)) || !previousIds.contains(term.getId())) {
+			if (term.getObsolete() && (CollectionUtils.isEmpty(dbTerms) || !previousIds.contains(term.getId()))) {
 				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 				return null;
 			}

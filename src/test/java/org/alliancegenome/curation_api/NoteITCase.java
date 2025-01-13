@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
@@ -43,7 +44,7 @@ public class NoteITCase extends BaseITCase {
 	private Long testNoteId;
 	
 	private void createRequiredObjects() {
-		testVocabulary = createVocabulary("Note test vocabulary", false);
+		testVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
 		testVocabularyTerm = createVocabularyTerm(testVocabulary, "Note test vocabulary term", false);
 		testVocabularyTerm2 = createVocabularyTerm(testVocabulary, "Note test vocabulary term 2", false);
 		testObsoleteVocabularyTerm = createVocabularyTerm(testVocabulary, "Obsolete Note test vocabularyTerm", true);
