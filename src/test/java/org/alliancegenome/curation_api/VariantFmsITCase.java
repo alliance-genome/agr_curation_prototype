@@ -236,7 +236,7 @@ public class VariantFmsITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.modInternalId", is(variantId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.variantType.curie", is("SO:1000008")).
 			body("entity.synonyms", is(List.of("Syn 3", "Syn 4"))).
 			body("entity.sourceGeneralConsequence.curie", is("SO:0001578")).

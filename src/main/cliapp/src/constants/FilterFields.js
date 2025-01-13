@@ -223,11 +223,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	dataProviderFieldSet: {
 		filterName: 'dataProviderFilter',
-		fields: [
-			'dataProvider.abbreviation',
-			'dataProvider.fullName',
-			'dataProvider.shortName',
-		],
+		fields: ['dataProvider.abbreviation', 'dataProvider.fullName', 'dataProvider.shortName'],
 	},
 	dataCreatedFieldSet: {
 		filterName: 'dateCreatedFilter',
@@ -578,11 +574,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	secondaryDataProviderFieldSet: {
 		filterName: 'secondaryDataProviderFilter',
-		fields: [
-			'secondaryDataProvider.abbreviation',
-			'secondaryDataProvider.fullName',
-			'secondaryDataProvider.shortName',
-		],
+		fields: ['secondaryDataProvider.abbreviation', 'secondaryDataProvider.fullName', 'secondaryDataProvider.shortName'],
 	},
 	secondaryIdsFieldSet: {
 		filterName: 'secondaryIdsFilter',
