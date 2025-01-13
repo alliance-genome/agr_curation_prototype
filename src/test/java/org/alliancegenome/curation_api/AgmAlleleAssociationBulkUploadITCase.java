@@ -79,8 +79,8 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.agmAlleleAssociationObject.modEntityId", is(alleleCurie)).
-			body("entity.agmAssociationSubject.modEntityId", is(agmCurie)).
+			body("entity.agmAlleleAssociationObject.primaryExternalId", is(alleleCurie)).
+			body("entity.agmAssociationSubject.primaryExternalId", is(agmCurie)).
 			body("entity.zygosity", is(zygosityCurie)).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
@@ -96,7 +96,7 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.components", hasSize(1)).
 			body("entity.components[0].relation.name", is(relationName)).
-			body("entity.components[0].agmAlleleAssociationObject.modEntityId", is(alleleCurie)).
+			body("entity.components[0].agmAlleleAssociationObject.primaryExternalId", is(alleleCurie)).
 			body("entity.components[0].agmAssociationSubject", not(hasKey("agmAlleles"))).
 			body("entity.components[0].zygosity", is(zygosityCurie));
 
@@ -112,10 +112,10 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 				when().
 				get(agmAlleleAssociationGetEndpoint + "?agmId=" + agm.getId() + "&relationName=" + relationName + "&alleleId=" + allele.getId()).
 				then().
-				statusCode(200).log().all().
+				statusCode(200).
 				body("entity.relation.name", is(relationName)).
-				body("entity.agmAlleleAssociationObject.modEntityId", is(alleleCurie)).
-				body("entity.agmAssociationSubject.modEntityId", is(agmCurie)).
+				body("entity.agmAlleleAssociationObject.primaryExternalId", is(alleleCurie)).
+				body("entity.agmAssociationSubject.primaryExternalId", is(agmCurie)).
 				body("entity.zygosity", is(zygosityCurie)).
 				body("entity.internal", is(false)).
 				body("entity.obsolete", is(false)).
