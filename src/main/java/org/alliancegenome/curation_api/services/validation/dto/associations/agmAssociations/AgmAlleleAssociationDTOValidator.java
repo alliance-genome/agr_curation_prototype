@@ -37,16 +37,16 @@ public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
 		ObjectResponse<AgmAlleleAssociation> aaaResponse = new ObjectResponse<AgmAlleleAssociation>();
 
 		List<String> zygosityCuries = Arrays.asList(
-            "GENO:0000602",
-            "GENO:0000603",
-            "GENO:0000604",
-            "GENO:0000605",
-            "GENO:0000606",
-            "GENO:0000135",
-            "GENO:0000136",
-            "GENO:0000137",
-            "GENO:0000134"
-        );
+		"GENO:0000602",
+			"GENO:0000603",
+			"GENO:0000604",
+			"GENO:0000605",
+			"GENO:0000606",
+			"GENO:0000135",
+			"GENO:0000136",
+			"GENO:0000137",
+			"GENO:0000134"
+		);
 
 		List<Long> subjectIds = null;
 		if (StringUtils.isBlank(dto.getAgmSubjectIdentifier())) {
@@ -102,7 +102,7 @@ public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
 			AffectedGenomicModel subject = agmService.findByIdentifierString(dto.getAgmSubjectIdentifier());
 			if (subject == null) {
 				aaaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
-			} else if (beDataProvider != null && !subject.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
+			} else if (beDataProvider != null && !subject.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 				aaaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
 			} else {
 				association.setAgmAssociationSubject(subject);
@@ -114,7 +114,7 @@ public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
 			Allele object = alleleService.findByIdentifierString(dto.getAlleleIdentifier());
 			if (object == null) {
 				aaaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
-			} else if (beDataProvider != null && !object.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
+			} else if (beDataProvider != null && !object.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 				aaaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAlleleIdentifier() + ")");
 			} else {
 				association.setAgmAlleleAssociationObject(object);

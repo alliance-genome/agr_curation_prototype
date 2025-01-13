@@ -34,7 +34,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class AgmAlleleAssociationService  extends BaseAssociationDTOCrudService<AgmAlleleAssociation, AgmAlleleAssociationDTO, AgmAlleleAssociationDAO> implements BaseUpsertServiceInterface<AgmAlleleAssociation, AgmAlleleAssociationDTO> {
+public class AgmAlleleAssociationService extends BaseAssociationDTOCrudService<AgmAlleleAssociation, AgmAlleleAssociationDTO, AgmAlleleAssociationDAO> implements BaseUpsertServiceInterface<AgmAlleleAssociation, AgmAlleleAssociationDTO> {
 	
 	@Inject AgmAlleleAssociationDAO agmAlleleAssociationDAO;
 	@Inject AgmAlleleAssociationDTOValidator agmAlleleAssociationDtoValidator;
