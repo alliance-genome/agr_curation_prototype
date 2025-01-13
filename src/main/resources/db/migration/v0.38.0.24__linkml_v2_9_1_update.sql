@@ -180,10 +180,10 @@ ALTER TABLE htpexpressiondatasetsampleannotation DROP COLUMN dataprovider_id;
 ALTER TABLE htpexpressiondatasetsampleannotation RENAME COLUMN newdataprovider_id TO dataprovider_id;
 
 ALTER TABLE htpexpressiondatasetsampleannotation ADD CONSTRAINT htpexpressiondatasetsampleannotation_dataprovider_id_fk FOREIGN KEY (dataprovider_id) REFERENCES organization(id);
-ALTER TABLE htpexpressiondatasetsampleannotation ADD CONSTRAINT htpexpressiondatasetsampleannotation_dataprovidercrossreference_id_fk FOREIGN KEY (dataprovidercrossreference_id) REFERENCES crossreference(id);
+ALTER TABLE htpexpressiondatasetsampleannotation ADD CONSTRAINT htpexpressiondatasetsampleannotation_dataproviderxref_id_fk FOREIGN KEY (dataprovidercrossreference_id) REFERENCES crossreference(id);
 
 CREATE INDEX htpexpressiondatasetsampleannotation_dataprovider_index ON htpexpressiondatasetsampleannotation USING btree (dataprovider_id);
-CREATE INDEX htpexpressiondatasetsampleannotation_dataprovidercrossreference_index ON htpexpressiondatasetsampleannotation USING btree (dataprovidercrossreference_id);
+CREATE INDEX htpexpressiondatasetsampleannotation_dataproviderxref_index ON htpexpressiondatasetsampleannotation USING btree (dataprovidercrossreference_id);
 
 --Update data provider for phenotypeannotation table
 ALTER TABLE phenotypeannotation ADD newdataprovider_id bigint;

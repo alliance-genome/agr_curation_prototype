@@ -46,7 +46,7 @@ import lombok.ToString;
 	@Index(name = "htpdatasample_sequencingFormat_index", columnList = "sequencingFormat_id"),
 	@Index(name = "htpdatasample_taxon_index", columnList = "taxon_id"),
 	@Index(name = "htpdatasample_dataprovider_index", columnList = "dataprovider_id"),
-	@Index(name = "htpdatasample_dataprovidercrossreference_index", columnList = "dataprovidercrossreference_id"),
+	@Index(name = "htpdatasample_dataproviderxref_index", columnList = "dataprovidercrossreference_id"),
 	@Index(name = "htpdatasample_createdby_index", columnList = "createdby_id"),
 	@Index(name = "htpdatasample_updatedby_index", columnList = "updatedby_id")
 })
