@@ -204,7 +204,7 @@ export default function AlleleDetailPage() {
 
 					<IdentifierFormTemplate
 						identifier={alleleState.allele?.primaryExternalId}
-						label="MOD Entity ID"
+						label="Primary External ID"
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}

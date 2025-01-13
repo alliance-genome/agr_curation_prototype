@@ -716,7 +716,7 @@ export const mockSettingsData = {
 	multiSortMeta: [],
 	selectedColumnNames: [
 		'Curie',
-		'MOD Entity ID',
+		'Primary External ID',
 		'MOD Internal ID',
 		'Name',
 		'Symbol',

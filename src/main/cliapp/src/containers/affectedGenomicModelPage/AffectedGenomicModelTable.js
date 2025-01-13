@@ -53,7 +53,7 @@ export const AffectedGenomicModelTable = () => {
 		},
 		{
 			field: 'primaryExternalId',
-			header: 'MOD Entity ID',
+			header: 'Primary External ID',
 			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,

@@ -174,7 +174,7 @@ export const VariantsTable = () => {
 		},
 		{
 			field: 'primaryExternalId',
-			header: 'MOD Entity ID',
+			header: 'Primary External ID',
 			sortable: true,
 			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
 			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,

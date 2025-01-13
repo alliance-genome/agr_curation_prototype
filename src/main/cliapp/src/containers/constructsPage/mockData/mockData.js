@@ -805,7 +805,7 @@ export const mockSettingsData = {
 	multiSortMeta: [],
 	selectedColumnNames: [
 		'Unique ID',
-		'MOD Entity ID',
+		'Primary External ID',
 		'MOD Internal ID',
 		'Name',
 		'Taxon',
