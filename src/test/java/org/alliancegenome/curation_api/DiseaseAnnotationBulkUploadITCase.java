@@ -347,7 +347,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage")).
 			body("entity.secondaryDataProviderCrossReference.referencedCurie", is("TEST:0002")).
 			body("entity.secondaryDataProviderCrossReference.displayName", is("TEST:0002")).
-			body("entity.secondaryDataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));;
+			body("entity.secondaryDataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -432,7 +432,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage")).
 			body("entity.secondaryDataProviderCrossReference.referencedCurie", is("TEST:0002")).
 			body("entity.secondaryDataProviderCrossReference.displayName", is("TEST:0002")).
-			body("entity.secondaryDataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));;
+			body("entity.secondaryDataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 
 	@Test
