@@ -33,23 +33,18 @@ export const data = {
 			dataProvider: {
 				internal: false,
 				obsolete: false,
-				id: 76151078,
-				sourceOrganization: {
+				id: 20308679,
+				uniqueId: 'FB',
+				abbreviation: 'FB',
+				fullName: 'FlyBase',
+				homepageResourceDescriptorPage: {
 					internal: false,
 					obsolete: false,
-					id: 20308679,
-					uniqueId: 'FB',
-					abbreviation: 'FB',
-					fullName: 'FlyBase',
-					homepageResourceDescriptorPage: {
-						internal: false,
-						obsolete: false,
-						dbDateCreated: '2023-02-20T09:26:39.537112Z',
-						dbDateUpdated: '2023-05-04T22:00:09.35185Z',
-						id: 41750763,
-						name: 'homepage',
-						urlTemplate: 'https://flybase.org/',
-					},
+					dbDateCreated: '2023-02-20T09:26:39.537112Z',
+					dbDateUpdated: '2023-05-04T22:00:09.35185Z',
+					id: 41750763,
+					name: 'homepage',
+					urlTemplate: 'https://flybase.org/',
 				},
 			},
 			references: [
