@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services.validation.associations;
+package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import java.util.ArrayList;
 import java.util.List;

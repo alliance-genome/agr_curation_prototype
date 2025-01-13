@@ -17,7 +17,6 @@ import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.apache.commons.collections.CollectionUtils;
@@ -32,7 +31,6 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 
 	@Inject VariantDAO variantDAO;
 	@Inject NoteValidator noteValidator;
-	@Inject VocabularyTermService vocabularyTermService;
 	@Inject CrossReferenceDAO crossReferenceDAO;
 	@Inject SoTermService soTermService;
 
@@ -77,7 +75,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 		SOTerm variantType = validateVariantType(uiEntity, dbEntity);
 		dbEntity.setVariantType(variantType);
 
-		VocabularyTerm variantStatus = validateVariantStatus(uiEntity, dbEntity);
+		VocabularyTerm variantStatus = validateTermInVocabulary("variantStatus", VocabularyConstants.VARIANT_STATUS_VOCABULARY, dbEntity.getVariantStatus(), uiEntity.getVariantStatus());
 		dbEntity.setVariantStatus(variantStatus);
 
 		SOTerm sourceGeneralConsequence = validateSourceGeneralConsequence(uiEntity, dbEntity);
@@ -122,26 +120,6 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 			}
 		}
 		return variantType;
-	}
-
-	private VocabularyTerm validateVariantStatus(Variant uiEntity, Variant dbEntity) {
-		String field = "variantStatus";
-
-		if (uiEntity.getVariantStatus() == null) {
-			return null;
-		}
-
-		VocabularyTerm variantStatus = vocabularyTermService.getTermInVocabulary(VocabularyConstants.VARIANT_STATUS_VOCABULARY, uiEntity.getVariantStatus().getName()).getEntity();
-		if (variantStatus == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (variantStatus.getObsolete() && (dbEntity.getVariantStatus() == null || !variantStatus.getName().equals(dbEntity.getVariantStatus().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-		return variantStatus;
 	}
 
 	public SOTerm validateSourceGeneralConsequence(Variant uiEntity, Variant dbEntity) {

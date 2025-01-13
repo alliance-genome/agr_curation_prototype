@@ -18,7 +18,6 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -31,7 +30,6 @@ import jakarta.inject.Inject;
 public class ConditionRelationValidator extends AuditedObjectValidator<ConditionRelation> {
 
 	@Inject ConditionRelationDAO conditionRelationDAO;
-	@Inject VocabularyTermService vocabularyTermService;
 	@Inject LiteratureReferenceDAO literatureReferenceDAO;
 	@Inject ReferenceDAO referenceDAO;
 	@Inject ExperimentalConditionDAO experimentalConditionDAO;
@@ -86,7 +84,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		String handle = validateHandle(uiEntity, dbEntity);
 		dbEntity.setHandle(handle);
 
-		VocabularyTerm conditionRelationType = validateConditionRelationType(uiEntity, dbEntity);
+		VocabularyTerm conditionRelationType = validateRequiredTermInVocabulary("conditionRelationType", VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, dbEntity.getConditionRelationType(), uiEntity.getConditionRelationType());
 		dbEntity.setConditionRelationType(conditionRelationType);
 
 		List<ExperimentalCondition> conditions = validateConditions(uiEntity, dbEntity);
@@ -174,27 +172,6 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		}
 
 		return singleRefResponse.getEntity();
-	}
-
-	public VocabularyTerm validateConditionRelationType(ConditionRelation uiEntity, ConditionRelation dbEntity) {
-		String field = "conditionRelationType";
-		if (uiEntity.getConditionRelationType() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		VocabularyTerm conditionRelationType = vocabularyTermService.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, uiEntity.getConditionRelationType().getName()).getEntity();
-		if (conditionRelationType == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (conditionRelationType.getObsolete() && (dbEntity.getConditionRelationType() == null || !conditionRelationType.getName().equals(dbEntity.getConditionRelationType().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return conditionRelationType;
 	}
 
 	public List<ExperimentalCondition> validateConditions(ConditionRelation uiEntity, ConditionRelation dbEntity) {

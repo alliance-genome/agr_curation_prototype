@@ -16,7 +16,6 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -29,8 +28,6 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
 
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-
-	@Inject VocabularyTermService vocabularyTermService;
 
 	@Inject AlleleDAO alleleDAO;
 
@@ -82,7 +79,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		Allele assertedAllele = validateAssertedAllele(uiEntity, dbEntity);
 		dbEntity.setAssertedAllele(assertedAllele);
 
-		VocabularyTerm relation = validateDiseaseRelation(uiEntity, dbEntity);
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, dbEntity.getRelation(), uiEntity.getRelation());
 		dbEntity.setRelation(relation);
 
 		dbEntity = (AGMDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
@@ -213,27 +210,5 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		}
 
 		return assertedAllele;
-	}
-
-	private VocabularyTerm validateDiseaseRelation(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
-		String field = "relation";
-		if (uiEntity.getRelation() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation().getName()).getEntity();
-
-		if (relation == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (relation.getObsolete() && (dbEntity.getRelation() == null || !relation.getName().equals(dbEntity.getRelation().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return relation;
 	}
 }

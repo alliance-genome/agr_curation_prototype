@@ -18,7 +18,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingRea
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.alliancegenome.curation_api.services.validation.associations.SequenceTargetingReagentGeneAssociationFmsDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.fms.SequenceTargetingReagentGeneAssociationFmsDTOValidator;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;

@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -23,8 +22,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	@Inject GeneDAO geneDAO;
 	@Inject AffectedGenomicModelDAO agmDAO;
 	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject VocabularyTermService vocabularyTermService;
-
+	
 	private String errorMessage;
 
 	public GeneDiseaseAnnotation validateAnnotationUpdate(GeneDiseaseAnnotation uiEntity) {
@@ -61,7 +59,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		Gene subject = validateSubject(uiEntity, dbEntity);
 		dbEntity.setDiseaseAnnotationSubject(subject);
 
-		VocabularyTerm relation = validateDiseaseRelation(uiEntity, dbEntity);
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, dbEntity.getRelation(), uiEntity.getRelation());
 		dbEntity.setRelation(relation);
 
 		AffectedGenomicModel sgdStrainBackground = validateSgdStrainBackground(uiEntity, dbEntity);
@@ -100,28 +98,6 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
 		return subjectEntity;
 
-	}
-
-	private VocabularyTerm validateDiseaseRelation(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
-		String field = "relation";
-		if (uiEntity.getRelation() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation().getName()).getEntity();
-
-		if (relation == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (relation.getObsolete() && (dbEntity.getRelation() == null || !relation.getName().equals(dbEntity.getRelation().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return relation;
 	}
 
 	private AffectedGenomicModel validateSgdStrainBackground(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {

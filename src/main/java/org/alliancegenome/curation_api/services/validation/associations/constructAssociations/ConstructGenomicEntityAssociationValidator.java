@@ -19,7 +19,6 @@ import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
 import org.alliancegenome.curation_api.services.validation.associations.EvidenceAssociationValidator;
@@ -35,7 +34,6 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 	@Inject ConstructDAO constructDAO;
 	@Inject GenomicEntityDAO genomicEntityDAO;
 	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
-	@Inject VocabularyTermService vocabularyTermService;
 	@Inject NoteValidator noteValidator;
 
 	private String errorMessage;
@@ -72,7 +70,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		GenomicEntity object = validateObject(uiEntity, dbEntity);
 		dbEntity.setConstructGenomicEntityAssociationObject(object);
 
-		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, dbEntity.getRelation(), uiEntity.getRelation());
 		dbEntity.setRelation(relation);
 
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
@@ -146,28 +144,6 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 
 		return objectEntity;
 
-	}
-
-	private VocabularyTerm validateRelation(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
-		String field = "relation";
-		if (uiEntity.getRelation() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation().getName()).getEntity();
-
-		if (relation == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (relation.getObsolete() && (dbEntity.getRelation() == null || !relation.getName().equals(dbEntity.getRelation().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return relation;
 	}
 
 	public List<Note> validateRelatedNotes(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {

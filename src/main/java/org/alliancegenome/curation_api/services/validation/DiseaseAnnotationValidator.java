@@ -24,7 +24,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.OrganizationService;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
 import org.apache.commons.collections.CollectionUtils;
@@ -39,7 +38,6 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 	@Inject GeneDAO geneDAO;
 	@Inject AlleleDAO alleleDAO;
 	@Inject AffectedGenomicModelDAO agmDAO;
-	@Inject VocabularyTermService vocabularyTermService;
 	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject OrganizationDAO organizationDAO;
 	@Inject OrganizationService organizationService;
@@ -63,28 +61,6 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 			}
 		}
 		return diseaseTerm;
-	}
-
-	public List<VocabularyTerm> validateDiseaseQualifiers(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		String field = "diseaseQualifiers";
-		if (CollectionUtils.isEmpty(uiEntity.getDiseaseQualifiers())) {
-			return null;
-		}
-		List<VocabularyTerm> validDiseaseQualifiers = new ArrayList<>();
-		for (VocabularyTerm dq : uiEntity.getDiseaseQualifiers()) {
-			VocabularyTerm qualifier = vocabularyTermService.getTermInVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY, dq.getName()).getEntity();
-			if (qualifier == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
-			} else if (qualifier.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getDiseaseQualifiers()) || !dbEntity.getDiseaseQualifiers().contains(qualifier))) {
-				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-				return null;
-			}
-
-			validDiseaseQualifiers.add(qualifier);
-
-		}
-		return validDiseaseQualifiers;
 	}
 
 	public List<ECOTerm> validateEvidenceCodes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
@@ -295,62 +271,8 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 			addMessageResponse(field, ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierGenes / diseaseGeneticModifierAlleles / diseaseGeneticModifierAgms");
 			return null;
 		}
-
-		VocabularyTerm dgmRelation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY, uiEntity.getDiseaseGeneticModifierRelation().getName()).getEntity();
-
-		if (dgmRelation == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (dgmRelation.getObsolete() && (dbEntity.getDiseaseGeneticModifierRelation() == null || !dgmRelation.getName().equals(dbEntity.getDiseaseGeneticModifierRelation().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return dgmRelation;
-	}
-
-	public VocabularyTerm validateGeneticSex(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		String field = "geneticSex";
-		if (uiEntity.getGeneticSex() == null) {
-			return null;
-		}
-
-		VocabularyTerm geneticSex = vocabularyTermService.getTermInVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY, uiEntity.getGeneticSex().getName()).getEntity();
-
-		if (geneticSex == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (geneticSex.getObsolete() && (dbEntity.getGeneticSex() == null || !geneticSex.getName().equals(dbEntity.getGeneticSex().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return geneticSex;
-	}
-
-	public VocabularyTerm validateAnnotationType(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		String field = "annotationType";
-		if (uiEntity.getAnnotationType() == null) {
-			return null;
-		}
-
-		VocabularyTerm annotationType = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY, uiEntity.getAnnotationType().getName()).getEntity();
-
-		if (annotationType == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (annotationType.getObsolete() && (dbEntity.getAnnotationType() == null || !annotationType.getName().equals(dbEntity.getAnnotationType().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return annotationType;
+		
+		return validateTermInVocabulary(field, VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY, dbEntity.getDiseaseGeneticModifierRelation(), uiEntity.getDiseaseGeneticModifierRelation());
 	}
 
 	public String validateUniqueId(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
@@ -386,10 +308,10 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		Boolean negated = uiEntity.getNegated() != null && uiEntity.getNegated();
 		dbEntity.setNegated(negated);
 
-		VocabularyTerm annotationType = validateAnnotationType(uiEntity, dbEntity);
+		VocabularyTerm annotationType = validateTermInVocabulary("annotationType", VocabularyConstants.ANNOTATION_TYPE_VOCABULARY, dbEntity.getAnnotationType(), uiEntity.getAnnotationType());
 		dbEntity.setAnnotationType(annotationType);
 
-		VocabularyTerm geneticSex = validateGeneticSex(uiEntity, dbEntity);
+		VocabularyTerm geneticSex = validateTermInVocabulary("geneticSex", VocabularyConstants.GENETIC_SEX_VOCABULARY, dbEntity.getGeneticSex(), uiEntity.getGeneticSex());
 		dbEntity.setGeneticSex(geneticSex);
 
 		Organization secondaryDataProvider = validateSecondaryDataProvider(uiEntity, dbEntity);
@@ -407,7 +329,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		dbEntity.setDiseaseGeneticModifierAgms(diseaseGeneticModifierAgms);
 		dbEntity.setDiseaseGeneticModifierRelation(dgmRelation);
 
-		List<VocabularyTerm> diseaseQualifiers = validateDiseaseQualifiers(uiEntity, dbEntity);
+		List<VocabularyTerm> diseaseQualifiers = validateTermsInVocabulary("diseaseQualifiers", VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY, dbEntity.getDiseaseQualifiers(), uiEntity.getDiseaseQualifiers());
 		dbEntity.setDiseaseQualifiers(diseaseQualifiers);
 
 		dbEntity = (DiseaseAnnotation) validateCommonAnnotationFields(uiEntity, dbEntity, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET);
