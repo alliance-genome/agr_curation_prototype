@@ -1,8 +1,5 @@
 package org.alliancegenome.curation_api;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,6 +24,8 @@ import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 
+import static org.hamcrest.Matchers.*;
+
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -36,7 +35,7 @@ import io.restassured.config.RestAssuredConfig;
 public class VariantFmsITCase extends BaseITCase {
 
 	// These tests require: GeneBulkUploadITCase and VocabularyTermITCase
-	
+
 	@BeforeEach
 	public void init() {
 		RestAssured.config = RestAssuredConfig.config()
@@ -53,7 +52,9 @@ public class VariantFmsITCase extends BaseITCase {
 	private final String variantId = DigestUtils.md5Hex("NC_003279.8:g.1A>T");
 	private final String reference = "AGRKB:000000001";
 	private final String reference2 = "AGRKB:000000021";
-	
+	private final String pubmedId = "PMID:25920554";
+	private final String updatedPubmedId = "PMID:009";
+
 	private void loadRequiredEntities() throws Exception {
 		createSoTerm("SO:1000002", "substitution", false);
 		createSoTerm("SO:0000667", "insertion", false);
@@ -68,9 +69,8 @@ public class VariantFmsITCase extends BaseITCase {
 		Organization dataProvider = getOrganization("WB");
 		createAllele(allele, "TestAlleleWithVariant", "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createAllele(allele2, "TestAlleleWithVariant2", "NCBITaxon:6239", symbolTerm, false, dataProvider);
-		
 	}
-	
+
 	@Test
 	@Order(1)
 	public void variantFmsBulkUpload() throws Exception {
@@ -82,7 +82,7 @@ public class VariantFmsITCase extends BaseITCase {
 		params.put("Associations", createCountParams(1, 0, 1, 0));
 
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "AF_01_all_fields.json", params);
-		
+
 		RestAssured.given().
 			when().
 			get(variantGetEndpoint + variantId).
@@ -111,10 +111,10 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.crossReferences", hasSize(1)).
 			body("entity.crossReferences[0].referencedCurie", is("TEST:WBVar00252636")).
 			body("entity.crossReferences[0].displayName", is("TEST:WBVar00252636")).
-			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage"));
-
+			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage")).
+			body("entity.references[0].crossReferences[0].referencedCurie", is(pubmedId));
 	}
-	
+
 	@Test
 	@Order(2)
 	public void variantFmsBulkUploadUpdate() throws Exception {
@@ -124,7 +124,7 @@ public class VariantFmsITCase extends BaseITCase {
 		params.put("Associations", createCountParams(1, 0, 1, 0));
 
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "UD_01_update_variant.json", params);
-		
+
 		RestAssured.given().
 			when().
 			get(variantGetEndpoint + variantId).
@@ -155,10 +155,10 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.crossReferences", hasSize(1)).
 			body("entity.crossReferences[0].referencedCurie", is("TEST:WBVar00252637")).
 			body("entity.crossReferences[0].displayName", is("TEST:WBVar00252637")).
-			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage"));
-
+			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage")).
+			body("entity.references[0].crossReferences[0].referencedCurie", is(updatedPubmedId));
 	}
-	
+
 	@Test
 	@Order(3)
 	public void variantFmsBulkUploadMissingRequiredFields() throws Exception {
@@ -166,7 +166,7 @@ public class VariantFmsITCase extends BaseITCase {
 		params.put("Entities", createCountParams(1, 1, 0, 0));
 		params.put("Locations", createCountParams(1, 1, 0, 0));
 		params.put("Associations", createCountParams(1, 1, 0, 0));
-		
+
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_01_no_start.json", params);
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_02_no_end.json", params);
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_03_no_sequence_of_reference_accession_number.json", params);
@@ -178,7 +178,7 @@ public class VariantFmsITCase extends BaseITCase {
 		params.put("Locations", createCountParams(1, 0, 1, 0));
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "MR_07_no_allele_id.json", params);
 	}
-	
+
 	@Test
 	@Order(4)
 	public void variantFmsBulkUploadEmptyRequiredFields() throws Exception {
@@ -186,7 +186,7 @@ public class VariantFmsITCase extends BaseITCase {
 		params.put("Entities", createCountParams(1, 1, 0, 0));
 		params.put("Locations", createCountParams(1, 1, 0, 0));
 		params.put("Associations", createCountParams(1, 1, 0, 0));
-		
+
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "ER_01_empty_sequence_of_reference_accession_number.json", params);
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "ER_02_empty_type.json", params);
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "ER_03_empty_genomic_reference_sequence.json", params);
@@ -196,7 +196,7 @@ public class VariantFmsITCase extends BaseITCase {
 		params.put("Locations", createCountParams(1, 0, 1, 0));
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "ER_05_empty_allele_id.json", params);
 	}
-	
+
 	@Test
 	@Order(5)
 	public void variantFmsBulkUploadInvalidFields() throws Exception {
@@ -207,15 +207,58 @@ public class VariantFmsITCase extends BaseITCase {
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_01_invalid_type.json", params);
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_02_invalid_type_for_fms_submissions.json", params);
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_03_invalid_consequence.json", params);
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_06_invalid_reference.json", params);
 
 		params.put("Entities", createCountParams(1, 0, 1, 0));
 		params.put("Associations", createCountParams(1, 0, 1, 0));
-		
+
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_04_invalid_sequence_of_reference_accession_number.json", params);
-		
+
 		params.put("Locations", createCountParams(1, 0, 1, 0));
 		params.put("Associations", createCountParams(1, 1, 0, 0));
 		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "IV_05_invalid_allele_id.json", params);
+	}
+
+	@Test
+	@Order(6)
+	public void variantFmsBulkUploadUpdateWithNoReferences() throws Exception {
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 0, 1, 0));
+		params.put("Locations", createCountParams(1, 0, 1, 0));
+		params.put("Associations", createCountParams(1, 0, 1, 0));
+
+		checkBulkLoadRecordCounts(variantFmsBulkPostEndpoint, variantFmsTestFilePath + "UD_02_update_with_no_references.json", params);
+
+		RestAssured.given().
+			when().
+			get(variantGetEndpoint + variantId).
+			then().
+			statusCode(200).
+			body("entity.modInternalId", is(variantId)).
+			body("entity.taxon.curie", is("NCBITaxon:6239")).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.variantType.curie", is("SO:1000008")).
+			body("entity.synonyms", is(List.of("Syn 3", "Syn 4"))).
+			body("entity.sourceGeneralConsequence.curie", is("SO:0001578")).
+			body("entity.curatedVariantGenomicLocations", hasSize(1)).
+			body("entity.curatedVariantGenomicLocations[0].hgvs", is("NC_003279.8:g.1A>T")).
+			body("entity.curatedVariantGenomicLocations[0].relation.name", is("located_on")).
+			body("entity.curatedVariantGenomicLocations[0].variantGenomicLocationAssociationObject.name", is("I")).
+			body("entity.curatedVariantGenomicLocations[0].start", is(1)).
+			body("entity.curatedVariantGenomicLocations[0].end", is(1000)).
+			body("entity.alleleVariantAssociations", hasSize(1)).
+			body("entity.alleleVariantAssociations[0].relation.name", is("has_variant")).
+			body("entity.alleleVariantAssociations[0].alleleAssociationSubject.primaryExternalId", is("WB:AlleleWithVar2")).
+			body("entity.relatedNotes", hasSize(1)).
+			body("entity.relatedNotes[0].internal", is(false)).
+			body("entity.relatedNotes[0].freeText", is("This is an updated test note.")).
+			body("entity.relatedNotes[0].noteType.name", is("comment")).
+			body("entity.relatedNotes[0].references[0].curie", is(reference2)).
+			body("entity.crossReferences", hasSize(1)).
+			body("entity.crossReferences[0].referencedCurie", is("TEST:WBVar00252637")).
+			body("entity.crossReferences[0].displayName", is("TEST:WBVar00252637")).
+			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage")).
+			body("entity.references", is(nullValue()));
 	}
 
 }

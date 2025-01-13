@@ -1,16 +1,16 @@
 [
 	{
-		"alleleId": "WB:AlleleWithVar2",
+		"alleleId": "WB:AlleleWithVar1",
 		"sequenceOfReferenceAccessionNumber": "RefSeq:NC_003279.8",
 		"start": 1,
 		"end": 1000,
 		"genomicReferenceSequence": "A",
 		"genomicVariantSequence": "T",
-		"type": "SO:1000008",
-		"consequence": "SO:0001578",
+		"type": "SO:1000002",
+		"consequence": "SO:0001587",
 		"references": [
 			{
-				"publicationId": "PMID:009",
+				"publicationId": "PMID:unknown",
 				"crossReference": {
 					"id": "WB:WBPaper00042242",
 					"pages": [
@@ -21,10 +21,10 @@
 		],
 		"notes": [
 			{
-				"note": "This is an updated test note.",
+				"note": "This is a test note.",
 				"references": [
 					{
-						"publicationId": "PMID:25920551",
+						"publicationId": "PMID:25920550",
 						"crossReference": {
 							"id": "WB:WBPaper00042241",
 							"pages": [
@@ -35,16 +35,16 @@
 				]
 			}
 		],
-		"synonyms" : [
-		  "Syn 3","Syn 4"
-		],
 		"crossReferences": [
 			{
-				"id": "TEST:WBVar00252637",
+				"id": "TEST:WBVar00252636",
 				"pages": [
 					"homepage"
 				]
 			}
+		],
+		"synonyms" : [
+			"Syn 1","Syn 2"
 		]
 	}
 ]

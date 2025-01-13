@@ -67,7 +67,7 @@ public class Reference extends InformationContentEntity {
 	 * Retrieve PUB MOD ID
 	 */
 	@Transient
-	@JsonIgnore
+	@JsonView(View.ForPublic.class)
 	public String getPubModID() {
 		return getReferenceID(false);
 	}
