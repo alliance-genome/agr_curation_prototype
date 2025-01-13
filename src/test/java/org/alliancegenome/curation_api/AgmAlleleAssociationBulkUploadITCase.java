@@ -11,7 +11,7 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -61,7 +61,7 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 	private void loadRequiredEntities() throws Exception {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		DataProvider dataProvider = createDataProvider("ZFIN", false);
+		Organization dataProvider = getOrganization("ZFIN");
 		allele = createAllele(alleleCurie, alleleCurie, "NCBITaxon:7955", symbolNameType, false, dataProvider);
 		agm = getAffectedGenomicModel(agmCurie);
 	}
