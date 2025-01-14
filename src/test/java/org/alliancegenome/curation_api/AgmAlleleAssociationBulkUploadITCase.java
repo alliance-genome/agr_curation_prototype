@@ -81,7 +81,7 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 			body("entity.relation.name", is(relationName)).
 			body("entity.agmAlleleAssociationObject.primaryExternalId", is(alleleCurie)).
 			body("entity.agmAssociationSubject.primaryExternalId", is(agmCurie)).
-			body("entity.zygosity", is(zygosityCurie)).
+			body("entity.zygosity.name", is(zygosityCurie)).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
 			body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
@@ -98,7 +98,7 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 			body("entity.components[0].relation.name", is(relationName)).
 			body("entity.components[0].agmAlleleAssociationObject.primaryExternalId", is(alleleCurie)).
 			body("entity.components[0].agmAssociationSubject", not(hasKey("agmAlleles"))).
-			body("entity.components[0].zygosity", is(zygosityCurie));
+			body("entity.components[0].zygosity.name", is(zygosityCurie));
 
 	}
 
@@ -116,7 +116,7 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 				body("entity.relation.name", is(relationName)).
 				body("entity.agmAlleleAssociationObject.primaryExternalId", is(alleleCurie)).
 				body("entity.agmAssociationSubject.primaryExternalId", is(agmCurie)).
-				body("entity.zygosity", is(zygosityCurie)).
+				body("entity.zygosity.name", is(zygosityCurie)).
 				body("entity.internal", is(false)).
 				body("entity.obsolete", is(false)).
 				body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
@@ -139,7 +139,6 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(agmAlleleAssociationBulkPostEndpoint, agmAlleleAssociationTestFilePath + "MR_01_no_subject.json");
 		checkFailedBulkLoad(agmAlleleAssociationBulkPostEndpoint, agmAlleleAssociationTestFilePath + "MR_02_no_relation.json");
 		checkFailedBulkLoad(agmAlleleAssociationBulkPostEndpoint, agmAlleleAssociationTestFilePath + "MR_03_no_object.json");
-		checkFailedBulkLoad(agmAlleleAssociationBulkPostEndpoint, agmAlleleAssociationTestFilePath + "MR_04_no_zygosity_curie.json");
 	}
 
 	@Test
@@ -148,7 +147,6 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(agmAlleleAssociationBulkPostEndpoint, agmAlleleAssociationTestFilePath + "ER_01_empty_subject.json");
 		checkFailedBulkLoad(agmAlleleAssociationBulkPostEndpoint, agmAlleleAssociationTestFilePath + "ER_02_empty_relation.json");
 		checkFailedBulkLoad(agmAlleleAssociationBulkPostEndpoint, agmAlleleAssociationTestFilePath + "ER_03_empty_object.json");
-		checkFailedBulkLoad(agmAlleleAssociationBulkPostEndpoint, agmAlleleAssociationTestFilePath + "ER_04_empty_zygosity_curie.json");
 	}
 
 	@Test
