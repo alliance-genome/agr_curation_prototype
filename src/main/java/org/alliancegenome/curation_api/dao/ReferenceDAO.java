@@ -1,13 +1,19 @@
 package org.alliancegenome.curation_api.dao;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Reference;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class ReferenceDAO extends BaseSQLDAO<Reference> {
@@ -37,7 +43,7 @@ public class ReferenceDAO extends BaseSQLDAO<Reference> {
 		jpqlQuery.executeUpdate();
 	}
 
-	public HashMap<String, Reference> getReferenceMap() {
+	public HashMap<String, Reference> getReferenceMap(boolean withCrossReferences) {
 		HashMap<String, Reference> referenceIdMap = new HashMap<>();
 		Query q = entityManager.createNativeQuery("""
 					SELECT ref.id, cr.referencedcurie
@@ -49,10 +55,12 @@ public class ReferenceDAO extends BaseSQLDAO<Reference> {
 		Set<Long> refIDs = ids.stream().map(object -> (Long) object[0]).collect(Collectors.toSet());
 		Map<Long, List<Object[]>> idMap = ids.stream().collect(Collectors.groupingBy(o -> (Long) o[0]));
 		List<Reference> refs = new ArrayList<>();
-		refIDs.forEach(id -> {
-			Reference reference = entityManager.getReference(Reference.class, id);
-			// populate cross references
-			reference.getCrossReferences().size();
+		Log.info("Caching: " + refIDs.size() + " references into memory");
+		for (Long id: refIDs) {
+			Reference reference = getShallowEntity(Reference.class, id);
+			if (withCrossReferences) {
+				reference.getCrossReferences().size();
+			}
 			refs.add(reference);
 			referenceIdMap.put(String.valueOf(id), reference);
 			if (idMap.get(id) != null) {
@@ -60,32 +68,9 @@ public class ReferenceDAO extends BaseSQLDAO<Reference> {
 					referenceIdMap.put((String) objects[1], reference);
 				});
 			}
-		});
+		}
+		Log.info("Caching references finished");
 		return referenceIdMap;
 	}
 
-	public HashMap<String, Reference> getShallowReferenceMap() {
-		HashMap<String, Reference> referenceIdMap = new HashMap<>();
-		Query q = entityManager.createNativeQuery("""
-					SELECT ref.id, cr.referencedcurie
-					FROM Reference as ref, reference_crossreference as assoc, Crossreference as cr
-					where assoc.reference_id = ref.id
-					and assoc.crossreferences_id = cr.id
-			""");
-		List<Object[]> ids = q.getResultList();
-		Set<Long> refIDs = ids.stream().map(object -> (Long) object[0]).collect(Collectors.toSet());
-		Map<Long, List<Object[]>> idMap = ids.stream().collect(Collectors.groupingBy(o -> (Long) o[0]));
-		List<Reference> refs = new ArrayList<>();
-		refIDs.forEach(id -> {
-			Reference reference = getShallowEntity(Reference.class, id);
-			refs.add(reference);
-			referenceIdMap.put(String.valueOf(id), reference);
-			if (idMap.get(id) != null) {
-				idMap.get(id).forEach(objects -> {
-					referenceIdMap.put((String) objects[1], reference);
-				});
-			}
-		});
-		return referenceIdMap;
-	}
 }
