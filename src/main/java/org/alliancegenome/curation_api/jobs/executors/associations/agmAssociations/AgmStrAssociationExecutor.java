@@ -51,7 +51,8 @@ public class AgmStrAssociationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.setCount(associations.size());
 		updateHistory(bulkLoadFileHistory);
 		
-		boolean success = runLoad(agmStrAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
+		String countType = "AGM Sequence Targeting Reagent Associations";
+		boolean success = runLoad(agmStrAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countType);
 		if (success && cleanUp) {
 			runCleanup(agmStrAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "agm str association");
 		}

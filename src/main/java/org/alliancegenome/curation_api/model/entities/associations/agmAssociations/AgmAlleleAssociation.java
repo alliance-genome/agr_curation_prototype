@@ -51,7 +51,7 @@ public class AgmAlleleAssociation extends Association {
 	@IndexedEmbedded(includePaths = {
 		"curie", "alleleSymbol.displayText", "alleleSymbol.formatText", "alleleFullName.displayText", "alleleFullName.formatText",
 		"curie_keyword", "alleleSymbol.displayText_keyword", "alleleSymbol.formatText_keyword", "alleleFullName.displayText_keyword",
-		"alleleFullName.formatText_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword" })
+		"alleleFullName.formatText_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
@@ -60,7 +60,7 @@ public class AgmAlleleAssociation extends Association {
 
 	@IndexedEmbedded(includePaths = {
 		"curie", "name", "curie_keyword", "name_keyword",
-		"modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword" })
+		"primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword" })
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({"components", "constructGenomicEntityAssociations", "agmSequenceTargetingReagentAssociations"})

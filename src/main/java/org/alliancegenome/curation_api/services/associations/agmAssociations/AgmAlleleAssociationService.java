@@ -26,13 +26,12 @@ import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.associations.agmAssociations.AgmAlleleAssociationDTOValidator;
 
+import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @RequestScoped
 public class AgmAlleleAssociationService extends BaseAssociationDTOCrudService<AgmAlleleAssociation, AgmAlleleAssociationDTO, AgmAlleleAssociationDAO> implements BaseUpsertServiceInterface<AgmAlleleAssociation, AgmAlleleAssociationDTO> {
 	
@@ -83,7 +82,7 @@ public class AgmAlleleAssociationService extends BaseAssociationDTOCrudService<A
 				response.addErrorMessage("id", errorMessage);
 				throw new ApiErrorException(response);
 			}
-			log.error(errorMessage);
+			Log.error(errorMessage);
 			return null;
 		}
 		if (deprecate) {
