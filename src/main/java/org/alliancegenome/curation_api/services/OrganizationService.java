@@ -1,17 +1,19 @@
 package org.alliancegenome.curation_api.services;
 
-import io.quarkus.logging.Log;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import java.util.Date;
+import java.util.HashMap;
+
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
+import org.alliancegenome.curation_api.model.entities.AllianceMember;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
-import java.util.Date;
-import java.util.HashMap;
+import io.quarkus.logging.Log;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class OrganizationService extends BaseEntityCrudService<Organization, OrganizationDAO> {
@@ -78,6 +80,15 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 		ObjectResponse<Organization> response = new ObjectResponse<>();
 		response.setEntity(org);
 		return response;
+	}
+	
+	public Organization getAffiliatedModDataProvider() {
+		AllianceMember member = authenticatedPerson.getAllianceMember();
+		if (member != null) {
+			return member;
+		}
+			
+		return organizationDAO.getOrCreateOrganization("Alliance");
 	}
 
 }

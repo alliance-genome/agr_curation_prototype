@@ -150,7 +150,7 @@ describe('GenomicEntityListTemplate', () => {
 				geneFullName: {
 					displayText: 'Gene Full Name 2',
 				},
-				modEntityId: 'ID2',
+				primaryExternalId: 'ID2',
 			},
 			{
 				geneSymbol: {

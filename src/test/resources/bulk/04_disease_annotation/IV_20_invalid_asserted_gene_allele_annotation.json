@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "DATEST:IV20",
+    "primary_external_id": "DATEST:IV20",
     "internal": false,
     "obsolete": false,
     "allele_identifier": "DATEST:Allele0001",

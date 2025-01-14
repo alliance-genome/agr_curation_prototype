@@ -1,7 +1,12 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.zip.GZIPInputStream;
+
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -18,12 +23,8 @@ import org.alliancegenome.curation_api.services.GeneExpressionExperimentService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.zip.GZIPInputStream;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class GeneExpressionExecutor extends LoadFileExecutor {
@@ -109,6 +110,10 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 				addException(history, new ObjectUpdateException.ObjectUpdateExceptionData(experimentId, e.getMessage(), e.getStackTrace()));
 			}
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				history.setErrorMessage("Thread isInterrupted");
+				throw new RuntimeException("Thread isInterrupted");
+			}
 		}
 		updateHistory(history);
 		ph.finishProcess();

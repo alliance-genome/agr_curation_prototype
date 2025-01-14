@@ -36,7 +36,7 @@ describe('<AffectedGenomicModelTable />', () => {
 
 	it('Contains Correct Table Data', async () => {
 		let result = await renderWithClient(<AffectedGenomicModelTable />);
-		const modEntityId = await result.findByText(/WB:WBStrain00051221/i);
-		expect(modEntityId).toBeInTheDocument();
+		const primaryExternalId = await result.findByText(/WB:WBStrain00051221/i);
+		expect(primaryExternalId).toBeInTheDocument();
 	});
 });

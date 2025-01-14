@@ -199,6 +199,8 @@ public class BulkLoadProcessor {
 		bulkLoadFileHistory.setLoadStarted(LocalDateTime.now());
 		bulkLoadFileHistory.setErrorMessage(null);
 		bulkLoadFileHistory.setLoadFinished(null);
+		Thread.currentThread().setName("BulkLoad Thread " + bulkLoadFileHistory.getId());
+		bulkLoadFileHistory.setRunningThreadName(Thread.currentThread().getName()); // Sets the thread name so that it can be stopped later
 		bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 		bulkLoadFileHistory.getBulkLoad().setBulkloadStatus(bulkLoadFileHistory.getBulkloadStatus());
 		bulkLoadDAO.merge(bulkLoadFileHistory.getBulkLoad());
@@ -218,6 +220,8 @@ public class BulkLoadProcessor {
 		if (status != JobStatus.FINISHED) {
 			slackNotifier.slackalert(bulkLoadFileHistory);
 		}
+		
+		bulkLoadFileHistory.setRunningThreadName(null); // Clears the name once finished
 		bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 		bulkLoadFileHistory.getBulkLoad().setBulkloadStatus(status);
 		bulkLoadDAO.merge(bulkLoadFileHistory.getBulkLoad());

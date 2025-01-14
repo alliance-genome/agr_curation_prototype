@@ -37,7 +37,9 @@ public class StartLoadProcessor extends BulkLoadProcessor {
 		} catch (Exception e) {
 			endLoad(bulkLoadFileHistory, "Failed loading: " + bulkLoadFileHistory.getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFileHistory.getErrorMessage(), JobStatus.FAILED);
 			Log.error("Load File: " + bulkLoadFileHistory.getBulkLoad().getName() + " is failed");
-			e.printStackTrace();
+			if (!bulkLoadFileHistory.getErrorMessage().equals("Thread isInterrupted")) {
+				e.printStackTrace();
+			}
 		}
 
 	}

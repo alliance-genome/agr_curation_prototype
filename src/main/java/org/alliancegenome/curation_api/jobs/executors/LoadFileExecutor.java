@@ -1,8 +1,14 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.quarkus.logging.Log;
-import jakarta.inject.Inject;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
+
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
@@ -29,10 +35,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.FileInputStream;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.quarkus.logging.Log;
+import jakarta.inject.Inject;
 
 public class LoadFileExecutor {
 
@@ -200,12 +206,26 @@ public class LoadFileExecutor {
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, String countType) {
 		return runLoad(service, history, dataProvider, objectList, idsAdded, true, countType);
 	}
-
+	
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType) {
+		String dataType = "";
+		if (CollectionUtils.isNotEmpty(objectList)) {
+			dataType = objectList.get(0).getClass().getSimpleName();
+			dataType = dataType.replace("FmsDTO", "");
+			dataType = dataType.replace("DTO", "");
+		}
+		return runLoad(service, history, dataProvider, objectList, idsAdded, terminateFailing, countType, dataType);
+	}
+
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType, String dataType) {
+		if (Thread.currentThread().isInterrupted()) {
+			history.setErrorMessage("Thread isInterrupted");
+			throw new RuntimeException("Thread isInterrupted");
+		}
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(objectList)) {
-			String loadMessage = objectList.get(0).getClass().getSimpleName() + " update";
+			String loadMessage = dataType + " update";
 			if (dataProvider != null) {
 				loadMessage = loadMessage + " for " + dataProvider.name();
 			}
@@ -239,6 +259,10 @@ public class LoadFileExecutor {
 					return false;
 				}
 				ph.progressProcess();
+				if (Thread.currentThread().isInterrupted()) {
+					history.setErrorMessage("Thread isInterrupted");
+					throw new RuntimeException("Thread isInterrupted");
+				}
 			}
 			updateHistory(history);
 			updateExceptions(history);
@@ -253,6 +277,10 @@ public class LoadFileExecutor {
 
 	// The following methods are for bulk validation
 	protected <S extends BaseEntityCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString, Boolean deprecate) {
+		if (Thread.currentThread().isInterrupted()) {
+			history.setErrorMessage("Thread isInterrupted");
+			throw new RuntimeException("Thread isInterrupted");
+		}
 		Log.debug("runLoad: After: " + dataProviderName + " " + annotationIdsAfter.size());
 
 		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
@@ -270,12 +298,13 @@ public class LoadFileExecutor {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 		ph.startProcess("Deletion/deprecation of: " + dataProviderName + " " + loadTypeString, idsToRemove.size());
-		//updateHistory(history);
+		updateHistory(history);
 		for (Long id : idsToRemove) {
 			try {
 				service.deprecateOrDelete(id, false, loadDescription, deprecate);
 				history.incrementCompleted(countType);
 			} catch (Exception e) {
+				e.printStackTrace();
 				history.incrementFailed(countType);
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
 			}
@@ -285,6 +314,10 @@ public class LoadFileExecutor {
 				break;
 			}
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				history.setErrorMessage("Thread isInterrupted");
+				throw new RuntimeException("Thread isInterrupted");
+			}
 		}
 		updateHistory(history);
 		updateExceptions(history);

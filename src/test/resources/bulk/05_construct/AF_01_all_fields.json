@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "WB:Construct0001",
+    "primary_external_id": "WB:Construct0001",
     "internal": true,
     "obsolete": true,
     "created_by_curie": "CONSTRUCTTEST:Person0001",

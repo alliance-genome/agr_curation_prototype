@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "VARIANTTEST:MR09",
+    "primary_external_id": "VARIANTTEST:MR09",
     "taxon_curie": "NCBITaxon:6239",
     "variant_type_curie": "SO:VT001",
     "variant_status_name": "status_test",

@@ -166,11 +166,11 @@ export default function AlleleDetailPage() {
 
 	const headerText = () => {
 		let prefix = 'Allele: ';
-		if (alleleState.allele?.alleleSymbol?.displayText && alleleState.allele?.modEntityId) {
-			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleState.allele.modEntityId})`;
+		if (alleleState.allele?.alleleSymbol?.displayText && alleleState.allele?.primaryExternalId) {
+			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleState.allele.primaryExternalId})`;
 		}
-		if (alleleState.allele?.modEntityId) {
-			return `${prefix} ${alleleState.allele.modEntityId}`;
+		if (alleleState.allele?.primaryExternalId) {
+			return `${prefix} ${alleleState.allele.primaryExternalId}`;
 		}
 		return 'Allele Detail Page';
 	};
@@ -203,8 +203,8 @@ export default function AlleleDetailPage() {
 					<Divider />
 
 					<IdentifierFormTemplate
-						identifier={alleleState.allele?.modEntityId}
-						label="MOD Entity ID"
+						identifier={alleleState.allele?.primaryExternalId}
+						label="Primary External ID"
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -311,7 +311,7 @@ export default function AlleleDetailPage() {
 					<Divider />
 
 					<DataProviderFormTemplate
-						dataProvider={alleleState.allele?.dataProvider?.sourceOrganization?.abbreviation}
+						dataProvider={alleleState.allele?.dataProvider?.abbreviation}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}

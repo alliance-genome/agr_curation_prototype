@@ -56,7 +56,7 @@ public class SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 				statusCode(200).
 				body("totalResults", is(1)).
 				body("results", hasSize(1)).
-				body("results[0].modEntityId", is("ZFIN:ZDB-TALEN-180503-1")).
+				body("results[0].primaryExternalId", is("ZFIN:ZDB-TALEN-180503-1")).
 				body("results[0].name", is("TALEN-inhbaa")).
 				body("results[0].taxon.curie", is("NCBITaxon:7955")).
 				body("results[0].synonyms", hasSize(1)).
@@ -116,7 +116,7 @@ public class SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results", hasSize(1)).
-			body("results[0]" , hasKey("modEntityId")).
+			body("results[0]" , hasKey("primaryExternalId")).
 			body("results[0]" , hasKey("name")).
 			body("results[0]" , hasKey("taxon")).
 			body("results[0]" , hasKey("synonyms")).

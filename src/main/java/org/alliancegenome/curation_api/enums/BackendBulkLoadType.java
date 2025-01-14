@@ -17,6 +17,7 @@ public enum BackendBulkLoadType {
 	ORTHOLOGY("json"),
 	ALLELE_ASSOCIATION("json"),
 	CONSTRUCT_ASSOCIATION("json"),
+	AGM_ASSOCIATION("json"),
 	VARIANT("json"),
 	VARIATION("json"), // FMS variants as opposed to direct submission for VARIANT
 	VEPTRANSCRIPT("tsv"),
@@ -30,6 +31,7 @@ public enum BackendBulkLoadType {
 	GFF_TRANSCRIPT("gff"),
 	GFF_GENE("gff"),
 	
+	GEOXREF("xml"),
 	INTERACTION_MOL("tsv"),
 	EXPRESSION_ATLAS("tsv"),
 	GAF("tsv"),

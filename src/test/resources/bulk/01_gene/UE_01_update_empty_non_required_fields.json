@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "GENETEST:Gene0001",
+    "primary_external_id": "GENETEST:Gene0001",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,
@@ -64,6 +64,17 @@
         "date_updated": ""
       }
     ],
+    "note_dtos": [
+      {
+        "free_text": "Test note",
+        "note_type_name": "comment",
+        "created_by_curie": "",
+        "updated_by_curie": "",
+        "date_created": "",
+        "date_updated": "",
+        "evidence_curies": []
+      }
+    ],
     "gene_secondary_id_dtos": [
       {
         "secondary_id": "TEST:Secondary",
@@ -79,13 +90,7 @@
     "data_provider_dto": {
       "internal": false,
       "obsolete": false,
-      "source_organization_abbreviation": "WB",
-      "cross_reference_dto": {
-        "referenced_curie": "TEST:0001",
-        "page_area": "homepage",
-        "display_name": "TEST:0001",
-        "prefix": "TEST"
-      }
+      "source_organization_abbreviation": "WB"
     },
     "cross_reference_dtos": [],
     "gene_type_curie": "SO:0001217"

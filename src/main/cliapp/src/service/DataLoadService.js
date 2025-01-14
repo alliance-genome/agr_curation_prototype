@@ -50,6 +50,10 @@ export class DataLoadService extends BaseAuthService {
 		return this.api.get(`/bulkloadfilehistory/restartloadhistory/${id}`);
 	}
 
+	stopHistoryLoad(id) {
+		return this.api.get(`/bulkloadfilehistory/stoploadhistory/${id}`);
+	}
+
 	getFileHistoryFile(id) {
 		return this.api.get(`/bulkloadfilehistory/${id}`);
 	}
@@ -123,6 +127,7 @@ export class DataLoadService extends BaseAuthService {
 				'CONSTRUCT',
 				'ALLELE_ASSOCIATION',
 				'CONSTRUCT_ASSOCIATION',
+				'AGM_ASSOCIATION',
 			],
 		};
 		return bulkLoadTypes[loadType];

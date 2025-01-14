@@ -1,10 +1,11 @@
 package org.alliancegenome.curation_api.services;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import lombok.extern.jbosslog.JBossLog;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
@@ -17,9 +18,11 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
-@JBossLog
 @RequestScoped
 public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneExpressionExperiment, GeneExpressionExperimentDAO> {
 
@@ -28,7 +31,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 	@Inject GeneService geneService;
 	@Inject MmoTermService mmoTermService;
 	@Inject ReferenceService referenceService;
-	@Inject DataProviderService dataProviderService;
+	@Inject OrganizationService organizationService;
 
 	@Override
 	@PostConstruct
@@ -62,7 +65,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 			geneExpressionExperiment = new GeneExpressionExperiment();
 			geneExpressionExperiment.setUniqueId(experimentId);
 		}
-		geneExpressionExperiment.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));
+		geneExpressionExperiment.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
 		geneExpressionExperiment.setEntityAssayed(geneService.findByIdentifierString(geneId));
 		geneExpressionExperiment.setSingleReference(referenceService.getByCurie(referenceId).getEntity());
 		geneExpressionExperiment.setExpressionAssayUsed(mmoTermService.findByCurie(assayId));

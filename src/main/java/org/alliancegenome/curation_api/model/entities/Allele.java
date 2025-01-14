@@ -178,7 +178,7 @@ public class Allele extends GenomicEntity {
 			"alleleGeneAssociationObject.curie", "alleleGeneAssociationObject.geneSymbol.displayText", "alleleGeneAssociationObject.geneSymbol.formatText", "alleleGeneAssociationObject.geneFullName.displayText",
 			"alleleGeneAssociationObject.geneFullName.formatText", "alleleGeneAssociationObject.curie_keyword", "alleleGeneAssociationObject.geneSymbol.displayText_keyword",
 			"alleleGeneAssociationObject.geneSymbol.formatText_keyword", "alleleGeneAssociationObject.geneFullName.displayText_keyword", "alleleGeneAssociationObject.geneFullName.formatText_keyword",
-			"alleleGeneAssociationObject.modEntityId", "alleleGeneAssociationObject.modInternalId", "alleleGeneAssociationObject.modEntityId_keyword", "alleleGeneAssociationObject.modInternalId_keyword"
+			"alleleGeneAssociationObject.primaryExternalId", "alleleGeneAssociationObject.modInternalId", "alleleGeneAssociationObject.primaryExternalId_keyword", "alleleGeneAssociationObject.modInternalId_keyword"
 		}
 	)
 	@OneToMany(mappedBy = "alleleAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -188,7 +188,7 @@ public class Allele extends GenomicEntity {
 	@IndexedEmbedded(
 		includePaths = {
 			"alleleVariantAssociationObject.curie", "alleleGeneAssociationObject.curie_keyword",
-			"alleleVariantAssociationObject.modEntityId", "alleleVariantAssociationObject.modEntityId_keyword",
+			"alleleVariantAssociationObject.primaryExternalId", "alleleVariantAssociationObject.primaryExternalId_keyword",
 			"alleleVariantAssociationObject.modInternalId", "alleleVariantAssociationObject.modInternalId_keyword"
 		}
 	)
@@ -208,9 +208,9 @@ public class Allele extends GenomicEntity {
 
 	@IndexedEmbedded(includePaths = {
 		"constructAssociationSubject.curie", "constructAssociationSubject.constructSymbol.displayText", "constructAssociationSubject.constructSymbol.formatText",
-		"constructAssociationSubject.constructFullName.displayText", "constructAssociationSubject.constructFullName.formatText", "constructAssociationSubject.modEntityId",
+		"constructAssociationSubject.constructFullName.displayText", "constructAssociationSubject.constructFullName.formatText", "constructAssociationSubject.primaryExternalId",
 		"constructAssociationSubject.curie_keyword", "constructAssociationSubject.constructSymbol.displayText_keyword", "constructAssociationSubject.constructSymbol.formatText_keyword",
-		"constructAssociationSubject.constructFullName.displayText_keyword", "constructAssociationSubject.constructFullName.formatText_keyword", "constructAssociationSubject.modEntityId_keyword"
+		"constructAssociationSubject.constructFullName.displayText_keyword", "constructAssociationSubject.constructFullName.formatText_keyword", "constructAssociationSubject.primaryExternalId_keyword"
 	})
 	@OneToMany(mappedBy = "constructGenomicEntityAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })

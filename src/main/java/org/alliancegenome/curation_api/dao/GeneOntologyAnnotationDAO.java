@@ -36,7 +36,7 @@ public class GeneOntologyAnnotationDAO extends BaseSQLDAO<GeneOntologyAnnotation
 
 	public Map<Long, GeneOntologyAnnotationDTO> getAllGafIdsPerProvider(Organization sourceOrganization) {
 		Query query = entityManager.createNativeQuery("""
-			select gga.id, be.modentityid, ot.curie
+			select gga.id, be.primaryexternalid, ot.curie
 			from GeneOntologyAnnotation as gga , BiologicalEntity as be, ontologyterm as ot,
 			species as spec
 			where gga.singlegene_id = be.id

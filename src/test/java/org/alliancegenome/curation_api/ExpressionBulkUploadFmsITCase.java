@@ -1,23 +1,34 @@
 package org.alliancegenome.curation_api;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusIntegrationTest;
-import io.restassured.RestAssured;
-import io.restassured.config.HttpClientConfig;
-import io.restassured.config.RestAssuredConfig;
-import org.alliancegenome.curation_api.base.BaseITCase;
-import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
-import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.junit.jupiter.api.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
+import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.restassured.RestAssured;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
 
 
 @QuarkusIntegrationTest
@@ -84,10 +95,10 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.statusCode(200)
 			.body("totalResults", is(1))
 			.body("results", hasSize(1))
-			.body("results[0].dataProvider.sourceOrganization.abbreviation", is("ZFIN"))
+			.body("results[0].dataProvider.abbreviation", is("ZFIN"))
 			.body("results[0].uniqueId", is(experimentUniqueIdExpected))
 			.body("results[0].expressionAnnotations.size()", is(1))
-			.body("results[0].entityAssayed.modEntityId", is(gene))
+			.body("results[0].entityAssayed.primaryExternalId", is(gene))
 			.body("results[0].singleReference.crossReferences[0].referencedCurie", is(publicationId))
 			.body("results[0].expressionAssayUsed.curie", is(mmoTerm))
 			.body("results[0].obsolete", is(false))
@@ -103,8 +114,8 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("totalResults", is(1))
 			.body("results", hasSize(1))
 			.body("results[0].dateCreated", is("2024-01-17T15:31:34Z"))
-			.body("results[0].dataProvider.sourceOrganization.abbreviation", is("ZFIN"))
-			.body("results[0].expressionAnnotationSubject.modEntityId", is(gene))
+			.body("results[0].dataProvider.abbreviation", is("ZFIN"))
+			.body("results[0].expressionAnnotationSubject.primaryExternalId", is(gene))
 			.body("results[0].expressionAssayUsed.curie", is(mmoTerm))
 			.body("results[0].whereExpressedStatement", is("trunk"))
 			.body("results[0].whenExpressedStageName", is("stage1"))
@@ -178,7 +189,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	}
 
 	private void loadRequiredEntities() throws Exception {
-		DataProvider dataProvider = createDataProvider("ZFIN", false);
+		Organization dataProvider = getOrganization("ZFIN");
 		Vocabulary vocabulary1 = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(vocabulary1, "nomenclature_symbol");
 		createGene(gene, taxon, symbolTerm, false, dataProvider);
@@ -191,7 +202,6 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		Vocabulary vocabulary2 = createVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, false);
 		createVocabularyTerm(vocabulary2, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM, false);
 		Vocabulary stageUberonTermVocabulary = getVocabulary(VocabularyConstants.STAGE_UBERON_SLIM_TERMS);
-		Vocabulary spatialExpressionQualifierVocabulary = getVocabulary(VocabularyConstants.SPATIAL_EXPRESSION_QUALIFIERS);
 		VocabularyTermSet anatatomicalStructureQualifierTermset = getVocabularyTermSet(VocabularyConstants.ANATOMICAL_STRUCTURE_QUALIFIER);
 		VocabularyTermSet anatatomicalSubstructureQualifierTermset = getVocabularyTermSet(VocabularyConstants.ANATOMICAL_SUBSTRUCTURE_QUALIFIER);
 		VocabularyTermSet cellularComponentQualifierTermset = getVocabularyTermSet(VocabularyConstants.CELLULAR_COMPONENT_QUALIFIER);

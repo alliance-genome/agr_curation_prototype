@@ -114,7 +114,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 
 	public Map<String, Long> getAllGeneIdsPerSpecies(Species species) {
 		String sql = """
-						select g.id, be.modentityid, s.displaytext
+						select g.id, be.primaryexternalid, s.displaytext
 						from biologicalentity as be, gene as g, slotannotation as s
 						where be.taxon_id = :ID
 						AND be.id = g.id

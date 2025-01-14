@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "DATEST:IV23",
+    "primary_external_id": "DATEST:IV23",
     "internal": false,
     "obsolete": false,
     "agm_identifier": "DATEST:AGM0001",

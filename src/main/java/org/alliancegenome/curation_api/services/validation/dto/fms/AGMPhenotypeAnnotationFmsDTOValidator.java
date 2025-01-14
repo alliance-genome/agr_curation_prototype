@@ -21,6 +21,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
+import org.alliancegenome.curation_api.services.helpers.crossReferences.GenePhenotypeAnnotationXrefHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,6 +34,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
 	@Inject GenomicEntityService genomicEntityService;
 	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject GenePhenotypeAnnotationXrefHelper xrefHelper;
 
 	public AGMPhenotypeAnnotation validatePrimaryAnnotation(AffectedGenomicModel subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
@@ -82,7 +84,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		Reference reference = refResponse.getEntity();
 		String refString = reference == null ? null : reference.getCurie();
 		
-		List<AGMPhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(agmPhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getModEntityId(), refString);
+		List<AGMPhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(agmPhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getPrimaryExternalId(), refString);
 		
 		if (CollectionUtils.isEmpty(primaryAnnotations)) {
 			PhenotypeFmsDTO inferredPrimaryDTO = createPrimaryAnnotationDTO(dto, primaryAnnotationSubject.getIdentifier());
@@ -104,15 +106,16 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 			if (inferredOrAssertedEntity == null) {
 				apaResponse.addErrorMessage("objectId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
 			} else if (inferredOrAssertedEntity instanceof Gene) {
+				Gene inferredOrAssertedGene = xrefHelper.addGenePhenotypeCrossReference(dataProvider, (Gene) inferredOrAssertedEntity);
 				for (AGMPhenotypeAnnotation primaryAnnotation : primaryAnnotations) {
 					if (dataProvider.hasInferredGenePhenotypeAnnotations) {
-						primaryAnnotation.setInferredGene((Gene) inferredOrAssertedEntity);
+						primaryAnnotation.setInferredGene(inferredOrAssertedGene);
 					} else if (dataProvider.hasAssertedGenePhenotypeAnnotations) {
 						List<Gene> assertedGenes = primaryAnnotation.getAssertedGenes();
 						if (assertedGenes == null) {
 							assertedGenes = new ArrayList<>();
 						}
-						assertedGenes.add((Gene) inferredOrAssertedEntity);
+						assertedGenes.add(inferredOrAssertedGene);
 						primaryAnnotation.setAssertedGenes(assertedGenes);
 					} else {
 						apaResponse.addErrorMessage("objectId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");

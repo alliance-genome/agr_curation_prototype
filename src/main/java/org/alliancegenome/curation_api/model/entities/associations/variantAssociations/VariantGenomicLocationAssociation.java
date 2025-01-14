@@ -37,7 +37,7 @@ import lombok.ToString;
 public abstract class VariantGenomicLocationAssociation extends VariantLocationAssociation {
 
 	@IndexedEmbedded(includePaths = {
-		"curie", "curie_keyword", "modEntityId", "modEntityId_keyword",
+		"curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword",
 		"modInternalId", "modInternalId_keyword", "name", "name_keyword"
 	})
 	@ManyToOne

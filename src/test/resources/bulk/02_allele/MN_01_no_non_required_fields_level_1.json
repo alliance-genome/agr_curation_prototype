@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "ALLELETEST:MN01",
+    "primary_external_id": "ALLELETEST:MN01",
     "taxon_curie": "NCBITaxon:6239",
     "allele_symbol_dto": {
       "display_text": "Ta1",
@@ -21,13 +21,7 @@
     "data_provider_dto": {
       "internal": false,
       "obsolete": false,
-      "source_organization_abbreviation": "WB",
-      "cross_reference_dto": {
-        "referenced_curie": "TEST:0001",
-        "page_area": "homepage",
-        "display_name": "TEST:0001",
-        "prefix": "TEST"
-      }
+      "source_organization_abbreviation": "WB"
     }
   }
 ]

@@ -55,7 +55,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 			if (construct == null) {
 				assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE);
 			} else {
-				if (beDataProvider != null && !construct.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
+				if (beDataProvider != null && !construct.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 					assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
 					return null;
 				}

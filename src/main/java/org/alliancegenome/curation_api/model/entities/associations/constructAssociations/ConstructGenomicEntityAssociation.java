@@ -40,9 +40,9 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includePaths = {
 		"curie", "constructSymbol.displayText", "constructSymbol.formatText",
-		"constructFullName.displayText", "constructFullName.formatText", "modEntityId", "modInternalId",
+		"constructFullName.displayText", "constructFullName.formatText", "primaryExternalId", "modInternalId",
 		"curie_keyword", "constructSymbol.displayText_keyword", "constructSymbol.formatText_keyword",
-		"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "modEntityId_keyword", "modInternalId_keyword"})
+		"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "primaryExternalId_keyword", "modInternalId_keyword"})
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	@JsonIgnoreProperties("constructGenomicEntityAssociations")

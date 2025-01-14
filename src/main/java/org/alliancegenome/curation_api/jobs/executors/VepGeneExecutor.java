@@ -70,6 +70,11 @@ public class VepGeneExecutor extends LoadFileExecutor {
 	}
 	
 	protected boolean runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<VepTxtDTO> objectList, List<Long> idsUpdated) {
+		if (Thread.currentThread().isInterrupted()) {
+			history.setErrorMessage("Thread isInterrupted");
+			throw new RuntimeException("Thread isInterrupted");
+		}
+		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(objectList)) {
@@ -106,6 +111,10 @@ public class VepGeneExecutor extends LoadFileExecutor {
 					return false;
 				}
 				ph.progressProcess();
+				if (Thread.currentThread().isInterrupted()) {
+					history.setErrorMessage("Thread isInterrupted");
+					throw new RuntimeException("Thread isInterrupted");
+				}
 			}
 			updateHistory(history);
 			updateExceptions(history);
@@ -147,6 +156,10 @@ public class VepGeneExecutor extends LoadFileExecutor {
 				break;
 			}
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				history.setErrorMessage("Thread isInterrupted");
+				throw new RuntimeException("Thread isInterrupted");
+			}
 		}
 		updateHistory(history);
 		updateExceptions(history);

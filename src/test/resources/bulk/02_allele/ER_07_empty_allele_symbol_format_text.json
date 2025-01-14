@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "ALLELETEST:ER07",
+    "primary_external_id": "ALLELETEST:ER07",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": false,

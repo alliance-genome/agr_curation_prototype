@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "ALLELETEST:MR02",
+    "primary_external_id": "ALLELETEST:MR02",
     "internal": true,
     "obsolete": false,
     "created_by_curie": "ALLELETEST:Person0001",

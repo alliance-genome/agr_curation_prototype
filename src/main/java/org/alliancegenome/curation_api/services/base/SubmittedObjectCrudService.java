@@ -38,7 +38,7 @@ public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T ex
 			return findByCurie(id);
 		}
 
-		return findByAlternativeFields(List.of("modEntityId", "modInternalId"), id);
+		return findByAlternativeFields(List.of("primaryExternalId", "modInternalId"), id);
 	}
 	
 	public List<Long> findIdsByIdentifierString(String id) {
@@ -49,7 +49,7 @@ public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T ex
 			return ids;
 		}
 
-		return findIdsByAlternativeFields(List.of("modEntityId", "modInternalId"), id);
+		return findIdsByAlternativeFields(List.of("primaryExternalId", "modInternalId"), id);
 	}
 	
 	

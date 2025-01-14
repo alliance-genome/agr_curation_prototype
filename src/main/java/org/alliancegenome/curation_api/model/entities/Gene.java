@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -93,8 +94,8 @@ public class Gene extends GenomicEntity {
 	@IndexedEmbedded(
 		includePaths = {"alleleAssociationSubject.curie", "alleleAssociationSubject.alleleSymbol.displayText", "alleleAssociationSubject.alleleSymbol.formatText", "alleleAssociationSubject.alleleFullName.displayText",
 			"alleleAssociationSubject.alleleFullName.formatText", "alleleAssociationSubject.curie_keyword", "alleleAssociationSubject.alleleSymbol.displayText_keyword", "alleleAssociationSubject.alleleSymbol.formatText_keyword",
-			"alleleAssociationSubject.alleleFullName.displayText_keyword", "alleleAssociationSubject.alleleFullName.formatText_keyword", "alleleAssociationSubject.modEntityId", "alleleAssociationSubject.modInternalId",
-			"alleleAssociationSubject.modEntityId_keyword", "alleleAssociationSubject.modInternalId_keyword"
+			"alleleAssociationSubject.alleleFullName.displayText_keyword", "alleleAssociationSubject.alleleFullName.formatText_keyword", "alleleAssociationSubject.primaryExternalId", "alleleAssociationSubject.modInternalId",
+			"alleleAssociationSubject.primaryExternalId_keyword", "alleleAssociationSubject.modInternalId_keyword"
 		}
 	)
 	@OneToMany(mappedBy = "alleleGeneAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -112,7 +113,7 @@ public class Gene extends GenomicEntity {
 	@IndexedEmbedded(
 		includePaths = {
 			"geneGenomicLocationAssociationObject.curie", "geneGenomicLocationAssociationObject.curie_keyword",
-			"geneGenomicLocationAssociationObject.modEntityId", "geneGenomicLocationAssociationObject.modEntityId_keyword",
+			"geneGenomicLocationAssociationObject.primaryExternalId", "geneGenomicLocationAssociationObject.primaryExternalId_keyword",
 			"geneGenomicLocationAssociationObject.modInternalId", "geneGenomicLocationAssociationObject.modInternalId_keyword",
 			"start", "end"
 		}
@@ -124,12 +125,21 @@ public class Gene extends GenomicEntity {
 
 	@IndexedEmbedded(includePaths = {
 		"constructAssociationSubject.curie", "constructAssociationSubject.constructSymbol.displayText", "constructAssociationSubject.constructSymbol.formatText",
-		"constructAssociationSubject.constructFullName.displayText", "constructAssociationSubject.constructFullName.formatText", "constructAssociationSubject.modEntityId",
+		"constructAssociationSubject.constructFullName.displayText", "constructAssociationSubject.constructFullName.formatText", "constructAssociationSubject.primaryExternalId",
 		"constructAssociationSubject.curie_keyword", "constructAssociationSubject.constructSymbol.displayText_keyword", "constructAssociationSubject.constructSymbol.formatText_keyword",
-		"constructAssociationSubject.constructFullName.displayText_keyword", "constructAssociationSubject.constructFullName.formatText_keyword", "constructAssociationSubject.modEntityId_keyword"
+		"constructAssociationSubject.constructFullName.displayText_keyword", "constructAssociationSubject.constructFullName.formatText_keyword", "constructAssociationSubject.primaryExternalId_keyword"
 	})
 	@OneToMany(mappedBy = "constructGenomicEntityAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
+
+	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class, View.GeneView.class })
+	@JoinTable(indexes = {
+		@Index(name = "gene_note_gene_index", columnList = "gene_id"),
+		@Index(name = "gene_note_relatednotes_index", columnList = "relatedNotes_id")})
+	private List<Note> relatedNotes;
 
 }

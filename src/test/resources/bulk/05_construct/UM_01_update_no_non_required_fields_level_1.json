@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "WB:Construct0001",
+    "primary_external_id": "WB:Construct0001",
     "construct_symbol_dto": {
       "display_text": "Ta1",
       "format_text": "Ta<sup>1</sup>",

@@ -14,16 +14,15 @@ import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.inject.Inject;
@@ -36,40 +35,7 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 	@Inject ConditionRelationValidator conditionRelationValidator;
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject AnnotationDAO annotationDAO;
-	@Inject DataProviderService dataProviderService;
-	@Inject DataProviderValidator dataProviderValidator;
-
-	public DataProvider validateDataProvider(Annotation uiEntity, Annotation dbEntity) {
-		String field = "dataProvider";
-
-		if (uiEntity.getDataProvider() == null) {
-			if (dbEntity.getId() == null) {
-				uiEntity.setDataProvider(dataProviderService.createAffiliatedModDataProvider());
-			}
-			if (uiEntity.getDataProvider() == null) {
-				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-				return null;
-			}
-		}
-
-		DataProvider uiDataProvider = uiEntity.getDataProvider();
-		DataProvider dbDataProvider = dbEntity.getDataProvider();
-
-		ObjectResponse<DataProvider> dpResponse = dataProviderValidator.validateDataProvider(uiDataProvider, dbDataProvider, false);
-		if (dpResponse.hasErrors()) {
-			addMessageResponse(field, dpResponse.errorMessagesString());
-			return null;
-		}
-
-		DataProvider validatedDataProvider = dpResponse.getEntity();
-		if (validatedDataProvider.getObsolete() && (dbDataProvider == null || !validatedDataProvider.getId().equals(dbDataProvider.getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return validatedDataProvider;
-	}
-
+	
 	public List<Note> validateRelatedNotes(Annotation uiEntity, Annotation dbEntity, String noteTypeSet) {
 		String field = "relatedNotes";
 
@@ -168,7 +134,7 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 
 	public Reference validateSingleReference(Annotation uiEntity, Annotation dbEntity) {
 		String field = "singleReference";
-		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isBlank(uiEntity.getSingleReference().getCurie())) {
+		if (uiEntity.getSingleReference() == null || StringUtils.isBlank(uiEntity.getSingleReference().getCurie())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
@@ -193,9 +159,9 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 			newEntity = true;
 		}
 		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
-
-		String modEntityId = StringUtils.isNotBlank(uiEntity.getModEntityId()) ? uiEntity.getModEntityId() : null;
-		dbEntity.setModEntityId(modEntityId);
+		
+		String primaryExternalId = StringUtils.isNotBlank(uiEntity.getPrimaryExternalId()) ? uiEntity.getPrimaryExternalId() : null;
+		dbEntity.setPrimaryExternalId(primaryExternalId);
 
 		String modInternalId = StringUtils.isNotBlank(uiEntity.getModInternalId()) ? uiEntity.getModInternalId() : null;
 		dbEntity.setModInternalId(modInternalId);
@@ -203,9 +169,12 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
 		dbEntity.setSingleReference(singleReference);
 
-		DataProvider dataProvider = validateDataProvider(uiEntity, dbEntity);
+		Organization dataProvider = validateDataProvider(uiEntity.getDataProvider(), dbEntity.getDataProvider(), newEntity);
 		dbEntity.setDataProvider(dataProvider);
-
+		
+		CrossReference dataProviderCrossReference = validateDataProviderCrossReference(uiEntity.getDataProviderCrossReference(), dbEntity.getDataProviderCrossReference());
+		dbEntity.setDataProviderCrossReference(dataProviderCrossReference);
+		
 		List<ConditionRelation> conditionRelations = validateConditionRelations(uiEntity, dbEntity);
 		dbEntity.setConditionRelations(conditionRelations);
 

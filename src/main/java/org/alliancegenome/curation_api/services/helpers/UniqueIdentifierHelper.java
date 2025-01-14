@@ -14,8 +14,8 @@ public class UniqueIdentifierHelper {
 	}
 
 	public static <E extends AnnotationDTO> String getIdentifyingField(E annotationDTO) {
-		if (StringUtils.isNotBlank(annotationDTO.getModEntityId())) {
-			return "modEntityId";
+		if (StringUtils.isNotBlank(annotationDTO.getPrimaryExternalId())) {
+			return "primaryExternalId";
 		} else if (StringUtils.isNotBlank(annotationDTO.getModInternalId())) {
 			return "modInternalId";
 		} else {
@@ -31,9 +31,9 @@ public class UniqueIdentifierHelper {
 	}
 
 	public static <E extends AnnotationDTO, F extends Annotation> String setAnnotationID(E annotationDTO, F annotation, String uniqueId) {
-		if (StringUtils.isNotBlank(annotationDTO.getModEntityId())) {
-			annotation.setModEntityId(annotationDTO.getModEntityId());
-			return annotationDTO.getModEntityId();
+		if (StringUtils.isNotBlank(annotationDTO.getPrimaryExternalId())) {
+			annotation.setPrimaryExternalId(annotationDTO.getPrimaryExternalId());
+			return annotationDTO.getPrimaryExternalId();
 		} else if (StringUtils.isNotBlank(annotationDTO.getModInternalId())) {
 			annotation.setModInternalId(annotationDTO.getModInternalId());
 			return annotationDTO.getModInternalId();
@@ -44,8 +44,8 @@ public class UniqueIdentifierHelper {
 
 
 	public static <E extends SubmittedObjectDTO> String getIdentifyingField(E submittedObjectDto) {
-		if (StringUtils.isNotBlank(submittedObjectDto.getModEntityId())) {
-			return "modEntityId";
+		if (StringUtils.isNotBlank(submittedObjectDto.getPrimaryExternalId())) {
+			return "primaryExternalId";
 		} else if (StringUtils.isNotBlank(submittedObjectDto.getModInternalId())) {
 			return "modInternalId";
 		} else {
@@ -61,9 +61,9 @@ public class UniqueIdentifierHelper {
 	}
 
 	public static <E extends SubmittedObjectDTO, F extends SubmittedObject> String setAnnotationID(E submittedObjectDTO, F submittedObject, String uniqueId) {
-		if (StringUtils.isNotBlank(submittedObjectDTO.getModEntityId())) {
-			submittedObject.setModEntityId(submittedObjectDTO.getModEntityId());
-			return submittedObjectDTO.getModEntityId();
+		if (StringUtils.isNotBlank(submittedObjectDTO.getPrimaryExternalId())) {
+			submittedObject.setPrimaryExternalId(submittedObjectDTO.getPrimaryExternalId());
+			return submittedObjectDTO.getPrimaryExternalId();
 		} else if (StringUtils.isNotBlank(submittedObjectDTO.getModInternalId())) {
 			submittedObject.setModInternalId(submittedObjectDTO.getModInternalId());
 			return submittedObjectDTO.getModInternalId();

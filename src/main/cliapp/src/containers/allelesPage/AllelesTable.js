@@ -1017,11 +1017,11 @@ export const AllelesTable = () => {
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
-			field: 'modEntityId',
-			header: 'MOD Entity ID',
-			body: (rowData) => <IdTemplate id={rowData.modEntityId} />,
+			field: 'primaryExternalId',
+			header: 'Primary External ID',
+			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
 		},
 		{
 			field: 'modInternalId',
@@ -1175,7 +1175,7 @@ export const AllelesTable = () => {
 			body: (rowData) => (
 				<TruncatedReferencesTemplate
 					references={rowData.references}
-					identifier={rowData.modEntityId}
+					identifier={rowData.primaryExternalId}
 					detailPage="Allele"
 				/>
 			),
@@ -1226,7 +1226,7 @@ export const AllelesTable = () => {
 			editor: relatedNotesEditor,
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleDataProviderFilterConfig,
