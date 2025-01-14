@@ -36,18 +36,6 @@ public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
 	public AgmAlleleAssociation validateAgmAlleleAssociationDTO(AgmAlleleAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 		ObjectResponse<AgmAlleleAssociation> aaaResponse = new ObjectResponse<AgmAlleleAssociation>();
 
-		List<String> zygosityCuries = Arrays.asList(
-		"GENO:0000602",
-			"GENO:0000603",
-			"GENO:0000604",
-			"GENO:0000605",
-			"GENO:0000606",
-			"GENO:0000135",
-			"GENO:0000136",
-			"GENO:0000137",
-			"GENO:0000134"
-		);
-
 		List<Long> subjectIds = null;
 		if (StringUtils.isBlank(dto.getAgmSubjectIdentifier())) {
 			aaaResponse.addErrorMessage("agm_identifier", ValidationConstants.REQUIRED_MESSAGE);
@@ -121,13 +109,14 @@ public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
 			}
 		}
 
-		if (StringUtils.isBlank(dto.getZygosityCurie())) {
-			aaaResponse.addErrorMessage("zygosity", ValidationConstants.INVALID_MESSAGE + " (" + dto.getZygosityCurie() + ")");
-		} else if (!zygosityCuries.contains(dto.getZygosityCurie())) {
-			aaaResponse.addErrorMessage("zygosity", ValidationConstants.INVALID_MESSAGE + " (" + dto.getZygosityCurie() + ")");
-		} else {
-			association.setZygosity(dto.getZygosityCurie());
+		VocabularyTerm zygosity = null;
+		if (StringUtils.isNotEmpty(dto.getZygosityCurie())) {
+			zygosity = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.AGM_ALLELE_ASSOCIATION_VOCABULARY_TERM_SET, dto.getZygosityCurie()).getEntity();
+			if (zygosity == null) {
+				aaaResponse.addErrorMessage("Zygosity_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getZygosityCurie() + ")");
+			}
 		}
+		association.setZygosity(zygosity);
 
 		ObjectResponse<AgmAlleleAssociation> assocResponse = validateAuditedObjectDTO(association, dto);
 		aaaResponse.addErrorMessages(assocResponse.getErrorMessages());

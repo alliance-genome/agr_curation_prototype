@@ -6,7 +6,7 @@ CREATE TABLE public.agmalleleassociation (
 	dbdateupdated timestamp(6) with time zone,
 	internal boolean DEFAULT false NOT NULL,
 	obsolete boolean DEFAULT false NOT NULL,
-	zygosity character varying(255),
+	zygosity_id bigint,
 	createdby_id bigint,
 	updatedby_id bigint,
 	agmalleleassociationobject_id bigint,
@@ -29,6 +29,7 @@ CREATE INDEX agmalleleassociation_createdby_index ON public.agmalleleassociation
 CREATE INDEX agmalleleassociation_internal_index ON public.agmalleleassociation USING btree (internal);
 CREATE INDEX agmalleleassociation_obsolete_index ON public.agmalleleassociation USING btree (obsolete);
 CREATE INDEX agmalleleassociation_relation_index ON public.agmalleleassociation USING btree (relation_id);
+CREATE INDEX agmalleleassociation_zygosity_index ON public.agmalleleassociation USING btree (zygosity_id);
 CREATE INDEX agmalleleassociation_updatedby_index ON public.agmalleleassociation USING btree (updatedby_id);
 
 ALTER TABLE ONLY public.agmalleleassociation ADD CONSTRAINT agmalleleassociation_agmalleleassociationobject_id FOREIGN KEY (agmalleleassociationobject_id) REFERENCES public.allele(id);
@@ -36,6 +37,7 @@ ALTER TABLE ONLY public.agmalleleassociation ADD CONSTRAINT agmalleleassociation
 ALTER TABLE ONLY public.agmalleleassociation ADD CONSTRAINT agmalleleassociation_createdby_id FOREIGN KEY (createdby_id) REFERENCES public.person(id);
 ALTER TABLE ONLY public.agmalleleassociation ADD CONSTRAINT agmalleleassociation_updatedby_id FOREIGN KEY (updatedby_id) REFERENCES public.person(id);
 ALTER TABLE ONLY public.agmalleleassociation ADD CONSTRAINT agmalleleassociation_relation_id FOREIGN KEY (relation_id) REFERENCES public.vocabularyterm(id);
+ALTER TABLE ONLY public.agmalleleassociation ADD CONSTRAINT agmalleleassociation_zygosity_id FOREIGN KEY (zygosity_id) REFERENCES public.vocabularyterm(id);
 
 
 INSERT INTO vocabularytermset(id, name, vocabularylabel, vocabularytermsetvocabulary_id) SELECT nextval('vocabularytermset_seq'), 'AGM Allele Association Relation', 'agm_allele_relation', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_relation';

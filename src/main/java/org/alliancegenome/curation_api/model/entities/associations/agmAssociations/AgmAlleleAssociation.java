@@ -10,15 +10,9 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.search.engine.backend.types.Aggregable;
-import org.hibernate.search.engine.backend.types.Searchable;
-import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -43,6 +37,7 @@ import lombok.ToString;
 	@Index(name = "AgmAlleleAssociation_createdBy_index", columnList = "createdBy_id"),
 	@Index(name = "AgmAlleleAssociation_updatedBy_index", columnList = "updatedBy_id"),
 	@Index(name = "AgmAlleleAssociation_relation_index", columnList = "relation_id"),
+	@Index(name = "AgmAlleleAssociation_zygosity_index", columnList = "zygosity_id"),
 	@Index(name = "AgmAlleleAssociation_agmAssociationSubject_index", columnList = "agmAssociationSubject_id"),
 	@Index(name = "AgmAlleleAssociation_AgmAlleleAssociationObject_index", columnList = "agmAlleleAssociationObject_id")
 })
@@ -67,10 +62,11 @@ public class AgmAlleleAssociation extends Association {
 	@Fetch(FetchMode.JOIN)
 	private AffectedGenomicModel agmAssociationSubject;
 
+	@IndexedEmbedded(includePaths = { "name", "name_keyword" })
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "zygosity_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	private String zygosity;
+	private VocabularyTerm zygosity;
 
 	@IndexedEmbedded(includePaths = { "name", "name_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
