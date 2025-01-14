@@ -47,11 +47,11 @@ public class GeneSymbolSlotAnnotationValidator extends NameSlotAnnotationValidat
 
 		dbEntity = (GeneSymbolSlotAnnotation) validateNameSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
-		VocabularyTerm nameType = validateRequiredTermInVocabularyTermSet("nameType", VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET, dbEntity.getNameType(), uiEntity.getNameType());
+		VocabularyTerm nameType = validateRequiredTermInVocabularyTermSet("nameType", VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET, uiEntity.getNameType(), dbEntity.getNameType());
 		dbEntity.setNameType(nameType);
 
 		if (validateGene) {
-			Gene singleGene = validateSingleGene(uiEntity.getSingleGene(), dbEntity.getSingleGene());
+			Gene singleGene = validateRequiredEntity(geneDAO, "singleGene", uiEntity.getSingleGene(), dbEntity.getSingleGene());
 			dbEntity.setSingleGene(singleGene);
 		}
 

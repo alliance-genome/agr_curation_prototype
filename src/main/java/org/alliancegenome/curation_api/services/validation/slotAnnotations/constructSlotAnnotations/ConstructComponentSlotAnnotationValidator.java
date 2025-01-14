@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -18,7 +19,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
-import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -32,7 +32,7 @@ import jakarta.inject.Inject;
 public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationValidator<ConstructComponentSlotAnnotation> {
 
 	@Inject ConstructComponentSlotAnnotationDAO constructComponentDAO;
-	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject ConstructDAO constructDAO;
 	@Inject NoteValidator noteValidator;
 	@Inject NoteDAO noteDAO;
 
@@ -65,24 +65,21 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 		dbEntity = (ConstructComponentSlotAnnotation) validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
 		if (validateConstruct) {
-			Construct singleConstruct = validateSingleConstruct(uiEntity.getSingleConstruct(), dbEntity.getSingleConstruct());
+			Construct singleConstruct = validateRequiredEntity(constructDAO, "singleConstruct", uiEntity.getSingleConstruct(), dbEntity.getSingleConstruct());
 			dbEntity.setSingleConstruct(singleConstruct);
 		}
 
 		String componentSymbol = validateComponentSymbol(uiEntity);
 		dbEntity.setComponentSymbol(componentSymbol);
 
-		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, dbEntity.getRelation(), uiEntity.getRelation());
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation(), dbEntity.getRelation());
 		dbEntity.setRelation(relation);
 
-		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
+		NCBITaxonTerm taxon = validateTaxon(uiEntity.getTaxon(), dbEntity.getTaxon());
 		dbEntity.setTaxon(taxon);
 
-		if (StringUtils.isNotBlank(uiEntity.getTaxonText())) {
-			dbEntity.setTaxonText(uiEntity.getTaxonText());
-		} else {
-			dbEntity.setTaxonText(null);
-		}
+		String taxonText = handleStringField(uiEntity.getTaxonText());
+		dbEntity.setTaxonText(taxonText);
 
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
 		dbEntity.setRelatedNotes(relatedNotes);
@@ -107,26 +104,6 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 		}
 
 		return uiEntity.getComponentSymbol();
-	}
-
-	public NCBITaxonTerm validateTaxon(ConstructComponentSlotAnnotation uiEntity, ConstructComponentSlotAnnotation dbEntity) {
-		String field = "taxon";
-		if (uiEntity.getTaxon() == null || StringUtils.isBlank(uiEntity.getTaxon().getCurie())) {
-			return null;
-		}
-
-		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(uiEntity.getTaxon().getCurie()).getEntity();
-		if (taxon == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (taxon.getObsolete() && (dbEntity.getTaxon() == null || !taxon.getCurie().equals(dbEntity.getTaxon().getCurie()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return taxon;
 	}
 
 	public List<Note> validateRelatedNotes(ConstructComponentSlotAnnotation uiEntity, ConstructComponentSlotAnnotation dbEntity) {

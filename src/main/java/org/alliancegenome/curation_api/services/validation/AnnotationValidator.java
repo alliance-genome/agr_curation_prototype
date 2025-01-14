@@ -160,10 +160,10 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		}
 		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 		
-		String primaryExternalId = StringUtils.isNotBlank(uiEntity.getPrimaryExternalId()) ? uiEntity.getPrimaryExternalId() : null;
+		String primaryExternalId = handleStringField(uiEntity.getPrimaryExternalId());
 		dbEntity.setPrimaryExternalId(primaryExternalId);
 
-		String modInternalId = StringUtils.isNotBlank(uiEntity.getModInternalId()) ? uiEntity.getModInternalId() : null;
+		String modInternalId = handleStringField(uiEntity.getModInternalId());
 		dbEntity.setModInternalId(modInternalId);
 
 		Reference singleReference = validateSingleReference(uiEntity, dbEntity);

@@ -46,11 +46,11 @@ public class GeneSynonymSlotAnnotationValidator extends NameSlotAnnotationValida
 		}
 		dbEntity = (GeneSynonymSlotAnnotation) validateNameSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
-		VocabularyTerm nameType = validateRequiredTermInVocabulary("nameType", VocabularyConstants.NAME_TYPE_VOCABULARY, dbEntity.getNameType(), uiEntity.getNameType());
+		VocabularyTerm nameType = validateRequiredTermInVocabulary("nameType", VocabularyConstants.NAME_TYPE_VOCABULARY, uiEntity.getNameType(), dbEntity.getNameType());
 		dbEntity.setNameType(nameType);
 
 		if (validateGene) {
-			Gene singleGene = validateSingleGene(uiEntity.getSingleGene(), dbEntity.getSingleGene());
+			Gene singleGene = validateRequiredEntity(geneDAO, "singleGene", uiEntity.getSingleGene(), dbEntity.getSingleGene());
 			dbEntity.setSingleGene(singleGene);
 		}
 

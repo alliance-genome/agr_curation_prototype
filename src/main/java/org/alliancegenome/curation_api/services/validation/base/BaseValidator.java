@@ -8,15 +8,19 @@ import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
+import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.CrossReferenceValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -32,6 +36,7 @@ public class BaseValidator<E extends Object> {
 	@Inject CrossReferenceDAO crossReferenceDAO;
 	@Inject CrossReferenceService crossReferenceService;
 	@Inject CrossReferenceValidator crossReferenceValidator;
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject OrganizationDAO organizationDAO;
 	@Inject OrganizationService organizationService;
 	@Inject PersonService personService;
@@ -128,23 +133,132 @@ public class BaseValidator<E extends Object> {
 		return xref;
 	}
 	
-	protected VocabularyTerm validateTermInVocabulary(String field, String vocabularyName, VocabularyTerm dbTerm, VocabularyTerm uiTerm) {
-		return validateVocabularyTerm(field, vocabularyName, dbTerm, uiTerm, false, false);
+	protected <N extends AuditedObject, D extends BaseSQLDAO<N>> N validateEntity(D dao, String field, N uiEntity, N dbEntity) {
+		return validateEntity(dao, field, uiEntity, dbEntity, false);
 	}
 	
-	protected VocabularyTerm validateRequiredTermInVocabulary(String field, String vocabularyName, VocabularyTerm dbTerm, VocabularyTerm uiTerm) {
-		return validateVocabularyTerm(field, vocabularyName, dbTerm, uiTerm, true, false);
+	protected <N extends AuditedObject, D extends BaseSQLDAO<N>> N validateRequiredEntity(D dao, String field, N uiEntity, N dbEntity) {
+		return validateEntity(dao, field, uiEntity, dbEntity, true);
 	}
 	
-	protected VocabularyTerm validateTermInVocabularyTermSet(String field, String vocabularyName, VocabularyTerm dbTerm, VocabularyTerm uiTerm) {
-		return validateVocabularyTerm(field, vocabularyName, dbTerm, uiTerm, false, true);
+	protected <N extends AuditedObject, D extends BaseSQLDAO<N>> N validateEntity(D dao, String field, N uiEntity, N dbEntity, boolean isRequired) {
+		if (uiEntity == null) {
+			if (isRequired) {
+				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			}
+			return null;
+		}
+		
+		N entity = null;
+		if (uiEntity.getId() != null) {
+			entity = dao.find(uiEntity.getId());
+		}
+		if (entity == null) {
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		
+		if (entity.getObsolete() && (dbEntity == null || !entity.getId().equals(dbEntity.getId()))) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+		
+		return entity;
 	}
 	
-	protected VocabularyTerm validateRequiredTermInVocabularyTermSet(String field, String vocabularyName, VocabularyTerm dbTerm, VocabularyTerm uiTerm) {
-		return validateVocabularyTerm(field, vocabularyName, dbTerm, uiTerm, true, true);
+	protected <N extends AuditedObject, D extends BaseSQLDAO<N>> List<N> validateEntities(D dao, String field, List<N> uiEntities, List<N> dbEntities) {
+		return validateEntities(dao, field, uiEntities, dbEntities, false);
 	}
 	
-	protected VocabularyTerm validateVocabularyTerm(String field, String vocabularyOrSetName, VocabularyTerm dbTerm, VocabularyTerm uiTerm, boolean isRequired, boolean isTermSet) {
+	protected <N extends AuditedObject, D extends BaseSQLDAO<N>> List<N> validateRequiredEntities(D dao, String field, List<N> uiEntities, List<N> dbEntities) {
+		return validateEntities(dao, field, uiEntities, dbEntities, true);
+	}
+	
+	protected <N extends AuditedObject, D extends BaseSQLDAO<N>> List<N> validateEntities(D dao, String field, List<N> uiEntities, List<N> dbEntities, boolean isRequired) {
+		if (CollectionUtils.isEmpty(uiEntities)) {
+			if (isRequired) {
+				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			}
+			return null;
+		}
+		
+		List<N> entities = new ArrayList<N>();
+		List<Long> previousIds = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(dbEntities)) {
+			previousIds = dbEntities.stream().map(N::getId).collect(Collectors.toList());
+		}
+		for (N uiEntity : uiEntities) {
+			N entity = null;
+			if (uiEntity.getId() != null) {
+				entity = dao.find(uiEntity.getId());
+			}
+			if (entity == null) {
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+				return null;
+			}
+		
+			if (entity.getObsolete() && !previousIds.contains(entity.getId())) {
+				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+				return null;
+			}
+			entities.add(entity);
+		}
+		
+		return entities;
+	}
+	
+	protected NCBITaxonTerm validateTaxon(NCBITaxonTerm uiTaxon, NCBITaxonTerm dbTaxon) {
+		return validateTaxon(uiTaxon, dbTaxon, false);
+	}
+	
+	protected NCBITaxonTerm validateRequiredTaxon(NCBITaxonTerm uiTaxon, NCBITaxonTerm dbTaxon) {
+		return validateTaxon(uiTaxon, dbTaxon, true);
+	}
+
+	protected NCBITaxonTerm validateTaxon(NCBITaxonTerm uiTaxon, NCBITaxonTerm dbTaxon, boolean isRequired) {
+		String field = "taxon";
+		if (uiTaxon == null) {
+			if (isRequired) {
+				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			}
+			return null;
+		}
+
+		NCBITaxonTerm taxon = null;
+		if (StringUtils.isNotBlank(uiTaxon.getCurie())) {
+			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie(uiTaxon.getCurie());
+			if (taxonResponse == null || taxonResponse.getEntity() == null) {
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+				return null;
+			}
+
+			taxon = taxonResponse.getEntity();
+			if (taxon.getObsolete() && (dbTaxon == null || !taxon.getCurie().equals(dbTaxon.getCurie()))) {
+				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+				return null;
+			}
+		}
+
+		return taxon;
+	}
+	
+	protected VocabularyTerm validateTermInVocabulary(String field, String vocabularyName, VocabularyTerm uiTerm, VocabularyTerm dbTerm) {
+		return validateVocabularyTerm(field, vocabularyName, uiTerm, dbTerm, false, false);
+	}
+	
+	protected VocabularyTerm validateRequiredTermInVocabulary(String field, String vocabularyName, VocabularyTerm uiTerm, VocabularyTerm dbTerm) {
+		return validateVocabularyTerm(field, vocabularyName, uiTerm, dbTerm, true, false);
+	}
+	
+	protected VocabularyTerm validateTermInVocabularyTermSet(String field, String vocabularyName, VocabularyTerm uiTerm, VocabularyTerm dbTerm) {
+		return validateVocabularyTerm(field, vocabularyName, uiTerm, dbTerm, false, true);
+	}
+	
+	protected VocabularyTerm validateRequiredTermInVocabularyTermSet(String field, String vocabularyName, VocabularyTerm uiTerm, VocabularyTerm dbTerm) {
+		return validateVocabularyTerm(field, vocabularyName, uiTerm, dbTerm, true, true);
+	}
+	
+	protected VocabularyTerm validateVocabularyTerm(String field, String vocabularyOrSetName, VocabularyTerm uiTerm, VocabularyTerm dbTerm, boolean isRequired, boolean isTermSet) {
 		if (uiTerm == null) {
 			if (isRequired) {
 				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
@@ -172,23 +286,23 @@ public class BaseValidator<E extends Object> {
 		return term;
 	}
 	
-	protected List<VocabularyTerm> validateTermsInVocabulary(String field, String vocabularyName, List<VocabularyTerm> dbTerms, List<VocabularyTerm> uiTerms) {
-		return validateVocabularyTerms(field, vocabularyName, dbTerms, uiTerms, false, false);
+	protected List<VocabularyTerm> validateTermsInVocabulary(String field, String vocabularyName, List<VocabularyTerm> uiTerms, List<VocabularyTerm> dbTerms) {
+		return validateVocabularyTerms(field, vocabularyName, uiTerms, dbTerms, false, false);
 	}
 	
-	protected List<VocabularyTerm> validateRequiredTermsInVocabulary(String field, String vocabularyName, List<VocabularyTerm> dbTerms, List<VocabularyTerm> uiTerms) {
-		return validateVocabularyTerms(field, vocabularyName, dbTerms, uiTerms, true, false);
+	protected List<VocabularyTerm> validateRequiredTermsInVocabulary(String field, String vocabularyName, List<VocabularyTerm> uiTerms, List<VocabularyTerm> dbTerms) {
+		return validateVocabularyTerms(field, vocabularyName, uiTerms, dbTerms, true, false);
 	}
 	
-	protected List<VocabularyTerm> validateTermsInVocabularyTermSet(String field, String vocabularyName, List<VocabularyTerm> dbTerms, List<VocabularyTerm> uiTerms) {
-		return validateVocabularyTerms(field, vocabularyName, dbTerms, uiTerms, false, true);
+	protected List<VocabularyTerm> validateTermsInVocabularyTermSet(String field, String vocabularyName, List<VocabularyTerm> uiTerms, List<VocabularyTerm> dbTerms) {
+		return validateVocabularyTerms(field, vocabularyName, uiTerms, dbTerms, false, true);
 	}
 	
-	protected List<VocabularyTerm> validateRequiredTermsInVocabularyTermSet(String field, String vocabularyName, List<VocabularyTerm> dbTerms, List<VocabularyTerm> uiTerms) {
-		return validateVocabularyTerms(field, vocabularyName, dbTerms, uiTerms, true, true);
+	protected List<VocabularyTerm> validateRequiredTermsInVocabularyTermSet(String field, String vocabularyName, List<VocabularyTerm> uiTerms, List<VocabularyTerm> dbTerms) {
+		return validateVocabularyTerms(field, vocabularyName, uiTerms, dbTerms, true, true);
 	}
 	
-	protected List<VocabularyTerm> validateVocabularyTerms(String field, String vocabularyOrSetName, List<VocabularyTerm> dbTerms, List<VocabularyTerm> uiTerms, boolean isRequired, boolean isTermSet) {
+	protected List<VocabularyTerm> validateVocabularyTerms(String field, String vocabularyOrSetName, List<VocabularyTerm> uiTerms, List<VocabularyTerm> dbTerms, boolean isRequired, boolean isTermSet) {
 		if (CollectionUtils.isEmpty(uiTerms)) {
 			if (isRequired) {
 				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
@@ -214,7 +328,7 @@ public class BaseValidator<E extends Object> {
 				return null;
 			}
 			
-			if (term.getObsolete() && (CollectionUtils.isEmpty(dbTerms) || !previousIds.contains(term.getId()))) {
+			if (term.getObsolete() && !previousIds.contains(term.getId())) {
 				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 				return null;
 			}

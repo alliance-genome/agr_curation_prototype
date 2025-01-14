@@ -84,7 +84,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		String handle = validateHandle(uiEntity, dbEntity);
 		dbEntity.setHandle(handle);
 
-		VocabularyTerm conditionRelationType = validateRequiredTermInVocabulary("conditionRelationType", VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, dbEntity.getConditionRelationType(), uiEntity.getConditionRelationType());
+		VocabularyTerm conditionRelationType = validateRequiredTermInVocabulary("conditionRelationType", VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, uiEntity.getConditionRelationType(), dbEntity.getConditionRelationType());
 		dbEntity.setConditionRelationType(conditionRelationType);
 
 		List<ExperimentalCondition> conditions = validateConditions(uiEntity, dbEntity);

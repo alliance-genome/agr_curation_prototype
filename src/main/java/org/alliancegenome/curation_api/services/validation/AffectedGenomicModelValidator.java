@@ -59,7 +59,7 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator<Affect
 		String name = handleStringField(uiEntity.getName());
 		dbEntity.setName(name);
 
-		VocabularyTerm subtype = validateRequiredTermInVocabulary("subtype", VocabularyConstants.AGM_SUBTYPE_VOCABULARY, dbEntity.getSubtype(), uiEntity.getSubtype());
+		VocabularyTerm subtype = validateRequiredTermInVocabulary("subtype", VocabularyConstants.AGM_SUBTYPE_VOCABULARY, uiEntity.getSubtype(), dbEntity.getSubtype());
 		dbEntity.setSubtype(subtype);
 
 		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {

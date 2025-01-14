@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services.validation.slotAnnotations.alle
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -21,6 +22,7 @@ import jakarta.inject.Inject;
 public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotationValidator<AlleleInheritanceModeSlotAnnotation> {
 
 	@Inject AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
+	@Inject AlleleDAO alleleDAO;
 	@Inject PhenotypeTermService phenotypeTermService;
 
 	public ObjectResponse<AlleleInheritanceModeSlotAnnotation> validateAlleleInheritanceModeSlotAnnotation(AlleleInheritanceModeSlotAnnotation uiEntity) {
@@ -52,11 +54,11 @@ public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotation
 		dbEntity = (AlleleInheritanceModeSlotAnnotation) validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
 		if (validateAllele) {
-			Allele singleAllele = validateSingleAllele(uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
+			Allele singleAllele = validateRequiredEntity(alleleDAO, "singleAllele", uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
 			dbEntity.setSingleAllele(singleAllele);
 		}
 
-		VocabularyTerm inheritanceMode = validateRequiredTermInVocabulary("inheritanceMode", VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, dbEntity.getInheritanceMode(), uiEntity.getInheritanceMode());
+		VocabularyTerm inheritanceMode = validateRequiredTermInVocabulary("inheritanceMode", VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, uiEntity.getInheritanceMode(), dbEntity.getInheritanceMode());
 		dbEntity.setInheritanceMode(inheritanceMode);
 
 		PhenotypeTerm phenotypeTerm = validatePhenotypeTerm(uiEntity, dbEntity);

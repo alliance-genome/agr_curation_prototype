@@ -108,7 +108,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		List<Reference> references = validateReferences(uiEntity, dbEntity);
 		dbEntity.setReferences(references);
 
-		VocabularyTerm inCollection = validateTermInVocabulary("inCollection", VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, dbEntity.getInCollection(), uiEntity.getInCollection());
+		VocabularyTerm inCollection = validateTermInVocabulary("inCollection", VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, uiEntity.getInCollection(), dbEntity.getInCollection());
 		dbEntity.setInCollection(inCollection);
 
 		if (uiEntity.getIsExtinct() != null) {

@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -16,6 +17,7 @@ import jakarta.inject.Inject;
 public class AlleleNomenclatureEventSlotAnnotationValidator extends SlotAnnotationValidator<AlleleNomenclatureEventSlotAnnotation> {
 
 	@Inject AlleleNomenclatureEventSlotAnnotationDAO alleleNomenclatureEventDAO;
+	@Inject AlleleDAO alleleDAO;
 
 	public ObjectResponse<AlleleNomenclatureEventSlotAnnotation> validateAlleleNomenclatureEventSlotAnnotation(AlleleNomenclatureEventSlotAnnotation uiEntity) {
 		AlleleNomenclatureEventSlotAnnotation nomenclatureEvent = validateAlleleNomenclatureEventSlotAnnotation(uiEntity, false, false);
@@ -46,11 +48,11 @@ public class AlleleNomenclatureEventSlotAnnotationValidator extends SlotAnnotati
 		dbEntity = (AlleleNomenclatureEventSlotAnnotation) validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
 		if (validateAllele) {
-			Allele singleAllele = validateSingleAllele(uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
+			Allele singleAllele = validateRequiredEntity(alleleDAO, "singleAllele", uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
 			dbEntity.setSingleAllele(singleAllele);
 		}
 
-		VocabularyTerm nomenclatureEvent = validateRequiredTermInVocabulary("nomenclatureEvent", VocabularyConstants.ALLELE_NOMENCLATURE_EVENT_VOCABULARY, dbEntity.getNomenclatureEvent(), uiEntity.getNomenclatureEvent());
+		VocabularyTerm nomenclatureEvent = validateRequiredTermInVocabulary("nomenclatureEvent", VocabularyConstants.ALLELE_NOMENCLATURE_EVENT_VOCABULARY, uiEntity.getNomenclatureEvent(), dbEntity.getNomenclatureEvent());
 		dbEntity.setNomenclatureEvent(nomenclatureEvent);
 
 		if (response.hasErrors()) {

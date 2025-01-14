@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -16,6 +17,7 @@ import jakarta.inject.Inject;
 public class AlleleDatabaseStatusSlotAnnotationValidator extends SlotAnnotationValidator<AlleleDatabaseStatusSlotAnnotation> {
 
 	@Inject AlleleDatabaseStatusSlotAnnotationDAO alleleDatabaseStatusDAO;
+	@Inject AlleleDAO alleleDAO;
 
 	public ObjectResponse<AlleleDatabaseStatusSlotAnnotation> validateAlleleDatabaseStatusSlotAnnotation(AlleleDatabaseStatusSlotAnnotation uiEntity) {
 		AlleleDatabaseStatusSlotAnnotation mutationType = validateAlleleDatabaseStatusSlotAnnotation(uiEntity, false, false);
@@ -46,11 +48,11 @@ public class AlleleDatabaseStatusSlotAnnotationValidator extends SlotAnnotationV
 		dbEntity = (AlleleDatabaseStatusSlotAnnotation) validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
 		if (validateAllele) {
-			Allele singleAllele = validateSingleAllele(uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
+			Allele singleAllele = validateRequiredEntity(alleleDAO, "singleAllele", uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
 			dbEntity.setSingleAllele(singleAllele);
 		}
 
-		VocabularyTerm databaseStatus = validateRequiredTermInVocabulary("databaseStatus", VocabularyConstants.ALLELE_DATABASE_STATUS_VOCABULARY, dbEntity.getDatabaseStatus(), uiEntity.getDatabaseStatus());
+		VocabularyTerm databaseStatus = validateRequiredTermInVocabulary("databaseStatus", VocabularyConstants.ALLELE_DATABASE_STATUS_VOCABULARY, uiEntity.getDatabaseStatus(), dbEntity.getDatabaseStatus());
 		dbEntity.setDatabaseStatus(databaseStatus);
 
 		if (response.hasErrors()) {

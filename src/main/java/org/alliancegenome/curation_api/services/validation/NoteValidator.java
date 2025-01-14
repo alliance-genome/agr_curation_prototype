@@ -107,10 +107,10 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		String field = "noteType";
 		
 		if (StringUtils.isBlank(noteVocabularySetName)) {
-			return validateRequiredTermInVocabulary(field, VocabularyConstants.NOTE_TYPE_VOCABULARY, dbEntity.getNoteType(), uiEntity.getNoteType());
+			return validateRequiredTermInVocabulary(field, VocabularyConstants.NOTE_TYPE_VOCABULARY, uiEntity.getNoteType(), dbEntity.getNoteType());
 		}
 		
-		return validateRequiredTermInVocabularyTermSet(field, noteVocabularySetName, dbEntity.getNoteType(), uiEntity.getNoteType());
+		return validateRequiredTermInVocabularyTermSet(field, noteVocabularySetName, uiEntity.getNoteType(), dbEntity.getNoteType());
 	}
 	
 	public String validateFreeText(Note uiEntity) {

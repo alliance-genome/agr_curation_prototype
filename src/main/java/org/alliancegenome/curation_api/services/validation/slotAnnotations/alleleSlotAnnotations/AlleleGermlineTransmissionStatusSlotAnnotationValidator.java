@@ -46,11 +46,11 @@ public class AlleleGermlineTransmissionStatusSlotAnnotationValidator extends Slo
 		}
 		dbEntity = (AlleleGermlineTransmissionStatusSlotAnnotation) validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
-		VocabularyTerm gts = validateRequiredTermInVocabulary("germlineTransmissionStatus", VocabularyConstants.GERMLINE_TRANSMISSION_STATUS_VOCABULARY, dbEntity.getGermlineTransmissionStatus(), uiEntity.getGermlineTransmissionStatus());
+		VocabularyTerm gts = validateRequiredTermInVocabulary("germlineTransmissionStatus", VocabularyConstants.GERMLINE_TRANSMISSION_STATUS_VOCABULARY, uiEntity.getGermlineTransmissionStatus(), dbEntity.getGermlineTransmissionStatus());
 		dbEntity.setGermlineTransmissionStatus(gts);
 
 		if (validateAllele) {
-			Allele singleAllele = validateSingleAllele(uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
+			Allele singleAllele = validateRequiredEntity(alleleDAO, "singleAllele", uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
 			dbEntity.setSingleAllele(singleAllele);
 		}
 

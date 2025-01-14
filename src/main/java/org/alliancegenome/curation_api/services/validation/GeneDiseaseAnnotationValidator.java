@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -56,10 +55,10 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
 	public GeneDiseaseAnnotation validateAnnotation(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
 
-		Gene subject = validateSubject(uiEntity, dbEntity);
+		Gene subject = validateRequiredEntity(geneDAO, "diseaseAnnotationSubject", uiEntity.getDiseaseAnnotationSubject(), dbEntity.getDiseaseAnnotationSubject());
 		dbEntity.setDiseaseAnnotationSubject(subject);
 
-		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, dbEntity.getRelation(), uiEntity.getRelation());
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation(), dbEntity.getRelation());
 		dbEntity.setRelation(relation);
 
 		AffectedGenomicModel sgdStrainBackground = validateSgdStrainBackground(uiEntity, dbEntity);
@@ -75,48 +74,15 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		return dbEntity;
 	}
 
-	private Gene validateSubject(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
-		String field = "diseaseAnnotationSubject";
-		if (ObjectUtils.isEmpty(uiEntity.getDiseaseAnnotationSubject())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		Gene subjectEntity = null;
-		if (uiEntity.getDiseaseAnnotationSubject().getId() != null) {
-			subjectEntity = geneDAO.find(uiEntity.getDiseaseAnnotationSubject().getId());
-		}
-		if (subjectEntity == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (subjectEntity.getObsolete() && (dbEntity.getDiseaseAnnotationSubject() == null || !subjectEntity.getId().equals(dbEntity.getDiseaseAnnotationSubject().getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return subjectEntity;
-
-	}
-
 	private AffectedGenomicModel validateSgdStrainBackground(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
 		String field = "sgdStrainBackground";
-		if (ObjectUtils.isEmpty(uiEntity.getSgdStrainBackground())) {
+		if (uiEntity.getSgdStrainBackground() == null) {
 			return null;
 		}
 
-		AffectedGenomicModel sgdStrainBackground = null;
-		if (uiEntity.getSgdStrainBackground().getId() != null) {
-			sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getId());
-		}
-		if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getName().startsWith("Saccharomyces cerevisiae")) {
+		AffectedGenomicModel sgdStrainBackground = validateEntity(agmDAO, field, uiEntity.getSgdStrainBackground(), dbEntity.getSgdStrainBackground());
+		if (sgdStrainBackground != null && !sgdStrainBackground.getTaxon().getName().startsWith("Saccharomyces cerevisiae")) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (sgdStrainBackground.getObsolete() && (dbEntity.getSgdStrainBackground() == null || !sgdStrainBackground.getId().equals(dbEntity.getSgdStrainBackground().getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 

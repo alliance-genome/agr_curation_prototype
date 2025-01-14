@@ -23,7 +23,6 @@ import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
 import org.alliancegenome.curation_api.services.validation.associations.EvidenceAssociationValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -63,14 +62,14 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		dbEntity = (ConstructGenomicEntityAssociation) validateEvidenceAssociationFields(uiEntity, dbEntity);
 
 		if (validateConstruct) {
-			Construct subject = validateSubjectReagent(uiEntity, dbEntity);
+			Construct subject = validateRequiredEntity(constructDAO, "constructAssociationSubject", uiEntity.getConstructAssociationSubject(), dbEntity.getConstructAssociationSubject());
 			dbEntity.setConstructAssociationSubject(subject);
 		}
 
-		GenomicEntity object = validateObject(uiEntity, dbEntity);
+		GenomicEntity object = validateRequiredEntity(genomicEntityDAO, "constructGenomicEntityAssociationObject", uiEntity.getConstructGenomicEntityAssociationObject(), dbEntity.getConstructGenomicEntityAssociationObject());
 		dbEntity.setConstructGenomicEntityAssociationObject(object);
 
-		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, dbEntity.getRelation(), uiEntity.getRelation());
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation(), dbEntity.getRelation());
 		dbEntity.setRelation(relation);
 
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
@@ -94,56 +93,6 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		}
 
 		return dbEntity;
-	}
-
-	private Construct validateSubjectReagent(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
-		String field = "constructAssociationSubject";
-		if (ObjectUtils.isEmpty(uiEntity.getConstructAssociationSubject())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		Construct subjectEntity = null;
-		if (uiEntity.getConstructAssociationSubject().getId() != null) {
-			subjectEntity = constructDAO.find(uiEntity.getConstructAssociationSubject().getId());
-		}
-		if (subjectEntity == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (subjectEntity.getObsolete() && (dbEntity.getConstructAssociationSubject() == null || !subjectEntity.getId().equals(dbEntity.getConstructAssociationSubject().getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return subjectEntity;
-
-	}
-
-	private GenomicEntity validateObject(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
-		String field = "constructGenomicEntityAssociationObject";
-		if (ObjectUtils.isEmpty(uiEntity.getConstructGenomicEntityAssociationObject())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		GenomicEntity objectEntity = null;
-		if (uiEntity.getConstructGenomicEntityAssociationObject().getId() != null) {
-			objectEntity = genomicEntityDAO.find(uiEntity.getConstructGenomicEntityAssociationObject().getId());
-		}
-		if (objectEntity == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (objectEntity.getObsolete() && (dbEntity.getConstructGenomicEntityAssociationObject() == null || !objectEntity.getId().equals(dbEntity.getConstructGenomicEntityAssociationObject().getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return objectEntity;
-
 	}
 
 	public List<Note> validateRelatedNotes(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {

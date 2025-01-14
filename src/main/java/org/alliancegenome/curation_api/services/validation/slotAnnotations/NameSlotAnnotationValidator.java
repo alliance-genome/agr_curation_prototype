@@ -32,7 +32,7 @@ public class NameSlotAnnotationValidator<E extends NameSlotAnnotation> extends S
 			dbEntity.setSynonymUrl(uiEntity.getSynonymUrl());
 		}
 
-		VocabularyTerm synonymScope = validateTermInVocabulary("synonymScope", VocabularyConstants.SYNONYM_SCOPE_VOCABULARY, dbEntity.getSynonymScope(), uiEntity.getSynonymScope());
+		VocabularyTerm synonymScope = validateTermInVocabulary("synonymScope", VocabularyConstants.SYNONYM_SCOPE_VOCABULARY, uiEntity.getSynonymScope(), dbEntity.getSynonymScope());
 		dbEntity.setSynonymScope(synonymScope);
 
 		return dbEntity;

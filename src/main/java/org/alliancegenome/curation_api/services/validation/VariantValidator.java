@@ -75,7 +75,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 		SOTerm variantType = validateVariantType(uiEntity, dbEntity);
 		dbEntity.setVariantType(variantType);
 
-		VocabularyTerm variantStatus = validateTermInVocabulary("variantStatus", VocabularyConstants.VARIANT_STATUS_VOCABULARY, dbEntity.getVariantStatus(), uiEntity.getVariantStatus());
+		VocabularyTerm variantStatus = validateTermInVocabulary("variantStatus", VocabularyConstants.VARIANT_STATUS_VOCABULARY, uiEntity.getVariantStatus(), dbEntity.getVariantStatus());
 		dbEntity.setVariantStatus(variantStatus);
 
 		SOTerm sourceGeneralConsequence = validateSourceGeneralConsequence(uiEntity, dbEntity);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -23,6 +24,7 @@ import jakarta.inject.Inject;
 public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotationValidator<AlleleFunctionalImpactSlotAnnotation> {
 
 	@Inject AlleleFunctionalImpactSlotAnnotationDAO alleleFunctionalImpactDAO;
+	@Inject AlleleDAO alleleDAO;
 	@Inject PhenotypeTermService phenotypeTermService;
 
 	public ObjectResponse<AlleleFunctionalImpactSlotAnnotation> validateAlleleFunctionalImpactSlotAnnotation(AlleleFunctionalImpactSlotAnnotation uiEntity) {
@@ -54,11 +56,11 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 		dbEntity = (AlleleFunctionalImpactSlotAnnotation) validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
 		if (validateAllele) {
-			Allele singleAllele = validateSingleAllele(uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
+			Allele singleAllele = validateRequiredEntity(alleleDAO, "singleAllele", uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
 			dbEntity.setSingleAllele(singleAllele);
 		}
 
-		List<VocabularyTerm> functionalImpacts = validateRequiredTermsInVocabulary("functionalImpacts", VocabularyConstants.ALLELE_FUNCTIONAL_IMPACT_VOCABULARY, dbEntity.getFunctionalImpacts(), uiEntity.getFunctionalImpacts());
+		List<VocabularyTerm> functionalImpacts = validateRequiredTermsInVocabulary("functionalImpacts", VocabularyConstants.ALLELE_FUNCTIONAL_IMPACT_VOCABULARY, uiEntity.getFunctionalImpacts(), dbEntity.getFunctionalImpacts());
 		dbEntity.setFunctionalImpacts(functionalImpacts);
 
 		PhenotypeTerm phenotypeTerm = validatePhenotypeTerm(uiEntity, dbEntity);
