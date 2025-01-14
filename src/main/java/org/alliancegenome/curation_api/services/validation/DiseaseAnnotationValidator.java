@@ -1,8 +1,6 @@
 package org.alliancegenome.curation_api.services.validation;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -12,6 +10,7 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
+import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -25,7 +24,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
-import org.alliancegenome.curation_api.services.ontology.DoTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,7 +32,7 @@ import jakarta.inject.Inject;
 public class DiseaseAnnotationValidator extends AnnotationValidator {
 
 	@Inject EcoTermDAO ecoTermDAO;
-	@Inject DoTermService doTermService;
+	@Inject DoTermDAO doTermDAO;
 	@Inject GeneDAO geneDAO;
 	@Inject AlleleDAO alleleDAO;
 	@Inject AffectedGenomicModelDAO agmDAO;
@@ -42,86 +40,36 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 	@Inject OrganizationDAO organizationDAO;
 	@Inject OrganizationService organizationService;
 
-	public DOTerm validateObjectOntologyTerm(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		String field = "diseaseAnnotationObject";
-		if (uiEntity.getDiseaseAnnotationObject() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		DOTerm diseaseTerm = null;
-		if (StringUtils.isNotBlank(uiEntity.getDiseaseAnnotationObject().getCurie())) {
-			diseaseTerm = doTermService.findByCurie(uiEntity.getDiseaseAnnotationObject().getCurie());
-			if (diseaseTerm == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
-			} else if (diseaseTerm.getObsolete() && (dbEntity.getDiseaseAnnotationObject() == null || !diseaseTerm.getId().equals(dbEntity.getDiseaseAnnotationObject().getId()))) {
-				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-				return null;
-			}
-		}
-		return diseaseTerm;
-	}
-
-	public List<ECOTerm> validateEvidenceCodes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+	private List<ECOTerm> validateEvidenceCodes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		String field = "evidenceCodes";
-		if (CollectionUtils.isEmpty(uiEntity.getEvidenceCodes())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
+		List<ECOTerm> validatedTerms = validateRequiredEntities(ecoTermDAO, field, uiEntity.getEvidenceCodes(), dbEntity.getEvidenceCodes());
+		
+		if (CollectionUtils.isNotEmpty(validatedTerms)) {
+			for (ECOTerm ec : validatedTerms) {
+				if (CollectionUtils.isEmpty(ec.getSubsets()) || !ec.getSubsets().contains(OntologyConstants.AGR_ECO_TERM_SUBSET)) {
+					addMessageResponse(field, ValidationConstants.UNSUPPORTED_MESSAGE);
+					return null;
+				}
+			}
 		}
-		List<ECOTerm> validEvidenceCodes = new ArrayList<>();
-		List<Long> previousIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getEvidenceCodes())) {
-			previousIds = dbEntity.getEvidenceCodes().stream().map(ECOTerm::getId).collect(Collectors.toList());
-		}
-		for (ECOTerm ec : uiEntity.getEvidenceCodes()) {
-			ECOTerm evidenceCode = null;
-			if (ec.getId() != null) {
-				evidenceCode = ecoTermDAO.find(ec.getId());
-			}
-			if (evidenceCode == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
-			}
-			if (evidenceCode.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getEvidenceCodes()) || !previousIds.contains(evidenceCode.getId()))) {
-				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-				return null;
-			}
-			if (!evidenceCode.getSubsets().contains(OntologyConstants.AGR_ECO_TERM_SUBSET)) {
-				addMessageResponse(field, ValidationConstants.UNSUPPORTED_MESSAGE);
-				return null;
-			}
-			validEvidenceCodes.add(evidenceCode);
-		}
-		return validEvidenceCodes;
+			
+		return validatedTerms;
 	}
 
 	public List<Gene> validateWith(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		if (CollectionUtils.isEmpty(uiEntity.getWith())) {
-			return null;
-		}
-
-		List<Gene> validWithGenes = new ArrayList<Gene>();
-		List<Long> previousIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getWith())) {
-			previousIds = dbEntity.getWith().stream().map(Gene::getId).collect(Collectors.toList());
-		}
-		for (Gene wg : uiEntity.getWith()) {
-			Gene withGene = null;
-			if (wg.getId() != null) {
-				withGene = geneDAO.find(wg.getId());
-			}
-			if (withGene == null || withGene.getPrimaryExternalId() == null || !withGene.getPrimaryExternalId().startsWith("HGNC:")) {
-				addMessageResponse("with", ValidationConstants.INVALID_MESSAGE);
-				return null;
-			} else if (withGene.getObsolete() && !previousIds.contains(withGene.getId())) {
-				addMessageResponse("with", ValidationConstants.OBSOLETE_MESSAGE);
-			} else {
-				validWithGenes.add(withGene);
+		String field = "with";
+		List<Gene> validatedGenes = validateEntities(geneDAO, field, uiEntity.getWith(), dbEntity.getWith());
+		
+		if (CollectionUtils.isNotEmpty(validatedGenes)) {
+			for (Gene gene : validatedGenes) {
+				if (gene.getPrimaryExternalId() == null || !gene.getPrimaryExternalId().startsWith("HGNC:")) {
+					addMessageResponse("with", ValidationConstants.INVALID_MESSAGE);
+					return null;
+				}
 			}
 		}
 
-		return validWithGenes;
+		return validatedGenes;
 	}
 
 	public Organization validateSecondaryDataProvider(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
@@ -233,7 +181,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 
 	public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 
-		DOTerm term = validateObjectOntologyTerm(uiEntity, dbEntity);
+		DOTerm term = validateRequiredEntity(doTermDAO, "diseaseAnnotationObject", uiEntity.getDiseaseAnnotationObject(), dbEntity.getDiseaseAnnotationObject());
 		dbEntity.setDiseaseAnnotationObject(term);
 
 		List<ECOTerm> terms = validateEvidenceCodes(uiEntity, dbEntity);

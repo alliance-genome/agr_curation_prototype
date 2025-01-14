@@ -1,8 +1,8 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations;
 
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.ontology.PhenotypeTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -10,10 +10,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -23,7 +20,7 @@ public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotation
 
 	@Inject AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
 	@Inject AlleleDAO alleleDAO;
-	@Inject PhenotypeTermService phenotypeTermService;
+	@Inject PhenotypeTermDAO phenotypeTermDAO;
 
 	public ObjectResponse<AlleleInheritanceModeSlotAnnotation> validateAlleleInheritanceModeSlotAnnotation(AlleleInheritanceModeSlotAnnotation uiEntity) {
 		AlleleInheritanceModeSlotAnnotation mutationType = validateAlleleInheritanceModeSlotAnnotation(uiEntity, false, false);
@@ -61,7 +58,7 @@ public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotation
 		VocabularyTerm inheritanceMode = validateRequiredTermInVocabulary("inheritanceMode", VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, uiEntity.getInheritanceMode(), dbEntity.getInheritanceMode());
 		dbEntity.setInheritanceMode(inheritanceMode);
 
-		PhenotypeTerm phenotypeTerm = validatePhenotypeTerm(uiEntity, dbEntity);
+		PhenotypeTerm phenotypeTerm = validateEntity(phenotypeTermDAO, "phenotypeTerm", uiEntity.getPhenotypeTerm(), dbEntity.getPhenotypeTerm());
 		dbEntity.setPhenotypeTerm(phenotypeTerm);
 
 		String phenotypeStatement = handleStringField(uiEntity.getPhenotypeStatement());
@@ -77,25 +74,5 @@ public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotation
 		}
 
 		return dbEntity;
-	}
-
-	public PhenotypeTerm validatePhenotypeTerm(AlleleInheritanceModeSlotAnnotation uiEntity, AlleleInheritanceModeSlotAnnotation dbEntity) {
-		String field = "phenotypeTerm";
-		if (ObjectUtils.isEmpty(uiEntity.getPhenotypeTerm())) {
-			return null;
-		}
-
-		PhenotypeTerm phenotypeTerm = null;
-		if (StringUtils.isNotBlank(uiEntity.getPhenotypeTerm().getCurie())) {
-			phenotypeTerm = phenotypeTermService.findByCurie(uiEntity.getPhenotypeTerm().getCurie());
-			if (phenotypeTerm == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
-			} else if (phenotypeTerm.getObsolete() && (dbEntity.getPhenotypeTerm() == null || !phenotypeTerm.getId().equals(dbEntity.getPhenotypeTerm().getId()))) {
-				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-				return null;
-			}
-		}
-		return phenotypeTerm;
 	}
 }

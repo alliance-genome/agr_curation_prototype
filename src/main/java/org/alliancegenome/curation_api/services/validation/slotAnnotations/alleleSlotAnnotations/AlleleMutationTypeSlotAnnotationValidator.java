@@ -59,7 +59,7 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 			dbEntity.setSingleAllele(singleAllele);
 		}
 
-		List<SOTerm> mutationTypes = validateMutationTypes(uiEntity, dbEntity);
+		List<SOTerm> mutationTypes = validateRequiredEntities(soTermDAO, "mutationTypes", uiEntity.getMutationTypes(), dbEntity.getMutationTypes());
 		dbEntity.setMutationTypes(mutationTypes);
 
 		if (response.hasErrors()) {
@@ -72,37 +72,6 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 		}
 
 		return dbEntity;
-	}
-
-	private List<SOTerm> validateMutationTypes(AlleleMutationTypeSlotAnnotation uiEntity, AlleleMutationTypeSlotAnnotation dbEntity) {
-		String field = "mutationTypes";
-		if (CollectionUtils.isEmpty(uiEntity.getMutationTypes())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-		List<SOTerm> validMutationTypes = new ArrayList<>();
-		List<Long> previousIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getMutationTypes())) {
-			previousIds = dbEntity.getMutationTypes().stream().map(SOTerm::getId).collect(Collectors.toList());
-		}
-		for (SOTerm mt : uiEntity.getMutationTypes()) {
-			SOTerm mutationType = null;
-			if (mt.getId() != null) {
-				mutationType = soTermDAO.find(mt.getId());
-			}
-			if (mutationType == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
-			}
-			if (mutationType.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getMutationTypes()) || !previousIds.contains(mutationType.getId()))) {
-				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-				return null;
-			}
-
-			validMutationTypes.add(mutationType);
-
-		}
-		return validMutationTypes;
 	}
 
 }

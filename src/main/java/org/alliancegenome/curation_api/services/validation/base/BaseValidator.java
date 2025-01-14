@@ -208,15 +208,18 @@ public class BaseValidator<E extends Object> {
 	}
 	
 	protected NCBITaxonTerm validateTaxon(NCBITaxonTerm uiTaxon, NCBITaxonTerm dbTaxon) {
-		return validateTaxon(uiTaxon, dbTaxon, false);
+		return validateTaxon(uiTaxon, dbTaxon, false, "taxon");
 	}
 	
 	protected NCBITaxonTerm validateRequiredTaxon(NCBITaxonTerm uiTaxon, NCBITaxonTerm dbTaxon) {
-		return validateTaxon(uiTaxon, dbTaxon, true);
+		return validateTaxon(uiTaxon, dbTaxon, true, "taxon");
+	}
+	
+	protected NCBITaxonTerm validateTaxon(NCBITaxonTerm uiTaxon, NCBITaxonTerm dbTaxon, String field) {
+		return validateTaxon(uiTaxon, dbTaxon, false, field);
 	}
 
-	protected NCBITaxonTerm validateTaxon(NCBITaxonTerm uiTaxon, NCBITaxonTerm dbTaxon, boolean isRequired) {
-		String field = "taxon";
+	protected NCBITaxonTerm validateTaxon(NCBITaxonTerm uiTaxon, NCBITaxonTerm dbTaxon, boolean isRequired, String field) {
 		if (uiTaxon == null) {
 			if (isRequired) {
 				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);

@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
+import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Variant;
@@ -18,10 +19,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
-import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -32,7 +30,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 	@Inject VariantDAO variantDAO;
 	@Inject NoteValidator noteValidator;
 	@Inject CrossReferenceDAO crossReferenceDAO;
-	@Inject SoTermService soTermService;
+	@Inject SoTermDAO soTermDAO;
 
 	private String errorMessage;
 
@@ -72,13 +70,13 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 
 		dbEntity = (Variant) validateGenomicEntityFields(uiEntity, dbEntity);
 
-		SOTerm variantType = validateVariantType(uiEntity, dbEntity);
+		SOTerm variantType = validateRequiredEntity(soTermDAO, "variantType", uiEntity.getVariantType(), dbEntity.getVariantType());
 		dbEntity.setVariantType(variantType);
 
 		VocabularyTerm variantStatus = validateTermInVocabulary("variantStatus", VocabularyConstants.VARIANT_STATUS_VOCABULARY, uiEntity.getVariantStatus(), dbEntity.getVariantStatus());
 		dbEntity.setVariantStatus(variantStatus);
 
-		SOTerm sourceGeneralConsequence = validateSourceGeneralConsequence(uiEntity, dbEntity);
+		SOTerm sourceGeneralConsequence = validateEntity(soTermDAO, "sourceGeneralConsequence", uiEntity.getSourceGeneralConsequence(), dbEntity.getSourceGeneralConsequence());
 		dbEntity.setSourceGeneralConsequence(sourceGeneralConsequence);
 
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
@@ -100,46 +98,6 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 		dbEntity = variantDAO.persist(dbEntity);
 
 		return dbEntity;
-	}
-
-	public SOTerm validateVariantType(Variant uiEntity, Variant dbEntity) {
-		String field = "variantType";
-		if (ObjectUtils.isEmpty(uiEntity.getVariantType())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-		SOTerm variantType = null;
-		if (StringUtils.isNotBlank(uiEntity.getVariantType().getCurie())) {
-			variantType = soTermService.findByCurie(uiEntity.getVariantType().getCurie());
-			if (variantType == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
-			} else if (variantType.getObsolete() && (dbEntity.getVariantType() == null || !variantType.getId().equals(dbEntity.getVariantType().getId()))) {
-				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-				return null;
-			}
-		}
-		return variantType;
-	}
-
-	public SOTerm validateSourceGeneralConsequence(Variant uiEntity, Variant dbEntity) {
-		String field = "sourceGeneralConsequence";
-		if (ObjectUtils.isEmpty(uiEntity.getSourceGeneralConsequence())) {
-			return null;
-		}
-
-		SOTerm sourceGeneralConsequence = null;
-		if (StringUtils.isNotBlank(uiEntity.getSourceGeneralConsequence().getCurie())) {
-			sourceGeneralConsequence = soTermService.findByCurie(uiEntity.getSourceGeneralConsequence().getCurie());
-			if (sourceGeneralConsequence == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
-			} else if (sourceGeneralConsequence.getObsolete() && (dbEntity.getSourceGeneralConsequence() == null || !sourceGeneralConsequence.getId().equals(dbEntity.getSourceGeneralConsequence().getId()))) {
-				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-				return null;
-			}
-		}
-		return sourceGeneralConsequence;
 	}
 
 	public List<Note> validateRelatedNotes(Variant uiEntity, Variant dbEntity) {

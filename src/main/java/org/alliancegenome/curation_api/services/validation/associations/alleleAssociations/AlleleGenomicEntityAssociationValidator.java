@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
 import org.alliancegenome.curation_api.services.validation.associations.EvidenceAssociationValidator;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.inject.Inject;
@@ -25,23 +26,9 @@ public class AlleleGenomicEntityAssociationValidator<E extends AlleleGenomicEnti
 
 	public ECOTerm validateEvidenceCode(E uiEntity, E dbEntity) {
 		String field = "evidenceCode";
-		if (ObjectUtils.isEmpty(uiEntity.getEvidenceCode())) {
-			return null;
-		}
 
-		ECOTerm evidenceCode = null;
-		if (uiEntity.getEvidenceCode().getId() != null) {
-			evidenceCode = ecoTermDAO.find(uiEntity.getEvidenceCode().getId());
-		}
-		if (evidenceCode == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-		if (evidenceCode.getObsolete() && (dbEntity.getEvidenceCode() == null || !dbEntity.getEvidenceCode().getId().equals(evidenceCode.getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-		if (!evidenceCode.getSubsets().contains(OntologyConstants.AGR_ECO_TERM_SUBSET)) {
+		ECOTerm evidenceCode = validateEntity(ecoTermDAO, field, uiEntity.getEvidenceCode(), dbEntity.getEvidenceCode());
+		if (evidenceCode != null && (CollectionUtils.isEmpty(evidenceCode.getSubsets()) || !evidenceCode.getSubsets().contains(OntologyConstants.AGR_ECO_TERM_SUBSET))) {
 			addMessageResponse(field, ValidationConstants.UNSUPPORTED_MESSAGE);
 			return null;
 		}

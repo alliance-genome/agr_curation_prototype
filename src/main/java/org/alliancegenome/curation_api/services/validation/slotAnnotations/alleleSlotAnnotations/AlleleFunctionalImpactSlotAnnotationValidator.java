@@ -2,9 +2,9 @@ package org.alliancegenome.curation_api.services.validation.slotAnnotations.alle
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.ontology.PhenotypeTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -12,10 +12,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -25,7 +22,7 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 
 	@Inject AlleleFunctionalImpactSlotAnnotationDAO alleleFunctionalImpactDAO;
 	@Inject AlleleDAO alleleDAO;
-	@Inject PhenotypeTermService phenotypeTermService;
+	@Inject PhenotypeTermDAO phenotypeTermDAO;
 
 	public ObjectResponse<AlleleFunctionalImpactSlotAnnotation> validateAlleleFunctionalImpactSlotAnnotation(AlleleFunctionalImpactSlotAnnotation uiEntity) {
 		AlleleFunctionalImpactSlotAnnotation mutationType = validateAlleleFunctionalImpactSlotAnnotation(uiEntity, false, false);
@@ -63,7 +60,7 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 		List<VocabularyTerm> functionalImpacts = validateRequiredTermsInVocabulary("functionalImpacts", VocabularyConstants.ALLELE_FUNCTIONAL_IMPACT_VOCABULARY, uiEntity.getFunctionalImpacts(), dbEntity.getFunctionalImpacts());
 		dbEntity.setFunctionalImpacts(functionalImpacts);
 
-		PhenotypeTerm phenotypeTerm = validatePhenotypeTerm(uiEntity, dbEntity);
+		PhenotypeTerm phenotypeTerm = validateEntity(phenotypeTermDAO, "phenotypeTerm", uiEntity.getPhenotypeTerm(), dbEntity.getPhenotypeTerm());
 		dbEntity.setPhenotypeTerm(phenotypeTerm);
 
 		String phenotypeStatement = handleStringField(uiEntity.getPhenotypeStatement());
@@ -79,25 +76,5 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 		}
 
 		return dbEntity;
-	}
-
-	public PhenotypeTerm validatePhenotypeTerm(AlleleFunctionalImpactSlotAnnotation uiEntity, AlleleFunctionalImpactSlotAnnotation dbEntity) {
-		String field = "phenotypeTerm";
-		if (ObjectUtils.isEmpty(uiEntity.getPhenotypeTerm())) {
-			return null;
-		}
-
-		PhenotypeTerm phenotypeTerm = null;
-		if (StringUtils.isNotBlank(uiEntity.getPhenotypeTerm().getCurie())) {
-			phenotypeTerm = phenotypeTermService.findByCurie(uiEntity.getPhenotypeTerm().getCurie());
-			if (phenotypeTerm == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
-			} else if (phenotypeTerm.getObsolete() && (dbEntity.getPhenotypeTerm() == null || !phenotypeTerm.getId().equals(dbEntity.getPhenotypeTerm().getId()))) {
-				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-				return null;
-			}
-		}
-		return phenotypeTerm;
 	}
 }
