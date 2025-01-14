@@ -30,7 +30,6 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.associations.AssociationIdentityHelper;
-import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.associations.alleleAssociations.AlleleGeneAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationValidator;
@@ -62,7 +61,6 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	@Inject AlleleFunctionalImpactSlotAnnotationValidator alleleFunctionalImpactValidator;
 	@Inject AlleleDatabaseStatusSlotAnnotationValidator alleleDatabaseStatusValidator;
 	@Inject AlleleGeneAssociationValidator alleleGeneAssociationValidator;
-	@Inject NoteValidator noteValidator;
 	@Inject ReferenceValidator referenceValidator;
 	
 	private String errorMessage;
@@ -117,7 +115,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			dbEntity.setIsExtinct(null);
 		}
 
-		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
+		List<Note> relatedNotes = validateRelatedNotes(uiEntity.getRelatedNotes(), VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
 		if (dbEntity.getRelatedNotes() != null) {
 			dbEntity.getRelatedNotes().clear();
 		}
@@ -305,47 +303,6 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		return validatedReferences;
-	}
-
-	public List<Note> validateRelatedNotes(Allele uiEntity, Allele dbEntity) {
-		String field = "relatedNotes";
-
-		List<Note> validatedNotes = new ArrayList<Note>();
-		Set<String> validatedNoteIdentities = new HashSet<>();
-		Boolean allValid = true;
-		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
-			for (int ix = 0; ix < uiEntity.getRelatedNotes().size(); ix++) {
-				Note note = uiEntity.getRelatedNotes().get(ix);
-				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
-				if (noteResponse.getEntity() == null) {
-					allValid = false;
-					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
-				} else {
-					note = noteResponse.getEntity();
-
-					String noteIdentity = NoteIdentityHelper.noteIdentity(note);
-					if (validatedNoteIdentities.contains(noteIdentity)) {
-						allValid = false;
-						Map<String, String> duplicateError = new HashMap<>();
-						duplicateError.put("freeText", ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
-						response.addErrorMessages(field, ix, duplicateError);
-					} else {
-						validatedNoteIdentities.add(noteIdentity);
-						validatedNotes.add(note);
-					}
-				}
-			}
-		}
-		if (!allValid) {
-			convertMapToErrorMessages(field);
-			return null;
-		}
-
-		if (CollectionUtils.isEmpty(validatedNotes)) {
-			return null;
-		}
-
-		return validatedNotes;
 	}
 
 	private List<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypes(Allele uiEntity, Allele dbEntity) {

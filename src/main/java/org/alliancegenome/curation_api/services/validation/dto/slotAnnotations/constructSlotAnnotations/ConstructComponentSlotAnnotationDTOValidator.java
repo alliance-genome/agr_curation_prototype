@@ -1,9 +1,7 @@
 package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.constructSlotAnnotations;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -13,7 +11,6 @@ import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
-import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.constructSlotAnnotations.ConstructComponentSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
@@ -78,31 +75,40 @@ public class ConstructComponentSlotAnnotationDTOValidator extends SlotAnnotation
 		} else {
 			annotation.setTaxonText(null);
 		}
-
-		if (CollectionUtils.isNotEmpty(annotation.getRelatedNotes())) {
-			annotation.getRelatedNotes().forEach(note -> {
-				constructComponentDAO.deleteAttachedNote(note.getId());
-			});
+		
+		
+		if (annotation.getRelatedNotes() != null) {
+			annotation.getRelatedNotes().clear();
 		}
+		
+		List<Note> validatedNotes = new ArrayList<Note>();
+		List<String> noteIdentities = new ArrayList<String>();
+		Boolean allNotesValid = true;
 		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
-			List<Note> notes = new ArrayList<>();
-			Set<String> noteIdentities = new HashSet<>();
-			for (NoteDTO noteDTO : dto.getNoteDtos()) {
-				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
+			for (int ix = 0; ix < dto.getNoteDtos().size(); ix++) {
+				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDtos().get(ix), VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
 				if (noteResponse.hasErrors()) {
-					ccsaResponse.addErrorMessage("note_dtos", noteResponse.errorMessagesString());
+					allNotesValid = false;
+					ccsaResponse.addErrorMessages("relatedNotes", ix, noteResponse.getErrorMessages());
 					break;
 				}
-				String noteIdentity = NoteIdentityHelper.noteDtoIdentity(noteDTO);
+				String noteIdentity = NoteIdentityHelper.noteDtoIdentity(dto.getNoteDtos().get(ix));
 				if (!noteIdentities.contains(noteIdentity)) {
 					noteIdentities.add(noteIdentity);
-					notes.add(noteDAO.persist(noteResponse.getEntity()));
+					validatedNotes.add(noteDAO.persist(noteResponse.getEntity()));
 				}
 			}
-			annotation.setRelatedNotes(notes);
-		} else {
-			annotation.setRelatedNotes(null);
 		}
+		if (!allNotesValid) {
+			ccsaResponse.convertMapToErrorMessages("relatedNotes");
+		}
+		if (CollectionUtils.isNotEmpty(validatedNotes) && allNotesValid) {
+			if (annotation.getRelatedNotes() == null) {
+				annotation.setRelatedNotes(new ArrayList<>());
+			}
+			annotation.getRelatedNotes().addAll(validatedNotes);
+		}
+
 
 		ccsaResponse.setEntity(annotation);
 

@@ -1,11 +1,7 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -18,8 +14,6 @@ import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
-import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -28,7 +22,6 @@ import jakarta.inject.Inject;
 public class VariantValidator extends GenomicEntityValidator<Variant> {
 
 	@Inject VariantDAO variantDAO;
-	@Inject NoteValidator noteValidator;
 	@Inject CrossReferenceDAO crossReferenceDAO;
 	@Inject SoTermDAO soTermDAO;
 
@@ -79,7 +72,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 		SOTerm sourceGeneralConsequence = validateEntity(soTermDAO, "sourceGeneralConsequence", uiEntity.getSourceGeneralConsequence(), dbEntity.getSourceGeneralConsequence());
 		dbEntity.setSourceGeneralConsequence(sourceGeneralConsequence);
 
-		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
+		List<Note> relatedNotes = validateRelatedNotes(uiEntity.getRelatedNotes(), VocabularyConstants.VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET);
 		if (dbEntity.getRelatedNotes() != null) {
 			dbEntity.getRelatedNotes().clear();
 		}
@@ -98,47 +91,6 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 		dbEntity = variantDAO.persist(dbEntity);
 
 		return dbEntity;
-	}
-
-	public List<Note> validateRelatedNotes(Variant uiEntity, Variant dbEntity) {
-		String field = "relatedNotes";
-
-		List<Note> validatedNotes = new ArrayList<Note>();
-		Set<String> validatedNoteIdentities = new HashSet<>();
-		Boolean allValid = true;
-		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
-			for (int ix = 0; ix < uiEntity.getRelatedNotes().size(); ix++) {
-				Note note = uiEntity.getRelatedNotes().get(ix);
-				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET);
-				if (noteResponse.getEntity() == null) {
-					allValid = false;
-					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
-				} else {
-					note = noteResponse.getEntity();
-
-					String noteIdentity = NoteIdentityHelper.noteIdentity(note);
-					if (validatedNoteIdentities.contains(noteIdentity)) {
-						allValid = false;
-						Map<String, String> duplicateError = new HashMap<>();
-						duplicateError.put("freeText", ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
-						response.addErrorMessages(field, ix, duplicateError);
-					} else {
-						validatedNoteIdentities.add(noteIdentity);
-						validatedNotes.add(note);
-					}
-				}
-			}
-		}
-		if (!allValid) {
-			convertMapToErrorMessages(field);
-			return null;
-		}
-
-		if (CollectionUtils.isEmpty(validatedNotes)) {
-			return null;
-		}
-
-		return validatedNotes;
 	}
 
 }

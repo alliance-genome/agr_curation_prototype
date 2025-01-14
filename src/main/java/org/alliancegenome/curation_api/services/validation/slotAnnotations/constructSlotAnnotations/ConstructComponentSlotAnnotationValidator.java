@@ -1,15 +1,11 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.constructSlotAnnotations;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
-import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -18,11 +14,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
-import org.alliancegenome.curation_api.services.validation.NoteValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -33,8 +25,6 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 
 	@Inject ConstructComponentSlotAnnotationDAO constructComponentDAO;
 	@Inject ConstructDAO constructDAO;
-	@Inject NoteValidator noteValidator;
-	@Inject NoteDAO noteDAO;
 
 	public ObjectResponse<ConstructComponentSlotAnnotation> validateConstructComponentSlotAnnotation(ConstructComponentSlotAnnotation uiEntity) {
 		ConstructComponentSlotAnnotation component = validateConstructComponentSlotAnnotation(uiEntity, false, false);
@@ -81,8 +71,16 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 		String taxonText = handleStringField(uiEntity.getTaxonText());
 		dbEntity.setTaxonText(taxonText);
 
-		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
-		dbEntity.setRelatedNotes(relatedNotes);
+		List<Note> relatedNotes = validateRelatedNotes(uiEntity.getRelatedNotes(), VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
+		if (dbEntity.getRelatedNotes() != null) {
+			dbEntity.getRelatedNotes().clear();
+		}
+		if (relatedNotes != null) {
+			if (dbEntity.getRelatedNotes() == null) {
+				dbEntity.setRelatedNotes(new ArrayList<>());
+			}
+			dbEntity.getRelatedNotes().addAll(relatedNotes);
+		}
 
 		if (response.hasErrors()) {
 			if (throwError) {
@@ -104,55 +102,6 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 		}
 
 		return uiEntity.getComponentSymbol();
-	}
-
-	public List<Note> validateRelatedNotes(ConstructComponentSlotAnnotation uiEntity, ConstructComponentSlotAnnotation dbEntity) {
-		String field = "relatedNotes";
-
-		List<Note> validatedNotes = new ArrayList<Note>();
-		Set<String> validatedNoteIdentities = new HashSet<>();
-		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
-			for (Note note : uiEntity.getRelatedNotes()) {
-				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
-				if (noteResponse.getEntity() == null) {
-					addMessageResponse(field, noteResponse.errorMessagesString());
-					return null;
-				}
-				note = noteResponse.getEntity();
-
-				String noteIdentity = NoteIdentityHelper.noteIdentity(note);
-				if (validatedNoteIdentities.contains(noteIdentity)) {
-					addMessageResponse(field, ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
-					return null;
-				}
-				validatedNoteIdentities.add(noteIdentity);
-				validatedNotes.add(note);
-			}
-		}
-
-		List<Long> previousNoteIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
-			previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
-		}
-		List<Long> validatedNoteIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(validatedNotes)) {
-			validatedNoteIds = validatedNotes.stream().map(Note::getId).collect(Collectors.toList());
-		}
-		for (Note validatedNote : validatedNotes) {
-			if (!previousNoteIds.contains(validatedNote.getId())) {
-				noteDAO.persist(validatedNote);
-			}
-		}
-		List<Long> idsToRemove = ListUtils.subtract(previousNoteIds, validatedNoteIds);
-		for (Long id : idsToRemove) {
-			constructComponentDAO.deleteAttachedNote(id);
-		}
-
-		if (CollectionUtils.isEmpty(validatedNotes)) {
-			return null;
-		}
-
-		return validatedNotes;
 	}
 
 }

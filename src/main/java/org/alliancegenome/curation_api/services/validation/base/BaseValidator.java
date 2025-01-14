@@ -1,7 +1,11 @@
 package org.alliancegenome.curation_api.services.validation.base;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
@@ -10,8 +14,10 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -20,11 +26,15 @@ import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.CrossReferenceValidator;
+import org.alliancegenome.curation_api.services.validation.NoteValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.Objects;
 
 import jakarta.inject.Inject;
 
@@ -41,6 +51,7 @@ public class BaseValidator<E extends Object> {
 	@Inject OrganizationService organizationService;
 	@Inject PersonService personService;
 	@Inject VocabularyTermService vocabularyTermService;
+	@Inject NoteValidator noteValidator;
 	
 	public ObjectResponse<E> response;
 
@@ -340,6 +351,85 @@ public class BaseValidator<E extends Object> {
 		}
 		
 		return validTerms;
+	}
+
+	protected Note validateRelatedNote(Note uiNote, String noteTypeVocabularyTermSet) {
+		String field = "relatedNote";
+
+		if (uiNote == null) {
+			return null;
+		}
+
+		ObjectResponse<Note> noteResponse = noteValidator.validateNote(uiNote, noteTypeVocabularyTermSet);
+		if (noteResponse.getEntity() == null) {
+			addMessageResponse(field, noteResponse.errorMessagesString());
+			return null;
+		}
+		return noteResponse.getEntity();
+	}
+	
+	protected List<Note> validateRelatedNotes(List<Note> uiNotes) {
+		return validateRelatedNotes(uiNotes, null, null);
+	}
+	
+	protected List<Note> validateRelatedNotes(List<Note> uiNotes, String noteTypeVocabularyTermSet) {
+		return validateRelatedNotes(uiNotes, noteTypeVocabularyTermSet, null);
+	}
+	
+	protected List<Note> validateRelatedNotes(List<Note> uiNotes, String noteTypeVocabularyTermSet, Reference expectedReference) {
+		String field = "relatedNotes";
+
+		List<Note> validatedNotes = new ArrayList<Note>();
+		Set<String> validatedNoteIdentities = new HashSet<>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(uiNotes)) {
+			for (int ix = 0; ix < uiNotes.size(); ix++) {
+				Note note = uiNotes.get(ix);
+				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, noteTypeVocabularyTermSet);
+				if (noteResponse.getEntity() == null) {
+					allValid = false;
+					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
+				} else {
+					note = noteResponse.getEntity();
+
+					String noteIdentity = NoteIdentityHelper.noteIdentity(note);
+					if (validatedNoteIdentities.contains(noteIdentity)) {
+						allValid = false;
+						Map<String, String> duplicateError = new HashMap<>();
+						duplicateError.put("freeText", ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
+						response.addErrorMessages(field, ix, duplicateError);
+					} else {
+						boolean expectedRefs = true;
+						if (expectedReference != null && expectedReference.getCurie() != null && CollectionUtils.isNotEmpty(note.getReferences())) {
+							for (Reference noteRef : note.getReferences()) {
+								if (!Objects.equal(noteRef.getCurie(), expectedReference.getCurie())) {
+									Map<String, String> noteRefErrorMessages = new HashMap<>();
+									noteRefErrorMessages.put("references", ValidationConstants.INVALID_MESSAGE + " (" + noteRef + ")");
+									response.addErrorMessages("relatedNotes", ix, noteRefErrorMessages);
+									allValid = false;
+									expectedRefs = false;
+									break;
+								}
+							}
+						}
+						if (expectedRefs) {
+							validatedNoteIdentities.add(noteIdentity);
+							validatedNotes.add(note);
+						}
+					}
+				}
+			}
+		}
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			return null;
+		}
+
+		if (CollectionUtils.isEmpty(validatedNotes)) {
+			return null;
+		}
+
+		return validatedNotes;
 	}
 
 }
