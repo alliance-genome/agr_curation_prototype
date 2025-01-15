@@ -115,11 +115,11 @@ public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isNotEmpty(dto.getZygosityCurie())) {
 			String curie = vocabularyTermService.getTermInVocabulary(VocabularyConstants.AGM_ALLELE_ASSOCIATION_VOCABULARY, dto.getZygosityCurie()).getEntity().getName();
 			if (StringUtils.isEmpty(curie)) {
-				aaaResponse.addErrorMessage("Zygosity_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getZygosityCurie() + ")");
+				aaaResponse.addErrorMessage("zygosity_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getZygosityCurie() + ")");
 			}
 			zygosity = genoTermService.getByCurie(curie).getEntity();
 			if (zygosity == null) {
-				aaaResponse.addErrorMessage("Zygosity_curie", ValidationConstants.UNRECOGNIZED_MESSAGE + " (" + dto.getZygosityCurie() + ")");
+				aaaResponse.addErrorMessage("zygosity_curie", ValidationConstants.UNRECOGNIZED_MESSAGE + " (" + dto.getZygosityCurie() + ")");
 			}
 		}
 		association.setZygosity(zygosity);
