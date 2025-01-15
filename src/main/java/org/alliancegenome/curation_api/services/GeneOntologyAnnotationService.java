@@ -123,11 +123,11 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 	}
 
 
-	public Map<Long, GeneOntologyAnnotationDTO> getGafMap(Organization organization) {
+	public Map<Long, GeneOntologyAnnotationDTO> getGafMap(String dataSubtype) {
 		if (gafMap.size() > 0) {
 			return gafMap;
 		}
-		gafMap = gafDAO.getAllGafIdsPerProvider(organization);
+		gafMap = gafDAO.getAllGafIdsPerProvider(dataSubtype);
 		return gafMap;
 	}
 
