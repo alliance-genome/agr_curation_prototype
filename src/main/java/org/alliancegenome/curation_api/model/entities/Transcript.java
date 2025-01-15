@@ -11,9 +11,14 @@ import org.alliancegenome.curation_api.model.entities.associations.transcriptAss
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -33,12 +38,18 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "transcriptGenomicLocationAssociations", "transcriptGeneAssociations", "transcriptCodingSequenceAssociations", "transcriptExonAssociations" }, callSuper = true)
 @Schema(name = "Transcript", description = "POJO that represents the Transcript")
-@AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
+@AGRCurationSchemaVersion(min = "2.8.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
 @Table(indexes = {
+	@Index(name = "transcript_transcriptId_index", columnList = "transcriptId"),
 	@Index(name = "transcript_transcriptType_index", columnList = "transcriptType_id")
 })
 public class Transcript extends GenomicEntity {
 
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "transcriptId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({ View.FieldsOnly.class })
+	private String transcriptId;
+	
 	@JsonView({ View.FieldsOnly.class })
 	private String name;
 
@@ -51,7 +62,7 @@ public class Transcript extends GenomicEntity {
 	@IndexedEmbedded(
 		includePaths = {
 			"transcriptGenomicLocationAssociationObject.curie", "transcriptGenomicLocationAssociationObject.curie_keyword",
-			"transcriptGenomicLocationAssociationObject.modEntityId", "transcriptGenomicLocationAssociationObject.modEntityId_keyword",
+			"transcriptGenomicLocationAssociationObject.primaryExternalId", "transcriptGenomicLocationAssociationObject.primaryExternalId_keyword",
 			"transcriptGenomicLocationAssociationObject.modInternalId", "transcriptGenomicLocationAssociationObject.modInternalId_keyword",
 			"start", "end"
 		}
@@ -62,9 +73,9 @@ public class Transcript extends GenomicEntity {
 
 	@IndexedEmbedded(
 		includePaths = {
-			"transcriptCodingSequenceAssociationObject.curie", "transcriptCodingSequenceAssociationObject.name", "transcriptCodingSequenceAssociationObject.modEntityId",
+			"transcriptCodingSequenceAssociationObject.curie", "transcriptCodingSequenceAssociationObject.name", "transcriptCodingSequenceAssociationObject.primaryExternalId",
 			"transcriptCodingSequenceAssociationObject.modInternalId", "transcriptCodingSequenceAssociationObject.uniqueId",
-			"transcriptCodingSequenceAssociationObject.curie_keyword", "transcriptCodingSequenceAssociationObject.name_keyword", "transcriptCodingSequenceAssociationObject.modEntityId_keyword",
+			"transcriptCodingSequenceAssociationObject.curie_keyword", "transcriptCodingSequenceAssociationObject.name_keyword", "transcriptCodingSequenceAssociationObject.primaryExternalId_keyword",
 			"transcriptCodingSequenceAssociationObject.modInternalId_keyword", "transcriptCodingSequenceAssociationObject.uniqueId_keyword"
 		}
 	)
@@ -74,9 +85,9 @@ public class Transcript extends GenomicEntity {
 
 	@IndexedEmbedded(
 		includePaths = {
-			"transcriptExonAssociationObject.curie", "transcriptExonAssociationObject.name", "transcriptExonAssociationObject.modEntityId",
+			"transcriptExonAssociationObject.curie", "transcriptExonAssociationObject.name", "transcriptExonAssociationObject.primaryExternalId",
 			"transcriptExonAssociationObject.modInternalId", "transcriptExonAssociationObject.uniqueId",
-			"transcriptExonAssociationObject.curie_keyword", "transcriptExonAssociationObject.name_keyword", "transcriptExonAssociationObject.modEntityId_keyword",
+			"transcriptExonAssociationObject.curie_keyword", "transcriptExonAssociationObject.name_keyword", "transcriptExonAssociationObject.primaryExternalId_keyword",
 			"transcriptExonAssociationObject.modInternalId_keyword", "transcriptExonAssociationObject.uniqueId_keyword"
 		}
 	)
@@ -89,7 +100,7 @@ public class Transcript extends GenomicEntity {
 			"transcriptGeneAssociationObject.curie", "transcriptGeneAssociationObject.geneSymbol.displayText", "transcriptGeneAssociationObject.geneSymbol.formatText", "transcriptGeneAssociationObject.geneFullName.displayText",
 			"transcriptGeneAssociationObject.geneFullName.formatText", "transcriptGeneAssociationObject.curie_keyword", "transcriptGeneAssociationObject.geneSymbol.displayText_keyword",
 			"transcriptGeneAssociationObject.geneSymbol.formatText_keyword", "transcriptGeneAssociationObject.geneFullName.displayText_keyword", "transcriptGeneAssociationObject.geneFullName.formatText_keyword",
-			"transcriptGeneAssociationObject.modEntityId", "transcriptGeneAssociationObject.modInternalId", "transcriptGeneAssociationObject.modEntityId_keyword", "transcriptGeneAssociationObject.modInternalId_keyword"
+			"transcriptGeneAssociationObject.primaryExternalId", "transcriptGeneAssociationObject.modInternalId", "transcriptGeneAssociationObject.primaryExternalId_keyword", "transcriptGeneAssociationObject.modInternalId_keyword"
 		}
 	)
 	@OneToMany(mappedBy = "transcriptAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)

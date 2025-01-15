@@ -129,6 +129,10 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 			}
 			updateHistory(history);
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				history.setErrorMessage("Thread isInterrupted");
+				throw new RuntimeException("Thread isInterrupted");
+			}
 		}
 	}
 
@@ -152,6 +156,10 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 			}
 			updateHistory(history);
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				history.setErrorMessage("Thread isInterrupted");
+				throw new RuntimeException("Thread isInterrupted");
+			}
 		}
 	}
 }

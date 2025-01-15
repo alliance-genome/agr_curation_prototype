@@ -34,11 +34,11 @@ public class SequenceTargetingReagentGeneAssociationFmsDTOValidator {
 		ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
 
 		SequenceTargetingReagent sqtr;
-		SearchResponse<SequenceTargetingReagent> sqtrSearchResponse = sqtrDAO.findByField("modEntityId",
+		SearchResponse<SequenceTargetingReagent> sqtrSearchResponse = sqtrDAO.findByField("primaryExternalId",
 				dto.getPrimaryId());
 
 		if (sqtrSearchResponse == null || sqtrSearchResponse.getSingleResult() == null) {
-			sqtrResponse.addErrorMessage("modEntityId",
+			sqtrResponse.addErrorMessage("primaryExternalId",
 					ValidationConstants.INVALID_MESSAGE + " (" + dto.getPrimaryId() + ")");
 			sqtr = new SequenceTargetingReagent();
 		} else {

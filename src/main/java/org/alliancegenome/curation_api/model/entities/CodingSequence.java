@@ -61,7 +61,7 @@ public class CodingSequence extends GenomicEntity {
 	@IndexedEmbedded(
 		includePaths = {
 			"codingSequenceGenomicLocationAssociationObject.curie", "codingSequenceGenomicLocationAssociationObject.curie_keyword",
-			"codingSequenceGenomicLocationAssociationObject.modEntityId", "codingSequenceGenomicLocationAssociationObject.modEntityId_keyword",
+			"codingSequenceGenomicLocationAssociationObject.primaryExternalId", "codingSequenceGenomicLocationAssociationObject.primaryExternalId_keyword",
 			"codingSequenceGenomicLocationAssociationObject.modInternalId", "codingSequenceGenomicLocationAssociationObject.modInternalId_keyword",
 			"start", "end"
 		}

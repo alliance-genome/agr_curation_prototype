@@ -38,7 +38,7 @@ describe('<GenesPage />', () => {
 	it('The table contains correct data', async () => {
 		let result = await renderWithClient(<GenesPage />);
 
-		const modEntityIdTd = await result.findByText(/WB:WBGene00003771/i);
+		const primaryExternalIdTd = await result.findByText(/WB:WBGene00003771/i);
 		const nameTd = await result.findByText(/LEVamisole resistant 8/i);
 		const symbolTd = await result.findByText(/lev-8/i);
 		const synonymsTd = await result.findByText(/acr-13/i);
@@ -49,7 +49,7 @@ describe('<GenesPage />', () => {
 		const geneTypeTd = await result.findByText(/protein_coding_gene/i);
 
 		await waitFor(() => {
-			expect(modEntityIdTd).toBeInTheDocument();
+			expect(primaryExternalIdTd).toBeInTheDocument();
 			expect(nameTd).toBeInTheDocument();
 			expect(symbolTd).toBeInTheDocument();
 			expect(synonymsTd).toBeInTheDocument();

@@ -23,7 +23,6 @@ import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
@@ -50,6 +49,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalCondi
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
@@ -167,16 +167,16 @@ public class BaseITCase {
 		return map;
 	}
 
-	public AffectedGenomicModel createAffectedGenomicModel(String modEntityId, String name, String taxonCurie, String subtypeName, Boolean obsolete) throws Exception {
-		return createAffectedGenomicModel(modEntityId, name, taxonCurie, subtypeName, obsolete, null);
+	public AffectedGenomicModel createAffectedGenomicModel(String primaryExternalId, String name, String taxonCurie, String subtypeName, Boolean obsolete) throws Exception {
+		return createAffectedGenomicModel(primaryExternalId, name, taxonCurie, subtypeName, obsolete, null);
 	}
 
-	public AffectedGenomicModel createAffectedGenomicModel(String modEntityId, String name, String taxonCurie, String subtypeName, Boolean obsolete, DataProvider dataProvider) {
+	public AffectedGenomicModel createAffectedGenomicModel(String primaryExternalId, String name, String taxonCurie, String subtypeName, Boolean obsolete, Organization dataProvider) {
 		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
 		VocabularyTerm subtype = getVocabularyTerm(subtypeVocabulary, subtypeName);
 
 		AffectedGenomicModel model = new AffectedGenomicModel();
-		model.setModEntityId(modEntityId);
+		model.setPrimaryExternalId(primaryExternalId);
 		model.setTaxon(getNCBITaxonTerm(taxonCurie));
 		model.setSubtype(subtype);
 		model.setName(name);
@@ -194,13 +194,13 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public Allele createAllele(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete) {
-		return createAllele(modEntityId, modEntityId, taxonCurie, symbolNameTerm, obsolete, null);
+	public Allele createAllele(String primaryExternalId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete) {
+		return createAllele(primaryExternalId, primaryExternalId, taxonCurie, symbolNameTerm, obsolete, null);
 	}
 
-	public Allele createAllele(String modEntityId, String symbol, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider) {
+	public Allele createAllele(String primaryExternalId, String symbol, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, Organization dataProvider) {
 		Allele allele = new Allele();
-		allele.setModEntityId(modEntityId);
+		allele.setPrimaryExternalId(primaryExternalId);
 		allele.setTaxon(getNCBITaxonTerm(taxonCurie));
 		allele.setObsolete(obsolete);
 		allele.setInternal(false);
@@ -243,9 +243,9 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 	
-	public AssemblyComponent createAssemblyComponent(String modEntityId, String name, GenomeAssembly assembly, DataProvider dataProvider) throws Exception {
+	public AssemblyComponent createAssemblyComponent(String primaryExternalId, String name, GenomeAssembly assembly, Organization dataProvider) throws Exception {
 		AssemblyComponent assemblyComponent = new AssemblyComponent();
-		assemblyComponent.setModEntityId(modEntityId);
+		assemblyComponent.setPrimaryExternalId(primaryExternalId);
 		assemblyComponent.setName(name);
 		assemblyComponent.setDataProvider(dataProvider);
 		assemblyComponent.setGenomeAssembly(assembly);
@@ -262,9 +262,9 @@ public class BaseITCase {
 			return response.getEntity();
 	}
 
-	public BiologicalEntity createBiologicalEntity(String modEntityId, String taxonCurie) {
+	public BiologicalEntity createBiologicalEntity(String primaryExternalId, String taxonCurie) {
 		BiologicalEntity bioEntity = new BiologicalEntity();
-		bioEntity.setModEntityId(modEntityId);
+		bioEntity.setPrimaryExternalId(primaryExternalId);
 		bioEntity.setTaxon(getNCBITaxonTerm(taxonCurie));
 
 		ObjectResponse<BiologicalEntity> response = given().
@@ -337,15 +337,15 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public Construct createConstruct(String modEntityId, Boolean obsolete, VocabularyTerm symbolNameTerm) {
+	public Construct createConstruct(String primaryExternalId, Boolean obsolete, VocabularyTerm symbolNameTerm) {
 		Construct construct = new Construct();
-		construct.setModEntityId(modEntityId);
+		construct.setPrimaryExternalId(primaryExternalId);
 		construct.setObsolete(obsolete);
 
 		ConstructSymbolSlotAnnotation symbol = new ConstructSymbolSlotAnnotation();
 		symbol.setNameType(symbolNameTerm);
-		symbol.setDisplayText(modEntityId);
-		symbol.setFormatText(modEntityId);
+		symbol.setDisplayText(primaryExternalId);
+		symbol.setFormatText(primaryExternalId);
 
 		construct.setConstructSymbol(symbol);
 
@@ -357,27 +357,6 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefConstruct());
-
-		return response.getEntity();
-	}
-
-	public DataProvider createDataProvider(String organizationAbbreviation, Boolean obsolete) {
-		DataProvider dataProvider = new DataProvider();
-		Organization sourceOrganization = getOrganization(organizationAbbreviation);
-		if (sourceOrganization == null) {
-			sourceOrganization = createOrganization(organizationAbbreviation, false);
-		}
-		dataProvider.setSourceOrganization(sourceOrganization);
-		dataProvider.setObsolete(obsolete);
-
-		ObjectResponse<DataProvider> response = RestAssured.given().
-			contentType("application/json").
-			body(dataProvider).
-			when().
-			post("/api/dataprovider").
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefDataProvider());
 
 		return response.getEntity();
 	}
@@ -466,34 +445,34 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public Gene createGene(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete) {
-		return createGene(modEntityId, taxonCurie, symbolNameTerm, obsolete, null);
+	public Gene createGene(String primaryExternalId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete) {
+		return createGene(primaryExternalId, taxonCurie, symbolNameTerm, obsolete, null);
 	}
 
-	public Gene createGene(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider) {
-		return createGeneWithXref(modEntityId, taxonCurie, symbolNameTerm, obsolete, dataProvider, null);
+	public Gene createGene(String primaryExternalId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, Organization dataProvider) {
+		return createGeneWithXref(primaryExternalId, taxonCurie, symbolNameTerm, obsolete, dataProvider, null);
 	}
 
-	public List<Gene> createGenes(List<String> modEntityIds, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider) {
+	public List<Gene> createGenes(List<String> primaryExternalIds, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, Organization dataProvider) {
 		List<Gene> geneList = new ArrayList<>();
-		for (String modEntityId : modEntityIds) {
-			geneList.add(createGene(modEntityId, taxonCurie, symbolNameTerm, obsolete, dataProvider));
+		for (String primaryExternalId : primaryExternalIds) {
+			geneList.add(createGene(primaryExternalId, taxonCurie, symbolNameTerm, obsolete, dataProvider));
 		}
 
 		return geneList;
 	}
 
-	public Gene createGeneWithXref(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider, String xrefCurie) {
+	public Gene createGeneWithXref(String primaryExternalId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, Organization dataProvider, String xrefCurie) {
 		Gene gene = new Gene();
-		gene.setModEntityId(modEntityId);
+		gene.setPrimaryExternalId(primaryExternalId);
 		gene.setTaxon(getNCBITaxonTerm(taxonCurie));
 		gene.setDataProvider(dataProvider);
 		gene.setObsolete(obsolete);
 
 		GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
 		symbol.setNameType(symbolNameTerm);
-		symbol.setDisplayText(modEntityId);
-		symbol.setFormatText(modEntityId);
+		symbol.setDisplayText(primaryExternalId);
+		symbol.setFormatText(primaryExternalId);
 
 		gene.setGeneSymbol(symbol);
 
@@ -600,6 +579,25 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefMMOTerm());
+
+		return response.getEntity();
+	}
+
+	public OBITerm createObiTerm(String curie, String name) throws Exception {
+		OBITerm obiTerm = new OBITerm();
+		obiTerm.setCurie(curie);
+		obiTerm.setName(name);
+		obiTerm.setObsolete(false);
+		obiTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<OBITerm> response = RestAssured.given().
+			contentType("application/json").
+			body(obiTerm).
+			when().
+			put("/api/obiterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefOBITerm());
 
 		return response.getEntity();
 	}
@@ -768,9 +766,9 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public SequenceTargetingReagent createSequenceTargetingReagent(String modEntityId, Boolean obsolete, String name) {
+	public SequenceTargetingReagent createSequenceTargetingReagent(String primaryExternalId, Boolean obsolete, String name) {
 		SequenceTargetingReagent sqtr = new SequenceTargetingReagent();
-		sqtr.setModEntityId(modEntityId);
+		sqtr.setPrimaryExternalId(primaryExternalId);
 		sqtr.setObsolete(obsolete);
 		sqtr.setName(name);
 
@@ -1120,10 +1118,10 @@ public class BaseITCase {
 		return res.getEntity();
 	}
 	
-	public GenomeAssembly getGenomeAssembly(String modEntityId) throws Exception {
+	public GenomeAssembly getGenomeAssembly(String primaryExternalId) throws Exception {
 		ObjectResponse<GenomeAssembly> response = RestAssured.given().
 				when().
-				get("/api/genomeassembly/" + modEntityId).
+				get("/api/genomeassembly/" + primaryExternalId).
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefGenomeAssembly());
@@ -1243,11 +1241,6 @@ public class BaseITCase {
 		};
 	}
 
-	private TypeRef<ObjectResponse<DataProvider>> getObjectResponseTypeRefDataProvider() {
-		return new TypeRef<ObjectResponse<DataProvider>>() {
-		};
-	}
-
 	private TypeRef<ObjectResponse<DOTerm>> getObjectResponseTypeRefDOTerm() {
 		return new TypeRef<ObjectResponse<DOTerm>>() {
 		};
@@ -1305,6 +1298,11 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<MMOTerm>> getObjectResponseTypeRefMMOTerm() {
 		return new TypeRef<ObjectResponse<MMOTerm>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<OBITerm>> getObjectResponseTypeRefOBITerm() {
+		return new TypeRef<ObjectResponse<OBITerm>>() {
 		};
 	}
 

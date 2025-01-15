@@ -34,11 +34,11 @@ export const GeneMolecularInteractionsTable = () => {
 	const sortMapping = {
 		'geneAssociationSubject.geneSymbol.displayText': [
 			'geneAssociationSubject.geneFullName.displayText',
-			'geneAssociationSubject.modEntityId',
+			'geneAssociationSubject.primaryExternalId',
 		],
 		'geneGeneAssociationObject.geneSymbol.displayText': [
 			'geneGeneAssociationObject.geneFullName.displayText',
-			'geneGeneAssociationObject.modEntityId',
+			'geneGeneAssociationObject.primaryExternalId',
 		],
 		'phenotypeAnnotationObject.name': ['phenotypeAnnotationObject.curie', 'phenotypeAnnotationObject.namespace'],
 		'interactionType.name': ['interactionType.curie'],

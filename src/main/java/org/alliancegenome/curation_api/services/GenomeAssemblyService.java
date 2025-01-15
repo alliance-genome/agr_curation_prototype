@@ -22,7 +22,7 @@ import jakarta.inject.Inject;
 public class GenomeAssemblyService extends BaseEntityCrudService<GenomeAssembly, GenomeAssemblyDAO> {
 
 	@Inject GenomeAssemblyDAO genomeAssemblyDAO;
-	@Inject DataProviderService dataProviderService;
+	@Inject OrganizationService organizationService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
 	@Override
@@ -35,15 +35,15 @@ public class GenomeAssemblyService extends BaseEntityCrudService<GenomeAssembly,
 
 		if (StringUtils.isNotBlank(assemblyName)) {
 			Map<String, Object> params = new HashMap<>();
-			params.put("modEntityId", assemblyName);
+			params.put("primaryExternalId", assemblyName);
 			params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
 	
 			SearchResponse<GenomeAssembly> resp = genomeAssemblyDAO.findByParams(params);
 			if (resp == null || resp.getSingleResult() == null) {
 				GenomeAssembly assembly = new GenomeAssembly();
-				assembly.setModEntityId(assemblyName);
-				assembly.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));
+				assembly.setPrimaryExternalId(assemblyName);
+				assembly.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
 				assembly.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
 	
 				return genomeAssemblyDAO.persist(assembly);
@@ -56,7 +56,7 @@ public class GenomeAssemblyService extends BaseEntityCrudService<GenomeAssembly,
 	}
 
 	public ObjectResponse<GenomeAssembly> deleteByIdentifier(String identifierString) {
-		GenomeAssembly assembly = findByAlternativeFields(List.of("modEntityId", "modInternalId"), identifierString);
+		GenomeAssembly assembly = findByAlternativeFields(List.of("primaryExternalId", "modInternalId"), identifierString);
 		if (assembly != null) {
 			genomeAssemblyDAO.remove(assembly.getId());
 		}

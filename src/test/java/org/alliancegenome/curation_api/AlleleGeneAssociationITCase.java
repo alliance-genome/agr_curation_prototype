@@ -120,8 +120,8 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relation.getName())).
-			body("entity.alleleGeneAssociationObject.modEntityId", is(gene.getModEntityId())).
-			body("entity.alleleAssociationSubject.modEntityId", is(allele.getModEntityId())).
+			body("entity.alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
+			body("entity.alleleAssociationSubject.primaryExternalId", is(allele.getPrimaryExternalId())).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference.getCurie())).
 			body("entity.evidenceCode.curie", is(ecoTerm.getCurie())).
@@ -139,22 +139,22 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 
 		RestAssured.given().
 			when().
-			get(alleleGetEndpoint + allele.getModEntityId()).
+			get(alleleGetEndpoint + allele.getPrimaryExternalId()).
 			then().
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relation.getName())).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.modEntityId", is(gene.getModEntityId())).
+			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
 			body("entity.alleleGeneAssociations[0].alleleAssociationSubject", not(hasKey("alleleGeneAssociations")));
 		
 		RestAssured.given().
 			when().
-			get(geneGetEndpoint + gene.getModEntityId()).
+			get(geneGetEndpoint + gene.getPrimaryExternalId()).
 			then().
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relation.getName())).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.modEntityId", is(gene.getModEntityId())).
+			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
 			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject", not(hasKey("alleleGeneAssociations")));
 	}
 	
@@ -185,8 +185,8 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relation2.getName())).
-			body("entity.alleleGeneAssociationObject.modEntityId", is(gene2.getModEntityId())).
-			body("entity.alleleAssociationSubject.modEntityId", is(allele2.getModEntityId())).
+			body("entity.alleleGeneAssociationObject.primaryExternalId", is(gene2.getPrimaryExternalId())).
+			body("entity.alleleAssociationSubject.primaryExternalId", is(allele2.getPrimaryExternalId())).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2.getCurie())).
 			body("entity.evidenceCode.curie", is(ecoTerm2.getCurie())).
@@ -336,9 +336,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	@Order(9)
 	public void createAlleleGeneAssociationWithInvalidFields() {
 		Allele nonPersistedAllele = new Allele();
-		nonPersistedAllele.setModEntityId("NP:Allele01");
+		nonPersistedAllele.setPrimaryExternalId("NP:Allele01");
 		Gene nonPersistedGene = new Gene();
-		nonPersistedGene.setModEntityId("NP:Gene01");
+		nonPersistedGene.setPrimaryExternalId("NP:Gene01");
 		Reference nonPersistedReference = new Reference();
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		ECOTerm nonPersistedEcoTerm = new ECOTerm();
@@ -379,9 +379,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	@Order(9)
 	public void editAlleleGeneAssociationWithInvalidFields() {
 		Allele nonPersistedAllele = new Allele();
-		nonPersistedAllele.setModEntityId("NP:Allele01");
+		nonPersistedAllele.setPrimaryExternalId("NP:Allele01");
 		Gene nonPersistedGene = new Gene();
-		nonPersistedGene.setModEntityId("NP:Gene01");
+		nonPersistedGene.setPrimaryExternalId("NP:Gene01");
 		Reference nonPersistedReference = new Reference();
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		ECOTerm nonPersistedEcoTerm = new ECOTerm();

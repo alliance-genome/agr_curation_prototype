@@ -61,7 +61,7 @@ describe('GenomicEntityTemplate', () => {
 	it('should render genomicEntity name and id when genomicEntity has name', () => {
 		const genomicEntity = {
 			name: 'genomicEntity Name',
-			modEntityId: 'ID',
+			primaryExternalId: 'ID',
 		};
 
 		const result = render(<GenomicEntityTemplate genomicEntity={genomicEntity} />);
@@ -94,7 +94,7 @@ describe('GenomicEntityTemplate', () => {
 			geneSymbol: {
 				displayText: 'Gene <sup>Symbol</sup>',
 			},
-			modEntityId: 'ID',
+			primaryExternalId: 'ID',
 		};
 
 		const { container } = render(<GenomicEntityTemplate genomicEntity={genomicEntity} />);

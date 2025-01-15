@@ -18,7 +18,7 @@ public class GenomicEntityDAO extends BaseSQLDAO<GenomicEntity> {
 
 	public Map<String, Long> getGenomicEntityIdMap() {
 		Map<String, Long> genomicEntityIdMap = new HashMap<>();
-		Query q = entityManager.createNativeQuery("SELECT a.id, a.modEntityId, a.modInternalId FROM BiologicalEntity as a where exists (select * from genomicentity as g where g.id = a.id)");
+		Query q = entityManager.createNativeQuery("SELECT a.id, a.primaryExternalId, a.modInternalId FROM BiologicalEntity as a where exists (select * from genomicentity as g where g.id = a.id)");
 		List<Object[]> ids = q.getResultList();
 		ids.forEach(record -> {
 			if (record[1] != null) {

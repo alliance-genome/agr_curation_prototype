@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
@@ -37,6 +38,7 @@ import lombok.ToString;
 		@Index(name = "chromosome_taxon_index", columnList = "taxon_id"),
 		@Index(name = "chromosome_name_index", columnList = "name"),
 		@Index(name = "chromosome_dataprovider_index", columnList = "dataprovider_id"),
+		@Index(name = "chromosome_dataprovidercrossreference_index", columnList = "dataprovidercrossreference_id"),
 		@Index(name = "chromosome_createdby_index", columnList = "createdby_id"),
 		@Index(name = "chromosome_updatedby_index", columnList = "updatedby_id")
 	},
@@ -53,14 +55,21 @@ public class Chromosome extends AuditedObject {
 	private NCBITaxonTerm taxon;
 
 	@IndexedEmbedded(includePaths = {
-		"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
-		"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"
+		"abbreviation", "fullName", "shortName",
+		"abbreviation_keyword", "fullName_keyword", "shortName_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class })
-	private DataProvider dataProvider;
+	private Organization dataProvider;
+	
+	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(orphanRemoval = true)
+	@Fetch(FetchMode.SELECT)
+	@JsonView({ View.FieldsOnly.class })
+	private CrossReference dataProviderCrossReference;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")

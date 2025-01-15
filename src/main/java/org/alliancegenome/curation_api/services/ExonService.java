@@ -32,7 +32,7 @@ public class ExonService extends BaseEntityCrudService<Exon, ExonDAO> {
 	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
+		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
 			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
 		}
 		List<Long> ids = exonDAO.findIdsByParams(params);
@@ -42,13 +42,13 @@ public class ExonService extends BaseEntityCrudService<Exon, ExonDAO> {
 
 	@Override
 	public ObjectResponse<Exon> getByIdentifier(String identifier) {
-		Exon object = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifier);
+		Exon object = findByAlternativeFields(List.of("curie", "primaryExternalId", "modInternalId", "uniqueId"), identifier);
 		ObjectResponse<Exon> ret = new ObjectResponse<Exon>(object);
 		return ret;
 	}
 
 	public ObjectResponse<Exon> deleteByIdentifier(String identifierString) {
-		Exon exon = findByAlternativeFields(List.of("modEntityId", "modInternalId", "uniqueId"), identifierString);
+		Exon exon = findByAlternativeFields(List.of("primaryExternalId", "modInternalId", "uniqueId"), identifierString);
 		if (exon != null) {
 			exonDAO.remove(exon.getId());
 		}

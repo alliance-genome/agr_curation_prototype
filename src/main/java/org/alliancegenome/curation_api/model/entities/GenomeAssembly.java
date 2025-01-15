@@ -42,7 +42,7 @@ public class GenomeAssembly extends BiologicalEntity {
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 	
-	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
+	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@EqualsAndHashCode.Include

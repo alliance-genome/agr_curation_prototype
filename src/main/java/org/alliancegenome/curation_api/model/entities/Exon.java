@@ -61,7 +61,7 @@ public class Exon extends GenomicEntity {
 	@IndexedEmbedded(
 		includePaths = {
 			"exonGenomicLocationAssociationObject.curie", "exonGenomicLocationAssociationObject.curie_keyword",
-			"exonGenomicLocationAssociationObject.modEntityId", "exonGenomicLocationAssociationObject.modEntityId_keyword",
+			"exonGenomicLocationAssociationObject.primaryExternalId", "exonGenomicLocationAssociationObject.primaryExternalId_keyword",
 			"exonGenomicLocationAssociationObject.modInternalId", "exonGenomicLocationAssociationObject.modInternalId_keyword",
 			"start", "end"
 		}

@@ -2,7 +2,13 @@ package org.alliancegenome.curation_api.jobs;
 
 import java.io.File;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
+import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
@@ -21,6 +27,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadGroup;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkScheduledLoad;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.apache.commons.collections4.ListUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.cronutils.model.Cron;
@@ -50,7 +57,6 @@ public class JobScheduler {
 
 	@Inject Event<StartedLoadJobEvent> startedFileJobEvents;
 
-	
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadGroupDAO groupDAO;
@@ -190,7 +196,49 @@ public class JobScheduler {
 		bulkLoadFileExceptionDAO.cleanUpTwoWeekOldExceptions();
 	}
 
-	@Scheduled(cron = "0 0 0 ? * SUN")
+	@Scheduled(cron = "0 0 2 ? * SUN")
+	public void cleanUpFileHistories() {
+		List<BulkLoad> bulkLoads = bulkLoadDAO.findAll().getResults();
+		for (BulkLoad bulkLoad : bulkLoads) {
+			List<BulkLoadFileHistory> histories = bulkLoad.getHistory();
+
+			Map<String, List<BulkLoadFileHistory>> groupedByFile = histories.stream()
+				.collect(Collectors.groupingBy(history -> history.getBulkLoadFile().getMd5Sum()));
+
+			Map<String, List<BulkLoadFileHistory>> limitedGroups = groupedByFile.entrySet().stream()
+				.collect(Collectors.toMap(
+					Map.Entry::getKey,
+					e -> e.getValue().stream()
+						.sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted()))
+						.filter(history -> !history.getCounts().isEmpty())
+						.limit(2)
+						.collect(Collectors.toList())
+			));
+
+			List<BulkLoadFileHistory> sortedList = limitedGroups.values().stream()
+				.flatMap(List::stream)
+				.sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted()))
+				.collect(Collectors.toList());
+
+			Set<String> selectedFiles = new HashSet<>();
+			List<BulkLoadFileHistory> historiesToKeep = new ArrayList<>();
+
+			for (BulkLoadFileHistory history : sortedList) {
+				if (selectedFiles.size() < 3 || selectedFiles.contains(history.getBulkLoadFile().getMd5Sum())) {
+					historiesToKeep.add(history);
+					selectedFiles.add(history.getBulkLoadFile().getMd5Sum());
+				}
+			}
+
+			List<BulkLoadFileHistory> historiesToRemove = ListUtils.subtract(histories, historiesToKeep);
+
+			for (BulkLoadFileHistory history : historiesToRemove) {
+				bulkLoadFileHistoryDAO.remove(history.getId());
+			}
+		}
+	}
+
+	//@Scheduled(cron = "0 0 0 ? * SUN")
 	public void runMassIndexerEverything() {
 		// Not sure what is going to happen when this time's out but should run anyway
 		// Defaults taken from the API endpoint

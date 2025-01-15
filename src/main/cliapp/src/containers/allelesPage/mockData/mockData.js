@@ -23,7 +23,7 @@ export const data = {
 			internal: false,
 			obsolete: false,
 			dbDateUpdated: '2023-04-05T02:49:57.970413Z',
-			modEntityId: 'FB:FBal0196303',
+			primaryExternalId: 'FB:FBal0196303',
 			taxon: {
 				internal: false,
 				obsolete: false,
@@ -33,23 +33,18 @@ export const data = {
 			dataProvider: {
 				internal: false,
 				obsolete: false,
-				id: 76151078,
-				sourceOrganization: {
+				id: 20308679,
+				uniqueId: 'FB',
+				abbreviation: 'FB',
+				fullName: 'FlyBase',
+				homepageResourceDescriptorPage: {
 					internal: false,
 					obsolete: false,
-					id: 20308679,
-					uniqueId: 'FB',
-					abbreviation: 'FB',
-					fullName: 'FlyBase',
-					homepageResourceDescriptorPage: {
-						internal: false,
-						obsolete: false,
-						dbDateCreated: '2023-02-20T09:26:39.537112Z',
-						dbDateUpdated: '2023-05-04T22:00:09.35185Z',
-						id: 41750763,
-						name: 'homepage',
-						urlTemplate: 'https://flybase.org/',
-					},
+					dbDateCreated: '2023-02-20T09:26:39.537112Z',
+					dbDateUpdated: '2023-05-04T22:00:09.35185Z',
+					id: 41750763,
+					name: 'homepage',
+					urlTemplate: 'https://flybase.org/',
 				},
 			},
 			references: [
@@ -530,7 +525,7 @@ export const alleleDetailData = {
 		internal: false,
 		obsolete: false,
 		dbDateUpdated: '2023-04-14T22:58:06.51117Z',
-		modEntityId: 'MGI:5146840',
+		primaryExternalId: 'MGI:5146840',
 		taxon: {
 			internal: false,
 			obsolete: false,
@@ -721,7 +716,7 @@ export const mockSettingsData = {
 	multiSortMeta: [],
 	selectedColumnNames: [
 		'Curie',
-		'MOD Entity ID',
+		'Primary External ID',
 		'MOD Internal ID',
 		'Name',
 		'Symbol',

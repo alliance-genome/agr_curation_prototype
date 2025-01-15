@@ -29,7 +29,7 @@ public class AssemblyComponentService extends BaseEntityCrudService<AssemblyComp
 	@Inject AssemblyComponentDAO assemblyComponentDAO;
 	@Inject GenomeAssemblyService genomeAssemblyService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject DataProviderService dataProviderService;
+	@Inject OrganizationService organizationService;
 
 	Date assemblyComponentRequest;
 	HashMap<String, AssemblyComponent> assemblyComponentCacheMap = new HashMap<>();
@@ -79,14 +79,14 @@ public class AssemblyComponentService extends BaseEntityCrudService<AssemblyComp
 		GenomeAssembly genomeAssembly = genomeAssemblyService.getOrCreate(assemblyId, dataProvider);
 		assemblyComponent.setGenomeAssembly(genomeAssembly);
 		assemblyComponent.setTaxon(ncbiTaxonTermService.getByCurie(taxonCurie).getEntity());
-		assemblyComponent.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));
-		String modEntityId = ChromosomeAccessionEnum.getChromosomeAccession(name, assemblyId);
-		assemblyComponent.setModEntityId(modEntityId);
+		assemblyComponent.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
+		String primaryExternalId = ChromosomeAccessionEnum.getChromosomeAccession(name, assemblyId);
+		assemblyComponent.setPrimaryExternalId(primaryExternalId);
 		return assemblyComponentDAO.persist(assemblyComponent);
 	}
 
 	public ObjectResponse<AssemblyComponent> deleteByIdentifier(String identifierString) {
-		AssemblyComponent assemblyComponent = findByAlternativeFields(List.of("modEntityId", "modInternalId"), identifierString);
+		AssemblyComponent assemblyComponent = findByAlternativeFields(List.of("primaryExternalId", "modInternalId"), identifierString);
 		if (assemblyComponent != null) {
 			assemblyComponentDAO.remove(assemblyComponent.getId());
 		}

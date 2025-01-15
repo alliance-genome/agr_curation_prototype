@@ -1,14 +1,14 @@
 package org.alliancegenome.curation_api.model.entities.associations.constructAssociations;
 
-import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.entities.Construct;
-import org.alliancegenome.curation_api.model.entities.EvidenceAssociation;
-import org.alliancegenome.curation_api.model.entities.GenomicEntity;
-import org.alliancegenome.curation_api.model.entities.Note;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
@@ -17,26 +17,13 @@ import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonView;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.util.List;
 
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
+@AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {EvidenceAssociation.class})
 @Schema(name = "ConstructGenomicEntityAssociation", description = "POJO representing an association between a construct and a genomic entity")
 
 @Table(indexes = {
@@ -53,28 +40,29 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includePaths = {
 		"curie", "constructSymbol.displayText", "constructSymbol.formatText",
-		"constructFullName.displayText", "constructFullName.formatText", "modEntityId", "modInternalId",
+		"constructFullName.displayText", "constructFullName.formatText", "primaryExternalId", "modInternalId",
 		"curie_keyword", "constructSymbol.displayText_keyword", "constructSymbol.formatText_keyword",
-		"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "modEntityId_keyword", "modInternalId_keyword"})
+		"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "primaryExternalId_keyword", "modInternalId_keyword"})
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	@JsonIgnoreProperties("constructGenomicEntityAssociations")
 	@Fetch(FetchMode.JOIN)
 	private Construct constructAssociationSubject;
-	
+
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm relation;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	@JsonIgnoreProperties({
 		"alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations",
-		"transcriptGenomicLocationAssociations", "exonGenomicLocationAssociations", "codingSequenceGenomicLocationAssociations"
+		"transcriptGenomicLocationAssociations", "exonGenomicLocationAssociations", "codingSequenceGenomicLocationAssociations",
+		"transcriptGeneAssociations", "geneGenomicLocationAssociations", "transcriptExonAssociations", "transcriptCodingSequenceAssociations"
 	})
 	private GenomicEntity constructGenomicEntityAssociationObject;
 
@@ -84,7 +72,7 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
+	@JsonView({View.FieldsAndLists.class, View.ConstructView.class})
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "constructgenomicentityassociation_id"),
 		inverseJoinColumns = @JoinColumn(name = "relatedNotes_id"),

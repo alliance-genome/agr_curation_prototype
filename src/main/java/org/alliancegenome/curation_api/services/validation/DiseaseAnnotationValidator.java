@@ -11,23 +11,23 @@ import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.DataProviderService;
+import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.inject.Inject;
@@ -41,12 +41,12 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 	@Inject AffectedGenomicModelDAO agmDAO;
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
-	@Inject DataProviderService dataProviderService;
-	@Inject DataProviderValidator dataProviderValidator;
+	@Inject OrganizationDAO organizationDAO;
+	@Inject OrganizationService organizationService;
 
 	public DOTerm validateObjectOntologyTerm(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		String field = "diseaseAnnotationObject";
-		if (ObjectUtils.isEmpty(uiEntity.getDiseaseAnnotationObject())) {
+		if (uiEntity.getDiseaseAnnotationObject() == null) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
@@ -135,7 +135,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 			if (wg.getId() != null) {
 				withGene = geneDAO.find(wg.getId());
 			}
-			if (withGene == null || withGene.getModEntityId() == null || !withGene.getModEntityId().startsWith("HGNC:")) {
+			if (withGene == null || withGene.getPrimaryExternalId() == null || !withGene.getPrimaryExternalId().startsWith("HGNC:")) {
 				addMessageResponse("with", ValidationConstants.INVALID_MESSAGE);
 				return null;
 			} else if (withGene.getObsolete() && !previousIds.contains(withGene.getId())) {
@@ -148,38 +148,37 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		return validWithGenes;
 	}
 
-	public DataProvider validateSecondaryDataProvider(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+	public Organization validateSecondaryDataProvider(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		String field = "secondaryDataProvider";
 
 		if (uiEntity.getSecondaryDataProvider() == null) {
 			if (dbEntity.getId() == null) {
-				uiEntity.setSecondaryDataProvider(dataProviderService.getAllianceDataProvider());
-				if (uiEntity.getSecondaryDataProvider() == null) {
-					return null;
-				}
+				return organizationDAO.getOrCreateOrganization("Alliance");
 			} else {
 				return null;
 			}
 		}
-
-		DataProvider uiDataProvider = uiEntity.getSecondaryDataProvider();
-		DataProvider dbDataProvider = dbEntity.getSecondaryDataProvider();
-
-		ObjectResponse<DataProvider> dpResponse = dataProviderValidator.validateDataProvider(uiDataProvider, dbDataProvider, false);
-		if (dpResponse.hasErrors()) {
-			addMessageResponse(field, dpResponse.errorMessagesString());
+		
+		Organization secondaryDataProvider = null;
+		if (uiEntity.getSecondaryDataProvider().getId() != null) {
+			secondaryDataProvider = organizationService.getById(uiEntity.getSecondaryDataProvider().getId()).getEntity();
+		} else if (StringUtils.isNotBlank(uiEntity.getSecondaryDataProvider().getAbbreviation())) {
+			secondaryDataProvider = organizationService.getByAbbr(uiEntity.getSecondaryDataProvider().getAbbreviation()).getEntity();
+		}
+		
+		if (secondaryDataProvider == null) {
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		DataProvider validatedDataProvider = dpResponse.getEntity();
-		if (validatedDataProvider.getObsolete() && (dbDataProvider == null || !validatedDataProvider.getId().equals(dbDataProvider.getId()))) {
+		if (secondaryDataProvider.getObsolete() && (dbEntity.getSecondaryDataProvider() == null || !secondaryDataProvider.getId().equals(dbEntity.getSecondaryDataProvider().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 
-		return validatedDataProvider;
+		return secondaryDataProvider;
 	}
-
+	
 	public List<Gene> validateDiseaseGeneticModifierGenes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		if (CollectionUtils.isEmpty(uiEntity.getDiseaseGeneticModifierGenes())) {
 			return null;
@@ -393,9 +392,12 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		VocabularyTerm geneticSex = validateGeneticSex(uiEntity, dbEntity);
 		dbEntity.setGeneticSex(geneticSex);
 
-		DataProvider secondaryDataProvider = validateSecondaryDataProvider(uiEntity, dbEntity);
+		Organization secondaryDataProvider = validateSecondaryDataProvider(uiEntity, dbEntity);
 		dbEntity.setSecondaryDataProvider(secondaryDataProvider);
-
+		
+		CrossReference secondaryDataProviderCrossReference = validateDataProviderCrossReference(uiEntity.getSecondaryDataProviderCrossReference(), dbEntity.getSecondaryDataProviderCrossReference(), true);
+		dbEntity.setDataProviderCrossReference(secondaryDataProviderCrossReference);
+		
 		List<Gene> diseaseGeneticModifierGenes = validateDiseaseGeneticModifierGenes(uiEntity, dbEntity);
 		List<Allele> diseaseGeneticModifierAlleles = validateDiseaseGeneticModifierAlleles(uiEntity, dbEntity);
 		List<AffectedGenomicModel> diseaseGeneticModifierAgms = validateDiseaseGeneticModifierAgms(uiEntity, dbEntity);

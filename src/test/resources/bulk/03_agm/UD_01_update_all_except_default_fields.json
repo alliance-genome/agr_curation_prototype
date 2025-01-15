@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "AGMTEST:Agm0001",
+    "primary_external_id": "AGMTEST:Agm0001",
     "subtype_name": "genotype",
     "name": "TestAgm1a",
     "taxon_curie": "NCBITaxon:10116",
@@ -18,6 +18,9 @@
         "display_name": "TEST2:0001",
         "prefix": "TEST2"
       }
-    }
+    },
+    "synonyms" : [
+      "Syn 1","Syn 2"
+    ]
   }
 ]

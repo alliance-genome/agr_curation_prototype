@@ -13,7 +13,7 @@ public class GeneExpressionFmsDTO extends BaseDTO {
 	private String assay;
 	private String dateAssigned;
 	private PublicationFmsDTO evidence;
-	private WhenExpressedDTO whenExpressed;
-	private WhereExpressedDTO whereExpressed;
+	private WhenExpressedFmsDTO whenExpressed;
+	private WhereExpressedFmsDTO whereExpressed;
 
 }

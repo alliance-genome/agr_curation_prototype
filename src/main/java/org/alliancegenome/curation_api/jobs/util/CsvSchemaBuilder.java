@@ -105,4 +105,30 @@ public class CsvSchemaBuilder {
 		
 		return schema;
 	}
+	
+	public static CsvSchema vepTxtSchema() {
+		CsvSchema schema = CsvSchema.builder()
+				.setColumnSeparator('\t')
+				.setArrayElementSeparator(";")
+				.setAllowComments(true)
+				.setNullValue("-")
+				.disableQuoteChar()
+				.addColumn("uploadedVariation")
+				.addColumn("location")
+				.addColumn("allele")
+				.addColumn("gene")
+				.addColumn("feature")
+				.addColumn("featureType")
+				.addColumn("consequence")
+				.addColumn("cdnaPosition")
+				.addColumn("cdsPosition")
+				.addColumn("proteinPosition")
+				.addColumn("aminoAcids")
+				.addColumn("codons")
+				.addColumn("existingVariation")
+				.addColumn("extra")
+				.build();
+		
+		return schema;
+	}
 }

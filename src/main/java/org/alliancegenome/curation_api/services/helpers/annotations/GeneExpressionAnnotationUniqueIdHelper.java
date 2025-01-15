@@ -14,11 +14,24 @@ public class GeneExpressionAnnotationUniqueIdHelper {
 		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getAssay());
 		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getGeneId());
 		uniqueIdGeneratorHelper.add(referenceCurie);
-		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhenExpressed().getStageTermId());
-		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhenExpressed().getStageName());
-		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement());
-		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureTermId());
-		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhereExpressed().getCellularComponentTermId());
+		if (geneExpressionFmsDTO.getWhenExpressed() != null) {
+			uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhenExpressed().getStageTermId());
+			uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhenExpressed().getStageName());
+		}
+		if (geneExpressionFmsDTO.getWhereExpressed() != null) {
+			uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement());
+			uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureTermId());
+			uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhereExpressed().getCellularComponentTermId());
+		}
+		return uniqueIdGeneratorHelper.getUniqueId();
+	}
+
+	//	UniqueID =	geneId | evidenceReferenceCurie | assayId
+	public String generateExperimentId(GeneExpressionFmsDTO geneExpressionFmsDTO, String referenceCurie) {
+		UniqueIdGeneratorHelper uniqueIdGeneratorHelper = new UniqueIdGeneratorHelper();
+		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getGeneId());
+		uniqueIdGeneratorHelper.add(referenceCurie);
+		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getAssay());
 		return uniqueIdGeneratorHelper.getUniqueId();
 	}
 }

@@ -34,7 +34,7 @@ public class TranscriptService extends BaseEntityCrudService<Transcript, Transcr
 	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
+		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
 			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
 		}
 		List<Long> ids = transcriptDAO.findIdsByParams(params);
@@ -43,7 +43,7 @@ public class TranscriptService extends BaseEntityCrudService<Transcript, Transcr
 	}
 
 	public ObjectResponse<Transcript> deleteByIdentifier(String identifierString) {
-		Transcript transcript = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId"), identifierString);
+		Transcript transcript = findByAlternativeFields(List.of("curie", "primaryExternalId", "modInternalId"), identifierString);
 		if (transcript != null) {
 			transcriptDAO.remove(transcript.getId());
 		}

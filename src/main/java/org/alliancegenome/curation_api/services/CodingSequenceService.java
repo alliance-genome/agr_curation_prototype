@@ -34,7 +34,7 @@ public class CodingSequenceService extends BaseEntityCrudService<CodingSequence,
 	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
+		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
 			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
 		}
 		List<Long> ids = codingSequenceDAO.findIdsByParams(params);
@@ -44,13 +44,13 @@ public class CodingSequenceService extends BaseEntityCrudService<CodingSequence,
 
 	@Override
 	public ObjectResponse<CodingSequence> getByIdentifier(String identifier) {
-		CodingSequence object = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifier);
+		CodingSequence object = findByAlternativeFields(List.of("curie", "primaryExternalId", "modInternalId", "uniqueId"), identifier);
 		ObjectResponse<CodingSequence> ret = new ObjectResponse<CodingSequence>(object);
 		return ret;
 	}
 
 	public ObjectResponse<CodingSequence> deleteByIdentifier(String identifierString) {
-		CodingSequence codingSequence = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifierString);
+		CodingSequence codingSequence = findByAlternativeFields(List.of("curie", "primaryExternalId", "modInternalId", "uniqueId"), identifierString);
 		if (codingSequence != null) {
 			codingSequenceDAO.remove(codingSequence.getId());
 		}

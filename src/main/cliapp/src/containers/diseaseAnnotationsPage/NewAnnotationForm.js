@@ -221,7 +221,13 @@ export const NewAnnotationForm = ({
 	};
 
 	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ['name', 'curie', 'modEntityId', 'modInternalId', 'crossReferences.referencedCurie'];
+		const autocompleteFields = [
+			'name',
+			'curie',
+			'primaryExternalId',
+			'modInternalId',
+			'crossReferences.referencedCurie',
+		];
 		const endpoint = 'agm';
 		const filterName = 'sgdStrainBackgroundFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -237,7 +243,13 @@ export const NewAnnotationForm = ({
 	};
 
 	const geneticModifierAgmsSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ['modEntityId', 'modInternalId', 'name', 'curie', 'crossReferences.referencedCurie'];
+		const autocompleteFields = [
+			'primaryExternalId',
+			'modInternalId',
+			'name',
+			'curie',
+			'crossReferences.referencedCurie',
+		];
 		const endpoint = 'agm';
 		const filterName = 'geneticModifierAgmsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -249,7 +261,7 @@ export const NewAnnotationForm = ({
 		const autocompleteFields = [
 			'alleleSymbol.displayText',
 			'alleleFullName.displayText',
-			'modEntityId',
+			'primaryExternalId',
 			'modInternalId',
 			'curie',
 			'crossReferences.referencedCurie',
@@ -267,7 +279,7 @@ export const NewAnnotationForm = ({
 		const autocompleteFields = [
 			'geneSymbol.displayText',
 			'geneFullName.displayText',
-			'modEntityId',
+			'primaryExternalId',
 			'modInternalId',
 			'curie',
 			'crossReferences.referencedCurie',
@@ -318,7 +330,7 @@ export const NewAnnotationForm = ({
 			'alleleFullName.displayText',
 			'alleleSynonyms.displayText',
 			'geneSynonyms.displayText',
-			'modEntityId',
+			'primaryExternalId',
 			'modInternalId',
 			'curie',
 			'crossReferences.referencedCurie',
@@ -422,7 +434,7 @@ export const NewAnnotationForm = ({
 		const autocompleteFields = [
 			'geneSymbol.displayText',
 			'geneFullName.displayText',
-			'modEntityId',
+			'primaryExternalId',
 			'modInternalId',
 			'curie',
 			'crossReferences.referencedCurie',
@@ -475,7 +487,7 @@ export const NewAnnotationForm = ({
 		const autocompleteFields = [
 			'geneSymbol.displayText',
 			'geneFullName.displayText',
-			'modEntityId',
+			'primaryExternalId',
 			'modInternalId',
 			'curie',
 			'crossReferences.referencedCurie',
@@ -492,7 +504,7 @@ export const NewAnnotationForm = ({
 		const autocompleteFields = [
 			'alleleSymbol.displayText',
 			'alleleFullName.displayText',
-			'modEntityId',
+			'primaryExternalId',
 			'modInternalId',
 			'curie',
 			'crossReferences.referencedCurie',
@@ -585,7 +597,7 @@ export const NewAnnotationForm = ({
 									initialValue={newAnnotation.diseaseAnnotationSubject}
 									search={subjectSearch}
 									fieldName="diseaseAnnotationSubject"
-									subField="modEntityId"
+									subField="primaryExternalId"
 									name="diseaseAnnotationSubject"
 									searchService={searchService}
 									onValueChangeHandler={onSubjectChange}
@@ -618,7 +630,7 @@ export const NewAnnotationForm = ({
 											customRef={assertedGenesRef}
 											search={assertedGenesSearch}
 											name="assertedGenes"
-											subField="modEntityId"
+											subField="primaryExternalId"
 											label="Asserted Genes"
 											fieldName="assertedGenes"
 											disabled={!isAssertedGeneEnabled}
@@ -656,7 +668,7 @@ export const NewAnnotationForm = ({
 											name="assertedAllele"
 											label="Asserted Allele"
 											fieldName="assertedAllele"
-											subField="modEntityId"
+											subField="primaryExternalId"
 											disabled={!isAssertedAlleleEnabled}
 											initialValue={newAnnotation.assertedAllele}
 											onValueChangeHandler={onSingleReferenceChange}
@@ -820,7 +832,7 @@ export const NewAnnotationForm = ({
 											name="with"
 											label="With"
 											fieldName="with"
-											subField="modEntityId"
+											subField="primaryExternalId"
 											initialValue={newAnnotation.with}
 											onValueChangeHandler={onArrayFieldChange}
 											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
@@ -976,7 +988,7 @@ export const NewAnnotationForm = ({
 											fieldName="sgdStrainBackground"
 											name="sgdStrainBackground"
 											label="SGD Strain Background"
-											subField="modEntityId"
+											subField="primaryExternalId"
 											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 												<SubjectAutocompleteTemplate
 													item={item}
@@ -1065,7 +1077,7 @@ export const NewAnnotationForm = ({
 											initialValue={newAnnotation.diseaseGeneticModifierAgms}
 											fieldName="diseaseGeneticModifierAgms"
 											name="diseaseGeneticModifierAgms"
-											subField="modEntityId"
+											subField="primaryExternalId"
 											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 												<SubjectAutocompleteTemplate
 													item={item}
@@ -1101,7 +1113,7 @@ export const NewAnnotationForm = ({
 											initialValue={newAnnotation.diseaseGeneticModifierAlleles}
 											fieldName="diseaseGeneticModifierAlleles"
 											name="diseaseGeneticModifierAlleles"
-											subField="modEntityId"
+											subField="primaryExternalId"
 											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 												<SubjectAutocompleteTemplate
 													item={item}
@@ -1139,7 +1151,7 @@ export const NewAnnotationForm = ({
 											initialValue={newAnnotation.diseaseGeneticModifierGenes}
 											fieldName="diseaseGeneticModifierGenes"
 											name="diseaseGeneticModifierGenes"
-											subField="modEntityId"
+											subField="primaryExternalId"
 											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 												<SubjectAutocompleteTemplate
 													item={item}

@@ -86,7 +86,7 @@ export const data = {
 				internal: false,
 				obsolete: false,
 				dbDateUpdated: '2024-02-26T14:32:35.925338Z',
-				modEntityId: 'WB:WBGene00012970',
+				primaryExternalId: 'WB:WBGene00012970',
 				dataProvider: {
 					id: 75373965,
 					internal: false,
@@ -217,7 +217,7 @@ export const data = {
 				internal: false,
 				obsolete: false,
 				dbDateUpdated: '2024-02-26T14:28:46.860335Z',
-				modEntityId: 'WB:WBGene00006765',
+				primaryExternalId: 'WB:WBGene00006765',
 				dataProvider: {
 					id: 75716655,
 					internal: false,
@@ -426,7 +426,7 @@ export const data = {
 				internal: false,
 				obsolete: false,
 				dbDateUpdated: '2023-04-05T02:49:57.970413Z',
-				modEntityId: 'FB:FBal0196303',
+				primaryExternalId: 'FB:FBal0196303',
 				taxon: {
 					internal: false,
 					obsolete: false,
@@ -501,7 +501,7 @@ export const data = {
 				internal: false,
 				obsolete: false,
 				dbDateUpdated: '2023-04-05T02:49:57.970413Z',
-				modEntityId: 'FB:FBal0196304',
+				primaryExternalId: 'FB:FBal0196304',
 				taxon: {
 					internal: false,
 					obsolete: false,

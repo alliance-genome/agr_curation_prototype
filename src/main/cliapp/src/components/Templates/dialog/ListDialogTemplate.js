@@ -9,7 +9,7 @@ export const ListDialogTemplate = ({ entities, handleOpen, getTextField, underli
 
 	const listTemplate = (item) => (
 		<div
-			className={`overflow-hidden text-overflow-ellipsis ${underline ? 'underline' : ''}`}
+			className={`overflow-hidden text-left text-overflow-ellipsis ${underline ? 'underline' : ''}`}
 			dangerouslySetInnerHTML={{ __html: item }}
 		/>
 	);

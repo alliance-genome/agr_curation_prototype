@@ -149,11 +149,11 @@ export const ConstructsTable = () => {
 			filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		},
 		{
-			field: 'modEntityId',
-			header: 'MOD Entity ID',
+			field: 'primaryExternalId',
+			header: 'Primary External ID',
 			sortable: { isInEditMode },
-			body: (rowData) => <IdTemplate id={rowData.modEntityId} />,
-			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
 		},
 		{
 			field: 'modInternalId',
@@ -249,7 +249,7 @@ export const ConstructsTable = () => {
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.constructDataProviderFilterConfig,

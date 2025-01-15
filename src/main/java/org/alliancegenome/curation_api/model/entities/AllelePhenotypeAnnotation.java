@@ -44,7 +44,7 @@ import lombok.EqualsAndHashCode;
 public class AllelePhenotypeAnnotation extends PhenotypeAnnotation {
 
 	@IndexedEmbedded(includePaths = {
-			"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+			"curie", "primaryExternalId", "modInternalId", "curie_keyword", "primaryExternalId_keyword", "modInternalId_keyword",
 			"alleleSymbol.formatText", "alleleSymbol.displayText", "alleleSymbol.formatText_keyword", "alleleSymbol.displayText_keyword",
 			"alleleFullName.formatText", "alleleFullName.displayText", "alleleFullName.formatText_keyword", "alleleFullName.displayText_keyword",
 			"alleleSynonyms.formatText", "alleleSynonyms.displayText", "alleleSynonyms.formatText_keyword", "alleleSynonyms.displayText_keyword",
@@ -58,7 +58,7 @@ public class AllelePhenotypeAnnotation extends PhenotypeAnnotation {
 	private Allele phenotypeAnnotationSubject;
 
 	@IndexedEmbedded(includePaths = {
-			"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+			"curie", "primaryExternalId", "modInternalId", "curie_keyword", "primaryExternalId_keyword", "modInternalId_keyword",
 			"geneSymbol.formatText", "geneSymbol.displayText", "geneSymbol.formatText_keyword", "geneSymbol.displayText_keyword",
 			"geneFullName.formatText", "geneFullName.displayText", "geneFullName.formatText_keyword", "geneFullName.displayText_keyword",
 			"geneSystematicName.formatText", "geneSystematicName.displayText", "geneSystematicName.formatText_keyword", "geneSystematicName.displayText_keyword",
@@ -72,7 +72,7 @@ public class AllelePhenotypeAnnotation extends PhenotypeAnnotation {
 	private Gene inferredGene;
 
 	@IndexedEmbedded(includePaths = {
-			"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+			"curie", "primaryExternalId", "modInternalId", "curie_keyword", "primaryExternalId_keyword", "modInternalId_keyword",
 			"geneSymbol.formatText", "geneSymbol.displayText", "geneSymbol.formatText_keyword", "geneSymbol.displayText_keyword",
 			"geneFullName.formatText", "geneFullName.displayText", "geneFullName.formatText_keyword", "geneFullName.displayText_keyword",
 			"geneSystematicName.formatText", "geneSystematicName.displayText", "geneSystematicName.formatText_keyword", "geneSystematicName.displayText_keyword",

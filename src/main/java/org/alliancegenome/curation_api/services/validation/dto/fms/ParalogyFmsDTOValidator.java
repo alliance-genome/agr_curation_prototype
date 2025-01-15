@@ -75,7 +75,7 @@ public class ParalogyFmsDTOValidator {
 			if (subjectGene == null) {
 				paralogyResponse.addErrorMessage("gene1", ValidationConstants.INVALID_MESSAGE + " (" + subjectGeneIdentifier + ")");
 			} else {
-				if (!sameGenus(speciesTaxon, subjectGene.getTaxon())) {
+				if (speciesTaxon != null && !sameGenus(speciesTaxon, subjectGene.getTaxon())) {
 					paralogyResponse.addErrorMessage("Species", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSpecies() + ") for gene " + subjectGene.getCurie());
 				}
 			}

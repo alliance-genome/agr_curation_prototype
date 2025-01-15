@@ -41,7 +41,7 @@ public class PersonValidator extends AuditedObjectValidator<Person> {
 		dbEntity.setMiddleName(handleStringField(uiEntity.getMiddleName()));
 		dbEntity.setLastName(handleStringField(uiEntity.getLastName()));
 		dbEntity.setOrcid(handleStringField(uiEntity.getOrcid()));
-		dbEntity.setModEntityId(handleStringField(uiEntity.getModEntityId()));
+		dbEntity.setPrimaryExternalId(handleStringField(uiEntity.getPrimaryExternalId()));
 
 		if (CollectionUtils.isNotEmpty(uiEntity.getEmails())) {
 			dbEntity.setEmails(uiEntity.getEmails());

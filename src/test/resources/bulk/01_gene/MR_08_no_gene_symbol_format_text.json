@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "GENETEST:MR08",
+    "primary_external_id": "GENETEST:MR08",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": false,

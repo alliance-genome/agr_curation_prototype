@@ -50,13 +50,14 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "PhenotypeAnnotation_internal_index", columnList = "internal"),
 	@Index(name = "PhenotypeAnnotation_obsolete_index", columnList = "obsolete"),
 	@Index(name = "PhenotypeAnnotation_curie_index", columnList = "curie"),
-	@Index(name = "PhenotypeAnnotation_modEntityId_index", columnList = "modEntityId"),
+	@Index(name = "PhenotypeAnnotation_primaryExternalId_index", columnList = "primaryExternalId"),
 	@Index(name = "PhenotypeAnnotation_modInternalId_index", columnList = "modInternalId"),
 	@Index(name = "PhenotypeAnnotation_uniqueId_index", columnList = "uniqueId"),
 	@Index(name = "PhenotypeAnnotation_createdBy_index", columnList = "createdBy_id"),
 	@Index(name = "PhenotypeAnnotation_updatedBy_index", columnList = "updatedBy_id"),
 	@Index(name = "PhenotypeAnnotation_singleReference_index", columnList = "singleReference_id"),
 	@Index(name = "PhenotypeAnnotation_dataProvider_index", columnList = "dataProvider_id"),
+	@Index(name = "PhenotypeAnnotation_dataProviderCrossReference_index", columnList = "dataProviderCrossReference_id"),
 	@Index(name = "PhenotypeAnnotation_crossReference_index", columnList = "crossReference_id"),
 	@Index(name = "PhenotypeAnnotation_relation_index", columnList = "relation_id")
 })
@@ -105,6 +106,6 @@ public abstract class PhenotypeAnnotation extends Annotation {
 	@Transient
 	@JsonIgnore
 	public String getDataProviderString() {
-		return dataProvider.getSourceOrganization().getAbbreviation();
+		return dataProvider.getAbbreviation();
 	}
 }

@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_ASSOCIATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_DISEASE_ANNOTATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_ASSOCIATION;
@@ -17,10 +18,12 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
+import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmStrAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3ExonExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3GeneExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 
@@ -48,6 +51,7 @@ public class BulkLoadJobExecutor {
 	@Inject VariantExecutor variantExecutor;
 	@Inject AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
 	@Inject ConstructGenomicEntityAssociationExecutor constructGenomicEntityAssociationExecutor;
+	@Inject AgmStrAssociationExecutor agmStrAssociationExecutor;
 	@Inject PhenotypeAnnotationExecutor phenotypeAnnotationExecutor;
 	@Inject GeneMolecularInteractionExecutor geneMolecularInteractionExecutor;
 	@Inject GeneGeneticInteractionExecutor geneGeneticInteractionExecutor;
@@ -55,20 +59,28 @@ public class BulkLoadJobExecutor {
 	@Inject GeneExpressionExecutor geneExpressionExecutor;
 	@Inject SequenceTargetingReagentExecutor sqtrExecutor;
 	@Inject VariantFmsExecutor variantFmsExecutor;
+	@Inject HTPExpressionDatasetAnnotationExecutor htpExpressionDatasetAnnotationExecutor;
+	@Inject HTPExpressionDatasetSampleAnnotationExecutor htpExpressionDatasetSampleAnnotationExecutor;
+	@Inject GeoXrefExecutor geoXrefExecutor;
+	
 	@Inject Gff3ExonExecutor gff3ExonExecutor;
 	@Inject Gff3CDSExecutor gff3CDSExecutor;
+	@Inject Gff3GeneExecutor gff3GeneExecutor;
 	@Inject Gff3TranscriptExecutor gff3TranscriptExecutor;
+	@Inject VepTranscriptExecutor vepTranscriptExecutor;
+	@Inject VepGeneExecutor vepGeneExecutor;
 	
-	@Inject HTPExpressionDatasetAnnotationExecutor htpExpressionDatasetAnnotationExecutor;
 	@Inject ExpressionAtlasExecutor expressionAtlasExecutor;
+	@Inject
+	GeneOntologyAnnotationExecutor gafExecutor;
 
 	@Inject BiogridOrcExecutor biogridOrcExecutor;
 
 	public void process(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) throws Exception {
 
 		BackendBulkLoadType loadType = bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType();
-
-		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, FULL_INGEST, ALLELE_ASSOCIATION, CONSTRUCT_ASSOCIATION);
+		
+		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, FULL_INGEST, ALLELE_ASSOCIATION, AGM_ASSOCIATION, CONSTRUCT_ASSOCIATION);
 
 		if (ingestTypes.contains(loadType)) {
 
@@ -103,6 +115,9 @@ public class BulkLoadJobExecutor {
 			if (loadType == CONSTRUCT_ASSOCIATION || loadType == FULL_INGEST) {
 				constructGenomicEntityAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
+			if (loadType == AGM_ASSOCIATION || loadType == FULL_INGEST) {
+				agmStrAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
 
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
 			moleculeExecutor.execLoad(bulkLoadFileHistory);
@@ -132,12 +147,24 @@ public class BulkLoadJobExecutor {
 			gff3CDSExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT) {
 			gff3TranscriptExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_GENE) {
+			gff3GeneExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.HTPDATASET) {
 			htpExpressionDatasetAnnotationExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION_ATLAS) {
 			expressionAtlasExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GEOXREF) {
+			geoXrefExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.BIOGRID_ORCS) {
 			biogridOrcExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.VEPTRANSCRIPT) {
+			vepTranscriptExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.VEPGENE) {
+			vepGeneExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.HTPDATASAMPLE) {
+			htpExpressionDatasetSampleAnnotationExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GAF) {
+			gafExecutor.execLoad(bulkLoadFileHistory);
 		} else {
 			log.info("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");

@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "",
+    "primary_external_id": "",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": false,

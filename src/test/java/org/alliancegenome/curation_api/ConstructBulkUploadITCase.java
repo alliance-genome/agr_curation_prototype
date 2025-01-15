@@ -82,7 +82,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("WB:Construct0001")).
+			body("entity.primaryExternalId", is("WB:Construct0001")).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
 			body("entity.createdBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
@@ -149,10 +149,10 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructComponents[0].relatedNotes[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
 			body("entity.constructComponents[0].relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.constructComponents[0].relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
+			body("entity.dataProvider.abbreviation", is(dataProvider)).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -165,7 +165,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("WB:Construct0001")).
+			body("entity.primaryExternalId", is("WB:Construct0001")).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
 			body("entity.createdBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
@@ -234,10 +234,10 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructComponents[0].relatedNotes[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
 			body("entity.constructComponents[0].relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.constructComponents[0].relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
+			body("entity.dataProvider.abbreviation", is(dataProvider2)).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST2:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST2:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage2"));
 	}
 	
 	@Test
@@ -343,7 +343,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
-			body("entity", hasKey("modEntityId")).
+			body("entity", hasKey("primaryExternalId")).
 			body("entity.constructSymbol", not(hasKey("synonymScope"))).
 			body("entity.constructSymbol", not(hasKey("synonymUrl"))).
 			body("entity.constructSymbol", not(hasKey("evidence"))).
@@ -373,7 +373,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructComponents[0]", not(hasKey("dateCreated"))).
 			body("entity.constructComponents[0]", not(hasKey("dateUpdated"))).
 			body("entity.constructComponents[0]", not(hasKey("relatedNotes"))).
-			body("entity.dataProvider", not(hasKey("crossReferences")));
+			body("entity", not(hasKey("dataProviderCrossReference")));
 	}
 	
 	@Test
@@ -387,7 +387,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
-			body("entity", hasKey("modEntityId")).
+			body("entity", hasKey("primaryExternalId")).
 			body("entity.constructComponents[0].relatedNotes[0]", not(hasKey("evidence"))).
 			body("entity.constructComponents[0].relatedNotes[0]", not(hasKey("createdBy"))).
 			body("entity.constructComponents[0].relatedNotes[0]", not(hasKey("updatedBy"))).
@@ -406,7 +406,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
-			body("entity", hasKey("modEntityId")).
+			body("entity", hasKey("primaryExternalId")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
@@ -471,7 +471,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:DN01").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("WB:DN01")).
+			body("entity.primaryExternalId", is("WB:DN01")).
 			body("entity.constructComponents", hasSize(1)).
 			body("entity.constructComponents[0].relatedNotes", hasSize(1));
 	}
@@ -488,7 +488,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("WB:Construct0001"));
+			body("entity.primaryExternalId", is("WB:Construct0001"));
 	}
 		
 }
