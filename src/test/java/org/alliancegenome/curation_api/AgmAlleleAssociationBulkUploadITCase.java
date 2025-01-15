@@ -64,6 +64,7 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 		Organization dataProvider = getOrganization("ZFIN");
 		allele = createAllele(alleleCurie, alleleCurie, "NCBITaxon:7955", symbolNameType, false, dataProvider);
 		agm = getAffectedGenomicModel(agmCurie);
+		createGenoTerm(zygosityCurie, "Zygosity Test");
 	}
 
 	@Test
@@ -81,7 +82,7 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 			body("entity.relation.name", is(relationName)).
 			body("entity.agmAlleleAssociationObject.primaryExternalId", is(alleleCurie)).
 			body("entity.agmAssociationSubject.primaryExternalId", is(agmCurie)).
-			body("entity.zygosity.name", is(zygosityCurie)).
+			body("entity.zygosity.curie", is(zygosityCurie)).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
 			body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
@@ -98,7 +99,7 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 			body("entity.components[0].relation.name", is(relationName)).
 			body("entity.components[0].agmAlleleAssociationObject.primaryExternalId", is(alleleCurie)).
 			body("entity.components[0].agmAssociationSubject", not(hasKey("agmAlleles"))).
-			body("entity.components[0].zygosity.name", is(zygosityCurie));
+			body("entity.components[0].zygosity.curie", is(zygosityCurie));
 
 	}
 
@@ -116,7 +117,7 @@ public class AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 				body("entity.relation.name", is(relationName)).
 				body("entity.agmAlleleAssociationObject.primaryExternalId", is(alleleCurie)).
 				body("entity.agmAssociationSubject.primaryExternalId", is(agmCurie)).
-				body("entity.zygosity.name", is(zygosityCurie)).
+				body("entity.zygosity.curie", is(zygosityCurie)).
 				body("entity.internal", is(false)).
 				body("entity.obsolete", is(false)).
 				body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).

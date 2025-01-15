@@ -70,7 +70,7 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 	"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(View.FieldsOnly.class)
 	private MMOTerm expressionAssayUsed;
 
 	@IndexedEmbedded(includePaths = {"age", "whenExpressedStageName", "age_keyword", "whenExpressedStageName_keyword"})

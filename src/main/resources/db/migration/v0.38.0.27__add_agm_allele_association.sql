@@ -37,7 +37,7 @@ ALTER TABLE ONLY public.agmalleleassociation ADD CONSTRAINT agmalleleassociation
 ALTER TABLE ONLY public.agmalleleassociation ADD CONSTRAINT agmalleleassociation_createdby_id FOREIGN KEY (createdby_id) REFERENCES public.person(id);
 ALTER TABLE ONLY public.agmalleleassociation ADD CONSTRAINT agmalleleassociation_updatedby_id FOREIGN KEY (updatedby_id) REFERENCES public.person(id);
 ALTER TABLE ONLY public.agmalleleassociation ADD CONSTRAINT agmalleleassociation_relation_id FOREIGN KEY (relation_id) REFERENCES public.vocabularyterm(id);
-ALTER TABLE ONLY public.agmalleleassociation ADD CONSTRAINT agmalleleassociation_zygosity_id FOREIGN KEY (zygosity_id) REFERENCES public.vocabularyterm(id);
+ALTER TABLE ONLY public.agmalleleassociation ADD CONSTRAINT agmalleleassociation_zygosity_id FOREIGN KEY (zygosity_id) REFERENCES public.ontologyterm(id);
 
 
 INSERT INTO vocabularytermset(id, name, vocabularylabel, vocabularytermsetvocabulary_id) SELECT nextval('vocabularytermset_seq'), 'AGM Allele Association Relation', 'agm_allele_relation', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_relation';
@@ -55,124 +55,14 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms
   	SELECT t1.id, t2.id FROM t1,t2;
 
 
-INSERT INTO vocabulary (id, name, vocabularylabel) VALUES (nextval('vocabulary_seq'), 'Geno Terms', 'geno_terms');
+INSERT INTO vocabulary (id, name, vocabularylabel) VALUES (nextval('vocabulary_seq'), 'AGM Allele Association GENO Terms', 'agm_allele_association_geno_terms');
 
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000602', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'geno_terms';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000603', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'geno_terms';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000604', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'geno_terms';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000605', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'geno_terms';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000606', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'geno_terms';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000135', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'geno_terms';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000136', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'geno_terms';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000137', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'geno_terms';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000134', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'geno_terms';
-
-INSERT INTO vocabularytermset(id, name, vocabularylabel, vocabularytermsetvocabulary_id) SELECT nextval('vocabularytermset_seq'), 'AGM Allele Association GENO Terms', 'agm_allele_association_geno_terms', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'geno_terms';
-
-INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
-	WITH
-  	t1 AS (
-    	SELECT id FROM vocabularytermset WHERE name = 'AGM Allele Association GENO Terms'
-  	),
-  	t2 AS (
-    	SELECT id FROM vocabularyterm WHERE name = 'GENO:0000602' AND vocabulary_id = (
-    		SELECT id FROM vocabulary WHERE vocabularylabel = 'geno_terms'
-    	)
-  	)
-  	SELECT t1.id, t2.id FROM t1,t2;
-
-INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
-WITH
-t1 AS (
-	SELECT id FROM vocabularytermset WHERE name = 'AGM Allele Association GENO Terms'
-),
-t2 AS (
-	SELECT id FROM vocabularyterm WHERE name = 'GENO:0000603' AND vocabulary_id = (
-		SELECT id FROM vocabulary WHERE vocabularylabel = 'geno_terms'
-	)
-)
-SELECT t1.id, t2.id FROM t1,t2;
-
-INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
-	WITH
-  	t1 AS (
-    	SELECT id FROM vocabularytermset WHERE name = 'AGM Allele Association GENO Terms'
-  	),
-  	t2 AS (
-    	SELECT id FROM vocabularyterm WHERE name = 'GENO:0000604' AND vocabulary_id = (
-    		SELECT id FROM vocabulary WHERE vocabularylabel = 'geno_terms'
-    	)
-  	)
-  	SELECT t1.id, t2.id FROM t1,t2;
-
-INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
-WITH
-t1 AS (
-	SELECT id FROM vocabularytermset WHERE name = 'AGM Allele Association GENO Terms'
-),
-t2 AS (
-	SELECT id FROM vocabularyterm WHERE name = 'GENO:0000605' AND vocabulary_id = (
-		SELECT id FROM vocabulary WHERE vocabularylabel = 'geno_terms'
-	)
-)
-SELECT t1.id, t2.id FROM t1,t2;
-
-INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
-WITH
-t1 AS (
-	SELECT id FROM vocabularytermset WHERE name = 'AGM Allele Association GENO Terms'
-),
-t2 AS (
-	SELECT id FROM vocabularyterm WHERE name = 'GENO:0000606' AND vocabulary_id = (
-		SELECT id FROM vocabulary WHERE vocabularylabel = 'geno_terms'
-	)
-)
-SELECT t1.id, t2.id FROM t1,t2;
-
-INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
-WITH
-t1 AS (
-	SELECT id FROM vocabularytermset WHERE name = 'AGM Allele Association GENO Terms'
-),
-t2 AS (
-	SELECT id FROM vocabularyterm WHERE name = 'GENO:0000135' AND vocabulary_id = (
-		SELECT id FROM vocabulary WHERE vocabularylabel = 'geno_terms'
-	)
-)
-SELECT t1.id, t2.id FROM t1,t2;
-
-INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
-WITH
-t1 AS (
-	SELECT id FROM vocabularytermset WHERE name = 'AGM Allele Association GENO Terms'
-),
-t2 AS (
-	SELECT id FROM vocabularyterm WHERE name = 'GENO:0000136' AND vocabulary_id = (
-		SELECT id FROM vocabulary WHERE vocabularylabel = 'geno_terms'
-	)
-)
-SELECT t1.id, t2.id FROM t1,t2;
-
-INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
-WITH
-t1 AS (
-	SELECT id FROM vocabularytermset WHERE name = 'AGM Allele Association GENO Terms'
-),
-t2 AS (
-	SELECT id FROM vocabularyterm WHERE name = 'GENO:0000137' AND vocabulary_id = (
-		SELECT id FROM vocabulary WHERE vocabularylabel = 'geno_terms'
-	)
-)
-SELECT t1.id, t2.id FROM t1,t2;
-
-INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
-WITH
-t1 AS (
-	SELECT id FROM vocabularytermset WHERE name = 'AGM Allele Association GENO Terms'
-),
-t2 AS (
-	SELECT id FROM vocabularyterm WHERE name = 'GENO:0000134' AND vocabulary_id = (
-		SELECT id FROM vocabulary WHERE vocabularylabel = 'geno_terms'
-	)
-)
-SELECT t1.id, t2.id FROM t1,t2;
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000602', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_allele_association_geno_terms';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000603', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_allele_association_geno_terms';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000604', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_allele_association_geno_terms';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000605', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_allele_association_geno_terms';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000606', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_allele_association_geno_terms';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000135', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_allele_association_geno_terms';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000136', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_allele_association_geno_terms';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000137', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_allele_association_geno_terms';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'GENO:0000134', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_allele_association_geno_terms';

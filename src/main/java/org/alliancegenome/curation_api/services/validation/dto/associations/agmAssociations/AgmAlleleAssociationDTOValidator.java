@@ -13,12 +13,14 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.agmAssociations.AgmAlleleAssociation;
+import org.alliancegenome.curation_api.model.entities.ontology.GENOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmAlleleAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.ontology.GenoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -31,6 +33,7 @@ public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
 	@Inject AffectedGenomicModelService agmService;
 	@Inject AlleleService alleleService;
 	@Inject VocabularyTermService vocabularyTermService;
+	@Inject GenoTermService genoTermService;
 
 	public AgmAlleleAssociation validateAgmAlleleAssociationDTO(AgmAlleleAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 		ObjectResponse<AgmAlleleAssociation> aaaResponse = new ObjectResponse<AgmAlleleAssociation>();
@@ -108,11 +111,15 @@ public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
 			}
 		}
 
-		VocabularyTerm zygosity = null;
+		GENOTerm zygosity = null;
 		if (StringUtils.isNotEmpty(dto.getZygosityCurie())) {
-			zygosity = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.AGM_ALLELE_ASSOCIATION_VOCABULARY_TERM_SET, dto.getZygosityCurie()).getEntity();
-			if (zygosity == null) {
+			String curie = vocabularyTermService.getTermInVocabulary(VocabularyConstants.AGM_ALLELE_ASSOCIATION_VOCABULARY, dto.getZygosityCurie()).getEntity().getName();
+			if (StringUtils.isEmpty(curie)) {
 				aaaResponse.addErrorMessage("Zygosity_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getZygosityCurie() + ")");
+			}
+			zygosity = genoTermService.getByCurie(curie).getEntity();
+			if (zygosity == null) {
+				aaaResponse.addErrorMessage("Zygosity_curie", ValidationConstants.UNRECOGNIZED_MESSAGE + " (" + dto.getZygosityCurie() + ")");
 			}
 		}
 		association.setZygosity(zygosity);
