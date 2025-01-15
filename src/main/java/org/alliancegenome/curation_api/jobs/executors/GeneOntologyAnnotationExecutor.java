@@ -52,7 +52,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 				String orgID = token[0];
 				String modID = token[1];
 				String goID = token[4];
-				if (abbr.equalsIgnoreCase(orgID) || (abbr.equals("XB") && orgID.equalsIgnoreCase("Xenbase")) || (abbr.equals("HUMAN") && orgID.equals("RGD"))) {
+				if (abbr.equalsIgnoreCase(orgID) || abbr.equals("XB") && orgID.equalsIgnoreCase("Xenbase") || abbr.equals("HUMAN") && orgID.equals("RGD")) {
 					List<String> goIDs = uiMap.computeIfAbsent(modID, list -> new ArrayList<>());
 					goIDs.add(goID);
 				}
