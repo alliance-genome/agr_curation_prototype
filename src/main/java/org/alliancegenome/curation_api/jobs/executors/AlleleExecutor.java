@@ -53,7 +53,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		
 		boolean success = runLoad(alleleService, bulkLoadFileHistory, dataProvider, alleles, alleleIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(alleleService, bulkLoadFileHistory, dataProvider.name(), alleleIdsBefore, alleleIdsLoaded, "allele");
+			runCleanup(alleleService, bulkLoadFileHistory, dataProvider.name(), alleleIdsBefore, alleleIdsLoaded, "Allele");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
