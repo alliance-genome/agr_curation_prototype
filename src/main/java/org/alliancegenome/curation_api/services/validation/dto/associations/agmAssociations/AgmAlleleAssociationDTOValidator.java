@@ -113,13 +113,20 @@ public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
 
 		GENOTerm zygosity = null;
 		if (StringUtils.isNotEmpty(dto.getZygosityCurie())) {
-			String curie = vocabularyTermService.getTermInVocabulary(VocabularyConstants.AGM_ALLELE_ASSOCIATION_VOCABULARY, dto.getZygosityCurie()).getEntity().getName();
-			if (StringUtils.isEmpty(curie)) {
+			String curie;
+			VocabularyTerm term = vocabularyTermService.getTermInVocabulary(VocabularyConstants.AGM_ALLELE_ASSOCIATION_VOCABULARY, dto.getZygosityCurie()).getEntity();
+			if (term == null) {
 				aaaResponse.addErrorMessage("zygosity_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getZygosityCurie() + ")");
-			}
-			zygosity = genoTermService.getByCurie(curie).getEntity();
-			if (zygosity == null) {
-				aaaResponse.addErrorMessage("zygosity_curie", ValidationConstants.UNRECOGNIZED_MESSAGE + " (" + dto.getZygosityCurie() + ")");
+			} else {
+				curie = term.getName();
+				if (StringUtils.isEmpty(curie)) {
+					aaaResponse.addErrorMessage("zygosity_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getZygosityCurie() + ")");
+				} else {
+					zygosity = genoTermService.getByCurie(curie).getEntity();
+					if (zygosity == null) {
+						aaaResponse.addErrorMessage("zygosity_curie", ValidationConstants.UNRECOGNIZED_MESSAGE + " (" + dto.getZygosityCurie() + ")");
+					}
+				}
 			}
 		}
 		association.setZygosity(zygosity);
