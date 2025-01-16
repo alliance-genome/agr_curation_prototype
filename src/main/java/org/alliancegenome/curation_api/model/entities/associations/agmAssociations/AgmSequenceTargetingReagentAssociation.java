@@ -49,7 +49,7 @@ public class AgmSequenceTargetingReagentAssociation extends Association {
 		"primaryExternalId", "perimaryExternalId_keyword", "modInternalId", "modInternalId_keyword" })
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@JsonIgnoreProperties({"agmSequenceTargetingReagentAssociations", "constructGenomicEntityAssociations"})
+	@JsonIgnoreProperties({"agmSequenceTargetingReagentAssociations", "constructGenomicEntityAssociations", "components"})
 	@Fetch(FetchMode.JOIN)
 	private AffectedGenomicModel agmAssociationSubject;
 

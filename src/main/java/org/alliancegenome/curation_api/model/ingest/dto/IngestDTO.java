@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.ingest.dto;
 
 import java.util.List;
 
+import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmAlleleAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmSequenceTargetingReagentAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleVariantAssociationDTO;
@@ -71,5 +72,9 @@ public class IngestDTO {
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("agm_sequence_targeting_reagent_association_ingest_set")
 	private List<AgmSequenceTargetingReagentAssociationDTO> agmStrAssociationIngestSet;
+
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("agm_allele_association_ingest_set")
+	private List<AgmAlleleAssociationDTO> agmAlleleAssociationIngestSet;
 }
 

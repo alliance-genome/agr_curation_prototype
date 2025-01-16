@@ -32,8 +32,8 @@ public class AgmSequenceTargetingReagentAssociationCrudController extends
 		setService(agmStrAssociationService);
 	}
 
-	public ObjectResponse<AgmSequenceTargetingReagentAssociation> getAssociation(Long alleleId, String relationName, Long geneId) {
-		return agmStrAssociationService.getAssociation(alleleId, relationName, geneId);
+	public ObjectResponse<AgmSequenceTargetingReagentAssociation> getAssociation(Long agmId, String relationName, Long strId) {
+		return agmStrAssociationService.getAssociation(agmId, relationName, strId);
 	}
 
 	@Override
