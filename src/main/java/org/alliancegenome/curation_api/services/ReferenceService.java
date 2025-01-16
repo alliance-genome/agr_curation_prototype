@@ -1,10 +1,10 @@
 package org.alliancegenome.curation_api.services;
 
-import io.quarkus.logging.Log;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -12,10 +12,11 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.references.ReferenceSynchronisationHelper;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import io.quarkus.logging.Log;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class ReferenceService extends BaseEntityCrudService<Reference, ReferenceDAO> {
@@ -56,7 +57,7 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 		Reference reference = null;
 		if (referenceRequest != null) {
 			if (referenceCacheMap.isEmpty()) {
-				referenceCacheMap = referenceDAO.getReferenceMap();
+				referenceCacheMap = referenceDAO.getReferenceMap(true);
 			}
 			if (referenceCacheMap.containsKey(curieOrXref)) {
 				reference = referenceCacheMap.get(curieOrXref);
@@ -80,7 +81,7 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 		} else {
 			Log.debug("Reference not cached, caching reference: (" + curieOrXref + ")");
 			if (shallowReferenceCacheMap.isEmpty()) {
-				shallowReferenceCacheMap = referenceDAO.getShallowReferenceMap();
+				shallowReferenceCacheMap = referenceDAO.getReferenceMap(false);
 				reference = shallowReferenceCacheMap.get(curieOrXref);
 			} else {
 				reference = findOrCreateReference(curieOrXref);

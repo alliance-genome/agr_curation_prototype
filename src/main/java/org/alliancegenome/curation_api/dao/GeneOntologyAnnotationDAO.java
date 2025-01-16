@@ -1,15 +1,17 @@
 package org.alliancegenome.curation_api.dao;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.Query;
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
-import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
-import org.alliancegenome.curation_api.model.entities.Organization;
-import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
+
+import com.google.common.base.Objects;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.Query;
 
 @ApplicationScoped
 public class GeneOntologyAnnotationDAO extends BaseSQLDAO<GeneOntologyAnnotation> {
@@ -34,17 +36,24 @@ public class GeneOntologyAnnotationDAO extends BaseSQLDAO<GeneOntologyAnnotation
 		return gaf;
 	}
 
-	public Map<Long, GeneOntologyAnnotationDTO> getAllGafIdsPerProvider(Organization sourceOrganization) {
+	public Map<Long, GeneOntologyAnnotationDTO> getAllGafIdsPerProvider(String speciesAbbreviation) {
+		String speciesNameClause = " and spec.displayname = :speciesName";
+		if (Objects.equal(speciesAbbreviation, "XB")) {
+			speciesNameClause = " and spec.displayname in ('XBXL', 'XBXT')";
+		}
+		
 		Query query = entityManager.createNativeQuery("""
-			select gga.id, be.primaryexternalid, ot.curie
-			from GeneOntologyAnnotation as gga , BiologicalEntity as be, ontologyterm as ot,
-			species as spec
-			where gga.singlegene_id = be.id
-			and be.taxon_id = spec.taxon_id
-			and spec.displayname = :speciesName
-			and gga.goterm_id = ot.id
-			""");
-		query.setParameter("speciesName", sourceOrganization.getAbbreviation());
+				select gga.id, be.primaryexternalid, ot.curie
+				from GeneOntologyAnnotation as gga , BiologicalEntity as be, ontologyterm as ot,
+				species as spec
+				where gga.singlegene_id = be.id
+				and be.taxon_id = spec.taxon_id
+				and gga.goterm_id = ot.id
+				""" + speciesNameClause);
+		if (!Objects.equal(speciesAbbreviation, "XB")) {
+			query.setParameter("speciesName", speciesAbbreviation);
+		}
+		
 		List<Object[]> result = query.getResultList();
 		Map<Long, GeneOntologyAnnotationDTO> map = new HashMap<>();
 		result.forEach(object -> {
@@ -53,6 +62,7 @@ public class GeneOntologyAnnotationDAO extends BaseSQLDAO<GeneOntologyAnnotation
 			dto.setGoTermCurie((String) object[2]);
 			map.put((Long) object[0], dto);
 		});
+		
 		return map;
 	}
 

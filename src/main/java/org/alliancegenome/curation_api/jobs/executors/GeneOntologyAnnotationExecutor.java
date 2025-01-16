@@ -17,20 +17,17 @@ import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
-import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
 import org.alliancegenome.curation_api.services.GeneOntologyAnnotationService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @ApplicationScoped
 public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 
@@ -42,7 +39,6 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
 		String abbr = ((BulkFMSLoad) bulkLoadFileHistory.getBulkLoad()).getFmsDataSubType();
-		Organization organization = organizationService.getByAbbr(abbr).getEntity();
 
 		// curie, List<GO curie>
 		Map<String, List<String>> uiMap = new HashMap<>();
@@ -56,7 +52,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 				String orgID = token[0];
 				String modID = token[1];
 				String goID = token[4];
-				if (abbr.equalsIgnoreCase(orgID) || orgID.equalsIgnoreCase("Xenbase") || abbr.equals("HUMAN") && orgID.equals("RGD")) {
+				if (abbr.equalsIgnoreCase(orgID) || abbr.equals("XB") && orgID.equalsIgnoreCase("Xenbase") || abbr.equals("HUMAN") && orgID.equals("RGD")) {
 					List<String> goIDs = uiMap.computeIfAbsent(modID, list -> new ArrayList<>());
 					goIDs.add(goID);
 				}
@@ -68,7 +64,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 
 		String name = bulkLoadFileHistory.getBulkLoad().getName();
 
-		Map<Long, GeneOntologyAnnotationDTO> gafMap = service.getGafMap(organization);
+		Map<Long, GeneOntologyAnnotationDTO> gafMap = service.getGafMap(abbr);
 		List<Long> gafIdsBefore = new ArrayList<>(gafMap.keySet().stream().toList());
 		gafIdsBefore.removeIf(Objects::isNull);
 
