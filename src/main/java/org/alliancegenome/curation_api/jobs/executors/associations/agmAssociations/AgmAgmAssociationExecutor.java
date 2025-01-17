@@ -9,9 +9,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmAgmAssociationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmSequenceTargetingReagentAssociationDTO;
 import org.alliancegenome.curation_api.services.associations.agmAssociations.AgmAgmAssociationService;
-import org.alliancegenome.curation_api.services.associations.agmAssociations.AgmStrAssociationService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +50,7 @@ public class AgmAgmAssociationExecutor extends LoadFileExecutor {
 
 		bulkLoadFileHistory.setCount(associations.size());
 		updateHistory(bulkLoadFileHistory);
-		
+
 		boolean success = runLoad(agmAgmAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
 		if (success && cleanUp) {
 			runCleanup(agmAgmAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "agm agm association");

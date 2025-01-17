@@ -22,19 +22,19 @@ CREATE SEQUENCE public.agmagmassociation_seq
 
 ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmagmassociation_pkey PRIMARY KEY (id);
 
-CREATE INDEX agmagmassociation_agmassociationsubject_in ON public.agmagmassociation USING btree (agmassociationsubject_id);
-CREATE INDEX agmagmassociation_agmassociationobject_in ON public.agmagmassociation USING btree (agmAssociationObject_id);
+CREATE INDEX agmagmassociation_agmassocsubject_in ON public.agmagmassociation USING btree (agmassociationsubject_id);
+CREATE INDEX agmagmassociation_agmassocobject_in ON public.agmagmassociation USING btree (agmAssociationObject_id);
 CREATE INDEX agmagmassociation_createdby_index ON public.agmagmassociation USING btree (createdby_id);
 CREATE INDEX agmagmassociation_internal_index ON public.agmagmassociation USING btree (internal);
 CREATE INDEX agmagmassociation_obsolete_index ON public.agmagmassociation USING btree (obsolete);
 CREATE INDEX agmagmassociation_relation_index ON public.agmagmassociation USING btree (relation_id);
 CREATE INDEX agmagmassociation_updatedby_index ON public.agmagmassociation USING btree (updatedby_id);
 
-ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmstrassociation_agmassociationsubject_id FOREIGN KEY (agmassociationsubject_id) REFERENCES public.affectedgenomicmodel(id);
-ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmstrassociation_relation_id FOREIGN KEY (relation_id) REFERENCES public.vocabularyterm(id);
-ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmstrassociation_updatedby_id FOREIGN KEY (updatedby_id) REFERENCES public.person(id);
-ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmstrassociation_agmassociationobject_id FOREIGN KEY (agmAssociationObject_id) REFERENCES public.affectedgenomicmodel(id);
-ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmstrassociation_createdby_id FOREIGN KEY (createdby_id) REFERENCES public.person(id);
+ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmstrassociation_agmassocsubject_fk FOREIGN KEY (agmassociationsubject_id) REFERENCES public.affectedgenomicmodel(id);
+ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmstrassociation_relation_fk FOREIGN KEY (relation_id) REFERENCES public.vocabularyterm(id);
+ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmstrassociation_updatedby_fk FOREIGN KEY (updatedby_id) REFERENCES public.person(id);
+ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmstrassociation_agmassociationobject_fk FOREIGN KEY (agmAssociationObject_id) REFERENCES public.affectedgenomicmodel(id);
+ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmstrassociation_createdby_fk FOREIGN KEY (createdby_id) REFERENCES public.person(id);
 
 --create vocabulary
 
