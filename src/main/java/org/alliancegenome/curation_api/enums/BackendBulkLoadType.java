@@ -18,6 +18,7 @@ public enum BackendBulkLoadType {
 	ALLELE_ASSOCIATION("json"),
 	CONSTRUCT_ASSOCIATION("json"),
 	AGM_ASSOCIATION("json"),
+	AGM_AGM_ASSOCIATION("json"),
 	VARIANT("json"),
 	VARIATION("json"), // FMS variants as opposed to direct submission for VARIANT
 	VEPTRANSCRIPT("tsv"),
