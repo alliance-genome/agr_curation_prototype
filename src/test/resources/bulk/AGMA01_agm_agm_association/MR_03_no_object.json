@@ -1,6 +1,6 @@
 [
   {
-    "agm_subject_identifier": "AMGTEST:AffectedGenomicModel0001",
+    "agm_subject_identifier": "AMGTEST:AffectedGenomicModel0010",
     "relation_name": "has_parental_population",
     "internal": true,
     "obsolete": true,

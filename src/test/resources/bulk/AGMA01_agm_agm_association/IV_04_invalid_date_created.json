@@ -1,8 +1,8 @@
 [
   {
-    "agm_subject_identifier": "AMGTEST:AffectedGenomicModel0001",
+    "agm_subject_identifier": "AMGTEST:AffectedGenomicModel0010",
     "relation_name": "has_parental_population",
-    "agm_object_identifier": "AMGTEST:AffectedGenomicModel0002",
+    "agm_object_identifier": "AMGTEST:AffectedGenomicModel0020",
     "internal": true,
     "obsolete": true,
     "created_by_curie": "AGMTEST:Person0001",
