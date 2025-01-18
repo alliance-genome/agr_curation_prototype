@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.associations.agmAssociations.AgmAgmAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.agmAssociations.AgmAlleleAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.agmAssociations.AgmSequenceTargetingReagentAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
@@ -79,7 +80,7 @@ public class AffectedGenomicModel extends GenomicEntity {
 		"agmSequenceTargetingReagentAssociationObject.secondaryIdentifiers_keyword"
 	})
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class })
+	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 
 	@IndexedEmbedded(includePaths = {
@@ -90,6 +91,30 @@ public class AffectedGenomicModel extends GenomicEntity {
 		"agmAlleleAssociationObject.alleleSecondaryIds.secondaryId", "agmAlleleAssociationObject.alleleSecondaryIds.secondaryId_keyword"
 	})
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class })
+	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
 	private List<AgmAlleleAssociation> components;
+	@IndexedEmbedded(includePaths = {
+		"agmAssociationSubject.name",
+		"agmAssociationSubject.name_keyword",
+		"agmAssociationSubject.synonyms",
+		"agmAssociationSubject.synonyms_keyword",
+		"agmAssociationSubject.secondaryIdentifiers",
+		"agmAssociationSubject.secondaryIdentifiers_keyword"
+	})
+	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
+	private List<AgmAgmAssociation> agmAgmAssociations;
+
+	@IndexedEmbedded(includePaths = {
+		"agmAssociationObject.name",
+		"agmAssociationObject.name_keyword",
+		"agmAssociationObject.synonyms",
+		"agmAssociationObject.synonyms_keyword",
+		"agmAssociationObject.secondaryIdentifiers",
+		"agmAssociationObject.secondaryIdentifiers_keyword"
+	})
+	@OneToMany(mappedBy = "agmAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
+	private List<AgmAgmAssociation> agmAgmObjectAssociations;
+
 }
