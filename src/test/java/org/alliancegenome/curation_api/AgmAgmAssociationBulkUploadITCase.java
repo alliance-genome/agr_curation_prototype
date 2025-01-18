@@ -26,8 +26,8 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 	
 	private AffectedGenomicModel agmSubject;
 	private AffectedGenomicModel agmObject;
-	private String agmSubjectCurie = "AMGTEST:AffectedGenomicModel0001";
-	private String agmObjectCurie = "AMGTEST:AffectedGenomicModel0002";
+	private String agmSubjectCurie = "AMGTEST:AffectedGenomicModel0010";
+	private String agmObjectCurie = "AMGTEST:AffectedGenomicModel0020";
 	private String relationName = "has_parental_population";
 
 	@BeforeEach
