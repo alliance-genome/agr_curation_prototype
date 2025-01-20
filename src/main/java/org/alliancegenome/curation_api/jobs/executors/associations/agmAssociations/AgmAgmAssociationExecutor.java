@@ -1,26 +1,26 @@
 package org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmSequenceTargetingReagentAssociationDTO;
-import org.alliancegenome.curation_api.services.associations.agmAssociations.AgmStrAssociationService;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmAgmAssociationDTO;
+import org.alliancegenome.curation_api.services.associations.agmAssociations.AgmAgmAssociationService;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import lombok.extern.jbosslog.JBossLog;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @JBossLog
 @ApplicationScoped
-public class AgmStrAssociationExecutor extends LoadFileExecutor {
+public class AgmAgmAssociationExecutor extends LoadFileExecutor {
 
-	@Inject AgmStrAssociationService agmStrAssociationService;
+	@Inject
+	AgmAgmAssociationService agmAgmAssociationService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
@@ -28,12 +28,12 @@ public class AgmStrAssociationExecutor extends LoadFileExecutor {
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AgmSequenceTargetingReagentAssociationDTO.class);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AgmAgmAssociationDTO.class);
 		if (ingestDto == null) {
 			return;
 		}
 
-		List<AgmSequenceTargetingReagentAssociationDTO> associations = ingestDto.getAgmStrAssociationIngestSet();
+		List<AgmAgmAssociationDTO> associations = ingestDto.getAgmAgmAssociationIngestSet();
 		if (associations == null) {
 			associations = new ArrayList<>();
 		}
@@ -41,7 +41,7 @@ public class AgmStrAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(agmStrAssociationService.getAssociationsByDataProvider(dataProvider));
+			associationIdsBefore.addAll(agmAgmAssociationService.getAssociationsByDataProvider(dataProvider));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 
@@ -50,11 +50,10 @@ public class AgmStrAssociationExecutor extends LoadFileExecutor {
 
 		bulkLoadFileHistory.setCount(associations.size());
 		updateHistory(bulkLoadFileHistory);
-		
-		String countType = "AGM Sequence Targeting Reagent Associations";
-		boolean success = runLoad(agmStrAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countType);
+
+		boolean success = runLoad(agmAgmAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(agmStrAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "agm str association");
+			runCleanup(agmAgmAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "agm agm association");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

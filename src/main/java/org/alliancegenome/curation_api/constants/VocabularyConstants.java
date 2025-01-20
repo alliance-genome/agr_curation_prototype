@@ -18,6 +18,9 @@ public final class VocabularyConstants {
 
 	public static final String AGM_RELATION_VOCABULARY = "agm_relation";
 	public static final String AGM_STR_RELATION_VOCABULARY_TERM_SET = "agm_str_relation";
+	public static final String AGM_ALLELE_RELATION_VOCABULARY_TERM_SET = "agm_allele_relation";
+	public static final String AGM_ALLELE_GENOTYPE_TERMS_VOCABULARY = "agm_allele_association_geno_terms";
+	public static final String AGM_AGM_RELATION_VOCABULARY_TERM_SET = "agm_agm_relation";
 
 	public static final String PHENOTYPE_RELATION_VOCABULARY = "phenotype_relation";
 

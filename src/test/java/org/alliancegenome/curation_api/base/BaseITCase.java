@@ -46,6 +46,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.GENOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
@@ -579,6 +580,25 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefMMOTerm());
+
+		return response.getEntity();
+	}
+
+	public GENOTerm createGenoTerm(String curie, String name) {
+		GENOTerm genoTerm = new GENOTerm();
+		genoTerm.setCurie(curie);
+		genoTerm.setName(name);
+		genoTerm.setObsolete(false);
+		genoTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<GENOTerm> response = RestAssured.given().
+			contentType("application/json").
+			body(genoTerm).
+			when().
+			put("/api/genoterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefGENOTerm());
 
 		return response.getEntity();
 	}
@@ -1298,6 +1318,11 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<MMOTerm>> getObjectResponseTypeRefMMOTerm() {
 		return new TypeRef<ObjectResponse<MMOTerm>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<GENOTerm>> getObjectResponseTypeRefGENOTerm() {
+		return new TypeRef<ObjectResponse<GENOTerm>>() {
 		};
 	}
 

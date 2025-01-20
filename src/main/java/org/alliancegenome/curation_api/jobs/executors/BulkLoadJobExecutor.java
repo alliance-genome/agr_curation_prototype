@@ -1,23 +1,10 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_ASSOCIATION;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_DISEASE_ANNOTATION;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_ASSOCIATION;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_DISEASE_ANNOTATION;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT_ASSOCIATION;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.DISEASE_ANNOTATION;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.FULL_INGEST;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE_DISEASE_ANNOTATION;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.VARIANT;
-
 import java.util.List;
 
-import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
+import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmAlleleAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmAgmAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmStrAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
@@ -31,11 +18,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.*;
+
 @JBossLog
 @ApplicationScoped
 public class BulkLoadJobExecutor {
-
-	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 
 	@Inject AlleleDiseaseAnnotationExecutor alleleDiseaseAnnotationExecutor;
 	@Inject AgmDiseaseAnnotationExecutor agmDiseaseAnnotationExecutor;
@@ -48,10 +35,12 @@ public class BulkLoadJobExecutor {
 	@Inject OrthologyExecutor orthologyExecutor;
 	@Inject OntologyExecutor ontologyExecutor;
 	@Inject ConstructExecutor constructExecutor;
-	@Inject VariantExecutor variantExecutor;
 	@Inject AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
 	@Inject ConstructGenomicEntityAssociationExecutor constructGenomicEntityAssociationExecutor;
 	@Inject AgmStrAssociationExecutor agmStrAssociationExecutor;
+	@Inject AgmAlleleAssociationExecutor agmAlleleAssociationExecutor;
+	@Inject
+	AgmAgmAssociationExecutor agmAgmAssociationExecutor;
 	@Inject PhenotypeAnnotationExecutor phenotypeAnnotationExecutor;
 	@Inject GeneMolecularInteractionExecutor geneMolecularInteractionExecutor;
 	@Inject GeneGeneticInteractionExecutor geneGeneticInteractionExecutor;
@@ -62,14 +51,14 @@ public class BulkLoadJobExecutor {
 	@Inject HTPExpressionDatasetAnnotationExecutor htpExpressionDatasetAnnotationExecutor;
 	@Inject HTPExpressionDatasetSampleAnnotationExecutor htpExpressionDatasetSampleAnnotationExecutor;
 	@Inject GeoXrefExecutor geoXrefExecutor;
-	
+
 	@Inject Gff3ExonExecutor gff3ExonExecutor;
 	@Inject Gff3CDSExecutor gff3CDSExecutor;
 	@Inject Gff3GeneExecutor gff3GeneExecutor;
 	@Inject Gff3TranscriptExecutor gff3TranscriptExecutor;
 	@Inject VepTranscriptExecutor vepTranscriptExecutor;
 	@Inject VepGeneExecutor vepGeneExecutor;
-	
+
 	@Inject ExpressionAtlasExecutor expressionAtlasExecutor;
 	@Inject
 	GeneOntologyAnnotationExecutor gafExecutor;
@@ -79,8 +68,8 @@ public class BulkLoadJobExecutor {
 	public void process(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) throws Exception {
 
 		BackendBulkLoadType loadType = bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType();
-		
-		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, FULL_INGEST, ALLELE_ASSOCIATION, AGM_ASSOCIATION, CONSTRUCT_ASSOCIATION);
+
+		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, FULL_INGEST, ALLELE_ASSOCIATION, AGM_ASSOCIATION, AGM_AGM_ASSOCIATION, CONSTRUCT_ASSOCIATION);
 
 		if (ingestTypes.contains(loadType)) {
 
@@ -117,6 +106,10 @@ public class BulkLoadJobExecutor {
 			}
 			if (loadType == AGM_ASSOCIATION || loadType == FULL_INGEST) {
 				agmStrAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+				agmAlleleAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
+			if (loadType == AGM_AGM_ASSOCIATION || loadType == FULL_INGEST) {
+				agmAgmAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {

@@ -44,6 +44,7 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 		response = new ObjectResponse<AffectedGenomicModel>();
 		
 		AffectedGenomicModel agm = findDatabaseObject(affectedGenomicModelDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
+
 		if (agm == null) {
 			agm = new AffectedGenomicModel();
 		}
