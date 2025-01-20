@@ -42,10 +42,10 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 	@Inject
 	AgmSecondaryIdSlotAnnotationDTOValidator agmSecondaryIdDtoValidator;
 
-	private final ObjectResponse<AffectedGenomicModel> agmResponse = new ObjectResponse<>();
+	private ObjectResponse<AffectedGenomicModel> agmResponse = new ObjectResponse<>();
 
 	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-
+		agmResponse = new ObjectResponse<>();
 		AffectedGenomicModel agm = null;
 		if (StringUtils.isNotBlank(dto.getPrimaryExternalId())) {
 			SearchResponse<AffectedGenomicModel> response = affectedGenomicModelDAO.findByField("primaryExternalId", dto.getPrimaryExternalId());
