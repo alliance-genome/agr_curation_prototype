@@ -1,8 +1,10 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import org.alliancegenome.curation_api.constants.ValidationConstants;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
@@ -15,21 +17,17 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.agmSlotAnn
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
-import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.base.GenomicEntityDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AgmSecondaryIdSlotAnnotationDTOValidator;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
-public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
+public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<AffectedGenomicModel, AffectedGenomicModelDTO> {
 
 	@Inject
 	AffectedGenomicModelDAO affectedGenomicModelDAO;
@@ -42,27 +40,18 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 	@Inject
 	AgmSecondaryIdSlotAnnotationDTOValidator agmSecondaryIdDtoValidator;
 
-	private final ObjectResponse<AffectedGenomicModel> agmResponse = new ObjectResponse<>();
-
 	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-
-		AffectedGenomicModel agm = null;
-		if (StringUtils.isNotBlank(dto.getPrimaryExternalId())) {
-			SearchResponse<AffectedGenomicModel> response = affectedGenomicModelDAO.findByField("primaryExternalId", dto.getPrimaryExternalId());
-			if (response != null && response.getSingleResult() != null) {
-				agm = response.getSingleResult();
-			}
-		} else {
-			agmResponse.addErrorMessage("primaryExternalId", ValidationConstants.REQUIRED_MESSAGE);
-		}
-
+		response = new ObjectResponse<AffectedGenomicModel>();
+		
+		AffectedGenomicModel agm = findDatabaseObject(affectedGenomicModelDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
 		if (agm == null) {
 			agm = new AffectedGenomicModel();
 		}
+		
+		agm = validateGenomicEntityDTO(agm, dto, dataProvider);
 
-		agm.setPrimaryExternalId(dto.getPrimaryExternalId());
-		agm.setModInternalId(handleStringField(dto.getModInternalId()));
 		agm.setName(handleStringField(dto.getName()));
+		
 		if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
 			List<String> existingSynonyms = agm.getSynonyms();
 			if (CollectionUtils.isEmpty(existingSynonyms)) {
@@ -96,25 +85,13 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 		}
 
 
-		ObjectResponse<AffectedGenomicModel> geResponse = validateGenomicEntityDTO(agm, dto, dataProvider);
-		agmResponse.addErrorMessages(geResponse.getErrorMessages());
-
-		VocabularyTerm subtype = null;
-		if (StringUtils.isBlank(dto.getSubtypeName())) {
-			agmResponse.addErrorMessage("subtype_name", ValidationConstants.REQUIRED_MESSAGE);
-
-		} else {
-			subtype = vocabularyTermService.getTermInVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY, dto.getSubtypeName()).getEntity();
-			if (subtype == null) {
-				agmResponse.addErrorMessage("subtype_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSubtypeName() + ")");
-			}
-		}
+		VocabularyTerm subtype = validateRequiredTermInVocabulary("subtype_name", dto.getSubtypeName(), VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
 		agm.setSubtype(subtype);
 
-		agmResponse.convertErrorMessagesToMap();
+		response.convertErrorMessagesToMap();
 
-		if (agmResponse.hasErrors()) {
-			throw new ObjectValidationException(dto, agmResponse.errorMessagesString());
+		if (response.hasErrors()) {
+			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
 		return agm;
@@ -139,7 +116,7 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 				ObjectResponse<AgmSecondaryIdSlotAnnotation> sidResponse = agmSecondaryIdDtoValidator.validateAgmSecondaryIdSlotAnnotationDTO(sid, sidDto);
 				if (sidResponse.hasErrors()) {
 					allValid = false;
-					agmResponse.addErrorMessages(field, ix, sidResponse.getErrorMessages());
+					response.addErrorMessages(field, ix, sidResponse.getErrorMessages());
 				} else {
 					sid = sidResponse.getEntity();
 					sid.setSingleAgm(model);
@@ -149,7 +126,7 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 		}
 
 		if (!allValid) {
-			agmResponse.convertMapToErrorMessages(field);
+			response.convertMapToErrorMessages(field);
 			return null;
 		}
 

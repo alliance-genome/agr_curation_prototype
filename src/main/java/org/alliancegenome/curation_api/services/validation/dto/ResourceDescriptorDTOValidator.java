@@ -24,18 +24,18 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
+public class ResourceDescriptorDTOValidator extends BaseDTOValidator<ResourceDescriptor> {
 
 	@Inject ResourceDescriptorDAO resourceDescriptorDAO;
 	@Inject ResourceDescriptorPageDAO resourceDescriptorPageDAO;
 	@Inject ResourceDescriptorPageDTOValidator resourceDescriptorPageDtoValidator;
 
 	public ResourceDescriptor validateResourceDescriptorDTO(ResourceDescriptorDTO dto) throws ValidationException {
-		ObjectResponse<ResourceDescriptor> rdResponse = new ObjectResponse<ResourceDescriptor>();
-
+		response = new ObjectResponse<ResourceDescriptor>();
+		
 		ResourceDescriptor rd = null;
 		if (StringUtils.isBlank(dto.getDbPrefix())) {
-			rdResponse.addErrorMessage("db_prefix", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("db_prefix", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			SearchResponse<ResourceDescriptor> rdSearchResponse = resourceDescriptorDAO.findByField("prefix", dto.getDbPrefix());
 			if (rdSearchResponse == null || rdSearchResponse.getSingleResult() == null) {
@@ -47,7 +47,7 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 		}
 
 		if (StringUtils.isBlank(dto.getName())) {
-			rdResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		rd.setName(dto.getName());
 
@@ -82,7 +82,7 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 			defaultPageDTO.setUrl(defaultUrlTemplate);
 			ObjectResponse<ResourceDescriptorPage> defaultRdPageResponse = resourceDescriptorPageDtoValidator.validateResourceDescriptorPageDTO(defaultPageDTO, dto.getDbPrefix());
 			if (defaultRdPageResponse.hasErrors()) {
-				rdResponse.addErrorMessage("default_url_template", "Error during default page construction: " + defaultRdPageResponse.errorMessagesString());
+				response.addErrorMessage("default_url_template", "Error during default page construction: " + defaultRdPageResponse.errorMessagesString());
 			}
 			rdPages.add(defaultRdPageResponse.getEntity());
 		}
@@ -96,7 +96,7 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 			for (ResourceDescriptorPageDTO rdPageDTO : dto.getPages()) {
 				ObjectResponse<ResourceDescriptorPage> rdPageResponse = resourceDescriptorPageDtoValidator.validateResourceDescriptorPageDTO(rdPageDTO, dto.getDbPrefix());
 				if (rdPageResponse.hasErrors()) {
-					rdResponse.addErrorMessage("pages", rdPageResponse.errorMessagesString());
+					response.addErrorMessage("pages", rdPageResponse.errorMessagesString());
 					break;
 				}
 				rdPages.add(rdPageResponse.getEntity());
@@ -105,10 +105,10 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 			rd.setResourcePages(null);
 		}
 
-		rdResponse.setEntity(rd);
+		response.setEntity(rd);
 
-		if (rdResponse.hasErrors()) {
-			throw new ObjectValidationException(dto, rdResponse.errorMessagesString());
+		if (response.hasErrors()) {
+			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
 		rd = resourceDescriptorDAO.persist(rd);

@@ -8,21 +8,19 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.S
 import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
-public class AlleleSecondaryIdSlotAnnotationDTOValidator extends SecondaryIdSlotAnnotationDTOValidator {
+public class AlleleSecondaryIdSlotAnnotationDTOValidator extends SecondaryIdSlotAnnotationDTOValidator<AlleleSecondaryIdSlotAnnotation, SecondaryIdSlotAnnotationDTO> {
 
 	public ObjectResponse<AlleleSecondaryIdSlotAnnotation> validateAlleleSecondaryIdSlotAnnotationDTO(AlleleSecondaryIdSlotAnnotation annotation, SecondaryIdSlotAnnotationDTO dto) {
-		ObjectResponse<AlleleSecondaryIdSlotAnnotation> asidResponse = new ObjectResponse<>();
-
+		response = new ObjectResponse<AlleleSecondaryIdSlotAnnotation>();
+		
 		if (annotation == null) {
 			annotation = new AlleleSecondaryIdSlotAnnotation();
 		}
 
-		ObjectResponse<AlleleSecondaryIdSlotAnnotation> saResponse = validateSecondaryIdSlotAnnotationDTO(annotation, dto);
-		annotation = saResponse.getEntity();
-		asidResponse.addErrorMessages(saResponse.getErrorMessages());
+		annotation = (AlleleSecondaryIdSlotAnnotation) validateSecondaryIdSlotAnnotationDTO(annotation, dto);
+		
+		response.setEntity(annotation);
 
-		asidResponse.setEntity(annotation);
-
-		return asidResponse;
+		return response;
 	}
 }

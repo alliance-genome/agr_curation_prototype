@@ -3,7 +3,7 @@
     "primary_external_id": "DATEST:IV03",
     "internal": false,
     "obsolete": false,
-    "gene_identifier": "DATEST:Gene0003",
+    "gene_identifier": "DATEST:GeneInvalid",
     "do_term_curie": "DATEST:Disease0001",
     "data_provider_dto": {
       "internal": false,

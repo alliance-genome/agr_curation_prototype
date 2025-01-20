@@ -8,7 +8,6 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -34,12 +33,9 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlot
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.ReferenceService;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
-import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.base.GenomicEntityDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationDTOValidator;
@@ -51,19 +47,15 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.a
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class AlleleDTOValidator extends BaseDTOValidator {
+public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, AlleleDTO> {
 
 	@Inject AlleleDAO alleleDAO;
-	@Inject VocabularyTermService vocabularyTermService;
-	@Inject ReferenceDAO referenceDAO;
-	@Inject ReferenceService referenceService;
 	@Inject AlleleMutationTypeSlotAnnotationDTOValidator alleleMutationTypeDtoValidator;
 	@Inject AlleleInheritanceModeSlotAnnotationDTOValidator alleleInheritanceModeDtoValidator;
 	@Inject AlleleGermlineTransmissionStatusSlotAnnotationDTOValidator alleleGermlineTransmissionStatusDtoValidator;
@@ -77,60 +69,25 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	@Inject AlleleFunctionalImpactSlotAnnotationDTOValidator alleleFunctionalImpactDtoValidator;
 	@Inject NoteDTOValidator noteDtoValidator;
 
-	private ObjectResponse<Allele> alleleResponse;
-
 	@Transactional
 	public Allele validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-
-		alleleResponse = new ObjectResponse<>();
-
-		Allele allele = null;
-		if (StringUtils.isNotBlank(dto.getPrimaryExternalId())) {
-			SearchResponse<Allele> response = alleleDAO.findByField("primaryExternalId", dto.getPrimaryExternalId());
-			if (response != null && response.getSingleResult() != null) {
-				allele = response.getSingleResult();
-			}
-		} else {
-			alleleResponse.addErrorMessage("primaryExternalId", ValidationConstants.REQUIRED_MESSAGE);
-		}
-
+		response = new ObjectResponse<Allele>();
+		
+		Allele allele = findDatabaseObject(alleleDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
 		if (allele == null) {
 			allele = new Allele();
 		}
 
-		allele.setPrimaryExternalId(dto.getPrimaryExternalId());
-		allele.setModInternalId(handleStringField(dto.getModInternalId()));
-
-		ObjectResponse<Allele> geResponse = validateGenomicEntityDTO(allele, dto, dataProvider);
-		alleleResponse.addErrorMessages(geResponse.getErrorMessages());
-
-		allele = geResponse.getEntity();
-
-		VocabularyTerm inCollection = null;
-		if (StringUtils.isNotBlank(dto.getInCollectionName())) {
-			inCollection = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, dto.getInCollectionName()).getEntity();
-			if (inCollection == null) {
-				alleleResponse.addErrorMessage("in_collection_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInCollectionName() + ")");
-			}
-		}
+		allele = validateGenomicEntityDTO(allele, dto, dataProvider);
+		
+		VocabularyTerm inCollection = validateTermInVocabulary("in_collection_name", dto.getInCollectionName(), VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
 		allele.setInCollection(inCollection);
 
 		allele.setIsExtinct(dto.getIsExtinct());
 
-		if (CollectionUtils.isNotEmpty(dto.getReferenceCuries())) {
-			List<Reference> references = new ArrayList<>();
-			for (String publicationId : dto.getReferenceCuries()) {
-				Reference reference = referenceService.retrieveFromDbOrLiteratureService(publicationId);
-				if (reference == null) {
-					alleleResponse.addErrorMessage("reference_curies", ValidationConstants.INVALID_MESSAGE + " (" + publicationId + ")");
-				} else {
-					references.add(reference);
-				}
-			}
-			allele.setReferences(references);
-		} else {
-			allele.setReferences(null);
-		}
+		List<Reference> references = validateReferences(dto.getReferenceCuries());
+		allele.setReferences(references);
+		
 
 		List<Note> relatedNotes = validateRelatedNotes(allele, dto);
 		if (relatedNotes != null) {
@@ -218,10 +175,10 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			allele.getAlleleFunctionalImpacts().addAll(functionalImpacts);
 		}
 
-		alleleResponse.convertErrorMessagesToMap();
+		response.convertErrorMessagesToMap();
 
-		if (alleleResponse.hasErrors()) {
-			throw new ObjectValidationException(dto, alleleResponse.errorMessagesString());
+		if (response.hasErrors()) {
+			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
 		return alleleDAO.persist(allele);
@@ -246,7 +203,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				ObjectResponse<AlleleMutationTypeSlotAnnotation> mtResponse = alleleMutationTypeDtoValidator.validateAlleleMutationTypeSlotAnnotationDTO(mt, mtDto);
 				if (mtResponse.hasErrors()) {
 					allValid = false;
-					alleleResponse.addErrorMessages(field, ix, mtResponse.getErrorMessages());
+					response.addErrorMessages(field, ix, mtResponse.getErrorMessages());
 				} else {
 					mt = mtResponse.getEntity();
 					mt.setSingleAllele(allele);
@@ -256,7 +213,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 
 		if (!allValid) {
-			alleleResponse.convertMapToErrorMessages(field);
+			response.convertMapToErrorMessages(field);
 			return null;
 		}
 
@@ -286,7 +243,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				ObjectResponse<AlleleInheritanceModeSlotAnnotation> imResponse = alleleInheritanceModeDtoValidator.validateAlleleInheritanceModeSlotAnnotationDTO(im, imDto);
 				if (imResponse.hasErrors()) {
 					allValid = false;
-					alleleResponse.addErrorMessages(field, ix, imResponse.getErrorMessages());
+					response.addErrorMessages(field, ix, imResponse.getErrorMessages());
 				} else {
 					im = imResponse.getEntity();
 					im.setSingleAllele(allele);
@@ -296,7 +253,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 
 		if (!allValid) {
-			alleleResponse.convertMapToErrorMessages(field);
+			response.convertMapToErrorMessages(field);
 			return null;
 		}
 
@@ -316,8 +273,8 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 
 		ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> agtsResponse = alleleGermlineTransmissionStatusDtoValidator.validateAlleleGermlineTransmissionStatusSlotAnnotationDTO(allele.getAlleleGermlineTransmissionStatus(), dto.getAlleleGermlineTransmissionStatusDto());
 		if (agtsResponse.hasErrors()) {
-			alleleResponse.addErrorMessage(field, agtsResponse.errorMessagesString());
-			alleleResponse.addErrorMessages(field, agtsResponse.getErrorMessages());
+			response.addErrorMessage(field, agtsResponse.errorMessagesString());
+			response.addErrorMessages(field, agtsResponse.getErrorMessages());
 			return null;
 		}
 
@@ -336,8 +293,8 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 
 		ObjectResponse<AlleleDatabaseStatusSlotAnnotation> adsResponse = alleleDatabaseStatusDtoValidator.validateAlleleDatabaseStatusSlotAnnotationDTO(allele.getAlleleDatabaseStatus(), dto.getAlleleDatabaseStatusDto());
 		if (adsResponse.hasErrors()) {
-			alleleResponse.addErrorMessage(field, adsResponse.errorMessagesString());
-			alleleResponse.addErrorMessages(field, adsResponse.getErrorMessages());
+			response.addErrorMessage(field, adsResponse.errorMessagesString());
+			response.addErrorMessages(field, adsResponse.getErrorMessages());
 			return null;
 		}
 
@@ -366,7 +323,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				ObjectResponse<AlleleNomenclatureEventSlotAnnotation> neResponse = alleleNomenclatureEventDtoValidator.validateAlleleNomenclatureEventSlotAnnotationDTO(ne, neDto);
 				if (neResponse.hasErrors()) {
 					allValid = false;
-					alleleResponse.addErrorMessages(field, ix, neResponse.getErrorMessages());
+					response.addErrorMessages(field, ix, neResponse.getErrorMessages());
 				} else {
 					ne = neResponse.getEntity();
 					ne.setSingleAllele(allele);
@@ -376,7 +333,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 
 		if (!allValid) {
-			alleleResponse.convertMapToErrorMessages(field);
+			response.convertMapToErrorMessages(field);
 			return null;
 		}
 
@@ -391,14 +348,14 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		String field = "allele_symbol_dto";
 
 		if (dto.getAlleleSymbolDto() == null) {
-			alleleResponse.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
 		ObjectResponse<AlleleSymbolSlotAnnotation> symbolResponse = alleleSymbolDtoValidator.validateAlleleSymbolSlotAnnotationDTO(allele.getAlleleSymbol(), dto.getAlleleSymbolDto());
 		if (symbolResponse.hasErrors()) {
-			alleleResponse.addErrorMessage(field, symbolResponse.errorMessagesString());
-			alleleResponse.addErrorMessages(field, symbolResponse.getErrorMessages());
+			response.addErrorMessage(field, symbolResponse.errorMessagesString());
+			response.addErrorMessages(field, symbolResponse.getErrorMessages());
 			return null;
 		}
 
@@ -417,8 +374,8 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 
 		ObjectResponse<AlleleFullNameSlotAnnotation> nameResponse = alleleFullNameDtoValidator.validateAlleleFullNameSlotAnnotationDTO(allele.getAlleleFullName(), dto.getAlleleFullNameDto());
 		if (nameResponse.hasErrors()) {
-			alleleResponse.addErrorMessage(field, nameResponse.errorMessagesString());
-			alleleResponse.addErrorMessages(field, nameResponse.getErrorMessages());
+			response.addErrorMessage(field, nameResponse.errorMessagesString());
+			response.addErrorMessages(field, nameResponse.getErrorMessages());
 			return null;
 		}
 
@@ -447,7 +404,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				ObjectResponse<AlleleSynonymSlotAnnotation> synResponse = alleleSynonymDtoValidator.validateAlleleSynonymSlotAnnotationDTO(syn, synDto);
 				if (synResponse.hasErrors()) {
 					allValid = false;
-					alleleResponse.addErrorMessages(field, ix, synResponse.getErrorMessages());
+					response.addErrorMessages(field, ix, synResponse.getErrorMessages());
 				} else {
 					syn = synResponse.getEntity();
 					syn.setSingleAllele(allele);
@@ -457,7 +414,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 
 		if (!allValid) {
-			alleleResponse.convertMapToErrorMessages(field);
+			response.convertMapToErrorMessages(field);
 			return null;
 		}
 
@@ -487,7 +444,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				ObjectResponse<AlleleSecondaryIdSlotAnnotation> sidResponse = alleleSecondaryIdDtoValidator.validateAlleleSecondaryIdSlotAnnotationDTO(sid, sidDto);
 				if (sidResponse.hasErrors()) {
 					allValid = false;
-					alleleResponse.addErrorMessages(field, ix, sidResponse.getErrorMessages());
+					response.addErrorMessages(field, ix, sidResponse.getErrorMessages());
 				} else {
 					sid = sidResponse.getEntity();
 					sid.setSingleAllele(allele);
@@ -497,7 +454,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 
 		if (!allValid) {
-			alleleResponse.convertMapToErrorMessages(field);
+			response.convertMapToErrorMessages(field);
 			return null;
 		}
 
@@ -527,7 +484,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				ObjectResponse<AlleleFunctionalImpactSlotAnnotation> fiResponse = alleleFunctionalImpactDtoValidator.validateAlleleFunctionalImpactSlotAnnotationDTO(fi, fiDto);
 				if (fiResponse.hasErrors()) {
 					allValid = false;
-					alleleResponse.addErrorMessages(field, ix, fiResponse.getErrorMessages());
+					response.addErrorMessages(field, ix, fiResponse.getErrorMessages());
 				} else {
 					fi = fiResponse.getEntity();
 					fi.setSingleAllele(allele);
@@ -537,7 +494,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 
 		if (!allValid) {
-			alleleResponse.convertMapToErrorMessages(field);
+			response.convertMapToErrorMessages(field);
 			return null;
 		}
 
@@ -563,7 +520,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDtos().get(ix), VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
 				if (noteResponse.hasErrors()) {
 					allValid = false;
-					alleleResponse.addErrorMessages(field, ix, noteResponse.getErrorMessages());
+					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
 				} else {
 					String noteIdentity = NoteIdentityHelper.noteDtoIdentity(dto.getNoteDtos().get(ix));
 					if (!noteIdentities.contains(noteIdentity)) {
@@ -575,7 +532,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 
 		if (!allValid) {
-			alleleResponse.convertMapToErrorMessages(field);
+			response.convertMapToErrorMessages(field);
 			return null;
 		}
 

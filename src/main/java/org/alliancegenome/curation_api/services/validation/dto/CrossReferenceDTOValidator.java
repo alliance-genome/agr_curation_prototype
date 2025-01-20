@@ -8,59 +8,59 @@ import org.alliancegenome.curation_api.model.ingest.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorService;
-import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.base.AuditedObjectDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class CrossReferenceDTOValidator extends BaseDTOValidator {
+public class CrossReferenceDTOValidator extends AuditedObjectDTOValidator<CrossReference, CrossReferenceDTO> {
 
 	@Inject ResourceDescriptorService resourceDescriptorService;
 	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 
 	public ObjectResponse<CrossReference> validateCrossReferenceDTO(CrossReferenceDTO dto, CrossReference xref) {
+		response = new ObjectResponse<CrossReference>();
+		
 		if (xref == null) {
 			xref = new CrossReference();
 		}
 
-		ObjectResponse<CrossReference> crResponse = validateAuditedObjectDTO(xref, dto);
-
-		xref = crResponse.getEntity();
+		xref = validateAuditedObjectDTO(xref, dto);
 
 		if (StringUtils.isBlank(dto.getPrefix())) {
-			crResponse.addErrorMessage("prefix", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("prefix", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			ObjectResponse<ResourceDescriptor> rdResponse = resourceDescriptorService.getByPrefixOrSynonym(dto.getPrefix());
 			if (rdResponse == null || rdResponse.getEntity() == null) {
-				crResponse.addErrorMessage("prefix", ValidationConstants.INVALID_MESSAGE + " (" + dto.getPrefix() + ")");
+				response.addErrorMessage("prefix", ValidationConstants.INVALID_MESSAGE + " (" + dto.getPrefix() + ")");
 			}
 		}
 
 		if (StringUtils.isBlank(dto.getReferencedCurie())) {
-			crResponse.addErrorMessage("reference_curie", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("reference_curie", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		xref.setReferencedCurie(dto.getReferencedCurie());
 
 		if (StringUtils.isBlank(dto.getDisplayName())) {
-			crResponse.addErrorMessage("display_name", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("display_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		xref.setDisplayName(dto.getDisplayName());
 
 		if (StringUtils.isBlank(dto.getPageArea())) {
-			crResponse.addErrorMessage("page_area", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("page_area", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(dto.getPrefix(), dto.getPageArea());
 			if (page == null) {
-				crResponse.addErrorMessage("page_area", ValidationConstants.INVALID_MESSAGE + " (" + dto.getPageArea() + ")");
+				response.addErrorMessage("page_area", ValidationConstants.INVALID_MESSAGE + " (" + dto.getPageArea() + ")");
 			}
 			xref.setResourceDescriptorPage(page);
 		}
 
-		crResponse.setEntity(xref);
+		response.setEntity(xref);
 
-		return crResponse;
+		return response;
 	}
 
 }

@@ -53,35 +53,35 @@ public class BaseValidator<E extends Object> {
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject NoteValidator noteValidator;
 	
-	public ObjectResponse<E> response;
+	protected ObjectResponse<E> response;
 
-	public String handleStringField(String string) {
+	protected String handleStringField(String string) {
 		if (!StringUtils.isBlank(string)) {
 			return string;
 		}
 		return null;
 	}
 
-	public List<E> handleListField(List<E> list) {
+	protected List<E> handleListField(List<E> list) {
 		if (CollectionUtils.isNotEmpty(list)) {
 			return list;
 		}
 		return null;
 	}
 
-	public void addMessageResponse(String message) {
+	protected void addMessageResponse(String message) {
 		response.setErrorMessage(message);
 	}
 
-	public void addMessageResponse(String fieldName, String message) {
+	protected void addMessageResponse(String fieldName, String message) {
 		response.addErrorMessage(fieldName, message);
 	}
 
-	public void convertMapToErrorMessages(String fieldName) {
+	protected void convertMapToErrorMessages(String fieldName) {
 		response.convertMapToErrorMessages(fieldName);
 	}
 
-	public Organization validateDataProvider(Organization uiDataProvider, Organization dbDataProvider, boolean newEntity) {
+	protected Organization validateDataProvider(Organization uiDataProvider, Organization dbDataProvider, boolean newEntity) {
 		String field = "dataProvider";
 
 		if (uiDataProvider == null) {
@@ -308,12 +308,12 @@ public class BaseValidator<E extends Object> {
 		return validateVocabularyTerms(field, vocabularyName, uiTerms, dbTerms, true, false);
 	}
 	
-	protected List<VocabularyTerm> validateTermsInVocabularyTermSet(String field, String vocabularyName, List<VocabularyTerm> uiTerms, List<VocabularyTerm> dbTerms) {
-		return validateVocabularyTerms(field, vocabularyName, uiTerms, dbTerms, false, true);
+	protected List<VocabularyTerm> validateTermsInVocabularyTermSet(String field, String vocabularyTermSetName, List<VocabularyTerm> uiTerms, List<VocabularyTerm> dbTerms) {
+		return validateVocabularyTerms(field, vocabularyTermSetName, uiTerms, dbTerms, false, true);
 	}
 	
-	protected List<VocabularyTerm> validateRequiredTermsInVocabularyTermSet(String field, String vocabularyName, List<VocabularyTerm> uiTerms, List<VocabularyTerm> dbTerms) {
-		return validateVocabularyTerms(field, vocabularyName, uiTerms, dbTerms, true, true);
+	protected List<VocabularyTerm> validateRequiredTermsInVocabularyTermSet(String field, String vocabularyTermSetName, List<VocabularyTerm> uiTerms, List<VocabularyTerm> dbTerms) {
+		return validateVocabularyTerms(field, vocabularyTermSetName, uiTerms, dbTerms, true, true);
 	}
 	
 	protected List<VocabularyTerm> validateVocabularyTerms(String field, String vocabularyOrSetName, List<VocabularyTerm> uiTerms, List<VocabularyTerm> dbTerms, boolean isRequired, boolean isTermSet) {

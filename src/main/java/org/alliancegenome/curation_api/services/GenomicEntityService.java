@@ -55,6 +55,9 @@ public class GenomicEntityService extends SubmittedObjectCrudService<GenomicEnti
 	}
 
 	public GenomicEntity getShallowEntity(Long id) {
+		if (id == null) {
+			return null;
+		}
 		return genomicEntityDAO.getShallowEntity(GenomicEntity.class, id);
 	}
 }

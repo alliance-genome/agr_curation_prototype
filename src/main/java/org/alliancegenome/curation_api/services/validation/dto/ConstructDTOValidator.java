@@ -20,7 +20,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.constructSlotAnnotations.ConstructComponentSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdentifierHelper;
 import org.alliancegenome.curation_api.services.helpers.constructs.ConstructUniqueIdHelper;
 import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
@@ -35,7 +34,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class ConstructDTOValidator extends ReagentDTOValidator {
+public class ConstructDTOValidator extends ReagentDTOValidator<Construct, ConstructDTO> {
 
 	@Inject ConstructSymbolSlotAnnotationDTOValidator constructSymbolDtoValidator;
 	@Inject ConstructFullNameSlotAnnotationDTOValidator constructFullNameDtoValidator;
@@ -44,44 +43,28 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 	@Inject ConstructComponentSlotAnnotationDTOValidator constructComponentDtoValidator;
 	@Inject SlotAnnotationIdentityHelper identityHelper;
 
-	private ObjectResponse<Construct> constructResponse;
-
 	@Transactional
 	public Construct validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-
-		constructResponse = new ObjectResponse<>();
-
+		response = new ObjectResponse<Construct>();
+		
 		Construct construct = new Construct();
+		
 		String uniqueId = ConstructUniqueIdHelper.getConstructUniqueId(dto);
-		String constructId = UniqueIdentifierHelper.setAnnotationID(dto, construct, uniqueId);
+		String constructId = UniqueIdentifierHelper.setSubmittedObjectIdentifiers(dto, construct, uniqueId);
 		String identifyingField = UniqueIdentifierHelper.getIdentifyingField(dto);
-		UniqueIdentifierHelper.setObsoleteAndInternal(dto, construct);
-
-		SearchResponse<Construct> constructList = constructDAO.findByField(identifyingField, constructId);
-		if (constructList != null && constructList.getResults().size() > 0) {
-			construct = constructList.getResults().get(0);
+		Construct dbConstruct = findDatabaseObject(constructDAO, identifyingField, constructId);
+		if (dbConstruct != null) {
+			construct = dbConstruct;
 		}
+		
 		construct.setUniqueId(uniqueId);
-
-		ObjectResponse<Construct> reagentResponse = validateReagentDTO(construct, dto);
-		constructResponse.addErrorMessages(reagentResponse.getErrorMessages());
-		construct = reagentResponse.getEntity();
-
-		if (CollectionUtils.isNotEmpty(dto.getReferenceCuries())) {
-			List<Reference> references = new ArrayList<>();
-			for (String publicationId : dto.getReferenceCuries()) {
-				Reference reference = referenceService.retrieveFromDbOrLiteratureService(publicationId);
-				if (reference == null) {
-					constructResponse.addErrorMessage("reference_curies", ValidationConstants.INVALID_MESSAGE + " (" + publicationId + ")");
-				} else {
-					references.add(reference);
-				}
-			}
-			construct.setReferences(references);
-		} else {
-			construct.setReferences(null);
-		}
-
+		UniqueIdentifierHelper.setObsoleteAndInternal(dto, construct);
+		
+		construct = validateReagentDTO(construct, dto);
+		
+		List<Reference> references = validateReferences(dto.getReferenceCuries());
+		construct.setReferences(references);
+		
 		ConstructSymbolSlotAnnotation symbol = validateConstructSymbol(construct, dto);
 		construct.setConstructSymbol(symbol);
 
@@ -110,10 +93,10 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			construct.getConstructComponents().addAll(components);
 		}
 
-		constructResponse.convertErrorMessagesToMap();
+		response.convertErrorMessagesToMap();
 
-		if (constructResponse.hasErrors()) {
-			throw new ObjectValidationException(dto, constructResponse.errorMessagesString());
+		if (response.hasErrors()) {
+			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
 		return constructDAO.persist(construct);
@@ -123,14 +106,14 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 		String field = "construct_symbol_dto";
 
 		if (dto.getConstructSymbolDto() == null) {
-			constructResponse.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
 		ObjectResponse<ConstructSymbolSlotAnnotation> symbolResponse = constructSymbolDtoValidator.validateConstructSymbolSlotAnnotationDTO(construct.getConstructSymbol(), dto.getConstructSymbolDto());
 		if (symbolResponse.hasErrors()) {
-			constructResponse.addErrorMessage(field, symbolResponse.errorMessagesString());
-			constructResponse.addErrorMessages(field, symbolResponse.getErrorMessages());
+			response.addErrorMessage(field, symbolResponse.errorMessagesString());
+			response.addErrorMessages(field, symbolResponse.getErrorMessages());
 			return null;
 		}
 
@@ -149,8 +132,8 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 
 		ObjectResponse<ConstructFullNameSlotAnnotation> nameResponse = constructFullNameDtoValidator.validateConstructFullNameSlotAnnotationDTO(construct.getConstructFullName(), dto.getConstructFullNameDto());
 		if (nameResponse.hasErrors()) {
-			constructResponse.addErrorMessage(field, nameResponse.errorMessagesString());
-			constructResponse.addErrorMessages(field, nameResponse.getErrorMessages());
+			response.addErrorMessage(field, nameResponse.errorMessagesString());
+			response.addErrorMessages(field, nameResponse.getErrorMessages());
 			return null;
 		}
 
@@ -179,7 +162,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 				ObjectResponse<ConstructSynonymSlotAnnotation> synResponse = constructSynonymDtoValidator.validateConstructSynonymSlotAnnotationDTO(syn, synDto);
 				if (synResponse.hasErrors()) {
 					allValid = false;
-					constructResponse.addErrorMessages(field, ix, synResponse.getErrorMessages());
+					response.addErrorMessages(field, ix, synResponse.getErrorMessages());
 				} else {
 					syn = synResponse.getEntity();
 					syn.setSingleConstruct(construct);
@@ -189,7 +172,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 		}
 
 		if (!allValid) {
-			constructResponse.convertMapToErrorMessages(field);
+			response.convertMapToErrorMessages(field);
 			return null;
 		}
 
@@ -219,7 +202,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 				ObjectResponse<ConstructComponentSlotAnnotation> compResponse = constructComponentDtoValidator.validateConstructComponentSlotAnnotationDTO(comp, compDto);
 				if (compResponse.hasErrors()) {
 					allValid = false;
-					constructResponse.addErrorMessages(field, ix, compResponse.getErrorMessages());
+					response.addErrorMessages(field, ix, compResponse.getErrorMessages());
 				} else {
 					comp = compResponse.getEntity();
 					comp.setSingleConstruct(construct);
@@ -229,7 +212,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 		}
 
 		if (!allValid) {
-			constructResponse.convertMapToErrorMessages(field);
+			response.convertMapToErrorMessages(field);
 			return null;
 		}
 
