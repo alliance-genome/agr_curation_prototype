@@ -57,6 +57,9 @@ public class BaseDTOValidator<E extends Object> {
 	
 	protected HashMap<String, String> miCurieCache = new HashMap<>();
 	protected HashMap<String, MITerm> miTermCache = new HashMap<>();
+	
+	protected HashMap<String, HashMap<String, VocabularyTerm>> vocabularyTermCache = new HashMap<>();
+	protected HashMap<String, HashMap<String, OntologyTerm>> ontologyTermCache = new HashMap<>();
 
 	protected String getCurieFromCache(String psiMiFormat) {
 		if (miCurieCache.containsKey(psiMiFormat)) {
@@ -279,9 +282,18 @@ public class BaseDTOValidator<E extends Object> {
 			return null;
 		}
 		
-		N ontologyTerm = service.findByCurieOrSecondaryId(curie);
+		N ontologyTerm = null;
+		if (!ontologyTermCache.containsKey(service.getClass().getName())) {
+			ontologyTermCache.put(service.getClass().getName(), new HashMap<String, OntologyTerm>());
+		} else {
+			ontologyTerm = (N) ontologyTermCache.get(service.getClass().getName()).get(curie);
+		}
 		if (ontologyTerm == null) {
-			response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + curie + ")");
+			ontologyTerm = service.findByCurieOrSecondaryId(curie);
+			ontologyTermCache.get(service.getClass().getName()).put(curie, ontologyTerm);
+			if (ontologyTerm == null) {
+				response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + curie + ")");
+			}
 		}
 		
 		return ontologyTerm;
@@ -304,11 +316,18 @@ public class BaseDTOValidator<E extends Object> {
 		}
 		
 		List<N> ontologyTerms = new ArrayList<>();
+		if (!ontologyTermCache.containsKey(service.getClass().getName())) {
+			ontologyTermCache.put(service.getClass().getName(), new HashMap<String, OntologyTerm>());
+		}
 		for (String curie : curies) {
-			N ontologyTerm = service.findByCurieOrSecondaryId(curie);
+			N ontologyTerm = (N) ontologyTermCache.get(service.getClass().getName()).get(curie);
 			if (ontologyTerm == null) {
-				response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + curie + ")");
-				return null;
+				ontologyTerm = service.findByCurieOrSecondaryId(curie);
+				ontologyTermCache.get(service.getClass().getName()).put(curie, ontologyTerm);
+				if (ontologyTerm == null) {
+					response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + curie + ")");
+					return null;
+				}
 			}
 			ontologyTerms.add(ontologyTerm);
 		}
@@ -341,15 +360,24 @@ public class BaseDTOValidator<E extends Object> {
 		}
 
 		VocabularyTerm term = null;
-		if (isTermSet) {
-			term = vocabularyTermService.getTermInVocabularyTermSet(vocabularyOrSetName, termName).getEntity();
+		if (!vocabularyTermCache.containsKey(vocabularyOrSetName)) {
+			vocabularyTermCache.put(vocabularyOrSetName, new HashMap<String, VocabularyTerm>());
 		} else {
-			term = vocabularyTermService.getTermInVocabulary(vocabularyOrSetName, termName).getEntity();
+			term = vocabularyTermCache.get(vocabularyOrSetName).get(termName);
 		}
 		
 		if (term == null) {
-			response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
+			if (isTermSet) {
+				term = vocabularyTermService.getTermInVocabularyTermSet(vocabularyOrSetName, termName).getEntity();
+			} else {
+				term = vocabularyTermService.getTermInVocabulary(vocabularyOrSetName, termName).getEntity();
+			}
+			vocabularyTermCache.get(vocabularyOrSetName).put(termName, term);
+			
+			if (term == null) {
+				response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE);
+				return null;
+			}
 		}
 
 		return term;
@@ -380,17 +408,23 @@ public class BaseDTOValidator<E extends Object> {
 		}
 
 		List<VocabularyTerm> terms = new ArrayList<>();
+		if (!vocabularyTermCache.containsKey(vocabularyOrSetName)) {
+			vocabularyTermCache.put(vocabularyOrSetName, new HashMap<String, VocabularyTerm>());
+		}
 		for (String termName : termNames) {
-			VocabularyTerm term = null;
-			if (isTermSet) {
-				term = vocabularyTermService.getTermInVocabularyTermSet(vocabularyOrSetName, termName).getEntity();
-			} else {
-				term = vocabularyTermService.getTermInVocabulary(vocabularyOrSetName, termName).getEntity();
-			}
-		
+			VocabularyTerm term = vocabularyTermCache.get(vocabularyOrSetName).get(termName);
 			if (term == null) {
-				response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
+				if (isTermSet) {
+					term = vocabularyTermService.getTermInVocabularyTermSet(vocabularyOrSetName, termName).getEntity();
+				} else {
+					term = vocabularyTermService.getTermInVocabulary(vocabularyOrSetName, termName).getEntity();
+				}
+				vocabularyTermCache.get(vocabularyOrSetName).put(termName, term);
+			
+				if (term == null) {
+					response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE);
+					return null;
+				}
 			}
 			terms.add(term);
 		}
