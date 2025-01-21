@@ -21,7 +21,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -52,7 +51,7 @@ public class ExternalDataBaseEntity extends CurieObject {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToOne
 	@JsonView({ View.FieldsOnly.class })
 	private CrossReference preferredCrossReference;
 
