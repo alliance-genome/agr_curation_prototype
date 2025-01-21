@@ -1,12 +1,19 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.DataProviderDAO;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
@@ -19,9 +26,10 @@ import org.alliancegenome.curation_api.services.ontology.DoTermService;
 import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
@@ -38,10 +46,6 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 	GeneService geneService;
 	@Inject
 	BiologicalEntityService biologicalEntityService;
-	@Inject
-	DataProviderDTOValidator dataProviderDtoValidator;
-	@Inject
-	DataProviderDAO dataProviderDAO;
 
 	public <E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> ObjectResponse<E> validateDiseaseAnnotationDTO(E annotation, D dto) {
 		ObjectResponse<E> daResponse = validateAnnotationDTO(annotation, dto, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET);
@@ -99,16 +103,22 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 			annotation.setWith(null);
 		}
 
-		DataProvider secondaryDataProvider = null;
-		if (dto.getSecondaryDataProviderDto() != null) {
-			ObjectResponse<DataProvider> dpResponse = dataProviderDtoValidator.validateDataProviderDTO(dto.getSecondaryDataProviderDto(), annotation.getSecondaryDataProvider());
+		if (dto.getSecondaryDataProviderDto() == null) {
+			annotation.setSecondaryDataProvider(null);
+			annotation.setSecondaryDataProviderCrossReference(null);
+		} else {
+			ObjectResponse<ImmutablePair<Organization, CrossReference>> dpResponse = validateDataProviderDTO(dto.getSecondaryDataProviderDto(), annotation.getSecondaryDataProviderCrossReference());
 			if (dpResponse.hasErrors()) {
-				daResponse.addErrorMessage("secondary_data_provider_dto", dpResponse.errorMessagesString());
+				daResponse.addErrorMessage("data_provider_dto", dpResponse.errorMessagesString());
 			} else {
-				secondaryDataProvider = dataProviderDAO.persist(dpResponse.getEntity());
+				annotation.setSecondaryDataProvider(dpResponse.getEntity().getLeft());
+				if (dpResponse.getEntity().getRight() != null) {
+					annotation.setSecondaryDataProviderCrossReference(crossReferenceDAO.persist(dpResponse.getEntity().getRight()));
+				} else {
+					annotation.setSecondaryDataProviderCrossReference(null);
+				}
 			}
 		}
-		annotation.setSecondaryDataProvider(secondaryDataProvider);
 
 		if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifierNames())) {
 			List<VocabularyTerm> diseaseQualifiers = new ArrayList<>();

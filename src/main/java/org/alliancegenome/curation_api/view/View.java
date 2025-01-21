@@ -67,6 +67,9 @@ public class View {
 	public static class AffectedGenomicModelView extends FieldsOnly {
 	}
 
+	public static class AffectedGenomicModelDetailView extends AffectedGenomicModelView {
+	}
+
 	public static class AlleleView extends FieldsOnly {
 	}
 

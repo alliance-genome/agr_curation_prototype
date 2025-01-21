@@ -34,7 +34,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "HTPExpressionDatasetSampleAnnotation", description = "POJO that represents the HighThroughputExpressionDatasetSampleAnnotation")
-@AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "2.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
 	@Index(name = "htpdatasample_htpExpressionSample_index", columnList = "htpExpressionSample_id"),
 	@Index(name = "htpdatasample_htpExpressionSampleType_index", columnList = "htpExpressionSampleType_id"),
@@ -46,6 +46,7 @@ import lombok.ToString;
 	@Index(name = "htpdatasample_sequencingFormat_index", columnList = "sequencingFormat_id"),
 	@Index(name = "htpdatasample_taxon_index", columnList = "taxon_id"),
 	@Index(name = "htpdatasample_dataprovider_index", columnList = "dataprovider_id"),
+	@Index(name = "htpdatasample_dataproviderxref_index", columnList = "dataprovidercrossreference_id"),
 	@Index(name = "htpdatasample_createdby_index", columnList = "createdby_id"),
 	@Index(name = "htpdatasample_updatedby_index", columnList = "updatedby_id")
 })
@@ -78,9 +79,9 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	private BioSampleAge htpExpressionSampleAge;
 
-	@IndexedEmbedded(includePaths = {"bioSampleAllele.curie", "bioSampleAllele.modInternalId", "bioSampleAllele.modEntityId", "bioSampleAllele.modEntityId_keyword",
-	"bioSampleAllele.modInternalId_keyword", "bioSampleAgm.curie", "bioSampleAgm.modInternalId", "bioSampleAgm.modEntityId", "bioSampleAgm.modInternalId_keyword",
-	"bioSampleAgm.modEntityId_keyword", "bioSampleAllele.curie_keyword", "bioSampleAgm.curie_keyword", "bioSampleText", "bioSampleText_keyword"
+	@IndexedEmbedded(includePaths = {"bioSampleAllele.curie", "bioSampleAllele.modInternalId", "bioSampleAllele.primaryExternalId", "bioSampleAllele.primaryExternalId_keyword",
+	"bioSampleAllele.modInternalId_keyword", "bioSampleAgm.curie", "bioSampleAgm.modInternalId", "bioSampleAgm.primaryExternalId", "bioSampleAgm.modInternalId_keyword",
+	"bioSampleAgm.primaryExternalId_keyword", "bioSampleAllele.curie_keyword", "bioSampleAgm.curie_keyword", "bioSampleText", "bioSampleText_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -94,13 +95,21 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 	private MicroarraySampleDetails microarraySampleDetails;
 
 	@IndexedEmbedded(includePaths = {
-		"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
-		"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"
+		"abbreviation", "fullName", "shortName",
+		"abbreviation_keyword", "fullName_keyword", "shortName_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
+	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class })
-	DataProvider dataProvider;
+	protected Organization dataProvider;
+	
+	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(orphanRemoval = true)
+	@Fetch(FetchMode.SELECT)
+	@JsonView({ View.FieldsOnly.class })
+	private CrossReference dataProviderCrossReference;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -115,7 +124,7 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 	private VocabularyTerm sequencingFormat;
 
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(indexes = {
 		@Index(name = "htpdatasample_anatomicalsite_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"),
 		@Index(name = "htpdatasample_anatomicalsite_samplelocations_index", columnList = "htpexpressionsamplelocations_id")

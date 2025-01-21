@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "GENETEST:MR02",
+    "primary_external_id": "GENETEST:MR02",
     "internal": true,
     "obsolete": false,
     "created_by_curie": "GENETEST:Person0001",

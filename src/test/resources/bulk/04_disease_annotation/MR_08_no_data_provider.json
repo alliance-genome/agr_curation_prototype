@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "DATEST:MR08",
+    "primary_external_id": "DATEST:MR08",
     "internal": false,
     "obsolete": false,
     "gene_identifier": "DATEST:Gene0001",

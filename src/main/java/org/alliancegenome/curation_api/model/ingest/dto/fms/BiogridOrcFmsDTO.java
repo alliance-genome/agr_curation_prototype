@@ -1,8 +1,5 @@
 package org.alliancegenome.curation_api.model.ingest.dto.fms;
 
-import java.util.List;
-
-import org.alliancegenome.curation_api.model.ingest.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 
 import lombok.Data;
@@ -25,5 +22,4 @@ public class BiogridOrcFmsDTO extends BaseDTO {
 	private Double score5;
 	private String hit;
 	private String source;
-	private List<CrossReferenceDTO> crossReferenceDtos;
 }

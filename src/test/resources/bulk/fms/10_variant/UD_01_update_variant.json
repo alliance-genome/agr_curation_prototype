@@ -10,7 +10,7 @@
 		"consequence": "SO:0001578",
 		"references": [
 			{
-				"publicationId": "PMID:25920554",
+				"publicationId": "PMID:009",
 				"crossReference": {
 					"id": "WB:WBPaper00042242",
 					"pages": [
@@ -34,6 +34,9 @@
 					}
 				]
 			}
+		],
+		"synonyms" : [
+		  "Syn 3","Syn 4"
 		],
 		"crossReferences": [
 			{

@@ -34,9 +34,9 @@ import io.restassured.config.RestAssuredConfig;
 @Order(202)
 public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCase {
 	
-	private String constructModEntityId = "WB:Construct0001";
+	private String constructPrimaryExternalId = "WB:Construct0001";
 	private String relationName = "is_regulated_by";
-	private String geneModEntityId = "GENETEST:Gene0001";
+	private String genePrimaryExternalId = "GENETEST:Gene0001";
 	private String reference = "AGRKB:000000001";
 	private String reference2 = "AGRKB:000000021";
 	private String noteType = "comment";
@@ -59,8 +59,8 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 	private final String geneGetEndpoint = "/api/gene/";
 
 	private void loadRequiredEntities() throws Exception {
-		gene = getGene(geneModEntityId);
-		construct = getConstruct(constructModEntityId);
+		gene = getGene(genePrimaryExternalId);
+		construct = getConstruct(constructPrimaryExternalId);
 	}
 	
 	@Test
@@ -76,8 +76,8 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociationObject.modEntityId", is(geneModEntityId)).
-			body("entity.constructAssociationSubject.modEntityId", is(constructModEntityId)).
+			body("entity.constructGenomicEntityAssociationObject.primaryExternalId", is(genePrimaryExternalId)).
+			body("entity.constructAssociationSubject.primaryExternalId", is(constructPrimaryExternalId)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference)).
 			body("entity.internal", is(true)).
@@ -98,23 +98,23 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 		
 		RestAssured.given().
 			when().
-			get(constructGetEndpoint + constructModEntityId).
+			get(constructGetEndpoint + constructPrimaryExternalId).
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is(constructModEntityId)).
+			body("entity.primaryExternalId", is(constructPrimaryExternalId)).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).
 			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.modEntityId", is(geneModEntityId)).
+			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.primaryExternalId", is(genePrimaryExternalId)).
 			body("entity.constructGenomicEntityAssociations[0].constructAssociationSubject", not(hasKey("constructGenomicEntityAssociations")));
 		
 		RestAssured.given().
 			when().
-			get(geneGetEndpoint + geneModEntityId).
+			get(geneGetEndpoint + genePrimaryExternalId).
 			then().
 			statusCode(200).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).
 			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.modEntityId", is(geneModEntityId)).
+			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.primaryExternalId", is(genePrimaryExternalId)).
 			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject", not(hasKey("constructGenomicEntityAssociations")));
 	}
 	
@@ -129,7 +129,7 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociationObject.modEntityId", is(geneModEntityId)).
+			body("entity.constructGenomicEntityAssociationObject.primaryExternalId", is(genePrimaryExternalId)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2)).
 			body("entity.internal", is(false)).
@@ -150,14 +150,14 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 		
 		RestAssured.given().
 			when().
-			get(constructGetEndpoint + constructModEntityId).
+			get(constructGetEndpoint + constructPrimaryExternalId).
 			then().
 			statusCode(200).
 			body("entity.constructGenomicEntityAssociations", hasSize(1));
 		
 		RestAssured.given().
 			when().
-			get(geneGetEndpoint + geneModEntityId).
+			get(geneGetEndpoint + genePrimaryExternalId).
 			then().
 			statusCode(200).
 			body("entity.constructGenomicEntityAssociations", hasSize(1));

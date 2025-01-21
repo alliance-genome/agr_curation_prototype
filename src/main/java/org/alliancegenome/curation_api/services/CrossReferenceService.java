@@ -1,9 +1,10 @@
 package org.alliancegenome.curation_api.services;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
@@ -12,13 +13,14 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class CrossReferenceService extends BaseEntityCrudService<CrossReference, CrossReferenceDAO> {
+	HashMap<String, CrossReference> crossReferenceCache = new HashMap<>();
 
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
@@ -58,6 +60,11 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 
 	@Transactional
 	public List<CrossReference> getUpdatedXrefList(List<CrossReference> incomingXrefs, List<CrossReference> existingXrefs) {
+		return getUpdatedXrefList(incomingXrefs, existingXrefs, false);
+	}
+	
+	@Transactional
+	public List<CrossReference> getUpdatedXrefList(List<CrossReference> incomingXrefs, List<CrossReference> existingXrefs, Boolean keepAllExisting) {
 		Map<String, CrossReference> existingXrefMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(existingXrefs)) {
 			for (CrossReference existingXref : existingXrefs) {
@@ -67,14 +74,21 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 
 		List<CrossReference> finalXrefs = new ArrayList<>();
 		List<String> addedXrefUniqueIds = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(incomingXrefs)) {
-			for (CrossReference incomingXref : incomingXrefs) {
-				String incomingXrefUniqueId = getCrossReferenceUniqueId(incomingXref);
+		
+		List<CrossReference> combinedXrefs = new ArrayList<>();
+		combinedXrefs.addAll(incomingXrefs);
+		if (keepAllExisting && CollectionUtils.isNotEmpty(existingXrefs)) {
+			combinedXrefs.addAll(existingXrefs);
+		}
+		
+		if (CollectionUtils.isNotEmpty(combinedXrefs)) {
+			for (CrossReference xref : combinedXrefs) {
+				String incomingXrefUniqueId = getCrossReferenceUniqueId(xref);
 				if (!addedXrefUniqueIds.contains(incomingXrefUniqueId)) {
 					if (existingXrefMap.containsKey(incomingXrefUniqueId)) {
-						finalXrefs.add(updateCrossReference(existingXrefMap.get(incomingXrefUniqueId), incomingXref));
+						finalXrefs.add(updateCrossReference(existingXrefMap.get(incomingXrefUniqueId), xref));
 					} else {
-						finalXrefs.add(crossReferenceDAO.persist(incomingXref));
+						finalXrefs.add(crossReferenceDAO.persist(xref));
 					}
 					addedXrefUniqueIds.add(incomingXrefUniqueId);
 				}
@@ -104,9 +118,5 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 			return xref.getReferencedCurie();
 		}
 		return StringUtils.join(List.of(xref.getReferencedCurie(), xref.getResourceDescriptorPage().getId()), "|");
-	}
-
-	public Map<String, Long> getGenomicEntityCrossRefMap(ResourceDescriptorPage page) {
-		return crossReferenceDAO.getGenesWithCrossRefs(page);
 	}
 }

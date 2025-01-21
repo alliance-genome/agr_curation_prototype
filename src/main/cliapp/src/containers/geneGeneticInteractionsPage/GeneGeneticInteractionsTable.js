@@ -34,11 +34,11 @@ export const GeneGeneticInteractionsTable = () => {
 	const sortMapping = {
 		'geneAssociationSubject.geneSymbol.displayText': [
 			'geneAssociationSubject.geneFullName.displayText',
-			'geneAssociationSubject.modEntityId',
+			'geneAssociationSubject.primaryExternalId',
 		],
 		'geneGeneAssociationObject.geneSymbol.displayText': [
 			'geneGeneAssociationObject.geneFullName.displayText',
-			'geneGeneAssociationObject.modEntityId',
+			'geneGeneAssociationObject.primaryExternalId',
 		],
 		'phenotypeAnnotationObject.name': ['phenotypeAnnotationObject.curie', 'phenotypeAnnotationObject.namespace'],
 		'interactionType.name': ['interactionType.curie'],
@@ -49,11 +49,11 @@ export const GeneGeneticInteractionsTable = () => {
 		'interactionSource.name': ['interactionSource.curie'],
 		'interactorAGeneticPerturbation.alleleSymbolDisplayText': [
 			'interactorAGeneticPerturbation.alleleFullName.displayText',
-			'interactorAGeneticPerturbation.modEntityId',
+			'interactorAGeneticPerturbation.primaryExternalId',
 		],
 		'interactorBGeneticPerturbation.alleleSymbolDisplayText': [
 			'interactorBGeneticPerturbation.alleleFullName.displayText',
-			'interactorBGeneticPerturbation.modEntityId',
+			'interactorBGeneticPerturbation.primaryExternalId',
 		],
 	};
 

@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
+import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -30,7 +31,6 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.search.EntitySearcher;
-import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 
 import io.quarkus.logging.Log;
 
@@ -317,7 +317,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			term.setObsolete(getBoolean(annotation.getValue()));
 		} else if (key.equals("hasOBONamespace")) {
 			term.setNamespace(getString(annotation.getValue()));
-		} else if (key.equals("hasExactSynonym") || key.equals("hasRelatedSynonym")) {
+		} else if (key.equals("hasExactSynonym") || key.equals("hasRelatedSynonym") || key.equals("hasNarrowSynonym") || key.equals("hasBroadSynonym")) {
 			if (term.getSynonyms() == null) {
 				term.setSynonyms(new ArrayList<>());
 			}

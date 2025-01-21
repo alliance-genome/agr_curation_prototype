@@ -9,7 +9,7 @@ const geneSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	const autocompleteFields = [
 		'curie',
-		'modEntityId',
+		'primaryExternalId',
 		'crossReferences.referencedCurie',
 		'geneFullName.formatText',
 		'geneFullName.displayText',
@@ -37,7 +37,7 @@ export const GeneEditor = ({ props, errorMessages, onChange, dataKey, fieldName 
 				initialValue={getIdentifier(props?.rowData?.[fieldName])}
 				rowProps={props}
 				fieldName={fieldName}
-				subField="modEntityId"
+				subField="primaryExternalId"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 					<SubjectAutocompleteTemplate
 						item={item}

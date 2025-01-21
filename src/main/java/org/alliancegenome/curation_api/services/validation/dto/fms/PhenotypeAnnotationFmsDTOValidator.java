@@ -26,13 +26,12 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeTermIdentifierFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.DataProviderService;
+import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -45,7 +44,7 @@ public class PhenotypeAnnotationFmsDTOValidator {
 	@Inject PhenotypeTermService phenotypeTermService;
 	@Inject ConditionRelationFmsDTOValidator conditionRelationFmsDtoValidator;
 	@Inject ConditionRelationDAO conditionRelationDAO;
-	@Inject DataProviderService dataProviderService;
+	@Inject OrganizationService organizationService;
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 
@@ -88,7 +87,7 @@ public class PhenotypeAnnotationFmsDTOValidator {
 			annotation.setConditionRelations(null);
 		}
 
-		annotation.setDataProvider(dataProviderService.getDefaultDataProvider(beDataProvider.sourceOrganization));
+		annotation.setDataProvider(organizationService.getByAbbr(beDataProvider.sourceOrganization).getEntity());
 		annotation.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.PHENOTYPE_RELATION_VOCABULARY, "has_phenotype").getEntity());
 
 		CrossReference evidenceXref = null;
@@ -129,7 +128,7 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		ObjectResponse<Reference> refResponse = new ObjectResponse<>();
 		Reference reference = null;
 
-		if (ObjectUtils.isEmpty(dto.getEvidence())) {
+		if (dto.getEvidence() == null) {
 			refResponse.addErrorMessage("evidence", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			if (StringUtils.isBlank(dto.getEvidence().getPublicationId())) {
@@ -168,9 +167,9 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		return xref;
 	}
 	
-	protected <D extends BaseSQLDAO<E>, E extends PhenotypeAnnotation> List<E> findPrimaryAnnotations(D dao, PhenotypeFmsDTO dto, String primaryAnnotationSubjectModEntityId, String refString) {
+	protected <D extends BaseSQLDAO<E>, E extends PhenotypeAnnotation> List<E> findPrimaryAnnotations(D dao, PhenotypeFmsDTO dto, String primaryAnnotationSubjectprimaryExternalId, String refString) {
 		HashMap<String, Object> params = new HashMap<>();
-		params.put("phenotypeAnnotationSubject.modEntityId", primaryAnnotationSubjectModEntityId);
+		params.put("phenotypeAnnotationSubject.primaryExternalId", primaryAnnotationSubjectprimaryExternalId);
 		if (StringUtils.isNotBlank(dto.getPhenotypeStatement())) {
 			params.put("phenotypeAnnotationObject", dto.getPhenotypeStatement());
 		} else {

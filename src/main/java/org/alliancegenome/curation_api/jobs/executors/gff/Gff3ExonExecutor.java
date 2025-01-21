@@ -155,6 +155,10 @@ public class Gff3ExonExecutor extends Gff3Executor {
 			}
 
 			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				history.setErrorMessage("Thread isInterrupted");
+				throw new RuntimeException("Thread isInterrupted");
+			}
 		}
 		updateHistory(history);
 		ph.finishProcess();

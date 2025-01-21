@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "AGMTEST:ER02",
+    "primary_external_id": "AGMTEST:ER02",
     "name": "TestAgm19",
     "taxon_curie": "",
     "internal": true,

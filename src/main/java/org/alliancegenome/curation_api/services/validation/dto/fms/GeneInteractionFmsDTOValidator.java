@@ -201,12 +201,12 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 			if (searchResponse != null) {
 				// Need to check that returned gene belongs to MOD corresponding to taxon
 				for (Gene searchResult : searchResponse.getResults()) {
-					String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getSourceOrganization().getAbbreviation());
+					String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
 					if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
 						allianceGene = searchResult;
 						break;
 					}
-					if (StringUtils.equals(taxonCurie, "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getSourceOrganization().getAbbreviation(), "RGD")) {
+					if (StringUtils.equals(taxonCurie, "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
 						allianceGene = searchResult;
 						break;
 					}

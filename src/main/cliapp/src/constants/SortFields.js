@@ -1,6 +1,6 @@
 export const SORT_FIELDS = Object.freeze([
 	'uniqueId',
-	'modEntityId',
+	'primaryExternalId',
 	'modInternalId',
 	'diseaseAnnotationSubject.symbol',
 	'phenotypeAnnotationSubject.symbol',
@@ -26,8 +26,8 @@ export const SORT_FIELDS = Object.freeze([
 	'assertedGenes.geneSymbol.displayText',
 	'inferredAllele.alleleSymbol.displayText',
 	'assertedAllele.alleleSymbol.displayText',
-	'dataProvider.sourceOrganization.abbreviation',
-	'secondaryDataProvider.sourceOrganization.abbreviation',
+	'dataProvider.abbreviation',
+	'secondaryDataProvider.abbreviation',
 	'updatedBy.uniqueId',
 	'dateUpdated',
 	'createdBy.uniqueId',

@@ -56,8 +56,8 @@ public class OrthologyBulkUploadFmsITCase extends BaseITCase {
 				statusCode(200).
 				body("totalResults", is(1)).
 				body("results", hasSize(1)).
-				body("results[0].subjectGene.modEntityId", is("GENETEST:Gene0001")).
-				body("results[0].objectGene.modEntityId", is("HGNC:0001")).
+				body("results[0].subjectGene.primaryExternalId", is("GENETEST:Gene0001")).
+				body("results[0].objectGene.primaryExternalId", is("HGNC:0001")).
 				body("results[0].subjectGene.taxon.curie", is("NCBITaxon:6239")).
 				body("results[0].objectGene.taxon.curie", is("NCBITaxon:9606")).
 				body("results[0].moderateFilter", is(false)).

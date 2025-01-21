@@ -59,6 +59,6 @@ public abstract class ExpressionAnnotation extends Annotation {
 	@Transient
 	@JsonIgnore
 	public String getDataProviderString() {
-		return dataProvider.getSourceOrganization().getAbbreviation();
+		return dataProvider.getAbbreviation();
 	}
 }
