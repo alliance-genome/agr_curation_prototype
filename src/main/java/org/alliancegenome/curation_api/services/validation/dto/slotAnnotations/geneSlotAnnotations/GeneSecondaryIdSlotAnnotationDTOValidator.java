@@ -8,21 +8,19 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.S
 import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
-public class GeneSecondaryIdSlotAnnotationDTOValidator extends SecondaryIdSlotAnnotationDTOValidator {
+public class GeneSecondaryIdSlotAnnotationDTOValidator extends SecondaryIdSlotAnnotationDTOValidator<GeneSecondaryIdSlotAnnotation, SecondaryIdSlotAnnotationDTO> {
 
 	public ObjectResponse<GeneSecondaryIdSlotAnnotation> validateGeneSecondaryIdSlotAnnotationDTO(GeneSecondaryIdSlotAnnotation annotation, SecondaryIdSlotAnnotationDTO dto) {
-		ObjectResponse<GeneSecondaryIdSlotAnnotation> gsidResponse = new ObjectResponse<GeneSecondaryIdSlotAnnotation>();
-
+		response = new ObjectResponse<GeneSecondaryIdSlotAnnotation>();
+		
 		if (annotation == null) {
 			annotation = new GeneSecondaryIdSlotAnnotation();
 		}
 
-		ObjectResponse<GeneSecondaryIdSlotAnnotation> saResponse = validateSecondaryIdSlotAnnotationDTO(annotation, dto);
-		annotation = saResponse.getEntity();
-		gsidResponse.addErrorMessages(saResponse.getErrorMessages());
+		annotation = (GeneSecondaryIdSlotAnnotation) validateSecondaryIdSlotAnnotationDTO(annotation, dto);
+		
+		response.setEntity(annotation);
 
-		gsidResponse.setEntity(annotation);
-
-		return gsidResponse;
+		return response;
 	}
 }

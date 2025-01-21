@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations;
 
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotationDAO;
@@ -9,7 +8,6 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -20,7 +18,6 @@ public class AlleleGermlineTransmissionStatusSlotAnnotationValidator extends Slo
 
 	@Inject AlleleGermlineTransmissionStatusSlotAnnotationDAO alleleGermlineTransmissionStatusDAO;
 	@Inject AlleleDAO alleleDAO;
-	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> validateAlleleGermlineTransmissionStatusSlotAnnotation(AlleleGermlineTransmissionStatusSlotAnnotation uiEntity) {
 		AlleleGermlineTransmissionStatusSlotAnnotation germlineTransmissionStatus = validateAlleleGermlineTransmissionStatusSlotAnnotation(uiEntity, false, false);
@@ -49,11 +46,11 @@ public class AlleleGermlineTransmissionStatusSlotAnnotationValidator extends Slo
 		}
 		dbEntity = (AlleleGermlineTransmissionStatusSlotAnnotation) validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
-		VocabularyTerm gts = validateGermlineTransmissionStatus(uiEntity, dbEntity);
+		VocabularyTerm gts = validateRequiredTermInVocabulary("germlineTransmissionStatus", VocabularyConstants.GERMLINE_TRANSMISSION_STATUS_VOCABULARY, uiEntity.getGermlineTransmissionStatus(), dbEntity.getGermlineTransmissionStatus());
 		dbEntity.setGermlineTransmissionStatus(gts);
 
 		if (validateAllele) {
-			Allele singleAllele = validateSingleAllele(uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
+			Allele singleAllele = validateRequiredEntity(alleleDAO, "singleAllele", uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
 			dbEntity.setSingleAllele(singleAllele);
 		}
 
@@ -67,27 +64,6 @@ public class AlleleGermlineTransmissionStatusSlotAnnotationValidator extends Slo
 		}
 
 		return dbEntity;
-	}
-
-	private VocabularyTerm validateGermlineTransmissionStatus(AlleleGermlineTransmissionStatusSlotAnnotation uiEntity, AlleleGermlineTransmissionStatusSlotAnnotation dbEntity) {
-		String field = "germlineTransmissionStatus";
-		if (uiEntity.getGermlineTransmissionStatus() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		VocabularyTerm gts = vocabularyTermService.getTermInVocabulary(VocabularyConstants.GERMLINE_TRANSMISSION_STATUS_VOCABULARY, uiEntity.getGermlineTransmissionStatus().getName()).getEntity();
-		if (gts == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (gts.getObsolete() && (dbEntity.getGermlineTransmissionStatus() == null || !gts.getName().equals(dbEntity.getGermlineTransmissionStatus().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return gts;
 	}
 
 }

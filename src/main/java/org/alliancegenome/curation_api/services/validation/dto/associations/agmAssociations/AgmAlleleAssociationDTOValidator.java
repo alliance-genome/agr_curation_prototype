@@ -21,14 +21,14 @@ import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.GenoTermService;
-import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.base.AuditedObjectDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
+public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<AgmAlleleAssociation, AgmAlleleAssociationDTO> {
 	@Inject AgmAlleleAssociationDAO agmAlleleAssociationDAO;
 	@Inject AffectedGenomicModelService agmService;
 	@Inject AlleleService alleleService;
@@ -36,25 +36,25 @@ public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
 	@Inject GenoTermService genoTermService;
 
 	public AgmAlleleAssociation validateAgmAlleleAssociationDTO(AgmAlleleAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
-		ObjectResponse<AgmAlleleAssociation> aaaResponse = new ObjectResponse<AgmAlleleAssociation>();
+		response = new ObjectResponse<AgmAlleleAssociation>();
 
 		List<Long> subjectIds = null;
 		if (StringUtils.isBlank(dto.getAgmSubjectIdentifier())) {
-			aaaResponse.addErrorMessage("agm_identifier", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("agm_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			subjectIds = agmService.findIdsByIdentifierString(dto.getAgmSubjectIdentifier());
 			if (subjectIds == null || subjectIds.size() != 1) {
-				aaaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
+				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
 			}
 		}
 
 		List<Long> objectIds = null;
 		if (StringUtils.isBlank(dto.getAlleleIdentifier())) {
-			aaaResponse.addErrorMessage("allele_identifier", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("allele_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			objectIds = alleleService.findIdsByIdentifierString(dto.getAlleleIdentifier());
 			if (objectIds == null || objectIds.size() != 1) {
-				aaaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
+				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
 			}
 		}
 
@@ -76,24 +76,16 @@ public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
 			association = new AgmAlleleAssociation();
 		}
 
-		VocabularyTerm relation = null;
-		if (StringUtils.isNotEmpty(dto.getRelationName())) {
-			relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.AGM_ALLELE_RELATION_VOCABULARY_TERM_SET, dto.getRelationName()).getEntity();
-			if (relation == null) {
-				aaaResponse.addErrorMessage("relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getRelationName() + ")");
-			}
-		} else {
-			aaaResponse.addErrorMessage("relation_name", ValidationConstants.REQUIRED_MESSAGE);
-		}
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation_name", dto.getRelationName(), VocabularyConstants.AGM_ALLELE_RELATION_VOCABULARY_TERM_SET);
 		association.setRelation(relation);
 
 		if (association.getAgmAssociationSubject() == null && !StringUtils.isBlank(dto.getAgmSubjectIdentifier())) {
 
 			AffectedGenomicModel subject = agmService.findByIdentifierString(dto.getAgmSubjectIdentifier());
 			if (subject == null) {
-				aaaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
+				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
 			} else if (beDataProvider != null && !subject.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				aaaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
+				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
 			} else {
 				association.setAgmAssociationSubject(subject);
 			}
@@ -103,43 +95,26 @@ public class AgmAlleleAssociationDTOValidator extends BaseDTOValidator {
 
 			Allele object = alleleService.findByIdentifierString(dto.getAlleleIdentifier());
 			if (object == null) {
-				aaaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
+				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
 			} else if (beDataProvider != null && !object.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				aaaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAlleleIdentifier() + ")");
+				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAlleleIdentifier() + ")");
 			} else {
 				association.setAgmAlleleAssociationObject(object);
 			}
 		}
 
-		GENOTerm zygosity = null;
-		if (StringUtils.isNotEmpty(dto.getZygosityCurie())) {
-			String curie;
-			VocabularyTerm term = vocabularyTermService.getTermInVocabulary(VocabularyConstants.AGM_ALLELE_ASSOCIATION_VOCABULARY, dto.getZygosityCurie()).getEntity();
-			if (term == null) {
-				aaaResponse.addErrorMessage("zygosity_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getZygosityCurie() + ")");
-			} else {
-				curie = term.getName();
-				if (StringUtils.isEmpty(curie)) {
-					aaaResponse.addErrorMessage("zygosity_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getZygosityCurie() + ")");
-				} else {
-					zygosity = genoTermService.getByCurie(curie).getEntity();
-					if (zygosity == null) {
-						aaaResponse.addErrorMessage("zygosity_curie", ValidationConstants.UNRECOGNIZED_MESSAGE + " (" + dto.getZygosityCurie() + ")");
-					}
-				}
-			}
+		GENOTerm zygosity = validateOntologyTerm(genoTermService, "zygosity_curie", dto.getZygosityCurie());
+		if (zygosity != null) {
+			validateTermInVocabulary("zygosity_curie", dto.getZygosityCurie(), VocabularyConstants.AGM_ALLELE_GENOTYPE_TERMS_VOCABULARY);
 		}
 		association.setZygosity(zygosity);
 
-		ObjectResponse<AgmAlleleAssociation> assocResponse = validateAuditedObjectDTO(association, dto);
-		aaaResponse.addErrorMessages(assocResponse.getErrorMessages());
-		association = (AgmAlleleAssociation) assocResponse.getEntity();
-
-		if (aaaResponse.hasErrors()) {
-			throw new ObjectValidationException(dto, aaaResponse.errorMessagesString());
+		association = validateAuditedObjectDTO(association, dto);
+		
+		if (response.hasErrors()) {
+			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
-		association = agmAlleleAssociationDAO.persist(association);
-
-		return association;
+		
+		return agmAlleleAssociationDAO.persist(association);
 	}
 }

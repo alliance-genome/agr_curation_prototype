@@ -1,17 +1,12 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -20,7 +15,6 @@ import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,67 +24,10 @@ import jakarta.inject.Inject;
 public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 
 	@Inject ReferenceValidator referenceValidator;
-	@Inject NoteValidator noteValidator;
-	@Inject NoteDAO noteDAO;
 	@Inject ConditionRelationValidator conditionRelationValidator;
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject AnnotationDAO annotationDAO;
 	
-	public List<Note> validateRelatedNotes(Annotation uiEntity, Annotation dbEntity, String noteTypeSet) {
-		String field = "relatedNotes";
-
-		List<Note> validatedNotes = new ArrayList<Note>();
-		Set<String> validatedNoteIdentities = new HashSet<>();
-		Boolean allValid = true;
-		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
-			for (int ix = 0; ix < uiEntity.getRelatedNotes().size(); ix++) {
-				Note note = uiEntity.getRelatedNotes().get(ix);
-				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, noteTypeSet);
-				if (noteResponse.getEntity() == null) {
-					allValid = false;
-					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
-				} else {
-					note = noteResponse.getEntity();
-
-					String noteIdentity = NoteIdentityHelper.noteIdentity(note);
-					if (validatedNoteIdentities.contains(noteIdentity)) {
-						allValid = false;
-						Map<String, String> duplicateError = new HashMap<>();
-						duplicateError.put("freeText", ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
-						response.addErrorMessages(field, ix, duplicateError);
-					} else {
-						Boolean matchingRefs = true;
-						if (CollectionUtils.isNotEmpty(note.getReferences())) {
-							for (Reference noteRef : note.getReferences()) {
-								if (!noteRef.getCurie().equals(dbEntity.getSingleReference().getCurie())) {
-									Map<String, String> noteRefErrorMessages = new HashMap<>();
-									noteRefErrorMessages.put("references", ValidationConstants.INVALID_MESSAGE + " (" + noteRef + ")");
-									response.addErrorMessages("relatedNotes", ix, noteRefErrorMessages);
-									allValid = false;
-									matchingRefs = false;
-								}
-							}
-						}
-						if (matchingRefs) {
-							validatedNoteIdentities.add(noteIdentity);
-							validatedNotes.add(note);
-						}
-					}
-				}
-			}
-		}
-		if (!allValid) {
-			convertMapToErrorMessages(field);
-			return null;
-		}
-
-		if (CollectionUtils.isEmpty(validatedNotes)) {
-			return null;
-		}
-
-		return validatedNotes;
-	}
-
 	public List<ConditionRelation> validateConditionRelations(Annotation uiEntity, Annotation dbEntity) {
 		if (CollectionUtils.isEmpty(uiEntity.getConditionRelations())) {
 			return null;
@@ -160,10 +97,10 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		}
 		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 		
-		String primaryExternalId = StringUtils.isNotBlank(uiEntity.getPrimaryExternalId()) ? uiEntity.getPrimaryExternalId() : null;
+		String primaryExternalId = handleStringField(uiEntity.getPrimaryExternalId());
 		dbEntity.setPrimaryExternalId(primaryExternalId);
 
-		String modInternalId = StringUtils.isNotBlank(uiEntity.getModInternalId()) ? uiEntity.getModInternalId() : null;
+		String modInternalId = handleStringField(uiEntity.getModInternalId());
 		dbEntity.setModInternalId(modInternalId);
 
 		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
@@ -178,7 +115,7 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		List<ConditionRelation> conditionRelations = validateConditionRelations(uiEntity, dbEntity);
 		dbEntity.setConditionRelations(conditionRelations);
 
-		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity, noteTypeSet);
+		List<Note> relatedNotes = validateRelatedNotes(uiEntity.getRelatedNotes(), noteTypeSet, dbEntity.getSingleReference());
 		if (dbEntity.getRelatedNotes() != null) {
 			dbEntity.getRelatedNotes().clear();
 		}

@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations;
 
+import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -14,6 +15,7 @@ import jakarta.inject.Inject;
 public class AlleleSecondaryIdSlotAnnotationValidator extends SecondaryIdSlotAnnotationValidator<AlleleSecondaryIdSlotAnnotation> {
 
 	@Inject AlleleSecondaryIdSlotAnnotationDAO alleleSecondaryIdDAO;
+	@Inject AlleleDAO alleleDAO;
 
 	public ObjectResponse<AlleleSecondaryIdSlotAnnotation> validateAlleleSecondaryIdSlotAnnotation(AlleleSecondaryIdSlotAnnotation uiEntity) {
 		AlleleSecondaryIdSlotAnnotation secondaryId = validateAlleleSecondaryIdSlotAnnotation(uiEntity, false, false);
@@ -44,7 +46,7 @@ public class AlleleSecondaryIdSlotAnnotationValidator extends SecondaryIdSlotAnn
 		dbEntity = (AlleleSecondaryIdSlotAnnotation) validateSecondaryIdSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
 		if (validateAllele) {
-			Allele singleAllele = validateSingleAllele(uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
+			Allele singleAllele = validateRequiredEntity(alleleDAO, "singleAllele", uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
 			dbEntity.setSingleAllele(singleAllele);
 		}
 

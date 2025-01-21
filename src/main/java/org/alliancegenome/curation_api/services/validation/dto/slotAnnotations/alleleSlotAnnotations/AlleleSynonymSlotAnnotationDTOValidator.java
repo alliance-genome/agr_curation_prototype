@@ -9,13 +9,18 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.N
 import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
-public class AlleleSynonymSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
+public class AlleleSynonymSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator<AlleleSynonymSlotAnnotation, NameSlotAnnotationDTO> {
 
 	public ObjectResponse<AlleleSynonymSlotAnnotation> validateAlleleSynonymSlotAnnotationDTO(AlleleSynonymSlotAnnotation annotation, NameSlotAnnotationDTO dto) {
+		response = new ObjectResponse<AlleleSynonymSlotAnnotation>();
+		
 		if (annotation == null) {
 			annotation = new AlleleSynonymSlotAnnotation();
 		}
 
-		return validateNameSlotAnnotationDTO(annotation, dto, VocabularyConstants.NAME_TYPE_VOCABULARY);
+		annotation = validateNameSlotAnnotationDTO(annotation, dto, VocabularyConstants.NAME_TYPE_VOCABULARY);
+		
+		response.setEntity(annotation);
+		return response;
 	}
 }

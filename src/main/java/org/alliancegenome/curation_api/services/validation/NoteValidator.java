@@ -5,15 +5,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +24,6 @@ import jakarta.inject.Inject;
 public class NoteValidator extends AuditedObjectValidator<Note> {
 
 	@Inject NoteDAO noteDAO;
-	@Inject VocabularyTermService vocabularyTermService;
 	@Inject ReferenceService referenceService;
 	@Inject ReferenceValidator referenceValidator;
 
@@ -107,34 +105,14 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 
 	public VocabularyTerm validateNoteType(Note uiEntity, Note dbEntity, String noteVocabularySetName) {
 		String field = "noteType";
-		if (uiEntity.getNoteType() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
+		
+		if (StringUtils.isBlank(noteVocabularySetName)) {
+			return validateRequiredTermInVocabulary(field, VocabularyConstants.NOTE_TYPE_VOCABULARY, uiEntity.getNoteType(), dbEntity.getNoteType());
 		}
-
-		VocabularyTerm noteType;
-		if (noteVocabularySetName == null) {
-			SearchResponse<VocabularyTerm> vtSearchResponse = vocabularyTermService.findByField("name", uiEntity.getNoteType().getName());
-			if (vtSearchResponse == null || vtSearchResponse.getSingleResult() == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
-			}
-			noteType = vtSearchResponse.getSingleResult();
-		} else {
-			noteType = vocabularyTermService.getTermInVocabularyTermSet(noteVocabularySetName, uiEntity.getNoteType().getName()).getEntity();
-			if (noteType == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
-			}
-		}
-
-		if (noteType.getObsolete() && (dbEntity.getNoteType() == null || !noteType.getName().equals(dbEntity.getNoteType().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-		return noteType;
+		
+		return validateRequiredTermInVocabularyTermSet(field, noteVocabularySetName, uiEntity.getNoteType(), dbEntity.getNoteType());
 	}
-
+	
 	public String validateFreeText(Note uiEntity) {
 		String field = "freeText";
 		if (StringUtils.isBlank(uiEntity.getFreeText())) {

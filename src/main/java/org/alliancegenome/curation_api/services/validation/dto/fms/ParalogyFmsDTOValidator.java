@@ -201,6 +201,9 @@ public class ParalogyFmsDTOValidator {
 	}
 
 	private boolean sameGenus(NCBITaxonTerm taxon, NCBITaxonTerm geneTaxon) {
+		if (taxon == null || geneTaxon == null) {
+			return false;
+		}
 		if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:8355") || StringUtils.equals(taxon.getCurie(), "NCBITaxon:8364")) {
 			// Must be same species for Xenopus as cleanup uses taxon curie
 			if (StringUtils.equals(taxon.getCurie(), geneTaxon.getCurie())) {

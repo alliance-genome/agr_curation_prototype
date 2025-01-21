@@ -1,14 +1,11 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.constructSlotAnnotations;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.NoteDAO;
+import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -17,13 +14,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
-import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
-import org.alliancegenome.curation_api.services.validation.NoteValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -33,10 +24,7 @@ import jakarta.inject.Inject;
 public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationValidator<ConstructComponentSlotAnnotation> {
 
 	@Inject ConstructComponentSlotAnnotationDAO constructComponentDAO;
-	@Inject NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject NoteValidator noteValidator;
-	@Inject NoteDAO noteDAO;
-	@Inject VocabularyTermService vocabularyTermService;
+	@Inject ConstructDAO constructDAO;
 
 	public ObjectResponse<ConstructComponentSlotAnnotation> validateConstructComponentSlotAnnotation(ConstructComponentSlotAnnotation uiEntity) {
 		ConstructComponentSlotAnnotation component = validateConstructComponentSlotAnnotation(uiEntity, false, false);
@@ -67,27 +55,32 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 		dbEntity = (ConstructComponentSlotAnnotation) validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
 		if (validateConstruct) {
-			Construct singleConstruct = validateSingleConstruct(uiEntity.getSingleConstruct(), dbEntity.getSingleConstruct());
+			Construct singleConstruct = validateRequiredEntity(constructDAO, "singleConstruct", uiEntity.getSingleConstruct(), dbEntity.getSingleConstruct());
 			dbEntity.setSingleConstruct(singleConstruct);
 		}
 
 		String componentSymbol = validateComponentSymbol(uiEntity);
 		dbEntity.setComponentSymbol(componentSymbol);
 
-		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation(), dbEntity.getRelation());
 		dbEntity.setRelation(relation);
 
-		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
+		NCBITaxonTerm taxon = validateTaxon(uiEntity.getTaxon(), dbEntity.getTaxon());
 		dbEntity.setTaxon(taxon);
 
-		if (StringUtils.isNotBlank(uiEntity.getTaxonText())) {
-			dbEntity.setTaxonText(uiEntity.getTaxonText());
-		} else {
-			dbEntity.setTaxonText(null);
-		}
+		String taxonText = handleStringField(uiEntity.getTaxonText());
+		dbEntity.setTaxonText(taxonText);
 
-		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
-		dbEntity.setRelatedNotes(relatedNotes);
+		List<Note> relatedNotes = validateRelatedNotes(uiEntity.getRelatedNotes(), VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
+		if (dbEntity.getRelatedNotes() != null) {
+			dbEntity.getRelatedNotes().clear();
+		}
+		if (relatedNotes != null) {
+			if (dbEntity.getRelatedNotes() == null) {
+				dbEntity.setRelatedNotes(new ArrayList<>());
+			}
+			dbEntity.getRelatedNotes().addAll(relatedNotes);
+		}
 
 		if (response.hasErrors()) {
 			if (throwError) {
@@ -109,97 +102,6 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 		}
 
 		return uiEntity.getComponentSymbol();
-	}
-
-	private VocabularyTerm validateRelation(ConstructComponentSlotAnnotation uiEntity, ConstructComponentSlotAnnotation dbEntity) {
-		String field = "relation";
-		if (uiEntity.getRelation() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation().getName()).getEntity();
-
-		if (relation == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (relation.getObsolete() && (dbEntity.getRelation() == null || !relation.getName().equals(dbEntity.getRelation().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return relation;
-	}
-
-	public NCBITaxonTerm validateTaxon(ConstructComponentSlotAnnotation uiEntity, ConstructComponentSlotAnnotation dbEntity) {
-		String field = "taxon";
-		if (uiEntity.getTaxon() == null || StringUtils.isBlank(uiEntity.getTaxon().getCurie())) {
-			return null;
-		}
-
-		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(uiEntity.getTaxon().getCurie()).getEntity();
-		if (taxon == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (taxon.getObsolete() && (dbEntity.getTaxon() == null || !taxon.getCurie().equals(dbEntity.getTaxon().getCurie()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return taxon;
-	}
-
-	public List<Note> validateRelatedNotes(ConstructComponentSlotAnnotation uiEntity, ConstructComponentSlotAnnotation dbEntity) {
-		String field = "relatedNotes";
-
-		List<Note> validatedNotes = new ArrayList<Note>();
-		Set<String> validatedNoteIdentities = new HashSet<>();
-		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
-			for (Note note : uiEntity.getRelatedNotes()) {
-				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
-				if (noteResponse.getEntity() == null) {
-					addMessageResponse(field, noteResponse.errorMessagesString());
-					return null;
-				}
-				note = noteResponse.getEntity();
-
-				String noteIdentity = NoteIdentityHelper.noteIdentity(note);
-				if (validatedNoteIdentities.contains(noteIdentity)) {
-					addMessageResponse(field, ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
-					return null;
-				}
-				validatedNoteIdentities.add(noteIdentity);
-				validatedNotes.add(note);
-			}
-		}
-
-		List<Long> previousNoteIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
-			previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
-		}
-		List<Long> validatedNoteIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(validatedNotes)) {
-			validatedNoteIds = validatedNotes.stream().map(Note::getId).collect(Collectors.toList());
-		}
-		for (Note validatedNote : validatedNotes) {
-			if (!previousNoteIds.contains(validatedNote.getId())) {
-				noteDAO.persist(validatedNote);
-			}
-		}
-		List<Long> idsToRemove = ListUtils.subtract(previousNoteIds, validatedNoteIds);
-		for (Long id : idsToRemove) {
-			constructComponentDAO.deleteAttachedNote(id);
-		}
-
-		if (CollectionUtils.isEmpty(validatedNotes)) {
-			return null;
-		}
-
-		return validatedNotes;
 	}
 
 }

@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations;
 
+import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -12,7 +13,9 @@ import jakarta.inject.Inject;
 
 @RequestScoped
 public class GeneSecondaryIdSlotAnnotationValidator extends SecondaryIdSlotAnnotationValidator<GeneSecondaryIdSlotAnnotation> {
+	
 	@Inject GeneSecondaryIdSlotAnnotationDAO geneSecondaryIdDAO;
+	@Inject GeneDAO geneDAO;
 
 	public ObjectResponse<GeneSecondaryIdSlotAnnotation> validateGeneSecondaryIdSlotAnnotation(GeneSecondaryIdSlotAnnotation uiEntity) {
 		GeneSecondaryIdSlotAnnotation secondaryId = validateGeneSecondaryIdSlotAnnotation(uiEntity, false, false);
@@ -43,7 +46,7 @@ public class GeneSecondaryIdSlotAnnotationValidator extends SecondaryIdSlotAnnot
 		dbEntity = (GeneSecondaryIdSlotAnnotation) validateSecondaryIdSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
 		if (validateGene) {
-			Gene singleGene = validateSingleGene(uiEntity.getSingleGene(), dbEntity.getSingleGene());
+			Gene singleGene = validateRequiredEntity(geneDAO, "singleGene", uiEntity.getSingleGene(), dbEntity.getSingleGene());
 			dbEntity.setSingleGene(singleGene);
 		}
 

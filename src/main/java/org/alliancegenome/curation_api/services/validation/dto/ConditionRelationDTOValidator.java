@@ -19,7 +19,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
-import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.base.AuditedObjectDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,7 +27,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class ConditionRelationDTOValidator extends BaseDTOValidator {
+public class ConditionRelationDTOValidator extends AuditedObjectDTOValidator<ConditionRelation, ConditionRelationDTO> {
 
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject VocabularyTermService vocabularyTermService;
@@ -37,17 +37,11 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 	@Inject ReferenceService referenceService;
 
 	public ObjectResponse<ConditionRelation> validateConditionRelationDTO(ConditionRelationDTO dto) {
-		ObjectResponse<ConditionRelation> crResponse = new ObjectResponse<ConditionRelation>();
+		response = new ObjectResponse<ConditionRelation>();
+		
+		ConditionRelation relation = new ConditionRelation();
 
-		ConditionRelation relation;
-
-		Reference reference = null;
-		if (StringUtils.isNotBlank(dto.getReferenceCurie())) {
-			reference = referenceService.retrieveFromDbOrLiteratureService(dto.getReferenceCurie());
-			if (reference == null) {
-				crResponse.addErrorMessage("reference_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getReferenceCurie() + ")");
-			}
-		}
+		Reference reference = validateReference(dto.getReferenceCurie());
 		String refCurie = reference == null ? null : reference.getCurie();
 
 		String uniqueId = AnnotationUniqueIdHelper.getConditionRelationUniqueId(dto, refCurie);
@@ -61,29 +55,19 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 		}
 		relation.setSingleReference(reference);
 
-		ObjectResponse<ConditionRelation> aoResponse = validateAuditedObjectDTO(relation, dto);
-		relation = aoResponse.getEntity();
-		crResponse.addErrorMessages(aoResponse.getErrorMessages());
-
-		String relationType = dto.getConditionRelationTypeName();
-		if (StringUtils.isBlank(relationType)) {
-			crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			VocabularyTerm conditionRelationTypeTerm = vocabularyTermService.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, relationType).getEntity();
-			if (conditionRelationTypeTerm == null) {
-				crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.INVALID_MESSAGE + " (" + relationType + ")");
-			}
-			relation.setConditionRelationType(conditionRelationTypeTerm);
-		}
+		relation = validateAuditedObjectDTO(relation, dto);
+		
+		VocabularyTerm relationType = validateRequiredTermInVocabulary("condition_relation_type_name", dto.getConditionRelationTypeName(), VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
+		relation.setConditionRelationType(relationType);
 
 		List<ExperimentalCondition> conditions = new ArrayList<>();
 		if (CollectionUtils.isEmpty(dto.getConditionDtos())) {
-			crResponse.addErrorMessage("condition_dtos", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("condition_dtos", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			for (ExperimentalConditionDTO conditionDTO : dto.getConditionDtos()) {
 				ObjectResponse<ExperimentalCondition> ecResponse = experimentalConditionDtoValidator.validateExperimentalConditionDTO(conditionDTO);
 				if (ecResponse.hasErrors()) {
-					crResponse.addErrorMessage("condition_dtos", ecResponse.errorMessagesString());
+					response.addErrorMessage("condition_dtos", ecResponse.errorMessagesString());
 				} else {
 					conditions.add(experimentalConditionDAO.persist(ecResponse.getEntity()));
 				}
@@ -94,17 +78,17 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isNotBlank(dto.getHandle())) {
 			relation.setHandle(dto.getHandle());
 			if (StringUtils.isBlank(dto.getReferenceCurie())) {
-				crResponse.addErrorMessage("handle", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "reference_curie");
+				response.addErrorMessage("handle", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "reference_curie");
 			}
 		} else {
 			if (relation.getHandle() != null) {
-				crResponse.addErrorMessage("handle", ValidationConstants.REQUIRED_MESSAGE);
+				response.addErrorMessage("handle", ValidationConstants.REQUIRED_MESSAGE);
 			}
 			relation.setHandle(null);
 		}
 
-		crResponse.setEntity(relation);
+		response.setEntity(relation);
 
-		return crResponse;
+		return response;
 	}
 }

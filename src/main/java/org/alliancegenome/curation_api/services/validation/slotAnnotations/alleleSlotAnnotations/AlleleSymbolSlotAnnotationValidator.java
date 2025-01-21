@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -45,11 +46,11 @@ public class AlleleSymbolSlotAnnotationValidator extends NameSlotAnnotationValid
 		}
 		dbEntity = (AlleleSymbolSlotAnnotation) validateNameSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
-		VocabularyTerm nameType = validateSymbolNameType(uiEntity.getNameType(), dbEntity.getNameType());
+		VocabularyTerm nameType = validateRequiredTermInVocabularyTermSet("nameType", VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET, uiEntity.getNameType(), dbEntity.getNameType());
 		dbEntity.setNameType(nameType);
 
 		if (validateAllele) {
-			Allele singleAllele = validateSingleAllele(uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
+			Allele singleAllele = validateRequiredEntity(alleleDAO, "singleAllele", uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
 			dbEntity.setSingleAllele(singleAllele);
 		}
 

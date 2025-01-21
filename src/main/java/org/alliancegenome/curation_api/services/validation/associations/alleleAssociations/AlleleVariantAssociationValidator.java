@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.validation.associations.alleleAssociations;
 
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleVariantAssociationDAO;
@@ -10,8 +9,6 @@ import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleVariantAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -21,7 +18,6 @@ public class AlleleVariantAssociationValidator extends AlleleGenomicEntityAssoci
 
 	@Inject VariantDAO variantDAO;
 	@Inject AlleleVariantAssociationDAO alleleVariantAssociationDAO;
-	@Inject VocabularyTermService vocabularyTermService;
 
 	private String errorMessage;
 
@@ -50,14 +46,14 @@ public class AlleleVariantAssociationValidator extends AlleleGenomicEntityAssoci
 		dbEntity = (AlleleVariantAssociation) validateAlleleGenomicEntityAssociationFields(uiEntity, dbEntity);
 
 		if (validateAllele) {
-			Allele subject = validateSubject(uiEntity, dbEntity);
+			Allele subject = validateRequiredEntity(alleleDAO, "alleleAssociationSubject", uiEntity.getAlleleAssociationSubject(), dbEntity.getAlleleAssociationSubject());
 			dbEntity.setAlleleAssociationSubject(subject);
 		}
 
-		Variant object = validateObject(uiEntity, dbEntity);
+		Variant object = validateRequiredEntity(variantDAO, "alleleVariantAssociationObject", uiEntity.getAlleleVariantAssociationObject(), dbEntity.getAlleleVariantAssociationObject());
 		dbEntity.setAlleleVariantAssociationObject(object);
 
-		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.ALLELE_VARIANT_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation(), dbEntity.getRelation());
 		dbEntity.setRelation(relation);
 
 		if (response.hasErrors()) {
@@ -70,77 +66,5 @@ public class AlleleVariantAssociationValidator extends AlleleGenomicEntityAssoci
 		}
 
 		return dbEntity;
-	}
-
-	private Allele validateSubject(AlleleVariantAssociation uiEntity, AlleleVariantAssociation dbEntity) {
-		String field = "alleleAssociationSubject";
-		if (ObjectUtils.isEmpty(uiEntity.getAlleleAssociationSubject())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		Allele subjectEntity = null;
-		if (uiEntity.getAlleleAssociationSubject().getId() != null) {
-			subjectEntity = alleleDAO.find(uiEntity.getAlleleAssociationSubject().getId());
-		}
-		if (subjectEntity == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (subjectEntity.getObsolete() && (dbEntity.getAlleleAssociationSubject() == null || !subjectEntity.getId().equals(dbEntity.getAlleleAssociationSubject().getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return subjectEntity;
-
-	}
-
-	private Variant validateObject(AlleleVariantAssociation uiEntity, AlleleVariantAssociation dbEntity) {
-		String field = "alleleVariantAssociationObject";
-		if (ObjectUtils.isEmpty(uiEntity.getAlleleVariantAssociationObject())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		Variant objectEntity = null;
-		if (uiEntity.getAlleleVariantAssociationObject().getId() != null) {
-			objectEntity = variantDAO.find(uiEntity.getAlleleVariantAssociationObject().getId());
-		}
-		if (objectEntity == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (objectEntity.getObsolete() && (dbEntity.getAlleleVariantAssociationObject() == null || !objectEntity.getId().equals(dbEntity.getAlleleVariantAssociationObject().getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return objectEntity;
-
-	}
-
-	private VocabularyTerm validateRelation(AlleleVariantAssociation uiEntity, AlleleVariantAssociation dbEntity) {
-		String field = "relation";
-		if (uiEntity.getRelation() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ALLELE_VARIANT_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation().getName()).getEntity();
-
-		if (relation == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (relation.getObsolete() && (dbEntity.getRelation() == null || !relation.getName().equals(dbEntity.getRelation().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return relation;
 	}
 }

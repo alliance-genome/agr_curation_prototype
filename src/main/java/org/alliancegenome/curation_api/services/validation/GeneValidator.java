@@ -6,6 +6,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
@@ -15,15 +16,12 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAn
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationValidator;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -32,7 +30,7 @@ import jakarta.inject.Inject;
 public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 	@Inject GeneDAO geneDAO;
-	@Inject SoTermService soTermService;
+	@Inject SoTermDAO soTermDAO;
 	@Inject GeneSymbolSlotAnnotationValidator geneSymbolValidator;
 	@Inject GeneFullNameSlotAnnotationValidator geneFullNameValidator;
 	@Inject GeneSystematicNameSlotAnnotationValidator geneSystematicNameValidator;
@@ -78,7 +76,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity);
 
-		SOTerm geneType = validateGeneType(uiEntity, dbEntity);
+		SOTerm geneType = validateRequiredEntity(soTermDAO, "geneType", uiEntity.getGeneType(), dbEntity.getGeneType());
 		dbEntity.setGeneType(geneType);
 
 		GeneSymbolSlotAnnotation symbol = validateGeneSymbol(uiEntity, dbEntity);
@@ -132,26 +130,6 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		}
 
 		return dbEntity;
-	}
-
-	private SOTerm validateGeneType(Gene uiEntity, Gene dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getGeneType())) {
-			addMessageResponse("geneType", ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		SOTerm soTerm = null;
-		if (StringUtils.isNotBlank(uiEntity.getGeneType().getCurie())) {
-			soTerm = soTermService.findByCurie(uiEntity.getGeneType().getCurie());
-			if (soTerm == null) {
-				addMessageResponse("geneType", ValidationConstants.INVALID_MESSAGE);
-				return null;
-			} else if (soTerm.getObsolete() && (dbEntity.getGeneType() == null || !soTerm.getId().equals(dbEntity.getGeneType().getId()))) {
-				addMessageResponse("geneType", ValidationConstants.OBSOLETE_MESSAGE);
-				return null;
-			}
-		}
-		return soTerm;
 	}
 
 	private GeneSymbolSlotAnnotation validateGeneSymbol(Gene uiEntity, Gene dbEntity) {

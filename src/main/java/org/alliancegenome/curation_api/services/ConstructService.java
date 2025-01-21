@@ -147,6 +147,9 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 	}
 
 	public Construct getShallowEntity(Long id) {
+		if (id == null) {
+			return null;
+		}
 		return constructDAO.getShallowEntity(Construct.class, id);
 	}
 }

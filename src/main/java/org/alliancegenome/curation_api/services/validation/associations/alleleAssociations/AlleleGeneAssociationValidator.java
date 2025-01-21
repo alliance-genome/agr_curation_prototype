@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.validation.associations.alleleAssociations;
 
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleGeneAssociationDAO;
@@ -10,8 +9,6 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -21,7 +18,6 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 
 	@Inject GeneDAO geneDAO;
 	@Inject AlleleGeneAssociationDAO alleleGeneAssociationDAO;
-	@Inject VocabularyTermService vocabularyTermService;
 
 	private String errorMessage;
 
@@ -50,14 +46,14 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 		dbEntity = (AlleleGeneAssociation) validateAlleleGenomicEntityAssociationFields(uiEntity, dbEntity);
 
 		if (validateAllele) {
-			Allele subject = validateSubject(uiEntity, dbEntity);
+			Allele subject = validateRequiredEntity(alleleDAO, "alleleAssociationSubject", uiEntity.getAlleleAssociationSubject(), dbEntity.getAlleleAssociationSubject());
 			dbEntity.setAlleleAssociationSubject(subject);
 		}
 
 		Gene object = validateObject(uiEntity, dbEntity);
 		dbEntity.setAlleleGeneAssociationObject(object);
 
-		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.ALLELE_GENE_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation(), dbEntity.getRelation());
 		dbEntity.setRelation(relation);
 
 		if (response.hasErrors()) {
@@ -72,47 +68,11 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 		return dbEntity;
 	}
 
-	private Allele validateSubject(AlleleGeneAssociation uiEntity, AlleleGeneAssociation dbEntity) {
-		String field = "alleleAssociationSubject";
-		if (ObjectUtils.isEmpty(uiEntity.getAlleleAssociationSubject())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		Allele subjectEntity = null;
-		if (uiEntity.getAlleleAssociationSubject().getId() != null) {
-			subjectEntity = alleleDAO.find(uiEntity.getAlleleAssociationSubject().getId());
-		}
-		if (subjectEntity == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (subjectEntity.getObsolete() && (dbEntity.getAlleleAssociationSubject() == null || !subjectEntity.getId().equals(dbEntity.getAlleleAssociationSubject().getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return subjectEntity;
-
-	}
-
 	private Gene validateObject(AlleleGeneAssociation uiEntity, AlleleGeneAssociation dbEntity) {
-		String field = "alleleGeneAssociationObject";
-		if (ObjectUtils.isEmpty(uiEntity.getAlleleGeneAssociationObject())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		Gene objectEntity = null;
-		if (uiEntity.getAlleleGeneAssociationObject().getId() != null) {
-			objectEntity = geneDAO.find(uiEntity.getAlleleGeneAssociationObject().getId());
-		}
-		if (objectEntity == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		} else {
-			// fix for SCRUM-3738
+		Gene objectEntity = validateRequiredEntity(geneDAO, "alleleGeneAssociationObject", uiEntity.getAlleleGeneAssociationObject(), dbEntity.getAlleleGeneAssociationObject());
+		
+		// fix for SCRUM-3738
+		if (objectEntity != null) {
 			if (objectEntity.getGeneSymbol() != null) {
 				if (objectEntity.getGeneSymbol().getEvidence() != null) {
 					objectEntity.getGeneSymbol().getEvidence().size();
@@ -120,34 +80,6 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 			}
 		}
 
-		if (objectEntity.getObsolete() && (dbEntity.getAlleleGeneAssociationObject() == null || !objectEntity.getId().equals(dbEntity.getAlleleGeneAssociationObject().getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
 		return objectEntity;
-
-	}
-
-	private VocabularyTerm validateRelation(AlleleGeneAssociation uiEntity, AlleleGeneAssociation dbEntity) {
-		String field = "relation";
-		if (uiEntity.getRelation() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ALLELE_GENE_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation().getName()).getEntity();
-
-		if (relation == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (relation.getObsolete() && (dbEntity.getRelation() == null || !relation.getName().equals(dbEntity.getRelation().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return relation;
 	}
 }

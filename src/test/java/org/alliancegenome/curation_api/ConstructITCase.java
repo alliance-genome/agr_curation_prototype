@@ -923,7 +923,7 @@ public class ConstructITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.constructComponents", is("relatedNotes - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|AGRKB:000020003|test_construct_component_note|false|false)"));
+			body("errorMessages.constructComponents", is("relatedNotes - freeText - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|AGRKB:000020003|test_construct_component_note|false|false)"));
 		
 	}
 	

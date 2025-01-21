@@ -12,17 +12,17 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class ResourceDescriptorPageDTOValidator extends BaseDTOValidator {
+public class ResourceDescriptorPageDTOValidator extends BaseDTOValidator<ResourceDescriptorPage> {
 
 	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 
 	public ObjectResponse<ResourceDescriptorPage> validateResourceDescriptorPageDTO(ResourceDescriptorPageDTO dto, String resourceDescriptorPrefix) {
+		response = new ObjectResponse<ResourceDescriptorPage>();
+		
 		ResourceDescriptorPage rdPage = null;
 
-		ObjectResponse<ResourceDescriptorPage> rdPageResponse = new ObjectResponse<ResourceDescriptorPage>();
-
 		if (StringUtils.isBlank(dto.getName())) {
-			rdPageResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			rdPage = resourceDescriptorPageService.getPageForResourceDescriptor(resourceDescriptorPrefix, dto.getName());
 			if (rdPage == null) {
@@ -32,7 +32,7 @@ public class ResourceDescriptorPageDTOValidator extends BaseDTOValidator {
 		}
 
 		if (StringUtils.isBlank(dto.getUrl())) {
-			rdPageResponse.addErrorMessage("url", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("url", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		rdPage.setUrlTemplate(dto.getUrl());
 
@@ -42,8 +42,8 @@ public class ResourceDescriptorPageDTOValidator extends BaseDTOValidator {
 		}
 		rdPage.setPageDescription(pageDescription);
 
-		rdPageResponse.setEntity(rdPage);
+		response.setEntity(rdPage);
 
-		return rdPageResponse;
+		return response;
 	}
 }

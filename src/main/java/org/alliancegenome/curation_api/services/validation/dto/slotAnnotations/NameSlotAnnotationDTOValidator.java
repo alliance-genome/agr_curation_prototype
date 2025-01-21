@@ -1,71 +1,49 @@
 package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations;
 
+import java.util.Objects;
+
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.lang3.StringUtils;
 
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
-@RequestScoped
-public class NameSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
+public class NameSlotAnnotationDTOValidator<E extends NameSlotAnnotation, D extends NameSlotAnnotationDTO> extends SlotAnnotationDTOValidator<E, D> {
 
 	@Inject VocabularyTermService vocabularyTermService;
 
-	public <E extends NameSlotAnnotation> ObjectResponse<E> validateNameSlotAnnotationDTO(E annotation, NameSlotAnnotationDTO dto, String nameTypeVocabularyOrSet) {
-		ObjectResponse<E> nsaResponse = validateSlotAnnotationDTO(annotation, dto);
-		annotation = nsaResponse.getEntity();
+	public E validateNameSlotAnnotationDTO(E annotation, D dto, String nameTypeVocabularyOrSet) {
+		annotation = validateSlotAnnotationDTO(annotation, dto);
 
 		if (StringUtils.isBlank(dto.getDisplayText())) {
-			nsaResponse.addErrorMessage("display_text", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("display_text", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			annotation.setDisplayText(dto.getDisplayText());
 		}
 
 		if (StringUtils.isBlank(dto.getFormatText())) {
-			nsaResponse.addErrorMessage("format_text", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("format_text", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			annotation.setFormatText(dto.getFormatText());
 		}
 
-		if (StringUtils.isNotEmpty(dto.getNameTypeName())) {
-			VocabularyTerm nameType;
-			if (nameTypeVocabularyOrSet.equals(VocabularyConstants.NAME_TYPE_VOCABULARY)) {
-				nameType = vocabularyTermService.getTermInVocabulary(nameTypeVocabularyOrSet, dto.getNameTypeName()).getEntity();
-			} else {
-				nameType = vocabularyTermService.getTermInVocabularyTermSet(nameTypeVocabularyOrSet, dto.getNameTypeName()).getEntity();
-			}
-			if (nameType == null) {
-				nsaResponse.addErrorMessage("name_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNameTypeName() + ")");
-			}
-			annotation.setNameType(nameType);
+		VocabularyTerm nameType = null;
+		if (Objects.equals(VocabularyConstants.NAME_TYPE_VOCABULARY, nameTypeVocabularyOrSet)) {
+			nameType = validateRequiredTermInVocabulary("name_type_name", dto.getNameTypeName(), VocabularyConstants.NAME_TYPE_VOCABULARY);
 		} else {
-			nsaResponse.addErrorMessage("name_type_name", ValidationConstants.REQUIRED_MESSAGE);
+			nameType = validateRequiredTermInVocabularyTermSet("name_type_name", dto.getNameTypeName(), nameTypeVocabularyOrSet);
 		}
+		annotation.setNameType(nameType);
 
-		if (StringUtils.isBlank(dto.getSynonymUrl())) {
-			annotation.setSynonymUrl(null);
-		} else {
-			annotation.setSynonymUrl(dto.getSynonymUrl());
-		}
+		annotation.setSynonymUrl(handleStringField(dto.getSynonymUrl()));
 
-		if (StringUtils.isNotBlank(dto.getSynonymScopeName())) {
-			VocabularyTerm synonymScope = vocabularyTermService.getTermInVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY, dto.getSynonymScopeName()).getEntity();
-			if (synonymScope == null) {
-				nsaResponse.addErrorMessage("synonym_scope", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSynonymScopeName() + ")");
-			}
-			annotation.setSynonymScope(synonymScope);
-		} else {
-			annotation.setSynonymScope(null);
-		}
-
-		nsaResponse.setEntity(annotation);
-
-		return nsaResponse;
+		VocabularyTerm synonymScope = validateTermInVocabulary("synonym_scope_name", dto.getSynonymScopeName(), VocabularyConstants.SYNONYM_SCOPE_VOCABULARY);
+		annotation.setSynonymScope(synonymScope);
+		
+		return annotation;
 	}
 }

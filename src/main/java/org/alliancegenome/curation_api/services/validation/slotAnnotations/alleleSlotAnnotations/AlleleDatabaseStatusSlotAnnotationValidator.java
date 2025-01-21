@@ -1,14 +1,13 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations;
 
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -18,7 +17,7 @@ import jakarta.inject.Inject;
 public class AlleleDatabaseStatusSlotAnnotationValidator extends SlotAnnotationValidator<AlleleDatabaseStatusSlotAnnotation> {
 
 	@Inject AlleleDatabaseStatusSlotAnnotationDAO alleleDatabaseStatusDAO;
-	@Inject VocabularyTermService vocabularyTermService;
+	@Inject AlleleDAO alleleDAO;
 
 	public ObjectResponse<AlleleDatabaseStatusSlotAnnotation> validateAlleleDatabaseStatusSlotAnnotation(AlleleDatabaseStatusSlotAnnotation uiEntity) {
 		AlleleDatabaseStatusSlotAnnotation mutationType = validateAlleleDatabaseStatusSlotAnnotation(uiEntity, false, false);
@@ -49,11 +48,11 @@ public class AlleleDatabaseStatusSlotAnnotationValidator extends SlotAnnotationV
 		dbEntity = (AlleleDatabaseStatusSlotAnnotation) validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
 		if (validateAllele) {
-			Allele singleAllele = validateSingleAllele(uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
+			Allele singleAllele = validateRequiredEntity(alleleDAO, "singleAllele", uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
 			dbEntity.setSingleAllele(singleAllele);
 		}
 
-		VocabularyTerm databaseStatus = validateDatabaseStatus(uiEntity, dbEntity);
+		VocabularyTerm databaseStatus = validateRequiredTermInVocabulary("databaseStatus", VocabularyConstants.ALLELE_DATABASE_STATUS_VOCABULARY, uiEntity.getDatabaseStatus(), dbEntity.getDatabaseStatus());
 		dbEntity.setDatabaseStatus(databaseStatus);
 
 		if (response.hasErrors()) {
@@ -66,27 +65,6 @@ public class AlleleDatabaseStatusSlotAnnotationValidator extends SlotAnnotationV
 		}
 
 		return dbEntity;
-	}
-
-	private VocabularyTerm validateDatabaseStatus(AlleleDatabaseStatusSlotAnnotation uiEntity, AlleleDatabaseStatusSlotAnnotation dbEntity) {
-		String field = "databaseStatus";
-
-		if (uiEntity.getDatabaseStatus() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		VocabularyTerm databaseStatus = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_DATABASE_STATUS_VOCABULARY, uiEntity.getDatabaseStatus().getName()).getEntity();
-		if (databaseStatus == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (databaseStatus.getObsolete() && (dbEntity.getDatabaseStatus() == null || !databaseStatus.getName().equals(dbEntity.getDatabaseStatus().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-		return databaseStatus;
 	}
 
 }

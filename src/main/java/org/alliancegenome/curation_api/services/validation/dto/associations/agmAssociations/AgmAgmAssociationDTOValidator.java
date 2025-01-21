@@ -1,7 +1,8 @@
 package org.alliancegenome.curation_api.services.validation.dto.associations.agmAssociations;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.associations.agmAssociations.AgmAgmAssociationDAO;
@@ -15,43 +16,38 @@ import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociat
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.base.AuditedObjectDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
-public class AgmAgmAssociationDTOValidator extends BaseDTOValidator {
+public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<AgmAgmAssociation, AgmAgmAssociationDTO> {
 
-	@Inject
-	AgmAgmAssociationDAO agmStrAssociationDAO;
-	@Inject
-	AffectedGenomicModelService agmService;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject AgmAgmAssociationDAO agmAgmAssociationDAO;
+	@Inject AffectedGenomicModelService agmService;
 
 	public AgmAgmAssociation validateAgmAgmAssociationDTO(AgmAgmAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
-		ObjectResponse<AgmAgmAssociation> asaResponse = new ObjectResponse<>();
+		response = new ObjectResponse<AgmAgmAssociation>();
 
 		List<Long> subjectIds = null;
 		if (StringUtils.isBlank(dto.getAgmSubjectIdentifier())) {
-			asaResponse.addErrorMessage("agm_identifier", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("agm_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			subjectIds = agmService.findIdsByIdentifierString(dto.getAgmSubjectIdentifier());
 			if (subjectIds == null || subjectIds.size() != 1) {
-				asaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
+				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
 			}
 		}
 
 		List<Long> objectIds = null;
 		if (StringUtils.isBlank(dto.getAgmObjectIdentifier())) {
-			asaResponse.addErrorMessage("agm_object_identifier", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("agm_object_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			objectIds = agmService.findIdsByIdentifierString(dto.getAgmObjectIdentifier());
 			if (objectIds == null || objectIds.size() != 1) {
-				asaResponse.addErrorMessage("agm_object_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmObjectIdentifier() + ")");
+				response.addErrorMessage("agm_object_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmObjectIdentifier() + ")");
 			}
 		}
 
@@ -63,7 +59,7 @@ public class AgmAgmAssociationDTOValidator extends BaseDTOValidator {
 			params.put("relation.name", dto.getRelationName());
 			params.put("agmAssociationObject.id", objectIds.get(0));
 
-			SearchResponse<AgmAgmAssociation> searchResponse = agmStrAssociationDAO.findByParams(params);
+			SearchResponse<AgmAgmAssociation> searchResponse = agmAgmAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
 			}
@@ -73,24 +69,16 @@ public class AgmAgmAssociationDTOValidator extends BaseDTOValidator {
 			association = new AgmAgmAssociation();
 		}
 
-		VocabularyTerm relation = null;
-		if (StringUtils.isNotEmpty(dto.getRelationName())) {
-			relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.AGM_AGM_RELATION_VOCABULARY_TERM_SET, dto.getRelationName()).getEntity();
-			if (relation == null) {
-				asaResponse.addErrorMessage("relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getRelationName() + ")");
-			}
-		} else {
-			asaResponse.addErrorMessage("relation_name", ValidationConstants.REQUIRED_MESSAGE);
-		}
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation_name", dto.getRelationName(), VocabularyConstants.AGM_AGM_RELATION_VOCABULARY_TERM_SET);
 		association.setRelation(relation);
 
 		if (association.getAgmAssociationSubject() == null && !StringUtils.isBlank(dto.getAgmSubjectIdentifier())) {
 
 			AffectedGenomicModel subject = agmService.findByIdentifierString(dto.getAgmSubjectIdentifier());
 			if (subject == null) {
-				asaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
+				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
 			} else if (beDataProvider != null && !subject.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				asaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
+				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
 			} else {
 				association.setAgmAssociationSubject(subject);
 			}
@@ -100,21 +88,20 @@ public class AgmAgmAssociationDTOValidator extends BaseDTOValidator {
 
 			AffectedGenomicModel object = agmService.findByIdentifierString(dto.getAgmObjectIdentifier());
 			if (object == null) {
-				asaResponse.addErrorMessage("agm_object_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmObjectIdentifier() + ")");
+				response.addErrorMessage("agm_object_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmObjectIdentifier() + ")");
 			} else if (beDataProvider != null && !object.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				asaResponse.addErrorMessage("agm_object_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmObjectIdentifier() + ")");
+				response.addErrorMessage("agm_object_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmObjectIdentifier() + ")");
 			} else {
 				association.setAgmAssociationObject(object);
 			}
 		}
-		ObjectResponse<AgmAgmAssociation> assocResponse = validateAuditedObjectDTO(association, dto);
-		asaResponse.addErrorMessages(assocResponse.getErrorMessages());
-		association = assocResponse.getEntity();
-		if (asaResponse.hasErrors()) {
-			throw new ObjectValidationException(dto, asaResponse.errorMessagesString());
+		association = validateAuditedObjectDTO(association, dto);
+		
+		if (response.hasErrors()) {
+			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		association = agmStrAssociationDAO.persist(association);
+		association = agmAgmAssociationDAO.persist(association);
 		return association;
 	}
 }

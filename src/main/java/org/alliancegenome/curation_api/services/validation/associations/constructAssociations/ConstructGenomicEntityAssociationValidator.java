@@ -19,12 +19,10 @@ import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
 import org.alliancegenome.curation_api.services.validation.associations.EvidenceAssociationValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -35,7 +33,6 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 	@Inject ConstructDAO constructDAO;
 	@Inject GenomicEntityDAO genomicEntityDAO;
 	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
-	@Inject VocabularyTermService vocabularyTermService;
 	@Inject NoteValidator noteValidator;
 
 	private String errorMessage;
@@ -65,14 +62,14 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		dbEntity = (ConstructGenomicEntityAssociation) validateEvidenceAssociationFields(uiEntity, dbEntity);
 
 		if (validateConstruct) {
-			Construct subject = validateSubjectReagent(uiEntity, dbEntity);
+			Construct subject = validateRequiredEntity(constructDAO, "constructAssociationSubject", uiEntity.getConstructAssociationSubject(), dbEntity.getConstructAssociationSubject());
 			dbEntity.setConstructAssociationSubject(subject);
 		}
 
-		GenomicEntity object = validateObject(uiEntity, dbEntity);
+		GenomicEntity object = validateRequiredEntity(genomicEntityDAO, "constructGenomicEntityAssociationObject", uiEntity.getConstructGenomicEntityAssociationObject(), dbEntity.getConstructGenomicEntityAssociationObject());
 		dbEntity.setConstructGenomicEntityAssociationObject(object);
 
-		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation(), dbEntity.getRelation());
 		dbEntity.setRelation(relation);
 
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
@@ -96,78 +93,6 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		}
 
 		return dbEntity;
-	}
-
-	private Construct validateSubjectReagent(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
-		String field = "constructAssociationSubject";
-		if (ObjectUtils.isEmpty(uiEntity.getConstructAssociationSubject())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		Construct subjectEntity = null;
-		if (uiEntity.getConstructAssociationSubject().getId() != null) {
-			subjectEntity = constructDAO.find(uiEntity.getConstructAssociationSubject().getId());
-		}
-		if (subjectEntity == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (subjectEntity.getObsolete() && (dbEntity.getConstructAssociationSubject() == null || !subjectEntity.getId().equals(dbEntity.getConstructAssociationSubject().getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return subjectEntity;
-
-	}
-
-	private GenomicEntity validateObject(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
-		String field = "constructGenomicEntityAssociationObject";
-		if (ObjectUtils.isEmpty(uiEntity.getConstructGenomicEntityAssociationObject())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		GenomicEntity objectEntity = null;
-		if (uiEntity.getConstructGenomicEntityAssociationObject().getId() != null) {
-			objectEntity = genomicEntityDAO.find(uiEntity.getConstructGenomicEntityAssociationObject().getId());
-		}
-		if (objectEntity == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (objectEntity.getObsolete() && (dbEntity.getConstructGenomicEntityAssociationObject() == null || !objectEntity.getId().equals(dbEntity.getConstructGenomicEntityAssociationObject().getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return objectEntity;
-
-	}
-
-	private VocabularyTerm validateRelation(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
-		String field = "relation";
-		if (uiEntity.getRelation() == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-
-		VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation().getName()).getEntity();
-
-		if (relation == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (relation.getObsolete() && (dbEntity.getRelation() == null || !relation.getName().equals(dbEntity.getRelation().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return relation;
 	}
 
 	public List<Note> validateRelatedNotes(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {

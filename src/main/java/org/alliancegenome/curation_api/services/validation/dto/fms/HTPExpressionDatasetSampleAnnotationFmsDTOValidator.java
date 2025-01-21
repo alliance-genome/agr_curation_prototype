@@ -75,7 +75,6 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		}
 		
 		if (dto.getSampleId() != null && StringUtils.isNotBlank(dto.getSampleId().getPrimaryId())) {
-			String curie = dto.getSampleId().getPrimaryId();
 			ExternalDataBaseEntity externalDbEntity = externalDataBaseEntityFmsDtoValidator.validateExternalDataBaseEntityFmsDTO(dto.getSampleId());
 			if (externalDbEntity != null) {
 				Long htpSampleId = externalDbEntity.getId();
