@@ -52,7 +52,7 @@ public class ExternalDataBaseEntity extends CurieObject {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToOne
 	@JsonView({ View.FieldsOnly.class })
 	private CrossReference preferredCrossReference;
 
