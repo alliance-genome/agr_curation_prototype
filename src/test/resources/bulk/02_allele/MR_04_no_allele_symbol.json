@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "ALLELETEST:MR04",
+    "primary_external_id": "ALLELETEST:MR04",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": false,

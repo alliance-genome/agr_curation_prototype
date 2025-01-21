@@ -23,10 +23,12 @@ import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTem
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
+import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 
 import { SearchService } from '../../service/SearchService';
 
@@ -171,11 +173,11 @@ export const VariantsTable = () => {
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
-			field: 'modEntityId',
-			header: 'MOD Entity ID',
+			field: 'primaryExternalId',
+			header: 'Primary External ID',
 			sortable: true,
-			body: (rowData) => <IdTemplate id={rowData.modEntityId} />,
-			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
 		},
 		{
 			field: 'modInternalId',
@@ -219,6 +221,15 @@ export const VariantsTable = () => {
 			editor: relatedNotesEditor,
 		},
 		{
+			field: 'references.primaryCrossReferenceCurie',
+			header: 'References',
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
+			body: (rowData) => (
+				<TruncatedReferencesTemplate references={rowData.references} identifier={rowData.primaryExternalId} />
+			),
+		},
+		{
 			field: 'sourceGeneralConsequence.name',
 			header: 'Source General Consequence',
 			sortable: true,
@@ -227,10 +238,17 @@ export const VariantsTable = () => {
 			editor: (props) => <SourceGeneralConsequenceTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'synonyms',
+			header: 'Synonyms',
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
+			body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
+		},
+		{
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.dataProvider?.sourceOrganization?.abbreviation} />,
+			body: (rowData) => <StringTemplate string={rowData.dataProvider?.abbreviation} />,
 			filterConfig: FILTER_CONFIGS.variantDataProviderFilterConfig,
 		},
 		{

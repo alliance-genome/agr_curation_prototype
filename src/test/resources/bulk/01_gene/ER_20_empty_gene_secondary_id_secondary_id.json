@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "GENETEST:ER20",
+    "primary_external_id": "GENETEST:ER20",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

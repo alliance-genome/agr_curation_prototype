@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
+import org.alliancegenome.curation_api.model.entities.AllianceMember;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -17,7 +18,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class OrganizationService extends BaseEntityCrudService<Organization, OrganizationDAO> {
 
-	@Inject OrganizationDAO organizationDAO;
+	@Inject
+	OrganizationDAO organizationDAO;
 
 	Date orgRequest;
 	HashMap<Long, Organization> orgIdCacheMap = new HashMap<>();
@@ -54,7 +56,7 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 	public ObjectResponse<Organization> getByAbbr(String abbr) {
 
 		Organization org = null;
-		SearchResponse<Organization> orgResponse = null;
+		SearchResponse<Organization> orgResponse;
 
 		if (orgRequest != null) {
 			if (orgAbbrCacheMap.containsKey(abbr)) {
@@ -78,6 +80,15 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 		ObjectResponse<Organization> response = new ObjectResponse<>();
 		response.setEntity(org);
 		return response;
+	}
+	
+	public Organization getAffiliatedModDataProvider() {
+		AllianceMember member = authenticatedPerson.getAllianceMember();
+		if (member != null) {
+			return member;
+		}
+			
+		return organizationDAO.getOrCreateOrganization("Alliance");
 	}
 
 }

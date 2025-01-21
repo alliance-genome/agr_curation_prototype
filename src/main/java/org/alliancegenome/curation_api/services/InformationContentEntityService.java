@@ -28,4 +28,5 @@ public class InformationContentEntityService extends BaseEntityCrudService<Infor
 
 		return ice;
 	}
+
 }

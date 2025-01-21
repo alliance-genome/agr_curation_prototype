@@ -51,7 +51,7 @@ describe('<ConstructsTable />', () => {
 			</BrowserRouter>
 		);
 
-		const modEntityTd = await result.findByText(/WB:WBCnstr00000001/i);
+		const primaryExternalIdTd = await result.findByText(/WB:WBCnstr00000001/i);
 		const referencesTd = await result.findByText(/PMID:17486083/i);
 		const updatedByCreatedByArray = await result.findAllByText('WB:curator');
 		const dateCreatedTd = await result.findByText(/2010-01-02T00:00:00Z/i);
@@ -63,7 +63,7 @@ describe('<ConstructsTable />', () => {
 		const constructGenomicComponentTd = await result.findByText(/lin-17/i);
 
 		await waitFor(() => {
-			expect(modEntityTd).toBeInTheDocument();
+			expect(primaryExternalIdTd).toBeInTheDocument();
 			expect(nameTd).toBeInTheDocument();
 			expect(symbolTd).toBeInTheDocument();
 			expect(synonymTd).toBeInTheDocument();

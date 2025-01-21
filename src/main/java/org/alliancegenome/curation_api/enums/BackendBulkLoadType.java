@@ -17,8 +17,12 @@ public enum BackendBulkLoadType {
 	ORTHOLOGY("json"),
 	ALLELE_ASSOCIATION("json"),
 	CONSTRUCT_ASSOCIATION("json"),
+	AGM_ASSOCIATION("json"),
+	AGM_AGM_ASSOCIATION("json"),
 	VARIANT("json"),
 	VARIATION("json"), // FMS variants as opposed to direct submission for VARIANT
+	VEPTRANSCRIPT("tsv"),
+	VEPGENE("tsv"),
 
 	// GFF all from the same file but split out
 	GFF("gff"), // For Database entries
@@ -26,9 +30,12 @@ public enum BackendBulkLoadType {
 	GFF_EXON("gff"),
 	GFF_CDS("gff"),
 	GFF_TRANSCRIPT("gff"),
+	GFF_GENE("gff"),
 	
+	GEOXREF("xml"),
 	INTERACTION_MOL("tsv"),
 	EXPRESSION_ATLAS("tsv"),
+	GAF("tsv"),
 	INTERACTION_GEN("tsv"),
 	BIOGRID_ORCS("tsv"),
 	PARALOGY("json"),

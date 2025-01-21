@@ -15,14 +15,14 @@ import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PublicationFmsDTO;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
+import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.collections.CollectionUtils;
@@ -40,7 +40,7 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 	@Inject ReferenceService referenceService;
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject ExternalDataBaseEntityFmsDTOValidator externalDataBaseEntityFmsDtoValidator;
-	@Inject DataProviderService dataProviderService;
+	@Inject OrganizationService organizationService;
 	
 	@Transactional
 	public HTPExpressionDatasetAnnotation validateHTPExpressionDatasetAnnotationFmsDTO(HTPExpressionDatasetAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
@@ -164,7 +164,7 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 			htpannotation.setRelatedNote(null);
 		}
 
-		htpannotation.setDataProvider(dataProviderService.getDefaultDataProvider(backendBulkDataProvider.sourceOrganization));
+		htpannotation.setDataProvider(organizationService.getByAbbr(backendBulkDataProvider.sourceOrganization).getEntity());
 
 		if (htpAnnotationResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, htpAnnotationResponse.errorMessagesString());

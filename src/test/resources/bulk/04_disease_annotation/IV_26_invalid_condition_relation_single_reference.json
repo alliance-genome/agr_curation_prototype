@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "DATEST:IV26",
+    "primary_external_id": "DATEST:IV26",
     "internal": true,
     "obsolete": true,
     "created_by_curie": "DATEST:Person0001",

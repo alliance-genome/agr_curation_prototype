@@ -47,7 +47,7 @@ public class GenomicEntityValidator<E extends GenomicEntity> extends BiologicalE
 					allValid = false;
 					response.addErrorMessages(field, ix, xrefResponse.getErrorMessages());
 				} else {
-					validatedXrefs.add(xref);
+					validatedXrefs.add(xrefResponse.getEntity());
 				}
 			}
 		}

@@ -370,8 +370,12 @@ export const GenericDataTable = (props) => {
 				{hasDetails && (
 					<Column
 						field="details"
-						editor={(props) => <EntityDetailsAction identifier={getIdentifier(props.rowData)} disabled={true} />}
-						body={(props) => <EntityDetailsAction identifier={getIdentifier(props)} disabled={isInEditMode} />}
+						editor={(props) => (
+							<EntityDetailsAction endpoint={endpoint} identifier={getIdentifier(props.rowData)} disabled={true} />
+						)}
+						body={(props) => (
+							<EntityDetailsAction endpoint={endpoint} identifier={getIdentifier(props)} disabled={isInEditMode} />
+						)}
 						showFilterMenu={false}
 						className={`text-center p-0 action-column ${isEditable ? 'visible' : 'hidden'}`}
 						bodyStyle={{ textAlign: 'center' }}

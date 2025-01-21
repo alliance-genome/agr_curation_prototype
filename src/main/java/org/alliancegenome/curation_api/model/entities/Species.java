@@ -42,7 +42,9 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Table(indexes = {
 		@Index(name = "species_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "species_updatedby_index", columnList = "updatedBy_id")
+		@Index(name = "species_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "species_dataprovider_index", columnList = "dataProvider_id"),
+		@Index(name = "species_dataprovidercrossreference_index", columnList = "dataProviderCrossReference_id")
 })
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class Species extends AuditedObject {
@@ -76,11 +78,22 @@ public class Species extends AuditedObject {
 	@JoinTable(indexes = @Index(name = "species_commonnames_species_id_index", columnList = "species_id"))
 	private List<String> commonNames;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {
+		"abbreviation", "fullName", "shortName",
+		"abbreviation_keyword", "fullName_keyword", "shortName_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne
+	@ManyToOne
+	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class })
-	private DataProvider dataProvider;
+	protected Organization dataProvider;
+	
+	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(orphanRemoval = true)
+	@Fetch(FetchMode.SELECT)
+	@JsonView({ View.FieldsOnly.class })
+	private CrossReference dataProviderCrossReference;
 
 	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView(View.FieldsOnly.class)

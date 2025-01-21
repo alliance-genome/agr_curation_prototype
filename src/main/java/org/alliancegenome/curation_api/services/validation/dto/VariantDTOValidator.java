@@ -45,16 +45,16 @@ public class VariantDTOValidator extends BaseDTOValidator {
 		variantResponse = new ObjectResponse<Variant>();
 
 		Variant variant = null;
-		if (StringUtils.isNotBlank(dto.getModEntityId())) {
-			SearchResponse<Variant> response = variantDAO.findByField("modEntityId", dto.getModEntityId());
+		if (StringUtils.isNotBlank(dto.getPrimaryExternalId())) {
+			SearchResponse<Variant> response = variantDAO.findByField("primaryExternalId", dto.getPrimaryExternalId());
 			if (response != null && response.getSingleResult() != null) {
 				variant = response.getSingleResult();
 			}
 		}
 		if (variant == null) {
 			if (StringUtils.isBlank(dto.getModInternalId())) {
-				if (StringUtils.isBlank(dto.getModEntityId())) {
-					variantResponse.addErrorMessage("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId");
+				if (StringUtils.isBlank(dto.getPrimaryExternalId())) {
+					variantResponse.addErrorMessage("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId");
 				}
 			} else {
 				SearchResponse<Variant> response = variantDAO.findByField("modInternalId", dto.getModInternalId());
@@ -68,7 +68,7 @@ public class VariantDTOValidator extends BaseDTOValidator {
 			variant = new Variant();
 		}
 
-		variant.setModEntityId(dto.getModEntityId());
+		variant.setPrimaryExternalId(dto.getPrimaryExternalId());
 		variant.setModInternalId(dto.getModInternalId());
 
 		ObjectResponse<Variant> geResponse = validateGenomicEntityDTO(variant, dto, dataProvider);

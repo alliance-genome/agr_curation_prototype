@@ -116,8 +116,12 @@ public abstract class AnnotationUniqueIdHelper {
 		if (CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
 			uniqueId.addList(annotation.getConditionRelations().stream().map(condition -> {
 				UniqueIdGeneratorHelper gen = new UniqueIdGeneratorHelper();
-				gen.add(condition.getConditionRelationType().getName());
-				gen.add(condition.getConditions().stream().map(AnnotationUniqueIdHelper::getExperimentalConditionUniqueId).collect(Collectors.joining(DELIMITER)));
+				if (condition.getConditionRelationType() != null) {
+					gen.add(condition.getConditionRelationType().getName());
+				}
+				if (CollectionUtils.isNotEmpty(condition.getConditions())) {
+					gen.add(condition.getConditions().stream().map(AnnotationUniqueIdHelper::getExperimentalConditionUniqueId).collect(Collectors.joining(DELIMITER)));
+				}
 				return gen.getUniqueId();
 			}).collect(Collectors.toList()));
 		}

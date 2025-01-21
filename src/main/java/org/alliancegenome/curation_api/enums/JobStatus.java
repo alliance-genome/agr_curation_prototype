@@ -4,11 +4,11 @@ public enum JobStatus {
 
 	SCHEDULED_PENDING, SCHEDULED_STARTED, SCHEDULED_RUNNING,
 
-	FORCED_PENDING, FORCED_STARTED, FORCED_RUNNING,
+	FORCED_PENDING, FORCED_STARTED, FORCED_RUNNING, FORCED_STOPPED,
 
 	MANUAL_PENDING, MANUAL_STARTED, MANUAL_RUNNING,
 
-	FAILED, STOPPED, FINISHED,
+	FAILED, STOPPED, FINISHED
 
 	;
 
@@ -25,7 +25,7 @@ public enum JobStatus {
 	}
 
 	public boolean isNotRunning() {
-		return this == FAILED || this == STOPPED || this == FINISHED;
+		return this == FAILED || this == STOPPED || this == FINISHED || this == FORCED_STOPPED;
 	}
 
 	public JobStatus getNextStatus() {
@@ -54,6 +54,6 @@ public enum JobStatus {
 	}
 
 	public boolean isForced() {
-		return this == FORCED_PENDING || this == FORCED_STARTED || this == FORCED_RUNNING;
+		return this == FORCED_PENDING || this == FORCED_STARTED || this == FORCED_RUNNING || this == FORCED_STOPPED;
 	}
 }

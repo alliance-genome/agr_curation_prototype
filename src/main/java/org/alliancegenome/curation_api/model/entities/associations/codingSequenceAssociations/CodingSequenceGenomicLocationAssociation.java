@@ -56,7 +56,7 @@ import lombok.ToString;
 public class CodingSequenceGenomicLocationAssociation extends LocationAssociation {
 
 	@IndexedEmbedded(includePaths = {
-		"curie", "curie_keyword", "modEntityId", "modEntityId_keyword",
+		"curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword",
 		"modInternalId", "modInternalId_keyword", "name", "name_keyword"
 	})
 	@ManyToOne
@@ -66,7 +66,7 @@ public class CodingSequenceGenomicLocationAssociation extends LocationAssociatio
 	private CodingSequence codingSequenceAssociationSubject;
 
 	@IndexedEmbedded(includePaths = {
-		"curie", "curie_keyword", "modEntityId", "modEntityId_keyword",
+		"curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword",
 		"modInternalId", "modInternalId_keyword", "name", "name_keyword"
 	})
 	@ManyToOne

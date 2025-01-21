@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -52,7 +52,7 @@ public class ParalogyBulkUploadFmsITCase extends BaseITCase {
 	private void loadRequiredEntities() throws Exception {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		DataProvider dataProvider = createDataProvider("WB", false);
+		Organization dataProvider = getOrganization("WB");
 		createGenes(List.of(gene1, gene2), "NCBITaxon:6239", symbolTerm, false, dataProvider);
 	}
 
@@ -66,8 +66,8 @@ public class ParalogyBulkUploadFmsITCase extends BaseITCase {
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}").post(paralogyFindEndpoint)
 				.then().statusCode(200).body("totalResults", is(1)).body("results", hasSize(1))
 				.body("results[0].confidence.name", is("moderate"))
-				.body("results[0].subjectGene.modEntityId", is("PARATEST:Gene000100"))
-				.body("results[0].objectGene.modEntityId", is("PARATEST:Gene000200"))
+				.body("results[0].subjectGene.primaryExternalId", is("PARATEST:Gene000100"))
+				.body("results[0].objectGene.primaryExternalId", is("PARATEST:Gene000200"))
 				.body("results[0].identity", is(65))
 				.body("results[0].length", is(466))
 				.body("results[0].predictionMethodsMatched", hasSize(1))

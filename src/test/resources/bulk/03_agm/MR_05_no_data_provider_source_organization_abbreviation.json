@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "AGMTEST:MR05",
+    "primary_external_id": "AGMTEST:MR05",
     "subtype_name": "fish",
     "name": "TestAgm1",
     "taxon_curie": "NCBITaxon:6239",

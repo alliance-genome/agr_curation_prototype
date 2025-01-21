@@ -74,7 +74,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			get(alleleGetEndpoint + "ALLELETEST:Allele0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("ALLELETEST:Allele0001")).
+			body("entity.primaryExternalId", is("ALLELETEST:Allele0001")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
@@ -194,10 +194,10 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleNomenclatureEvents[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("entity.alleleNomenclatureEvents[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.alleleNomenclatureEvents[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
+			body("entity.dataProvider.abbreviation", is(requiredDataProvider)).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -210,7 +210,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			get(alleleGetEndpoint + "ALLELETEST:Allele0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("ALLELETEST:Allele0001")).
+			body("entity.primaryExternalId", is("ALLELETEST:Allele0001")).
 			body("entity.taxon.curie", is("NCBITaxon:10116")).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
@@ -332,10 +332,10 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleNomenclatureEvents[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.alleleNomenclatureEvents[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.alleleNomenclatureEvents[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProviderRGD)).
-			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
+			body("entity.dataProvider.abbreviation", is(requiredDataProviderRGD)).
+			body("entity.dataProviderCrossReference.referencedCurie", is("TEST2:0001")).
+			body("entity.dataProviderCrossReference.displayName", is("TEST2:0001")).
+			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage2"));
 	}
 	
 	@Test
@@ -450,7 +450,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			get(alleleGetEndpoint + "ALLELETEST:Allele0001").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("ALLELETEST:Allele0001")).
+			body("entity.primaryExternalId", is("ALLELETEST:Allele0001")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
@@ -466,7 +466,8 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("alleleFunctionalImpacts"))).
 			body("entity", not(hasKey("alleleGermlineTransmissionStatus"))).
 			body("entity", not(hasKey("alleleDatabaseStatus"))).
-			body("entity", not(hasKey("alleleNomenclatureEvents")));
+			body("entity", not(hasKey("alleleNomenclatureEvents"))).
+			body("entity", not(hasKey("dataProviderCrossReference")));
 	}
 
 	@Test
@@ -479,7 +480,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			when().
 			get(alleleGetEndpoint + "ALLELETEST:Allele0001").then().
 			statusCode(200).
-			body("entity.modEntityId", is("ALLELETEST:Allele0001")).
+			body("entity.primaryExternalId", is("ALLELETEST:Allele0001")).
 			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
 			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
 			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
@@ -549,7 +550,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	
 	@Test
 	@Order(8)
-	public void alleleBulkUploadUpdateEmptyNonRequiredFieldsLevel() throws Exception {
+	public void alleleBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UE_01_update_empty_non_required_fields.json");
 		
@@ -557,7 +558,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 		when().
 		get(alleleGetEndpoint + "ALLELETEST:Allele0001").then().
 		statusCode(200).
-			body("entity.modEntityId", is("ALLELETEST:Allele0001")).
+			body("entity.primaryExternalId", is("ALLELETEST:Allele0001")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
@@ -661,7 +662,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			get(alleleGetEndpoint + "ALLELETEST:DN01").
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is("ALLELETEST:DN01")).
+			body("entity.primaryExternalId", is("ALLELETEST:DN01")).
 			body("entity.relatedNotes", hasSize(1));
 	}
 	

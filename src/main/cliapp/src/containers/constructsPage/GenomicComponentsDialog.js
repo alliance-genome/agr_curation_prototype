@@ -155,7 +155,7 @@ export const GenomicComponentsDialog = ({
 					>
 						<Column field="relation.name" header="Relation" headerClassName="surface-0" />
 						<Column
-							field="constructGenomicEntityAssociationObject.modEntityId"
+							field="constructGenomicEntityAssociationObject.primaryExternalId"
 							header="Component"
 							headerClassName="surface-0"
 							body={componentTemplate}

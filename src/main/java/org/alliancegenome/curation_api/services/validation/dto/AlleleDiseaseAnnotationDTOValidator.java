@@ -67,7 +67,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 
 				if (dataProvider != null
 					&& (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN"))
-					&& (!allele.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) || !dataProvider.sourceOrganization.equals(allele.getDataProvider().getSourceOrganization().getAbbreviation()))) {
+					&& (!allele.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) || !dataProvider.sourceOrganization.equals(allele.getDataProvider().getAbbreviation()))) {
 					adaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ") for " + dataProvider.name() + " load");
 				}
 			}

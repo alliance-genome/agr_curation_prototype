@@ -42,8 +42,8 @@ import lombok.ToString;
 
 public class TranscriptGeneAssociation extends EvidenceAssociation {
 
-	@IndexedEmbedded(includePaths = {"curie", "name", "modEntityId", "modInternalId",
-			"curie_keyword", "name_keyword", "modEntityId_keyword", "modInternalId_keyword"})
+	@IndexedEmbedded(includePaths = {"curie", "name", "primaryExternalId", "modInternalId",
+			"curie_keyword", "name_keyword", "primaryExternalId_keyword", "modInternalId_keyword"})
 	@ManyToOne
 	@JsonIgnoreProperties({
 		"transcriptCodingSequenceAssociations",
@@ -56,7 +56,7 @@ public class TranscriptGeneAssociation extends EvidenceAssociation {
 	
 	@IndexedEmbedded(includePaths = {"curie", "geneSymbol.displayText", "geneSymbol.formatText", "geneFullName.displayText", "geneFullName.formatText",
 			"curie_keyword", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "geneFullName.displayText_keyword", "geneFullName.formatText_keyword",
-			"modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
+			"primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonIgnoreProperties({

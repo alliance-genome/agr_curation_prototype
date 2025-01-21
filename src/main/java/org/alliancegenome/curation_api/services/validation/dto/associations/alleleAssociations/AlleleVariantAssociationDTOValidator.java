@@ -90,7 +90,7 @@ public class AlleleVariantAssociationDTOValidator extends AlleleGenomicEntityAss
 			Allele subject = alleleService.findByIdentifierString(dto.getAlleleIdentifier());
 			if (subject == null) {
 				agaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
-			} else if (beDataProvider != null && !subject.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
+			} else if (beDataProvider != null && !subject.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 				agaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAlleleIdentifier() + ")");
 			} else {
 				association.setAlleleAssociationSubject(subject);
@@ -102,7 +102,7 @@ public class AlleleVariantAssociationDTOValidator extends AlleleGenomicEntityAss
 			Variant object = variantService.findByIdentifierString(dto.getVariantIdentifier());
 			if (object == null) {
 				agaResponse.addErrorMessage("variant_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getVariantIdentifier() + ")");
-			} else if (beDataProvider != null && !object.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
+			} else if (beDataProvider != null && !object.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 				agaResponse.addErrorMessage("variant_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getVariantIdentifier() + ")");
 			} else {
 				association.setAlleleVariantAssociationObject(object);

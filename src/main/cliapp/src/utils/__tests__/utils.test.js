@@ -21,8 +21,8 @@ describe('removeInvalidFilters', () => {
 					tokenOperator: 'OR',
 				},
 			},
-			modentityidFilter: {
-				modEntityId: {
+			primaryexternalidFilter: {
+				primaryExternalId: {
 					queryString: 's',
 					tokenOperator: 'AND',
 				},
@@ -50,8 +50,8 @@ describe('removeInvalidFilters', () => {
 					tokenOperator: 'OR',
 				},
 			},
-			modentityidFilter: {
-				modEntityId: {
+			primaryexternalidFilter: {
+				primaryExternalId: {
 					queryString: 's',
 					tokenOperator: 'AND',
 				},
@@ -73,8 +73,8 @@ describe('removeInvalidFilters', () => {
 					tokenOperator: 'OR',
 				},
 			},
-			modentityidFilter: {
-				modEntityId: {
+			primaryexternalidFilter: {
+				primaryExternalId: {
 					queryString: 's',
 					tokenOperator: 'AND',
 				},
@@ -100,8 +100,8 @@ describe('removeInvalidFilters', () => {
 					tokenOperator: 'OR',
 				},
 			},
-			modentityidFilter: {
-				invalidModEntityId: {
+			primaryexternalidFilter: {
+				invalidPrimaryExternalId: {
 					queryString: 's',
 					tokenOperator: 'AND',
 				},

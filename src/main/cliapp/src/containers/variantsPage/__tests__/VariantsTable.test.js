@@ -60,6 +60,7 @@ describe('<VariantsTable />', () => {
 		const variantTypeTd = await result.findByText(/SNP/i);
 		const variantStatusTd = await result.findByText(/dead/i);
 		const sourceGeneralConsequenceTd = await result.findByText(/point_mutation/i);
+		const referenceTd = await result.findByText(/AGRKB:000000002/i);
 
 		await waitFor(() => {
 			expect(curieTd).toBeInTheDocument();
@@ -71,6 +72,7 @@ describe('<VariantsTable />', () => {
 			expect(variantTypeTd).toBeInTheDocument();
 			expect(variantStatusTd).toBeInTheDocument();
 			expect(sourceGeneralConsequenceTd).toBeInTheDocument();
+			expect(referenceTd).toBeInTheDocument();
 		});
 	});
 });

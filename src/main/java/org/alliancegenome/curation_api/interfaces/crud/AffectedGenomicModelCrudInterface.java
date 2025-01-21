@@ -44,7 +44,7 @@ public interface AffectedGenomicModelCrudInterface extends BaseSubmittedObjectCr
 	@Override
 	@GET
 	@Path("/{identifierString}")
-	@JsonView(View.AffectedGenomicModelView.class)
+	@JsonView(View.AffectedGenomicModelDetailView.class)
 	ObjectResponse<AffectedGenomicModel> getByIdentifier(@PathParam("identifierString") String identifierString);
 
 	@Override

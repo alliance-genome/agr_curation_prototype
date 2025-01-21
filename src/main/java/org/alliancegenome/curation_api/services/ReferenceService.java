@@ -21,11 +21,15 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ReferenceService extends BaseEntityCrudService<Reference, ReferenceDAO> {
 
-	@Inject ReferenceDAO referenceDAO;
-	@Inject ReferenceSynchronisationHelper refSyncHelper;
-	
+	@Inject
+	ReferenceDAO referenceDAO;
+	@Inject
+	ReferenceSynchronisationHelper refSyncHelper;
+
 	Date referenceRequest;
+	Date referenceRequestShallow;
 	HashMap<String, Reference> referenceCacheMap = new HashMap<>();
+	HashMap<String, Reference> shallowReferenceCacheMap = new HashMap<>();
 
 	@Override
 	@PostConstruct
@@ -52,6 +56,9 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 	public Reference retrieveFromDbOrLiteratureService(String curieOrXref) {
 		Reference reference = null;
 		if (referenceRequest != null) {
+			if (referenceCacheMap.isEmpty()) {
+				referenceCacheMap = referenceDAO.getReferenceMap(true);
+			}
 			if (referenceCacheMap.containsKey(curieOrXref)) {
 				reference = referenceCacheMap.get(curieOrXref);
 			} else {
@@ -65,7 +72,25 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 		}
 		return reference;
 	}
-	
+
+	@Transactional
+	public Reference retrieveShallowReferenceFromDbOrLiteratureService(String curieOrXref) {
+		Reference reference = null;
+		if (shallowReferenceCacheMap.containsKey(curieOrXref)) {
+			reference = shallowReferenceCacheMap.get(curieOrXref);
+		} else {
+			Log.debug("Reference not cached, caching reference: (" + curieOrXref + ")");
+			if (shallowReferenceCacheMap.isEmpty()) {
+				shallowReferenceCacheMap = referenceDAO.getReferenceMap(false);
+				reference = shallowReferenceCacheMap.get(curieOrXref);
+			} else {
+				reference = findOrCreateReference(curieOrXref);
+				referenceCacheMap.put(curieOrXref, reference);
+			}
+		}
+		return reference;
+	}
+
 	private Reference findOrCreateReference(String curieOrXref) {
 		Reference reference = null;
 

@@ -16,6 +16,12 @@ public final class VocabularyConstants {
 	public static final String ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET = "allele_disease_relation";
 	public static final String AGM_DISEASE_RELATION_VOCABULARY_TERM_SET = "agm_disease_relation";
 
+	public static final String AGM_RELATION_VOCABULARY = "agm_relation";
+	public static final String AGM_STR_RELATION_VOCABULARY_TERM_SET = "agm_str_relation";
+	public static final String AGM_ALLELE_RELATION_VOCABULARY_TERM_SET = "agm_allele_relation";
+	public static final String AGM_ALLELE_ASSOCIATION_VOCABULARY = "agm_allele_association_geno_terms";
+	public static final String AGM_AGM_RELATION_VOCABULARY_TERM_SET = "agm_agm_relation";
+
 	public static final String PHENOTYPE_RELATION_VOCABULARY = "phenotype_relation";
 
 	public static final String ALLELE_INHERITANCE_MODE_VOCABULARY = "allele_inheritance_mode";
@@ -84,7 +90,14 @@ public final class VocabularyConstants {
 	public static final String ANATOMICAL_SUBSTRUCTURE_QUALIFIER = "anatomical_subtructure_qualifier";
 	public static final String CELLULAR_COMPONENT_QUALIFIER = "cellular_component_qualifier";
 
-	public static final String HTP_DATASET_CATEGORY_TAGS = "data_set_category_tags";
+	public static final String HTP_DATASET_CATEGORY_TAGS_VOCABULARY = "data_set_category_tags";
 	public static final String HTP_DATASET_NOTE_TYPE_VOCABULARY_TERM_SET = "htp_expression_dataset_note_type";
 	public static final String HTP_DATASET_SAMPLE_NOTE_TYPE_VOCABULARY_TERM_SET = "htp_expression_dataset_sample_note_type";
+	
+	public static final String VEP_IMPACT_VOCABULARY = "vep_impact";
+	public static final String VEP_CONSEQUENCE_VOCABULARY = "vep_consequence";
+	public static final String SIFT_PREDICTION_VOCABULARY = "sift_prediction";
+	public static final String POLYPHEN_PREDICTION_VOCABULARY = "polyphen_prediction";
+
+	public static final String HTP_DATASET_SAMPLE_SEQUENCE_FORMAT_VOCABULARY = "htp_data_sample_sequencing_format";
 }

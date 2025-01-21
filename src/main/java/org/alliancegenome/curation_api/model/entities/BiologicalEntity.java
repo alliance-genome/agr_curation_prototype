@@ -52,13 +52,14 @@ import lombok.ToString;
 		@Index(name = "biologicalentity_curie_index", columnList = "curie"),
 		@Index(name = "biologicalentity_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "biologicalentity_updatedby_index", columnList = "updatedBy_id"),
-		@Index(name = "biologicalentity_modentityid_index", columnList = "modentityid"),
+		@Index(name = "biologicalentity_primaryExternalId_index", columnList = "primaryExternalId"),
 		@Index(name = "biologicalentity_modinternalid_index", columnList = "modinternalid"),
-		@Index(name = "biologicalentity_dataprovider_index", columnList = "dataprovider_id")
+		@Index(name = "biologicalentity_dataprovider_index", columnList = "dataprovider_id"),
+		@Index(name = "biologicalentity_dataprovidercrossreference_index", columnList = "dataprovidercrossreference_id")
 	},
 	uniqueConstraints = {
 		@UniqueConstraint(name = "biologicalentity_curie_uk", columnNames = "curie"),
-		@UniqueConstraint(name = "biologicalentity_modentityid_uk", columnNames = "modentityid"),
+		@UniqueConstraint(name = "biologicalentity_primaryExternalId_uk", columnNames = "primaryExternalId"),
 		@UniqueConstraint(name = "biologicalentity_modinternalid_uk", columnNames = "modinternalid")
 	}
 )

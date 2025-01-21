@@ -41,8 +41,11 @@ export const PhenotypeAnnotationsTable = () => {
 
 	const sortMapping = {
 		'phenotypeAnnotationObject.name': ['phenotypeAnnotationObject.curie', 'phenotypeAnnotationObject.namespace'],
-		'phenotypeAnnotationSubject.symbol': ['phenotypeAnnotationSubject.name', 'phenotypeAnnotationSubject.modEntityId'],
-		'sgdStrainBackground.name': ['sgdStrainBackground.modEntityId'],
+		'phenotypeAnnotationSubject.symbol': [
+			'phenotypeAnnotationSubject.name',
+			'phenotypeAnnotationSubject.primaryExternalId',
+		],
+		'sgdStrainBackground.name': ['sgdStrainBackground.primaryExternalId'],
 	};
 
 	const handleConditionRelationsOpen = (event, rowData, isInEdit) => {
@@ -154,7 +157,7 @@ export const PhenotypeAnnotationsTable = () => {
 			filterConfig: FILTER_CONFIGS.assertedAlleleFilterConfig,
 		},
 		{
-			field: 'dataProvider.sourceOrganization.abbreviation',
+			field: 'dataProvider.abbreviation',
 			header: 'Data Provider',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.phenotypeDataProviderFilterConfig,

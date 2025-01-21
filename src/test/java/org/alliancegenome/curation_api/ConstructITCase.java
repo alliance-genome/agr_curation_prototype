@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Construct;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -66,9 +65,9 @@ public class ConstructITCase extends BaseITCase {
 	private Note relatedNote2;
 	private OffsetDateTime datetime;
 	private OffsetDateTime datetime2;
-	private DataProvider dataProvider;
-	private DataProvider dataProvider2;
-	private DataProvider obsoleteDataProvider;
+	private Organization dataProvider;
+	private Organization dataProvider2;
+	private Organization obsoleteDataProvider;
 	private Person person;
 	private Vocabulary nameTypeVocabulary;
 	private Vocabulary synonymScopeVocabulary;
@@ -113,9 +112,9 @@ public class ConstructITCase extends BaseITCase {
 		datetime = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
 		datetime2 = OffsetDateTime.parse("2022-04-10T22:10:11+00:00");
 		obsoleteReference = createReference("AGRKB:000020000", true);
-		dataProvider = createDataProvider("CNST_TEST", false);
-		dataProvider2 = createDataProvider("CNST_TEST2", false);
-		obsoleteDataProvider = createDataProvider("CNST_ODP", true);
+		dataProvider = createOrganization("CNST_TEST", false);
+		dataProvider2 = createOrganization("CNST_TEST2", false);
+		obsoleteDataProvider = createOrganization("CNST_ODP", true);
 		person = createPerson("TEST:ConstructPerson0001");
 		nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		synonymScopeVocabulary = getVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY);
@@ -144,7 +143,7 @@ public class ConstructITCase extends BaseITCase {
 		loadRequiredEntities();
 		
 		Construct construct = new Construct();
-		construct.setModEntityId(CONSTRUCT);
+		construct.setPrimaryExternalId(CONSTRUCT);
 		construct.setConstructSymbol(constructSymbol);
 		construct.setConstructFullName(constructFullName);
 		construct.setConstructSynonyms(List.of(constructSynonym));
@@ -167,7 +166,7 @@ public class ConstructITCase extends BaseITCase {
 			get("/api/construct/" + CONSTRUCT).
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is(CONSTRUCT)).
+			body("entity.primaryExternalId", is(CONSTRUCT)).
 			body("entity.constructSymbol.displayText", is(constructSymbol.getDisplayText())).
 			body("entity.constructSymbol.formatText", is(constructSymbol.getFormatText())).
 			body("entity.constructSymbol.nameType.name", is(constructSymbol.getNameType().getName())).
@@ -192,7 +191,7 @@ public class ConstructITCase extends BaseITCase {
 			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation())).
+			body("entity.dataProvider.abbreviation", is(dataProvider.getAbbreviation())).
 			body("entity.constructComponents", hasSize(1)).
 			body("entity.constructComponents[0].componentSymbol", is("cc1")).
 			body("entity.constructComponents[0].relation.name", is(isRegulatedByRelation.getName())).
@@ -273,14 +272,14 @@ public class ConstructITCase extends BaseITCase {
 			get("/api/construct/" + CONSTRUCT).
 			then().
 			statusCode(200).
-			body("entity.modEntityId", is(CONSTRUCT)).
+			body("entity.primaryExternalId", is(CONSTRUCT)).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
 			body("entity.references[0].curie", is(reference2.getCurie())).
 			body("entity.dateCreated", is(datetime2.toString())).
 			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2.getSourceOrganization().getAbbreviation())).
+			body("entity.dataProvider.abbreviation", is(dataProvider2.getAbbreviation())).
 			body("entity.constructSymbol.displayText", is(editedSymbol.getDisplayText())).
 			body("entity.constructSymbol.formatText", is(editedSymbol.getFormatText())).
 			body("entity.constructSymbol.nameType.name", is(editedSymbol.getNameType().getName())).
@@ -330,7 +329,7 @@ public class ConstructITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(2))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId")).
 			body("errorMessages.constructSymbol", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
@@ -340,7 +339,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = getConstruct(CONSTRUCT);
 		construct.setConstructSymbol(null);
 		construct.setDataProvider(null);
-		construct.setModEntityId(null);
+		construct.setPrimaryExternalId(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -351,7 +350,7 @@ public class ConstructITCase extends BaseITCase {
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.constructSymbol", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId")).
 			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
@@ -360,7 +359,7 @@ public class ConstructITCase extends BaseITCase {
 	public void createConstructWithMissingRequiredFieldsLevel2() {
 		Construct construct = new Construct();
 		construct.setDataProvider(dataProvider);
-		construct.setModEntityId("Construct:0005");
+		construct.setPrimaryExternalId("Construct:0005");
 		
 		ConstructComponentSlotAnnotation invalidComponent = new ConstructComponentSlotAnnotation();
 		ConstructSymbolSlotAnnotation invalidSymbol = new ConstructSymbolSlotAnnotation();
@@ -465,7 +464,7 @@ public class ConstructITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(5))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId")).
 			body("errorMessages.constructSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
@@ -482,7 +481,7 @@ public class ConstructITCase extends BaseITCase {
 	@Order(8)
 	public void editConstructWithEmptyRequiredFields() {
 		Construct construct = getConstruct(CONSTRUCT);
-		construct.setModEntityId("");
+		construct.setPrimaryExternalId("");
 		construct.setModInternalId("");
 		ConstructComponentSlotAnnotation component = construct.getConstructComponents().get(0);
 		component.setComponentSymbol("");
@@ -505,7 +504,7 @@ public class ConstructITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(5))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId")).
 			body("errorMessages.constructSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
@@ -527,8 +526,6 @@ public class ConstructITCase extends BaseITCase {
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		Organization nonPersistedOrganization = new Organization();
 		nonPersistedOrganization.setAbbreviation("INV");
-		DataProvider invalidDataProvider = new DataProvider();
-		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		
 		Note invalidNote = new Note();
 		invalidNote.setNoteType(alleleNoteType);
@@ -542,10 +539,10 @@ public class ConstructITCase extends BaseITCase {
 		
 		
 		Construct construct = new Construct();
-		construct.setModEntityId("Construct:0009");
+		construct.setPrimaryExternalId("Construct:0009");
 		construct.setReferences(List.of(nonPersistedReference));
 		construct.setDateCreated(datetime);
-		construct.setDataProvider(invalidDataProvider);
+		construct.setDataProvider(nonPersistedOrganization);
 		construct.setConstructComponents(List.of(invalidComponent));
 		construct.setConstructSymbol(invalidSymbol);
 		construct.setConstructFullName(invalidFullName);
@@ -559,7 +556,7 @@ public class ConstructITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(6))).
-			body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.dataProvider", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.constructComponents", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
@@ -592,8 +589,6 @@ public class ConstructITCase extends BaseITCase {
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		Organization nonPersistedOrganization = new Organization();
 		nonPersistedOrganization.setAbbreviation("INV");
-		DataProvider invalidDataProvider = new DataProvider();
-		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		
 		Note invalidNote = new Note();
 		invalidNote.setNoteType(alleleNoteType);
@@ -602,7 +597,7 @@ public class ConstructITCase extends BaseITCase {
 		
 		Construct construct = getConstruct(CONSTRUCT);
 		construct.setReferences(List.of(nonPersistedReference));
-		construct.setDataProvider(invalidDataProvider);
+		construct.setDataProvider(nonPersistedOrganization);
 		ConstructComponentSlotAnnotation component = construct.getConstructComponents().get(0);
 		component.setRelation(alleleNoteType);
 		component.setEvidence(List.of(nonPersistedReference));
@@ -633,7 +628,7 @@ public class ConstructITCase extends BaseITCase {
 		then().
 		statusCode(400).
 		body("errorMessages", is(aMapWithSize(6))).
-		body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE)).
+		body("errorMessages.dataProvider", is(ValidationConstants.INVALID_MESSAGE)).
 		body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE)).
 		body("errorMessages.constructComponents", is(String.join(" | ", List.of(
 				"evidence - " + ValidationConstants.INVALID_MESSAGE,
@@ -671,7 +666,7 @@ public class ConstructITCase extends BaseITCase {
 		ConstructSynonymSlotAnnotation obsoleteSynonym = createConstructSynonymSlotAnnotation(List.of(obsoleteReference), "Test synonym", obsoleteNameType, obsoleteSynonymScope, "https://test.org");
 		
 		Construct construct = new Construct();
-		construct.setModEntityId("Construct:0011");
+		construct.setPrimaryExternalId("Construct:0011");
 		construct.setReferences(List.of(obsoleteReference));
 		construct.setDateCreated(datetime);
 		construct.setDataProvider(obsoleteDataProvider);
@@ -842,6 +837,7 @@ public class ConstructITCase extends BaseITCase {
 		construct.setConstructFullName(null);
 		construct.setConstructSynonyms(null);
 		construct.setSecondaryIdentifiers(null);
+		construct.setDataProviderCrossReference(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -860,7 +856,8 @@ public class ConstructITCase extends BaseITCase {
 			body("entity", not(hasKey("constructFullName"))).
 			body("entity", not(hasKey("constructSynonyms"))).
 			body("entity", not(hasKey("references"))).
-			body("entity", not(hasKey("secondaryIdentifiers")));
+			body("entity", not(hasKey("secondaryIdentifiers"))).
+			body("entity", not(hasKey("dataProviderCrossReference")));
 	}
 	
 	@Test
@@ -869,7 +866,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = new Construct();
 		construct.setConstructSymbol(constructSymbol);
 		construct.setDataProvider(dataProvider);
-		construct.setModEntityId("Construct:0015");
+		construct.setPrimaryExternalId("Construct:0015");
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -886,7 +883,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = new Construct();
 		construct.setConstructSymbol(constructSymbol);
 		construct.setDataProvider(dataProvider);
-		construct.setModEntityId("Construct:0016");
+		construct.setPrimaryExternalId("Construct:0016");
 		
 		ConstructComponentSlotAnnotation minimalComponent = createConstructComponentSlotAnnotation(isRegulatedByRelation, null, "minimalCmp", null, null, null);
 		ConstructSymbolSlotAnnotation minimalConstructSymbol = createConstructSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);
@@ -913,7 +910,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = new Construct();
 		construct.setConstructSymbol(constructSymbol);
 		construct.setDataProvider(dataProvider);
-		construct.setModEntityId("Construct:0017");
+		construct.setPrimaryExternalId("Construct:0017");
 		
 		ConstructComponentSlotAnnotation component = createConstructComponentSlotAnnotation(isRegulatedByRelation, null, "dnCmp", null, null, List.of(relatedNote, relatedNote));
 		construct.setConstructComponents(List.of(component));
@@ -954,7 +951,7 @@ public class ConstructITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity", hasKey("constructGenomicEntityAssociations")).
-			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.modEntityId", is(gene.getModEntityId()));
+			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId()));
 	}
 	
 	@Test

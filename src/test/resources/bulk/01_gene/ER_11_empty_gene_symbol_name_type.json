@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "GENETEST:ER11",
+    "primary_external_id": "GENETEST:ER11",
     "taxon_curie": "",
     "internal": true,
     "obsolete": false,
