@@ -118,7 +118,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		if (conditionClass != null && (CollectionUtils.isEmpty(conditionClass.getSubsets()) || !conditionClass.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET))) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
-		} 
+		}
 		
 		return conditionClass;
 	}

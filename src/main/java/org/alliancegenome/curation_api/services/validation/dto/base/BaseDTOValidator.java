@@ -152,8 +152,8 @@ public class BaseDTOValidator<E extends Object> {
 	}
 	
 	protected <N extends SubmittedObject, D extends BaseSQLDAO<N>, T extends SubmittedObjectDTO, S extends SubmittedObjectCrudService<N, T, D>> List<N> validateRequiredIdentifiers(S service, String field, List<String> identifiers) {
-		return validateIdentifiers(service, field, identifiers, true)
-	;}
+		return validateIdentifiers(service, field, identifiers, true);
+	}
 	
 	protected <N extends SubmittedObject, D extends BaseSQLDAO<N>, T extends SubmittedObjectDTO, S extends SubmittedObjectCrudService<N, T, D>> List<N> validateIdentifiers(S service, String field, List<String> identifiers, boolean isRequired) {
 		if (CollectionUtils.isEmpty(identifiers)) {
@@ -266,15 +266,15 @@ public class BaseDTOValidator<E extends Object> {
 		return references;
 	}
 	
-	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm (S service, String field, String curie) {
+	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm(S service, String field, String curie) {
 		return validateOntologyTerm(service, field, curie, false);
 	}
 	
-	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> N validateRequiredOntologyTerm (S service, String field, String curie) {
+	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> N validateRequiredOntologyTerm(S service, String field, String curie) {
 		return validateOntologyTerm(service, field, curie, true);
 	}
 	
-	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm (S service, String field, String curie, boolean isRequired) {
+	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm(S service, String field, String curie, boolean isRequired) {
 		if (StringUtils.isBlank(curie)) {
 			if (isRequired) {
 				response.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
@@ -304,15 +304,15 @@ public class BaseDTOValidator<E extends Object> {
 		return ontologyTerm;
 	}
 	
-	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateOntologyTerms (S service, String field, List<String> curies) {
+	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateOntologyTerms(S service, String field, List<String> curies) {
 		return validateOntologyTerms(service, field, curies, false);
 	}
 	
-	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateRequiredOntologyTerms (S service, String field, List<String> curies) {
+	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateRequiredOntologyTerms(S service, String field, List<String> curies) {
 		return validateOntologyTerms(service, field, curies, true);
 	}
 	
-	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateOntologyTerms (S service, String field, List<String> curies, boolean isRequired) {
+	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateOntologyTerms(S service, String field, List<String> curies, boolean isRequired) {
 		if (CollectionUtils.isEmpty(curies)) {
 			if (isRequired) {
 				response.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
@@ -434,7 +434,7 @@ public class BaseDTOValidator<E extends Object> {
 				if (term == null) {
 					response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE);
 					return null;
-				} 
+				}
 				
 				term.getSynonyms().size();
 				vocabularyTermCache.get(vocabularyOrSetName).put(termName, term);
@@ -507,11 +507,11 @@ public class BaseDTOValidator<E extends Object> {
 	}
 	
 	protected NCBITaxonTerm validateTaxon(String field, String curie) {
-		return  validateTaxon(field, curie, false);
+		return validateTaxon(field, curie, false);
 	}
 	
 	protected NCBITaxonTerm validateRequiredTaxon(String field, String curie) {
-		return  validateTaxon(field, curie, true);
+		return validateTaxon(field, curie, true);
 	}
 	
 	protected NCBITaxonTerm validateTaxon(String field, String curie, boolean isRequired) {

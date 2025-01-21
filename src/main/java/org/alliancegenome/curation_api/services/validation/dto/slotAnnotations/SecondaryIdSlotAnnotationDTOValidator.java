@@ -5,7 +5,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.SecondaryI
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.apache.commons.lang3.StringUtils;
 
-public class SecondaryIdSlotAnnotationDTOValidator<E extends SecondaryIdSlotAnnotation, D extends SecondaryIdSlotAnnotationDTO> extends SlotAnnotationDTOValidator <E, D>{
+public class SecondaryIdSlotAnnotationDTOValidator<E extends SecondaryIdSlotAnnotation, D extends SecondaryIdSlotAnnotationDTO> extends SlotAnnotationDTOValidator<E, D> {
 
 	public SecondaryIdSlotAnnotation validateSecondaryIdSlotAnnotationDTO(E annotation, D dto) {
 		annotation = validateSlotAnnotationDTO(annotation, dto);

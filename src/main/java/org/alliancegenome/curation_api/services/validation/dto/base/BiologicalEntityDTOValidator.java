@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
 
-public class BiologicalEntityDTOValidator <E extends BiologicalEntity, D extends BiologicalEntityDTO> extends SubmittedObjectDTOValidator<E, D> {
+public class BiologicalEntityDTOValidator<E extends BiologicalEntity, D extends BiologicalEntityDTO> extends SubmittedObjectDTOValidator<E, D> {
 
 	public E validateBiologicalEntityDTO(E entity, D dto, BackendBulkDataProvider beDataProvider) {
 

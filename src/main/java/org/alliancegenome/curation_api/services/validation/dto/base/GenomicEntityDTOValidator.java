@@ -15,7 +15,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.inject.Inject;
 
-public class GenomicEntityDTOValidator <E extends GenomicEntity, D extends GenomicEntityDTO> extends BiologicalEntityDTOValidator<E, D> {
+public class GenomicEntityDTOValidator<E extends GenomicEntity, D extends GenomicEntityDTO> extends BiologicalEntityDTOValidator<E, D> {
 
 	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
 	@Inject CrossReferenceService crossReferenceService;

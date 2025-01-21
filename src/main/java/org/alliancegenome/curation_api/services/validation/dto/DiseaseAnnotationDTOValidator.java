@@ -30,7 +30,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import jakarta.inject.Inject;
 
-public class DiseaseAnnotationDTOValidator <E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> extends AnnotationDTOValidator<E, D> {
+public class DiseaseAnnotationDTOValidator<E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> extends AnnotationDTOValidator<E, D> {
 
 	@Inject
 	DoTermService doTermService;
@@ -57,7 +57,7 @@ public class DiseaseAnnotationDTOValidator <E extends DiseaseAnnotation, D exten
 				if (!ecoTerm.getSubsets().contains(OntologyConstants.AGR_ECO_TERM_SUBSET)) {
 					response.addErrorMessage("evidence_code_curies", ValidationConstants.UNSUPPORTED_MESSAGE + " (" + ecoTerm.getCurie() + ")");
 					break;
-				} 
+				}
 			}
 		}
 		annotation.setEvidenceCodes(ecoTerms);

@@ -21,7 +21,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import jakarta.inject.Inject;
 
-public class AnnotationDTOValidator <E extends Annotation, D extends AnnotationDTO> extends AuditedObjectDTOValidator<E, D> {
+public class AnnotationDTOValidator<E extends Annotation, D extends AnnotationDTO> extends AuditedObjectDTOValidator<E, D> {
 
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject ConditionRelationDTOValidator conditionRelationDtoValidator;

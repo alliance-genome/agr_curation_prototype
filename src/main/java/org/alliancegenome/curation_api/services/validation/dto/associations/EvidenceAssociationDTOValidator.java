@@ -13,7 +13,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.inject.Inject;
 
-public class EvidenceAssociationDTOValidator <E extends EvidenceAssociation, D extends EvidenceAssociationDTO> extends AuditedObjectDTOValidator<E, D> {
+public class EvidenceAssociationDTOValidator<E extends EvidenceAssociation, D extends EvidenceAssociationDTO> extends AuditedObjectDTOValidator<E, D> {
 
 	@Inject
 	InformationContentEntityService informationContentEntityService;

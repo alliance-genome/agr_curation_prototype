@@ -12,7 +12,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import jakarta.inject.Inject;
 
-public class SubmittedObjectDTOValidator <E extends SubmittedObject, D extends SubmittedObjectDTO> extends AuditedObjectDTOValidator<E, D> {
+public class SubmittedObjectDTOValidator<E extends SubmittedObject, D extends SubmittedObjectDTO> extends AuditedObjectDTOValidator<E, D> {
 
 	@Inject CrossReferenceDAO crossReferenceDAO;
 
