@@ -25,7 +25,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<AgmAgmAssociation, AgmAgmAssociationDTO> {
 
-	@Inject AgmAgmAssociationDAO agmStrAssociationDAO;
+	@Inject AgmAgmAssociationDAO agmAgmAssociationDAO;
 	@Inject AffectedGenomicModelService agmService;
 
 	public AgmAgmAssociation validateAgmAgmAssociationDTO(AgmAgmAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
@@ -59,7 +59,7 @@ public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<Agm
 			params.put("relation.name", dto.getRelationName());
 			params.put("agmAssociationObject.id", objectIds.get(0));
 
-			SearchResponse<AgmAgmAssociation> searchResponse = agmStrAssociationDAO.findByParams(params);
+			SearchResponse<AgmAgmAssociation> searchResponse = agmAgmAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
 			}
@@ -101,7 +101,7 @@ public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<Agm
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		association = agmStrAssociationDAO.persist(association);
+		association = agmAgmAssociationDAO.persist(association);
 		return association;
 	}
 }

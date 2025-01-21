@@ -290,10 +290,15 @@ public class BaseDTOValidator<E extends Object> {
 		}
 		if (ontologyTerm == null) {
 			ontologyTerm = service.findByCurieOrSecondaryId(curie);
-			ontologyTermCache.get(service.getClass().getName()).put(curie, ontologyTerm);
+			
 			if (ontologyTerm == null) {
 				response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + curie + ")");
+				return null;
 			}
+			
+			ontologyTerm.getSecondaryIdentifiers().size();
+			ontologyTerm.getSynonyms().size();
+			ontologyTermCache.get(service.getClass().getName()).put(curie, ontologyTerm);
 		}
 		
 		return ontologyTerm;
@@ -323,11 +328,15 @@ public class BaseDTOValidator<E extends Object> {
 			N ontologyTerm = (N) ontologyTermCache.get(service.getClass().getName()).get(curie);
 			if (ontologyTerm == null) {
 				ontologyTerm = service.findByCurieOrSecondaryId(curie);
-				ontologyTermCache.get(service.getClass().getName()).put(curie, ontologyTerm);
+				
 				if (ontologyTerm == null) {
 					response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + curie + ")");
 					return null;
 				}
+				
+				ontologyTerm.getSecondaryIdentifiers().size();
+				ontologyTerm.getSynonyms().size();
+				ontologyTermCache.get(service.getClass().getName()).put(curie, ontologyTerm);
 			}
 			ontologyTerms.add(ontologyTerm);
 		}
@@ -372,14 +381,16 @@ public class BaseDTOValidator<E extends Object> {
 			} else {
 				term = vocabularyTermService.getTermInVocabulary(vocabularyOrSetName, termName).getEntity();
 			}
-			vocabularyTermCache.get(vocabularyOrSetName).put(termName, term);
 			
 			if (term == null) {
 				response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
+			
+			term.getSynonyms().size();
+			vocabularyTermCache.get(vocabularyOrSetName).put(termName, term);
 		}
-
+		
 		return term;
 	}
 	
@@ -419,12 +430,14 @@ public class BaseDTOValidator<E extends Object> {
 				} else {
 					term = vocabularyTermService.getTermInVocabulary(vocabularyOrSetName, termName).getEntity();
 				}
-				vocabularyTermCache.get(vocabularyOrSetName).put(termName, term);
 			
 				if (term == null) {
 					response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE);
 					return null;
-				}
+				} 
+				
+				term.getSynonyms().size();
+				vocabularyTermCache.get(vocabularyOrSetName).put(termName, term);
 			}
 			terms.add(term);
 		}
