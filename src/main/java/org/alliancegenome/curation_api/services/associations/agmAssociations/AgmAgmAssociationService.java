@@ -144,7 +144,7 @@ public class AgmAgmAssociationService extends BaseAssociationDTOCrudService<AgmA
 	}
 
 	private void addAssociationToStr(AgmAgmAssociation association) {
-		AffectedGenomicModel str = association.getAgmAssociationObject();
+		AffectedGenomicModel str = association.getAgmAgmAssociationObject();
 		List<AgmAgmAssociation> currentAssociations = str.getAgmAgmAssociations();
 		if (currentAssociations == null) {
 			currentAssociations = new ArrayList<>();

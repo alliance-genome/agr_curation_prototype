@@ -61,5 +61,5 @@ public class AgmAgmAssociation extends Association {
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	@JsonIgnoreProperties({"agmAgmAssociations", "agmAgmObjectAssociations", "agmSequenceTargetingReagentAssociations"})
-	private AffectedGenomicModel agmAssociationObject;
+	private AffectedGenomicModel agmAgmAssociationObject;
 }

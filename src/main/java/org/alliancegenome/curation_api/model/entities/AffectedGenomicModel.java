@@ -113,7 +113,7 @@ public class AffectedGenomicModel extends GenomicEntity {
 		"agmAssociationObject.secondaryIdentifiers",
 		"agmAssociationObject.secondaryIdentifiers_keyword"
 	})
-	@OneToMany(mappedBy = "agmAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "agmAgmAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
 	private List<AgmAgmAssociation> agmAgmObjectAssociations;
 
