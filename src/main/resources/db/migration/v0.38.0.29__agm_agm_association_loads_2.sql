@@ -12,12 +12,6 @@ from bulkscheduledload
 where id in (SELECT id
              FROM bulkload
              WHERE backendbulkloadtype = 'AGM_AGM_ASSOCIATION');
-delete
-from bulkload
-WHERE group_id in (select id from bulkloadgroup where name = 'Direct (LinkML) AGM AGM Association Loads');
-delete
-from bulkloadgroup
-where name = 'Direct (LinkML) AGM AGM Association Loads';
 
 delete
 from bulkmanualload
@@ -25,9 +19,12 @@ where id in (SELECT id
              FROM bulkload
              WHERE backendbulkloadtype = 'AGM_AGM_ASSOCIATION');
 
-SELECT id, 'ZFIN'
-FROM bulkload
-WHERE name = 'ZFIN AGM AGM Association Load';
+delete
+from bulkload
+WHERE group_id in (select id from bulkloadgroup where name = 'Direct (LinkML) AGM AGM Association Loads');
 
-select *
-from bulkmanualload
+delete
+from bulkloadgroup
+where name = 'Direct (LinkML) AGM AGM Association Loads';
+
+
