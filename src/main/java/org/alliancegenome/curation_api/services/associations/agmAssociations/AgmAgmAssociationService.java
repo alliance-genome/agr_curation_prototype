@@ -112,7 +112,7 @@ public class AgmAgmAssociationService extends BaseAssociationDTOCrudService<AgmA
 		Map<String, Object> params = new HashMap<>();
 		params.put("agmAssociationSubject.id", agmId);
 		params.put("relation.name", relationName);
-		params.put("agmAssociationObject.id", strId);
+		params.put("agmAgmAssociationObject.id", strId);
 
 		SearchResponse<AgmAgmAssociation> resp = agmAgmAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null) {

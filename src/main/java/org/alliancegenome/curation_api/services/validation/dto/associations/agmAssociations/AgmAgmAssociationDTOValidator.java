@@ -57,7 +57,7 @@ public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<Agm
 
 			params.put("agmAssociationSubject.id", subjectIds.get(0));
 			params.put("relation.name", dto.getRelationName());
-			params.put("agmAssociationObject.id", objectIds.get(0));
+			params.put("agmAgmAssociationObject.id", objectIds.get(0));
 
 			SearchResponse<AgmAgmAssociation> searchResponse = agmAgmAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {

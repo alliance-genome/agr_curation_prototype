@@ -62,7 +62,7 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.agmAssociationObject.primaryExternalId", is(agmObjectCurie)).
+			body("entity.agmAgmAssociationObject.primaryExternalId", is(agmObjectCurie)).
 			body("entity.agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
@@ -79,7 +79,7 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 			body("entity.agmAgmAssociations", hasSize(1)).
 			body("entity.agmAgmAssociations[0].relation.name", is(relationName)).
 			body("entity.agmAgmAssociations[0].agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
-			body("entity.agmAgmAssociations[0].agmAssociationSubject", not(hasKey("agmAssociationObject")));
+			body("entity.agmAgmAssociations[0].agmAssociationSubject", not(hasKey("agmAgmAssociationObject")));
 
 		RestAssured.given().
 			when().

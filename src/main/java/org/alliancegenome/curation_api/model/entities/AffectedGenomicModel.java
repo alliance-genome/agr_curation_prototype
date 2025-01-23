@@ -106,12 +106,12 @@ public class AffectedGenomicModel extends GenomicEntity {
 	private List<AgmAgmAssociation> agmAgmAssociations;
 
 	@IndexedEmbedded(includePaths = {
-		"agmAssociationObject.name",
-		"agmAssociationObject.name_keyword",
-		"agmAssociationObject.synonyms",
-		"agmAssociationObject.synonyms_keyword",
-		"agmAssociationObject.secondaryIdentifiers",
-		"agmAssociationObject.secondaryIdentifiers_keyword"
+		"agmAgmAssociationObject.name",
+		"agmAgmAssociationObject.name_keyword",
+		"agmAgmAssociationObject.synonyms",
+		"agmAgmAssociationObject.synonyms_keyword",
+		"agmAgmAssociationObject.secondaryIdentifiers",
+		"agmAgmAssociationObject.secondaryIdentifiers_keyword"
 	})
 	@OneToMany(mappedBy = "agmAgmAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
