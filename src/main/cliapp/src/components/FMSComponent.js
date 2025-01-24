@@ -7,12 +7,11 @@ import { FMSService } from '../service/FMSService';
 export const FMSComponent = () => {
 	const [dataFiles, setDataFiles] = useState(null);
 	const [snapShotDate, setSnapShotDate] = useState(0);
-	const [first, setFirst] = useState(0);
-	const [rows, setRows] = useState(20);
 	const [releases, setReleases] = useState(null);
 	const [selectedRelease, setSelectedRelease] = useState({ releaseVersion: '0' });
 
 	useEffect(() => {
+		console.log('Mounted');
 		const fmsService = new FMSService();
 
 		if (selectedRelease.releaseVersion !== '0') {
@@ -46,6 +45,10 @@ export const FMSComponent = () => {
 				}
 			});
 		}
+
+		return () => {
+			console.log('UnMounted');
+		};
 	}, [selectedRelease.releaseVersion]);
 
 	const symbolTemplate = (rowData) => {
@@ -54,11 +57,6 @@ export const FMSComponent = () => {
 
 	const uploadTemplate = (rowData) => {
 		return <div>{new Date(rowData.uploadDate).toGMTString()}</div>;
-	};
-
-	const customPage = (event) => {
-		setRows(event.rows);
-		setFirst(event.first);
 	};
 
 	const onReleaseChange = (event) => {
@@ -83,14 +81,12 @@ export const FMSComponent = () => {
 					value={dataFiles}
 					className="p-datatable-sm"
 					paginator
-					onPage={customPage}
-					first={first}
 					filterDisplay="row"
 					sortMode="multiple"
 					removableSort
 					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
 					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-					rows={rows}
+					rows={20}
 					rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
 				>
 					<Column showFilterMenu={false} field="md5Sum" header="MD5" sortable filter></Column>
