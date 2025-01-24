@@ -1,0 +1,4 @@
+drop INDEX agmagmassociation_agmassocobject_in;
+ALTER TABLE public.agmagmassociation DROP CONSTRAINT agmstrassociation_agmassociationobject_fk;
+CREATE INDEX agmagmassociation_agmassocobject_in ON public.agmagmassociation USING btree (agmAgmAssociationObject_id);
+ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmagmassociation_agmassociationobject_fk FOREIGN KEY (agmAgmAssociationObject_id) REFERENCES public.affectedgenomicmodel(id);

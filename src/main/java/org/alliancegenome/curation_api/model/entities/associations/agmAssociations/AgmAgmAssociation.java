@@ -43,10 +43,10 @@ public class AgmAgmAssociation extends Association {
 
 	@IndexedEmbedded(includePaths = {
 		"curie", "name", "curie_keyword", "name_keyword",
-		"primaryExternalId", "perimaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
+		"primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
-	@JsonIgnoreProperties({"agmAgmAssociations", "agmAgmObjectAssociations", "agmSequenceTargetingReagentAssociations"})
+	@JsonIgnoreProperties({"parentalPopulations", "agmSequenceTargetingReagentAssociations"})
 	@Fetch(FetchMode.JOIN)
 	private AffectedGenomicModel agmAssociationSubject;
 
@@ -56,10 +56,10 @@ public class AgmAgmAssociation extends Association {
 	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm relation;
 
-	@IndexedEmbedded(includePaths = {"name", "synonyms", "secondaryIdentifiers"})
+	@IndexedEmbedded(includePaths = {"name", "synonyms"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
-	@JsonIgnoreProperties({"agmAgmAssociations", "agmAgmObjectAssociations", "agmSequenceTargetingReagentAssociations"})
+	@JsonIgnoreProperties({"parentalPopulations", "agmSequenceTargetingReagentAssociations"})
 	private AffectedGenomicModel agmAgmAssociationObject;
 }

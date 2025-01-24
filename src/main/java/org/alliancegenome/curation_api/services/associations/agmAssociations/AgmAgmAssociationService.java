@@ -127,10 +127,10 @@ public class AgmAgmAssociationService extends BaseAssociationDTOCrudService<AgmA
 
 	private void addAssociationToAgm(AgmAgmAssociation association) {
 		AffectedGenomicModel agm = association.getAgmAssociationSubject();
-		List<AgmAgmAssociation> currentAssociations = agm.getAgmAgmAssociations();
+		List<AgmAgmAssociation> currentAssociations = agm.getParentalPopulations();
 		if (currentAssociations == null) {
 			currentAssociations = new ArrayList<>();
-			agm.setAgmAgmAssociations(currentAssociations);
+			agm.setParentalPopulations(currentAssociations);
 		}
 
 		List<Long> currentAssociationIds = new ArrayList<>();
@@ -145,10 +145,10 @@ public class AgmAgmAssociationService extends BaseAssociationDTOCrudService<AgmA
 
 	private void addAssociationToStr(AgmAgmAssociation association) {
 		AffectedGenomicModel str = association.getAgmAgmAssociationObject();
-		List<AgmAgmAssociation> currentAssociations = str.getAgmAgmAssociations();
+		List<AgmAgmAssociation> currentAssociations = str.getParentalPopulations();
 		if (currentAssociations == null) {
 			currentAssociations = new ArrayList<>();
-			str.setAgmAgmAssociations(currentAssociations);
+			str.setParentalPopulations(currentAssociations);
 		}
 
 		List<Long> currentAssociationIds = new ArrayList<>();

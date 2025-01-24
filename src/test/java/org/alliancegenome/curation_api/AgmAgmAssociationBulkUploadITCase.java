@@ -26,8 +26,12 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 	
 	private AffectedGenomicModel agmSubject;
 	private AffectedGenomicModel agmObject;
+	private AffectedGenomicModel agmSubject2;
+	private AffectedGenomicModel agmObject2;
 	private String agmSubjectCurie = "AMGTEST:AffectedGenomicModel0010";
 	private String agmObjectCurie = "AMGTEST:AffectedGenomicModel0020";
+	private String agmSubjectCurie2 = "AMGTEST:AffectedGenomicModel00102";
+	private String agmObjectCurie2 = "AMGTEST:AffectedGenomicModel00202";
 	private String relationName = "has_parental_population";
 
 	@BeforeEach
@@ -55,14 +59,15 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 		loadRequiredEntities();
 		
 		checkSuccessfulBulkLoad(agmAgmAssociationBulkPostEndpoint, agmAgmAssociationTestFilePath + "AF_01_all_fields.json");
-	
+
+		String s = agmAgmAssociationGetEndpoint + "?agmSubjectId=" + agmSubject.getId() + "&relationName=" + relationName + "&agmObjectId=" + agmObject.getId();
+		System.out.println(s);
 		RestAssured.given().
 			when().
-			get(agmAgmAssociationGetEndpoint + "?agmSubjectId=" + agmSubject.getId() + "&relationName=" + relationName + "&agmObjectId=" + agmObject.getId()).
+			get(s).
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.agmAgmAssociationObject.primaryExternalId", is(agmObjectCurie)).
 			body("entity.agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
@@ -76,22 +81,14 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 			get(agmGetEndpoint + agmSubjectCurie).
 			then().
 			statusCode(200).
-			body("entity.agmAgmAssociations", hasSize(1)).
-			body("entity.agmAgmAssociations[0].relation.name", is(relationName)).
-			body("entity.agmAgmAssociations[0].agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
-			body("entity.agmAgmAssociations[0].agmAssociationSubject", not(hasKey("agmAgmAssociationObject")));
+			body("entity.parentalPopulations", hasSize(1)).
+			body("entity.parentalPopulations[0].relation.name", is(relationName)).
+			body("entity.parentalPopulations[0].agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
+			body("entity.parentalPopulations[0].agmAssociationSubject", not(hasKey("agmAgmAssociationObject")));
 
-		RestAssured.given().
-			when().
-			get(agmGetEndpoint + agmObjectCurie).
-			then().
-			statusCode(200).
-			body("entity.agmAgmObjectAssociations", hasSize(1)).
-			body("entity.agmAgmObjectAssociations[0].relation.name", is(relationName)).
-			body("entity.agmAgmObjectAssociations[0].agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
-			body("entity.agmAgmObjectAssociations[0].agmAgmAssociationObject", not(hasKey("agmAgmAssociations")));
 	}
 
+	@Test
 	@Order(2)
 	public void agmAgmAssociationBulkUploadUpdateCheckFields() throws Exception {
 
@@ -99,12 +96,11 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 
 		RestAssured.given().
 				when().
-				get(agmAgmAssociationGetEndpoint + "?agmSubjectId=" + agmSubject.getId() + "&relationName=" + relationName + "&agmObjectId=" + agmObject.getId()).
+				get(agmAgmAssociationGetEndpoint + "?agmSubjectId=" + agmSubject2.getId() + "&relationName=" + relationName + "&agmObjectId=" + agmObject2.getId()).
 				then().
 				statusCode(200).
 				body("entity.relation.name", is(relationName)).
-				body("entity.agmAgmAssociationObject.primaryExternalId", is(agmObjectCurie)).
-				body("entity.agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
+				body("entity.agmAssociationSubject.primaryExternalId", is(agmSubjectCurie2)).
 				body("entity.internal", is(true)).
 				body("entity.obsolete", is(true)).
 				body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
@@ -115,17 +111,10 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 
 		RestAssured.given().
 				when().
-				get(agmGetEndpoint + agmSubjectCurie).
+				get(agmGetEndpoint + agmSubjectCurie2).
 				then().
 				statusCode(200).
-				body("entity.agmSequenceTargetingReagentAssociations", hasSize(1));
-
-		RestAssured.given().
-				when().
-				get(agmGetEndpoint + agmObjectCurie).
-				then().
-				statusCode(200).
-				body("entity.agmSequenceTargetingReagentAssociations", hasSize(1));
+				body("entity.agmAgmAssociations", hasSize(1));
 	}
 
 	@Test

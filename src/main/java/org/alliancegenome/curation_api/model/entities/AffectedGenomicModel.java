@@ -94,18 +94,6 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
 	private List<AgmAlleleAssociation> components;
 	@IndexedEmbedded(includePaths = {
-		"agmAssociationSubject.name",
-		"agmAssociationSubject.name_keyword",
-		"agmAssociationSubject.synonyms",
-		"agmAssociationSubject.synonyms_keyword",
-		"agmAssociationSubject.secondaryIdentifiers",
-		"agmAssociationSubject.secondaryIdentifiers_keyword"
-	})
-	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
-	private List<AgmAgmAssociation> agmAgmAssociations;
-
-	@IndexedEmbedded(includePaths = {
 		"agmAgmAssociationObject.name",
 		"agmAgmAssociationObject.name_keyword",
 		"agmAgmAssociationObject.synonyms",
@@ -113,8 +101,8 @@ public class AffectedGenomicModel extends GenomicEntity {
 		"agmAgmAssociationObject.secondaryIdentifiers",
 		"agmAgmAssociationObject.secondaryIdentifiers_keyword"
 	})
-	@OneToMany(mappedBy = "agmAgmAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
-	private List<AgmAgmAssociation> agmAgmObjectAssociations;
+	private List<AgmAgmAssociation> parentalPopulations;
 
 }
