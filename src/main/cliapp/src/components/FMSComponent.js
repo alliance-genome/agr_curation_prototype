@@ -11,7 +11,6 @@ export const FMSComponent = () => {
 	const [selectedRelease, setSelectedRelease] = useState({ releaseVersion: '0' });
 
 	useEffect(() => {
-		console.log('Mounted');
 		const fmsService = new FMSService();
 
 		if (selectedRelease.releaseVersion !== '0') {
@@ -45,10 +44,6 @@ export const FMSComponent = () => {
 				}
 			});
 		}
-
-		return () => {
-			console.log('UnMounted');
-		};
 	}, [selectedRelease.releaseVersion]);
 
 	const symbolTemplate = (rowData) => {
