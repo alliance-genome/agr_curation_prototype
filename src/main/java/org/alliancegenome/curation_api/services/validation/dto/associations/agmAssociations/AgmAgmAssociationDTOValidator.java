@@ -57,7 +57,7 @@ public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<Agm
 
 			params.put("agmAssociationSubject.id", subjectIds.get(0));
 			params.put("relation.name", dto.getRelationName());
-			params.put("agmAssociationObject.id", objectIds.get(0));
+			params.put("agmAgmAssociationObject.id", objectIds.get(0));
 
 			SearchResponse<AgmAgmAssociation> searchResponse = agmAgmAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
@@ -84,7 +84,7 @@ public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<Agm
 			}
 		}
 
-		if (association.getAgmAssociationObject() == null && !StringUtils.isBlank(dto.getAgmObjectIdentifier())) {
+		if (association.getAgmAgmAssociationObject() == null && !StringUtils.isBlank(dto.getAgmObjectIdentifier())) {
 
 			AffectedGenomicModel object = agmService.findByIdentifierString(dto.getAgmObjectIdentifier());
 			if (object == null) {
@@ -92,7 +92,7 @@ public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<Agm
 			} else if (beDataProvider != null && !object.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 				response.addErrorMessage("agm_object_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmObjectIdentifier() + ")");
 			} else {
-				association.setAgmAssociationObject(object);
+				association.setAgmAgmAssociationObject(object);
 			}
 		}
 		association = validateAuditedObjectDTO(association, dto);
