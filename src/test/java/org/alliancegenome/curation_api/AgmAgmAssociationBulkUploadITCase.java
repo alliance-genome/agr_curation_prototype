@@ -61,7 +61,6 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 		checkSuccessfulBulkLoad(agmAgmAssociationBulkPostEndpoint, agmAgmAssociationTestFilePath + "AF_01_all_fields.json");
 
 		String s = agmAgmAssociationGetEndpoint + "?agmSubjectId=" + agmSubject.getId() + "&relationName=" + relationName + "&agmObjectId=" + agmObject.getId();
-		System.out.println(s);
 		RestAssured.given().
 			when().
 			get(s).
