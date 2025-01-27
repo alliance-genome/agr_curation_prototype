@@ -26,12 +26,8 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 	
 	private AffectedGenomicModel agmSubject;
 	private AffectedGenomicModel agmObject;
-	private AffectedGenomicModel agmSubject2;
-	private AffectedGenomicModel agmObject2;
 	private String agmSubjectCurie = "AMGTEST:AffectedGenomicModel0010";
 	private String agmObjectCurie = "AMGTEST:AffectedGenomicModel0020";
-	private String agmSubjectCurie2 = "AMGTEST:AffectedGenomicModel00102";
-	private String agmObjectCurie2 = "AMGTEST:AffectedGenomicModel00202";
 	private String relationName = "has_parental_population";
 
 	@BeforeEach
@@ -90,16 +86,15 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void agmAgmAssociationBulkUploadUpdateCheckFields() throws Exception {
-
 		checkSuccessfulBulkLoad(agmAgmAssociationBulkPostEndpoint, agmAgmAssociationTestFilePath + "UD_01_update_all_except_default_fields.json");
 
 		RestAssured.given().
 				when().
-				get(agmAgmAssociationGetEndpoint + "?agmSubjectId=" + agmSubject2.getId() + "&relationName=" + relationName + "&agmObjectId=" + agmObject2.getId()).
+				get(agmAgmAssociationGetEndpoint + "?agmSubjectId=" + agmSubject.getId() + "&relationName=" + relationName + "&agmObjectId=" + agmObject.getId()).
 				then().
 				statusCode(200).
 				body("entity.relation.name", is(relationName)).
-				body("entity.agmAssociationSubject.primaryExternalId", is(agmSubjectCurie2)).
+				body("entity.agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
 				body("entity.internal", is(true)).
 				body("entity.obsolete", is(true)).
 				body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
@@ -110,10 +105,10 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 
 		RestAssured.given().
 				when().
-				get(agmGetEndpoint + agmSubjectCurie2).
+				get(agmGetEndpoint + agmSubjectCurie).
 				then().
 				statusCode(200).
-				body("entity.agmAgmAssociations", hasSize(1));
+				body("entity.parentalPopulations", hasSize(1));
 	}
 
 	@Test
