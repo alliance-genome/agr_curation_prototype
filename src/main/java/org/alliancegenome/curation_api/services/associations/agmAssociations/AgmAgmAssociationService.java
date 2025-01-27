@@ -112,7 +112,7 @@ public class AgmAgmAssociationService extends BaseAssociationDTOCrudService<AgmA
 		Map<String, Object> params = new HashMap<>();
 		params.put("agmAssociationSubject.id", agmId);
 		params.put("relation.name", relationName);
-		params.put("agmAssociationObject.id", strId);
+		params.put("agmAgmAssociationObject.id", strId);
 
 		SearchResponse<AgmAgmAssociation> resp = agmAgmAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null) {
@@ -127,10 +127,10 @@ public class AgmAgmAssociationService extends BaseAssociationDTOCrudService<AgmA
 
 	private void addAssociationToAgm(AgmAgmAssociation association) {
 		AffectedGenomicModel agm = association.getAgmAssociationSubject();
-		List<AgmAgmAssociation> currentAssociations = agm.getAgmAgmAssociations();
+		List<AgmAgmAssociation> currentAssociations = agm.getParentalPopulations();
 		if (currentAssociations == null) {
 			currentAssociations = new ArrayList<>();
-			agm.setAgmAgmAssociations(currentAssociations);
+			agm.setParentalPopulations(currentAssociations);
 		}
 
 		List<Long> currentAssociationIds = new ArrayList<>();
@@ -144,11 +144,11 @@ public class AgmAgmAssociationService extends BaseAssociationDTOCrudService<AgmA
 	}
 
 	private void addAssociationToStr(AgmAgmAssociation association) {
-		AffectedGenomicModel str = association.getAgmAssociationObject();
-		List<AgmAgmAssociation> currentAssociations = str.getAgmAgmAssociations();
+		AffectedGenomicModel str = association.getAgmAgmAssociationObject();
+		List<AgmAgmAssociation> currentAssociations = str.getParentalPopulations();
 		if (currentAssociations == null) {
 			currentAssociations = new ArrayList<>();
-			str.setAgmAgmAssociations(currentAssociations);
+			str.setParentalPopulations(currentAssociations);
 		}
 
 		List<Long> currentAssociationIds = new ArrayList<>();

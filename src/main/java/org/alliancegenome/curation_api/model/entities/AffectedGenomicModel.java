@@ -27,7 +27,7 @@ import java.util.List;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"agmDiseaseAnnotations", "constructGenomicEntityAssociations", "agmSecondaryIds", "agmSequenceTargetingReagentAssociations", "components"}, callSuper = true)
+@ToString(exclude = {"agmDiseaseAnnotations", "constructGenomicEntityAssociations", "agmSecondaryIds", "agmSequenceTargetingReagentAssociations", "components", "parentalPopulations"}, callSuper = true)
 @Schema(name = "AffectedGenomicModel", description = "POJO that represents the AGM")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntity.class}, partial = true)
 public class AffectedGenomicModel extends GenomicEntity {
@@ -94,27 +94,15 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
 	private List<AgmAlleleAssociation> components;
 	@IndexedEmbedded(includePaths = {
-		"agmAssociationSubject.name",
-		"agmAssociationSubject.name_keyword",
-		"agmAssociationSubject.synonyms",
-		"agmAssociationSubject.synonyms_keyword",
-		"agmAssociationSubject.secondaryIdentifiers",
-		"agmAssociationSubject.secondaryIdentifiers_keyword"
+		"agmAgmAssociationObject.name",
+		"agmAgmAssociationObject.name_keyword",
+		"agmAgmAssociationObject.synonyms",
+		"agmAgmAssociationObject.synonyms_keyword",
+		"agmAgmAssociationObject.secondaryIdentifiers",
+		"agmAgmAssociationObject.secondaryIdentifiers_keyword"
 	})
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
-	private List<AgmAgmAssociation> agmAgmAssociations;
-
-	@IndexedEmbedded(includePaths = {
-		"agmAssociationObject.name",
-		"agmAssociationObject.name_keyword",
-		"agmAssociationObject.synonyms",
-		"agmAssociationObject.synonyms_keyword",
-		"agmAssociationObject.secondaryIdentifiers",
-		"agmAssociationObject.secondaryIdentifiers_keyword"
-	})
-	@OneToMany(mappedBy = "agmAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
-	private List<AgmAgmAssociation> agmAgmObjectAssociations;
+	private List<AgmAgmAssociation> parentalPopulations;
 
 }

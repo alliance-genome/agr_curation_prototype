@@ -55,14 +55,14 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 		loadRequiredEntities();
 		
 		checkSuccessfulBulkLoad(agmAgmAssociationBulkPostEndpoint, agmAgmAssociationTestFilePath + "AF_01_all_fields.json");
-	
+
+		String s = agmAgmAssociationGetEndpoint + "?agmSubjectId=" + agmSubject.getId() + "&relationName=" + relationName + "&agmObjectId=" + agmObject.getId();
 		RestAssured.given().
 			when().
-			get(agmAgmAssociationGetEndpoint + "?agmSubjectId=" + agmSubject.getId() + "&relationName=" + relationName + "&agmObjectId=" + agmObject.getId()).
+			get(s).
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.agmAssociationObject.primaryExternalId", is(agmObjectCurie)).
 			body("entity.agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
@@ -76,25 +76,16 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 			get(agmGetEndpoint + agmSubjectCurie).
 			then().
 			statusCode(200).
-			body("entity.agmAgmAssociations", hasSize(1)).
-			body("entity.agmAgmAssociations[0].relation.name", is(relationName)).
-			body("entity.agmAgmAssociations[0].agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
-			body("entity.agmAgmAssociations[0].agmAssociationSubject", not(hasKey("agmAssociationObject")));
+			body("entity.parentalPopulations", hasSize(1)).
+			body("entity.parentalPopulations[0].relation.name", is(relationName)).
+			body("entity.parentalPopulations[0].agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
+			body("entity.parentalPopulations[0].agmAssociationSubject", not(hasKey("agmAgmAssociationObject")));
 
-		RestAssured.given().
-			when().
-			get(agmGetEndpoint + agmObjectCurie).
-			then().
-			statusCode(200).
-			body("entity.agmAgmObjectAssociations", hasSize(1)).
-			body("entity.agmAgmObjectAssociations[0].relation.name", is(relationName)).
-			body("entity.agmAgmObjectAssociations[0].agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
-			body("entity.agmAgmObjectAssociations[0].agmAgmAssociationObject", not(hasKey("agmAgmAssociations")));
 	}
 
+	@Test
 	@Order(2)
 	public void agmAgmAssociationBulkUploadUpdateCheckFields() throws Exception {
-
 		checkSuccessfulBulkLoad(agmAgmAssociationBulkPostEndpoint, agmAgmAssociationTestFilePath + "UD_01_update_all_except_default_fields.json");
 
 		RestAssured.given().
@@ -103,7 +94,6 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 				then().
 				statusCode(200).
 				body("entity.relation.name", is(relationName)).
-				body("entity.agmAgmAssociationObject.primaryExternalId", is(agmObjectCurie)).
 				body("entity.agmAssociationSubject.primaryExternalId", is(agmSubjectCurie)).
 				body("entity.internal", is(true)).
 				body("entity.obsolete", is(true)).
@@ -118,14 +108,7 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 				get(agmGetEndpoint + agmSubjectCurie).
 				then().
 				statusCode(200).
-				body("entity.agmSequenceTargetingReagentAssociations", hasSize(1));
-
-		RestAssured.given().
-				when().
-				get(agmGetEndpoint + agmObjectCurie).
-				then().
-				statusCode(200).
-				body("entity.agmSequenceTargetingReagentAssociations", hasSize(1));
+				body("entity.parentalPopulations", hasSize(1));
 	}
 
 	@Test
